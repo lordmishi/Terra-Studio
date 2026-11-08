@@ -608,6 +608,9 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
         (Method::Get, "/fonts/familjen.woff2") => {
             respond(req, 200, "font/woff2", include_bytes!("../assets/familjen.woff2").to_vec())
         }
+        (Method::Get, "/logo.png") => {
+            respond(req, 200, "image/png", include_bytes!("../assets/logo.png").to_vec())
+        }
         (Method::Get, "/api/ping") => respond(req, 200, "text/plain", PING_ID.as_bytes().to_vec()),
         (Method::Post, "/api/heartbeat") => {
             last_seen.store(now(), Ordering::Relaxed);

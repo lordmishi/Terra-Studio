@@ -2,7 +2,7 @@
 <div class="shell">
   <aside class="rail">
     <h1 class="sr">Terra Studio</h1>
-    <svg class="logo" viewBox="0 0 32 32" role="img" aria-label="Terra Studio"><rect x="1" y="1" width="30" height="30" rx="8"/><path d="M7 10h18M7 15h15"/><rect class="layer-b" x="6" y="18.5" width="20" height="7" rx="2"/><circle cx="17.5" cy="22" r="1.8"/></svg>
+    <img class="logo" src="/logo.png" width="40" height="40" alt="Terra Studio">
     <nav class="tabs" role="tablist" aria-label="Menu" aria-orientation="vertical">
       <button role="tab" id="t-dash" aria-selected="true" data-tab="dash"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M12 9.5a1 1 0 0 1 1 1V12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-1.5a1 1 0 0 1 1-1z"/><path d="M7 1a1 1 0 0 1 1 1v4.5a1 1 0 0 1-1 1H1.932a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"/><path d="M12.469 1a.5.5 0 0 1 .5.5v1.25a.5.5 0 0 1-.5.5H10.5a.5.5 0 0 1-.5-.5V1.5a.5.5 0 0 1 .5-.5z"/><path d="M12.469 5.25a.5.5 0 0 1 .5.5V7a.5.5 0 0 1-.5.5H10.5A.5.5 0 0 1 10 7V5.75a.5.5 0 0 1 .5-.5z"/></svg><span>Dashboard</span></button>
       <button role="tab" id="t-ideas" aria-selected="false" data-tab="ideas"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M11.5 5.031a4.5 4.5 0 1 0-6.5 4v1.5a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1.5a4.48 4.48 0 0 0 2.5-4"/><path d="M5 13.5h4"/></svg><span>Ide &amp; jadwal</span></button>
@@ -15,7 +15,7 @@
     <div class="rail-sp"></div>
     <button type="button" class="rail-plus" id="rail-plus" aria-label="Rencana konten baru" data-tip="Rencana baru">+</button>
     <button type="button" class="skin" id="skin-tog" aria-label="Ganti tema" data-tip="Tema: batu / lumut"><i></i></button>
-    <p class="ver">v1.8</p>
+    <p class="ver">v1.8.1</p>
   </aside>
   <aside class="side" aria-label="Kalender dan jadwal">
     <div class="box calw">
@@ -334,7 +334,7 @@
     <div class="card" style="margin-top:16px">
       <span class="layer">Aplikasi</span>
       <h3>Data dan aplikasi</h3>
-      <p class="note">Semua pengaturan, data Studio, rencana kalender, dan hasil AI disimpan hanya di komputer ini, di folder <code id="cfg-dir"></code>. API key disimpan terenkripsi dengan pengaman Windows. Menutup jendela Terra Studio berarti menutup aplikasinya. Versi 1.8.0.</p>
+      <p class="note">Semua pengaturan, data Studio, rencana kalender, dan hasil AI disimpan hanya di komputer ini, di folder <code id="cfg-dir"></code>. API key disimpan terenkripsi dengan pengaman Windows. Menutup jendela Terra Studio berarti menutup aplikasinya. Versi 1.8.1.</p>
       <h3 style="margin-top:14px">Backup</h3>
       <p class="note">Simpan file backup (profil, data Studio, kalender, hasil AI) ke folder Downloads, lalu salin ke flashdisk atau Google Drive. API key dan gambar thumbnail rencana tidak ikut. Pulihkan di komputer baru atau setelah instal ulang Windows.</p>
       <div class="chips"><button type="button" class="btn ghost" id="backup-save">Simpan backup</button><button type="button" class="btn ghost" id="backup-load">Pulihkan dari backup</button></div>
