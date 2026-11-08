@@ -40,6 +40,21 @@ struct Config {
     api_key: String,
     #[serde(skip_serializing_if = "String::is_empty")]
     api_key_dpapi: String,
+    /// "claude", "gemini", or "" to pick automatically from the saved keys.
+    provider: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
+    gemini_key: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
+    gemini_key_dpapi: String,
+    /// Gemini model id such as "gemini-x-flash"; empty picks the newest Flash.
+    gemini_model: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
+    eleven_key: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
+    eleven_key_dpapi: String,
+    eleven_voice: String,
+    eleven_voice_name: String,
+    eleven_model: String,
     model: String,
     effort: String,
     profile: Value,
@@ -50,6 +65,15 @@ impl Default for Config {
         Config {
             api_key: String::new(),
             api_key_dpapi: String::new(),
+            provider: String::new(),
+            gemini_key: String::new(),
+            gemini_key_dpapi: String::new(),
+            gemini_model: String::new(),
+            eleven_key: String::new(),
+            eleven_key_dpapi: String::new(),
+            eleven_voice: String::new(),
+            eleven_voice_name: String::new(),
+            eleven_model: String::new(),
             model: MODELS[1].into(),
             effort: "medium".into(),
             profile: json!({}),
@@ -82,10 +106,19 @@ fn load_config(dir: &Path) -> Config {
         .ok()
         .and_then(|s| serde_json::from_str(&s).ok())
         .unwrap_or_default();
+    // A key still in plaintext comes from an older version or a failed encryption.
+    let had_plain = !c.api_key.is_empty() || !c.gemini_key.is_empty() || !c.eleven_key.is_empty();
+    let open = |enc: &str| from_hex(enc).and_then(|b| secret::unprotect(&b)).unwrap_or_default();
     if !c.api_key_dpapi.is_empty() {
-        c.api_key = from_hex(&c.api_key_dpapi).and_then(|b| secret::unprotect(&b)).unwrap_or_default();
-    } else if !c.api_key.is_empty() && secret::AVAILABLE {
-        // Plaintext key from an older version: rewrite it encrypted.
+        c.api_key = open(&c.api_key_dpapi);
+    }
+    if !c.gemini_key_dpapi.is_empty() {
+        c.gemini_key = open(&c.gemini_key_dpapi);
+    }
+    if !c.eleven_key_dpapi.is_empty() {
+        c.eleven_key = open(&c.eleven_key_dpapi);
+    }
+    if had_plain && secret::AVAILABLE {
         let _ = save_config(dir, &c);
     }
     c
@@ -95,10 +128,24 @@ fn load_config(dir: &Path) -> Config {
 fn save_config(dir: &Path, c: &Config) -> Result<(), String> {
     let mut disk = c.clone();
     disk.api_key_dpapi.clear();
+    disk.gemini_key_dpapi.clear();
+    disk.eleven_key_dpapi.clear();
+    if !c.eleven_key.is_empty() {
+        if let Some(enc) = secret::protect(c.eleven_key.as_bytes()) {
+            disk.eleven_key_dpapi = to_hex(&enc);
+            disk.eleven_key.clear();
+        }
+    }
     if !c.api_key.is_empty() {
         if let Some(enc) = secret::protect(c.api_key.as_bytes()) {
             disk.api_key_dpapi = to_hex(&enc);
             disk.api_key.clear();
+        }
+    }
+    if !c.gemini_key.is_empty() {
+        if let Some(enc) = secret::protect(c.gemini_key.as_bytes()) {
+            disk.gemini_key_dpapi = to_hex(&enc);
+            disk.gemini_key.clear();
         }
     }
     let bytes = serde_json::to_vec_pretty(&disk).map_err(|e| e.to_string())?;
@@ -373,6 +420,17 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
                 200,
                 json!({
                     "has_key": !c.api_key.is_empty(),
+                    "has_gemini": !c.gemini_key.is_empty(),
+                    "gemini_hint": c.gemini_key.chars().rev().take(4).collect::<Vec<_>>().into_iter().rev().collect::<String>(),
+                    "gemini_model": c.gemini_model,
+                    "provider": active_provider(&c),
+                    "provider_choice": c.provider,
+                    "has_eleven": !c.eleven_key.is_empty(),
+                    "eleven_hint": c.eleven_key.chars().rev().take(4).collect::<Vec<_>>().into_iter().rev().collect::<String>(),
+                    "eleven_voice": c.eleven_voice,
+                    "eleven_voice_name": c.eleven_voice_name,
+                    "eleven_model": c.eleven_model,
+                    "audio_dir": eleven::out_dir(dir).display().to_string(),
                     "key_hint": hint,
                     "model": c.model,
                     "effort": c.effort,
@@ -389,6 +447,32 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
             let mut c = cfg.lock().unwrap();
             if v["clear_key"].as_bool() == Some(true) {
                 c.api_key.clear();
+            }
+            if v["clear_eleven"].as_bool() == Some(true) {
+                c.eleven_key.clear();
+            }
+            if let Some(k) = v["eleven_key"].as_str().map(str::trim).filter(|k| !k.is_empty()) {
+                c.eleven_key = k.to_string();
+            }
+            let safe_id = |x: &str| x.len() < 80 && x.chars().all(|ch| ch.is_ascii_alphanumeric() || "-_".contains(ch));
+            if let Some(x) = v["eleven_voice"].as_str().filter(|x| safe_id(x)) {
+                c.eleven_voice = x.to_string();
+                c.eleven_voice_name = v["eleven_voice_name"].as_str().unwrap_or("").chars().take(80).collect();
+            }
+            if let Some(x) = v["eleven_model"].as_str().filter(|x| safe_id(x)) {
+                c.eleven_model = x.to_string();
+            }
+            if v["clear_gemini"].as_bool() == Some(true) {
+                c.gemini_key.clear();
+            }
+            if let Some(k) = v["gemini_key"].as_str().map(str::trim).filter(|k| !k.is_empty()) {
+                c.gemini_key = k.to_string();
+            }
+            if let Some(m) = v["gemini_model"].as_str().filter(|m| m.is_empty() || (m.len() < 80 && m.chars().all(|ch| ch.is_ascii_alphanumeric() || "-._".contains(ch)))) {
+                c.gemini_model = m.to_string();
+            }
+            if let Some(p) = v["provider"].as_str().filter(|p| ["", "manual", "claude", "gemini"].contains(p)) {
+                c.provider = p.to_string();
             }
             if let Some(k) = v["api_key"].as_str() {
                 let k = k.trim();
@@ -426,6 +510,60 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
             respond_json(req, code, out)
         }
         (Method::Get, "/api/data") => respond_json(req, 200, load_data(dir)),
+        (Method::Post, "/api/gemini-models") => {
+            let v = match read_json(&mut req, 64 * 1024) {
+                Ok(v) => v,
+                Err(e) => return respond_json(req, 400, json!({"error": e})),
+            };
+            let key = v["key"].as_str().map(str::trim).filter(|k| !k.is_empty()).map(String::from)
+                .unwrap_or_else(|| cfg.lock().unwrap().gemini_key.clone());
+            if key.is_empty() {
+                return respond_json(req, 400, json!({"error": "API key Gemini belum diisi."}));
+            }
+            match gemini::models(&key) {
+                Ok(list) => {
+                    let def = gemini::pick_default(&list);
+                    respond_json(req, 200, json!({"models": list, "default": def}))
+                }
+                Err((code, body)) => respond_json(req, 502, json!({"error": gemini::friendly(code, &body)})),
+            }
+        }
+        (Method::Post, "/api/eleven/info") => {
+            let v = match read_json(&mut req, 64 * 1024) {
+                Ok(v) => v,
+                Err(e) => return respond_json(req, 400, json!({"error": e})),
+            };
+            let key = v["key"].as_str().map(str::trim).filter(|k| !k.is_empty()).map(String::from)
+                .unwrap_or_else(|| cfg.lock().unwrap().eleven_key.clone());
+            if key.is_empty() {
+                return respond_json(req, 400, json!({"error": "API key ElevenLabs belum diisi."}));
+            }
+            match eleven::info(&key) {
+                Ok(info) => respond_json(req, 200, info),
+                Err(e) => respond_json(req, 502, json!({"error": e})),
+            }
+        }
+        (Method::Post, "/api/eleven/tts") => {
+            let v = match read_json(&mut req, 512 * 1024) {
+                Ok(v) => v,
+                Err(e) => return respond_json(req, 400, json!({"error": e})),
+            };
+            let c = cfg.lock().unwrap().clone();
+            let voice = v["voice"].as_str().filter(|x| !x.is_empty()).unwrap_or(&c.eleven_voice).to_string();
+            let parts: Vec<String> = v["parts"].as_array().into_iter().flatten().filter_map(|p| p.as_str().map(String::from)).collect();
+            match eleven::speak(&c, dir, v["title"].as_str().unwrap_or("voice over"), &parts, &voice) {
+                Ok(out) => respond_json(req, 200, out),
+                Err(e) => respond_json(req, 502, json!({"error": e})),
+            }
+        }
+        (Method::Post, "/api/open-folder") => {
+            let d = eleven::out_dir(dir);
+            #[cfg(windows)]
+            let _ = Command::new("explorer.exe").arg(&d).spawn();
+            #[cfg(not(windows))]
+            let _ = Command::new("xdg-open").arg(&d).spawn();
+            respond_json(req, 200, json!({"ok": true}))
+        }
         // Backup: profile, settings (never the API key), Studio data, plans and AI results.
         (Method::Get, "/api/backup") => {
             let c = cfg.lock().unwrap().clone();
@@ -511,6 +649,14 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
             std::thread::sleep(Duration::from_millis(300));
             std::process::exit(0);
         }
+        (Method::Get, p) if p.starts_with("/api/audio/") => {
+            let name = percent_decode(&p["/api/audio/".len()..]);
+            let ok = name.ends_with(".mp3") && !name.contains(['/', '\\']) && !name.contains("..");
+            match ok.then(|| fs::read(eleven::out_dir(dir).join(&name)).ok()).flatten() {
+                Some(bytes) => respond(req, 200, "audio/mpeg", bytes),
+                None => respond_json(req, 404, json!({"error": "not found"})),
+            }
+        }
         _ => respond_json(req, 404, json!({"error": "not found"})),
     }
 }
@@ -536,7 +682,23 @@ fn percent_decode(s: &str) -> String {
 
 // ---------------------------------------------------------------- Claude API
 
+/// The provider used for generation: an explicit choice wins, otherwise
+/// whichever key is saved (Claude first). Empty means copy-paste mode.
+fn active_provider(c: &Config) -> &'static str {
+    match c.provider.as_str() {
+        "manual" => "",
+        "claude" if !c.api_key.is_empty() => "claude",
+        "gemini" if !c.gemini_key.is_empty() => "gemini",
+        _ if !c.api_key.is_empty() => "claude",
+        _ if !c.gemini_key.is_empty() => "gemini",
+        _ => "",
+    }
+}
+
 fn generate(c: &Config, prompt: &str, test: bool) -> (u16, Value) {
+    if active_provider(c) == "gemini" {
+        return gemini::generate(c, prompt, test);
+    }
     if c.api_key.is_empty() {
         return (400, json!({"error": "API key belum diisi. Buka tab Pengaturan dan tempel API key Anthropic Anda."}));
     }
@@ -657,6 +819,365 @@ fn call_claude(key: &str, body: &Value, fallback: bool) -> Result<Value, (u16, S
         Ok(resp) => resp.into_json::<Value>().map_err(|e| (0, e.to_string())),
         Err(ureq::Error::Status(code, resp)) => Err((code, resp.into_string().unwrap_or_default())),
         Err(e) => Err((0, e.to_string())),
+    }
+}
+
+// ---------------------------------------------------------------- Gemini API
+
+mod gemini {
+    use super::*;
+    const BASE: &str = "https://generativelanguage.googleapis.com/v1beta";
+
+    fn agent() -> ureq::Agent {
+        ureq::AgentBuilder::new()
+            .try_proxy_from_env(true)
+            .timeout_connect(Duration::from_secs(20))
+            .timeout_read(Duration::from_secs(600))
+            .build()
+    }
+
+    pub fn friendly(code: u16, body: &str) -> String {
+        let msg = serde_json::from_str::<Value>(body)
+            .ok()
+            .and_then(|v| v["error"]["message"].as_str().map(String::from))
+            .unwrap_or_else(|| body.chars().take(300).collect());
+        let lower = msg.to_lowercase();
+        match code {
+            0 => format!("Tidak bisa terhubung ke Google Gemini. Periksa koneksi internet. ({msg})"),
+            400 if lower.contains("api key") || lower.contains("api_key") => {
+                "API key Gemini ditolak. Periksa kunci di tab Pengaturan.".into()
+            }
+            401 | 403 => format!("Akses ke Gemini ditolak. Pesan asli: {msg}"),
+            404 => "Model Gemini itu tidak tersedia. Pilih model lain di Pengaturan.".into(),
+            429 => "Kuota gratis Gemini sedang habis. Tunggu sebentar (atau sampai besok), lalu coba lagi.".into(),
+            500..=599 => "Server Gemini sedang sibuk. Coba lagi beberapa saat lagi.".into(),
+            _ => format!("Permintaan ke Gemini gagal (kode {code}). Pesan asli: {msg}"),
+        }
+    }
+
+    /// Text models the key can use, newest first.
+    pub fn models(key: &str) -> Result<Vec<String>, (u16, String)> {
+        let resp = agent()
+            .get(&format!("{BASE}/models?pageSize=200"))
+            .set("x-goog-api-key", key)
+            .call();
+        let v: Value = match resp {
+            Ok(r) => r.into_json().map_err(|e| (0, e.to_string()))?,
+            Err(ureq::Error::Status(code, r)) => return Err((code, r.into_string().unwrap_or_default())),
+            Err(e) => return Err((0, e.to_string())),
+        };
+        let mut out: Vec<String> = v["models"]
+            .as_array()
+            .into_iter()
+            .flatten()
+            .filter(|m| {
+                m["supportedGenerationMethods"].as_array().map_or(false, |a| a.iter().any(|x| x == "generateContent"))
+            })
+            .filter_map(|m| m["name"].as_str().map(|n| n.trim_start_matches("models/").to_string()))
+            .filter(|n| n.starts_with("gemini") && !["tts", "image", "live", "audio", "embedding", "robotics", "computer"].iter().any(|x| n.contains(x)))
+            .collect();
+        out.sort_by(|a, b| version_key(b).partial_cmp(&version_key(a)).unwrap_or(std::cmp::Ordering::Equal).then(a.cmp(b)));
+        Ok(out)
+    }
+
+    /// Sort key: version number, then stable before preview/experimental.
+    fn version_key(name: &str) -> (f64, u8) {
+        let ver = name
+            .split('-')
+            .nth(1)
+            .and_then(|v| v.parse::<f64>().ok())
+            .unwrap_or(0.0);
+        let stable = !(name.contains("preview") || name.contains("exp"));
+        (ver, stable as u8)
+    }
+
+    /// Newest stable Flash (not Lite), else newest Flash, else the first model.
+    pub fn pick_default(list: &[String]) -> Option<String> {
+        let flash = |n: &&String| n.contains("flash") && !n.contains("lite");
+        list.iter()
+            .filter(flash)
+            .find(|n| !(n.contains("preview") || n.contains("exp")))
+            .or_else(|| list.iter().find(flash))
+            .or_else(|| list.first())
+            .cloned()
+    }
+
+    pub fn generate(c: &Config, prompt: &str, test: bool) -> (u16, Value) {
+        if prompt.trim().is_empty() {
+            return (400, json!({"error": "Permintaan kosong."}));
+        }
+        let model = if c.gemini_model.is_empty() {
+            match models(&c.gemini_key) {
+                Ok(list) => match pick_default(&list) {
+                    Some(m) => m,
+                    None => return (502, json!({"error": "Tidak ada model Gemini yang bisa dipakai dengan kunci ini."})),
+                },
+                Err((code, body)) => return (502, json!({"error": friendly(code, &body)})),
+            }
+        } else {
+            c.gemini_model.clone()
+        };
+        let mut config = json!({"maxOutputTokens": if test { 256 } else { 16000 }});
+        if !test {
+            config["responseMimeType"] = json!("application/json");
+        }
+        let body = json!({
+            "contents": [{"role": "user", "parts": [{"text": prompt}]}],
+            "generationConfig": config,
+        });
+        let resp = agent()
+            .post(&format!("{BASE}/models/{model}:generateContent"))
+            .set("x-goog-api-key", &c.gemini_key)
+            .set("content-type", "application/json")
+            .send_json(body);
+        let v: Value = match resp {
+            Ok(r) => match r.into_json() {
+                Ok(v) => v,
+                Err(e) => return (502, json!({"error": friendly(0, &e.to_string())})),
+            },
+            Err(ureq::Error::Status(code, r)) => {
+                return (502, json!({"error": friendly(code, &r.into_string().unwrap_or_default())}))
+            }
+            Err(e) => return (502, json!({"error": friendly(0, &e.to_string())})),
+        };
+        let cand = &v["candidates"][0];
+        let finish = cand["finishReason"].as_str().unwrap_or("");
+        let text: String = cand["content"]["parts"]
+            .as_array()
+            .into_iter()
+            .flatten()
+            .filter(|p| p["thought"].as_bool() != Some(true))
+            .filter_map(|p| p["text"].as_str())
+            .collect();
+        let usage = json!({
+            "input_tokens": v["usageMetadata"]["promptTokenCount"].as_u64().unwrap_or(0),
+            "output_tokens": v["usageMetadata"]["candidatesTokenCount"].as_u64().unwrap_or(0),
+        });
+        if text.trim().is_empty() {
+            let why = match finish {
+                "MAX_TOKENS" => "Jawaban Gemini terpotong sebelum selesai. Coba lagi.".to_string(),
+                "SAFETY" | "PROHIBITED_CONTENT" | "BLOCKLIST" | "RECITATION" => {
+                    "Gemini menolak permintaan ini. Ubah topik atau kata-katanya, lalu coba lagi.".to_string()
+                }
+                _ if v["promptFeedback"]["blockReason"].is_string() => {
+                    "Gemini menolak permintaan ini. Ubah topik atau kata-katanya, lalu coba lagi.".to_string()
+                }
+                _ => "Gemini tidak mengirim jawaban. Coba lagi.".to_string(),
+            };
+            return (502, json!({"error": why, "provider": "gemini", "model": model, "usage": usage}));
+        }
+        (200, json!({"text": text, "provider": "gemini", "model": model, "stop_reason": finish, "usage": usage}))
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+        #[test]
+        fn picks_newest_stable_flash() {
+            let mut l: Vec<String> = ["gemini-2.5-flash", "gemini-3.0-flash-preview", "gemini-3.0-pro", "gemini-2.5-flash-lite", "gemini-3.0-flash"]
+                .iter().map(|s| s.to_string()).collect();
+            l.sort_by(|a, b| version_key(b).partial_cmp(&version_key(a)).unwrap().then(a.cmp(b)));
+            assert_eq!(pick_default(&l).as_deref(), Some("gemini-3.0-flash"));
+        }
+    }
+}
+
+// ------------------------------------------------------------ ElevenLabs TTS
+
+mod eleven {
+    use super::*;
+    const BASE: &str = "https://api.elevenlabs.io";
+    /// Characters per request; well under every model's limit, and short
+    /// enough that one failed chunk is cheap to retry.
+    const CHUNK: usize = 2400;
+    pub const DEFAULT_MODEL: &str = "eleven_multilingual_v2";
+
+    fn agent() -> ureq::Agent {
+        ureq::AgentBuilder::new()
+            .try_proxy_from_env(true)
+            .timeout_connect(Duration::from_secs(20))
+            .timeout_read(Duration::from_secs(300))
+            .build()
+    }
+
+    fn friendly(code: u16, body: &str) -> String {
+        let detail = serde_json::from_str::<Value>(body)
+            .ok()
+            .and_then(|v| v["detail"]["message"].as_str().or(v["detail"].as_str()).map(String::from))
+            .unwrap_or_else(|| body.chars().take(200).collect());
+        let lower = detail.to_lowercase();
+        match code {
+            0 => format!("Tidak bisa terhubung ke ElevenLabs. Periksa koneksi internet. ({detail})"),
+            401 => "API key ElevenLabs ditolak atau tidak punya izin ini. Periksa kunci di Pengaturan.".into(),
+            _ if code == 402 || lower.contains("quota") || lower.contains("credits") => {
+                "Kuota karakter ElevenLabs habis untuk periode ini.".into()
+            }
+            404 => "Suara ElevenLabs tidak ditemukan. Pilih suara lain di Pengaturan.".into(),
+            429 => "ElevenLabs sedang sibuk atau batas permintaan tercapai. Coba lagi sebentar.".into(),
+            _ => format!("ElevenLabs gagal (kode {code}): {detail}"),
+        }
+    }
+
+    fn get(key: &str, path: &str) -> Result<Value, String> {
+        match agent().get(&format!("{BASE}{path}")).set("xi-api-key", key).call() {
+            Ok(r) => r.into_json().map_err(|e| friendly(0, &e.to_string())),
+            Err(ureq::Error::Status(code, r)) => Err(friendly(code, &r.into_string().unwrap_or_default())),
+            Err(e) => Err(friendly(0, &e.to_string())),
+        }
+    }
+
+    /// Remaining characters, voices and TTS models on this account.
+    pub fn info(key: &str) -> Result<Value, String> {
+        let sub = get(key, "/v1/user/subscription")?;
+        let voices = get(key, "/v1/voices")?;
+        let models = get(key, "/v1/models").unwrap_or(json!([]));
+        let voices: Vec<Value> = voices["voices"]
+            .as_array()
+            .into_iter()
+            .flatten()
+            .map(|v| {
+                let labels: Vec<&str> = v["labels"].as_object().into_iter().flatten().filter_map(|(_, x)| x.as_str()).take(3).collect();
+                json!({"id": v["voice_id"], "name": v["name"], "desc": labels.join(", "), "preview": v["preview_url"]})
+            })
+            .collect();
+        let models: Vec<Value> = models
+            .as_array()
+            .into_iter()
+            .flatten()
+            .filter(|m| m["can_do_text_to_speech"].as_bool() != Some(false))
+            .map(|m| json!({"id": m["model_id"], "name": m["name"]}))
+            .collect();
+        let used = sub["character_count"].as_u64().unwrap_or(0);
+        let limit = sub["character_limit"].as_u64().unwrap_or(0);
+        Ok(json!({"tier": sub["tier"], "used": used, "limit": limit, "left": limit.saturating_sub(used),
+            "reset": sub["next_character_count_reset_unix"], "voices": voices, "models": models}))
+    }
+
+    /// Splits text at paragraph, then sentence, boundaries into pieces of at most CHUNK characters.
+    pub fn chunks(parts: &[String]) -> Vec<String> {
+        let mut out: Vec<String> = Vec::new();
+        let mut cur = String::new();
+        let push = |piece: &str, cur: &mut String, out: &mut Vec<String>| {
+            if !cur.is_empty() && cur.chars().count() + piece.chars().count() + 2 > CHUNK {
+                out.push(std::mem::take(cur));
+            }
+            if !cur.is_empty() {
+                cur.push_str("\n\n");
+            }
+            cur.push_str(piece);
+        };
+        for part in parts {
+            for para in part.split("\n").map(str::trim).filter(|p| !p.is_empty()) {
+                if para.chars().count() <= CHUNK {
+                    push(para, &mut cur, &mut out);
+                    continue;
+                }
+                let mut sentence = String::new();
+                for ch in para.chars() {
+                    sentence.push(ch);
+                    if matches!(ch, '.' | '!' | '?') {
+                        push(sentence.trim(), &mut cur, &mut out);
+                        sentence.clear();
+                    }
+                }
+                if !sentence.trim().is_empty() {
+                    push(sentence.trim(), &mut cur, &mut out);
+                }
+            }
+        }
+        if !cur.is_empty() {
+            out.push(cur);
+        }
+        out
+    }
+
+    pub fn out_dir(app: &Path) -> PathBuf {
+        let base = std::env::var_os("USERPROFILE")
+            .map(|h| PathBuf::from(h).join("Documents").join("Terra Studio"))
+            .unwrap_or_else(|| app.join("audio"));
+        let _ = fs::create_dir_all(&base);
+        base
+    }
+
+    fn file_name(title: &str) -> String {
+        let slug: String = title
+            .chars()
+            .map(|c| if c.is_ascii_alphanumeric() { c.to_ascii_lowercase() } else { '-' })
+            .collect::<String>()
+            .split('-')
+            .filter(|s| !s.is_empty())
+            .take(8)
+            .collect::<Vec<_>>()
+            .join("-");
+        let slug = if slug.is_empty() { "voice-over".to_string() } else { slug };
+        format!("{slug}-{}.mp3", now())
+    }
+
+    pub fn speak(c: &Config, dir: &Path, title: &str, parts: &[String], voice: &str) -> Result<Value, String> {
+        if c.eleven_key.is_empty() {
+            return Err("API key ElevenLabs belum diisi. Buka Pengaturan, bagian Suara.".into());
+        }
+        if voice.is_empty() {
+            return Err("Pilih suara ElevenLabs dulu di Pengaturan.".into());
+        }
+        let pieces = chunks(parts);
+        if pieces.is_empty() {
+            return Err("Naskahnya kosong.".into());
+        }
+        let model = if c.eleven_model.is_empty() { DEFAULT_MODEL } else { c.eleven_model.as_str() };
+        let mut audio: Vec<u8> = Vec::new();
+        for (i, text) in pieces.iter().enumerate() {
+            let mut body = json!({"text": text, "model_id": model});
+            if i > 0 {
+                body["previous_text"] = json!(pieces[i - 1].chars().rev().take(500).collect::<String>().chars().rev().collect::<String>());
+            }
+            if let Some(next) = pieces.get(i + 1) {
+                body["next_text"] = json!(next.chars().take(500).collect::<String>());
+            }
+            let resp = agent()
+                .post(&format!("{BASE}/v1/text-to-speech/{voice}?output_format=mp3_44100_128"))
+                .set("xi-api-key", &c.eleven_key)
+                .set("content-type", "application/json")
+                .send_json(body);
+            match resp {
+                Ok(r) => {
+                    let mut buf = Vec::new();
+                    r.into_reader().take(50 * 1024 * 1024).read_to_end(&mut buf).map_err(|e| friendly(0, &e.to_string()))?;
+                    audio.extend_from_slice(&buf);
+                }
+                Err(ureq::Error::Status(code, r)) => {
+                    let msg = friendly(code, &r.into_string().unwrap_or_default());
+                    return Err(if i == 0 { msg } else { format!("{msg} (berhenti di bagian {} dari {})", i + 1, pieces.len()) });
+                }
+                Err(e) => return Err(friendly(0, &e.to_string())),
+            }
+        }
+        let name = file_name(title);
+        let path = out_dir(dir).join(&name);
+        fs::write(&path, &audio).map_err(|e| format!("Gagal menyimpan MP3: {e}"))?;
+        let chars: usize = pieces.iter().map(|p| p.chars().count()).sum();
+        Ok(json!({"file": name, "path": path.display().to_string(), "chars": chars, "chunks": pieces.len(), "bytes": audio.len()}))
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+        #[test]
+        fn chunks_respect_limit_and_keep_text() {
+            let long = "This is a sentence. ".repeat(400);
+            let parts = vec!["Short intro.".to_string(), long.clone(), "Outro.".to_string()];
+            let c = chunks(&parts);
+            assert!(c.len() > 2);
+            assert!(c.iter().all(|x| x.chars().count() <= CHUNK));
+            let joined: String = c.join(" ").split_whitespace().collect::<Vec<_>>().join(" ");
+            assert!(joined.starts_with("Short intro.") && joined.ends_with("Outro."));
+            assert_eq!(joined.matches("sentence").count(), 400);
+        }
+        #[test]
+        fn file_names_are_safe() {
+            let n = file_name("Megistotherium: the Butcher / ../x");
+            assert!(n.starts_with("megistotherium-the-butcher-x-") && n.ends_with(".mp3"));
+        }
     }
 }
 

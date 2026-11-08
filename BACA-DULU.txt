@@ -1,10 +1,10 @@
-TERRA STUDIO 1.5 (Windows 10/11, 64-bit)
+TERRA STUDIO 1.6 (Windows 10/11, 64-bit)
 =========================================
 
 Aplikasi PC untuk channel YouTube: ide video dan kalender, naskah per babak,
 judul/deskripsi/tag, teks thumbnail, ide Shorts (di menu Data & cuan), dan
-analisis data YouTube Studio. AI-nya memakai Claude lewat
-API key milik Anda sendiri. Tidak perlu login claude.ai.
+analisis data YouTube Studio, plus voice over ElevenLabs. AI-nya bisa lewat
+salin-tempel ke claude.ai, Gemini (gratis), atau Claude API.
 
 CARA MULAI
 1. Ekstrak zip ini ke folder mana saja, misalnya Documents\TerraStudio.
@@ -28,22 +28,43 @@ NASKAH PENUH
 Setelah kerangka naskah jadi, klik "Tulis naskah narasi penuh" untuk naskah
 voice over siap baca (bisa ditempel ke Bang Story).
 
+VOICE OVER ELEVENLABS (baru di 1.6)
+Memakai kuota karakter langganan ElevenLabs Anda, tanpa biaya tambahan.
+1. Buka https://elevenlabs.io/app/settings/api-keys > Create API key.
+   Izinkan Text to Speech, Voices, Models, dan User (baca).
+2. Di aplikasi: Pengaturan > Suara (ElevenLabs), tempel kunci, klik
+   "Muat suara". Sisa kuota karakter Anda tampil di situ.
+3. Pilih suara narator (bisa didengar dulu), lalu Simpan.
+4. Di Kerangka naskah, setelah naskah narasi penuh jadi, klik
+   "Buat voice over". Naskah 1.800 kata sekitar 11.000 karakter dan
+   butuh 1 sampai 3 menit.
+File MP3 tersimpan di Documents\Terra Studio, bisa diputar langsung di
+aplikasi, dan tombol "Buka folder" membuka foldernya.
+ElevenLabs hanya untuk suara. Gambar dan video tetap lewat Google Flow.
+
 GOOGLE FLOW
 Kerangka naskah menghasilkan prompt video per klip 8 detik, dan menu
 Thumbnail menghasilkan prompt gambar. Salin lalu tempel di Google Flow.
 
-DUA CARA MEMAKAI AI
+TIGA CARA MEMAKAI AI (pilih di Pengaturan > Koneksi AI)
 A. Tanpa API key (pakai langganan claude.ai, tanpa biaya tambahan)
    Klik tombol AI mana saja. Aplikasi menyiapkan perintah:
    1. Klik "Salin perintah".
    2. Buka claude.ai, mulai chat baru, tempel, kirim.
    3. Salin seluruh jawaban Claude, tempel di kotak "Jawaban dari claude.ai",
       lalu klik "Pakai jawaban". Hasilnya tampil dan tersimpan.
-B. Dengan API key (otomatis, bayar per pemakaian, terpisah dari langganan)
-   Ikuti langkah di bawah. Untuk kembali ke cara A, klik "Hapus API key"
+B. Gemini otomatis (gratis, hasil langsung muncul di aplikasi)
+   1. Buka https://aistudio.google.com/apikey, masuk dengan akun Google.
+   2. Klik Create API key, salin.
+   3. Pengaturan > Cara memakai AI: Gemini, tempel kunci, Simpan,
+      lalu Uji koneksi.
+   Di kuota gratis ada batas permintaan per menit dan per hari, dan Google
+   bisa memakai isi permintaan untuk meningkatkan modelnya.
+C. Claude API (otomatis, bayar per pemakaian, terpisah dari langganan)
+   Ikuti langkah di bawah. Untuk kembali ke cara A, pilih "Salin-tempel"
    di Pengaturan.
 
-API KEY ANTHROPIC (opsional, untuk cara B)
+API KEY ANTHROPIC (opsional, untuk cara C)
 1. Buka https://platform.claude.com dan daftar/masuk (akun terpisah dari
    langganan claude.ai).
 2. Menu Billing: isi saldo (kartu kredit/debit). Minimal biasanya 5 USD.
@@ -77,7 +98,7 @@ IMPOR DATA YOUTUBE STUDIO
 
 DI MANA DATA DISIMPAN
 %APPDATA%\TerraStudio\
-  config.json  = model, profil, dan API key (terenkripsi dengan pengaman
+  config.json  = model, profil, dan API key Claude/Gemini/ElevenLabs (terenkripsi dengan pengaman
                  Windows, hanya bisa dibuka akun Windows Anda)
   data.json    = data Studio yang sudah diimpor
   last.json    = hasil AI terakhir, rencana kalender, dan catatan biaya
@@ -86,8 +107,8 @@ BACKUP
 Pengaturan > Backup > "Simpan backup" menyimpan file .json ke folder Downloads
 (profil, data Studio, kalender, hasil AI; API key tidak ikut). Simpan file itu
 di flashdisk atau Google Drive. Untuk memulihkan: "Pulihkan dari backup".
-Tidak ada data yang dikirim ke mana pun selain ke API Anthropic saat Anda
-klik Generate.
+Data hanya dikirim ke layanan yang Anda pakai: Anthropic atau Google saat
+Generate, dan ElevenLabs saat membuat voice over.
 
 MENUTUP APLIKASI
 Tutup jendelanya. Aplikasi berhenti sendiri sekitar 3 menit kemudian.

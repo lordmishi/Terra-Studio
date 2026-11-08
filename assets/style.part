@@ -8,16 +8,16 @@
    - Cards: only for separate results a user copies or compares; borders flat, no shadows, because nothing floats above anything else.
    - Spacing: 16px between sibling blocks, 24-28px between form and results, so a tool reads as one unit. */
 :root{
-  --bg:#EEF0EA; --surface:#FAFBF7; --line:#CBD0C2; --field:#858C7A; --ink:#23261F; --muted:#5E6458;
-  --accent:#975808; --accent-ink:#FFF8EE; --moss:#4E6B3A; --warn:#9A3B22; --chip:#E3E7DA;
-  --f-display:"Alegreya SC", Georgia, serif; --f-body:"Alegreya Sans", system-ui, sans-serif; --f-mono:"IBM Plex Mono", ui-monospace, monospace;
+  --bg:#F3F4F1; --surface:#FFFFFF; --line:#E0E3DC; --field:#9EA597; --ink:#1C1F1A; --muted:#5A6056;
+  --accent:#975808; --accent-ink:#FFF8EE; --moss:#4E6B3A; --warn:#9A3B22; --chip:#ECEEE9;
+  --f-display:"Familjen Grotesk", system-ui, sans-serif; --f-body:"Familjen Grotesk", system-ui, sans-serif; --f-mono:"IBM Plex Mono", ui-monospace, monospace;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#171A15; --surface:#20241D; --line:#3A4034; --field:#727A67; --ink:#E7EAE0; --muted:#A3AA98;
-  --accent:#E59A3C; --accent-ink:#1E1407; --moss:#9BC07E; --warn:#F08A6B; --chip:#2B3126; color-scheme:dark}}
+  --bg:#141613; --surface:#1C1F1B; --line:#2D312A; --field:#6C7366; --ink:#E9ECE5; --muted:#A2A99B;
+  --accent:#E59A3C; --accent-ink:#1E1407; --moss:#9BC07E; --warn:#F08A6B; --chip:#262A23; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#171A15; --surface:#20241D; --line:#3A4034; --field:#727A67; --ink:#E7EAE0; --muted:#A3AA98;
-  --accent:#E59A3C; --accent-ink:#1E1407; --moss:#9BC07E; --warn:#F08A6B; --chip:#2B3126; color-scheme:dark}
+  --bg:#141613; --surface:#1C1F1B; --line:#2D312A; --field:#6C7366; --ink:#E9ECE5; --muted:#A2A99B;
+  --accent:#E59A3C; --accent-ink:#1E1407; --moss:#9BC07E; --warn:#F08A6B; --chip:#262A23; color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 body{background:var(--bg);color:var(--ink);font:17px/1.55 var(--f-body)}
@@ -179,4 +179,69 @@ dialog form.tool{border:0}
 @media (max-width:560px){.side nav.tabs button span{display:none}.side nav.tabs button{padding:10px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 .main .banner{font-size:15px;line-height:1.45;padding:8px 12px}
+.grp{display:grid;gap:12px;padding:12px;border:1px solid var(--line);border-radius:6px;background:var(--bg)}
+.qbar{height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin:4px 0 6px}.qbar span{display:block;height:100%;background:var(--accent)}
+a.btn{text-decoration:none;display:inline-flex;align-items:center}
+/* Restyle 2026-11 (Craftwork rules): data-tool family. One sans for text, mono only for numbers,
+   flat surfaces, hairlines instead of boxes in dense areas, one radius system (10 cards, 8 controls),
+   one button scale (40 / 34), hover fades 180ms. */
+:root{--r-card:10px;--r-ctl:8px;--ease:cubic-bezier(.22,1,.36,1)}
+h1{font-weight:600;letter-spacing:-.02em}
+form.tool{border-radius:var(--r-card);padding:20px;gap:16px}
+form.tool h2,.cal-head h2{font:600 19px/1.2 var(--f-display);letter-spacing:-.01em}
+.card{border-radius:var(--r-card);padding:18px 20px}
+.card h3{font-weight:600;font-size:18px}
+input,select,textarea{border-radius:var(--r-ctl);background:var(--surface);border-color:var(--line);box-shadow:inset 0 0 0 1px transparent;transition:background-color .18s var(--ease)}
+.grp input,.grp select{background:var(--surface)}
+.btn{font:600 15px var(--f-body);border-radius:var(--r-ctl);min-height:40px;padding:8px 16px;transition:background-color .18s var(--ease),color .18s var(--ease),transform .15s var(--ease)}
+.btn.ghost{font:500 14px var(--f-body);min-height:40px;padding:8px 14px;background:var(--surface);border:1px solid var(--line);box-shadow:0 1px 0 rgba(28,31,26,.04)}
+@media (hover:hover){.btn:hover{background:#7E4906}.btn.ghost:hover{background:var(--chip)}
+  :root[data-theme="dark"] .btn:hover{background:#F0AE5A}}
+@media (hover:hover) and (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn:not(.ghost):hover{background:#F0AE5A}}
+.btn:active{transform:scale(.97)}
+.btn.icon{min-width:40px;font-size:18px;padding:4px 10px}
+.status{font:14px/1.45 var(--f-body)}
+.layer{font:600 12.5px var(--f-body);letter-spacing:0;text-transform:none;color:var(--muted)}
+.meta,.chip,.date,.titles .len,.ab,.act .num small{font-family:var(--f-body);font-variant-numeric:tabular-nums}
+.chip{border-radius:6px;padding:3px 9px}
+.date{font-weight:600}
+.act .num{font:600 26px/1 var(--f-display)}
+.copybox pre{font:15px/1.6 var(--f-body);border-radius:var(--r-ctl);background:var(--bg);padding:14px 16px}
+.banner{border-radius:var(--r-card);border-color:var(--line)}
+.grp{border-radius:var(--r-card)}
+/* shell */
+.side{padding:20px 12px}
+.brand b{font:600 18px/1.1 var(--f-display);letter-spacing:-.01em}
+.side-label{font:600 12px var(--f-body);color:var(--muted)}
+.side nav.tabs button{border-radius:var(--r-ctl);font-size:15px;transition:background-color .18s var(--ease),color .18s var(--ease)}
+.side nav.tabs button[aria-selected="true"]{box-shadow:none;background:var(--chip);font-weight:600}
+.side-foot{font:13px var(--f-body)}
+.topbar{padding:16px max(16px,2.5vw)}
+.topbar .meter,.topbar .meter .layer{font:14px var(--f-body);letter-spacing:0;text-transform:none}
+.topbar .meter b{font:600 15px var(--f-mono);font-variant-numeric:tabular-nums}
+/* dashboard: one stat strip with hairlines, not six boxes */
+.stats{gap:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);margin-bottom:20px;overflow:hidden}
+.stat{background:none;border:0;border-left:1px solid var(--line);border-radius:0;padding:16px 18px}
+.stat:first-child{border-left:0}
+.stat span{font-size:13.5px}
+.stat b{font:600 22px/1.25 var(--f-mono);letter-spacing:-.02em;margin-top:4px}
+.card.cal-card{border-radius:var(--r-card);padding:0}
+@media (max-width:700px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.stat{border-left:0;border-top:1px solid var(--line)}.stat:nth-child(even){border-left:1px solid var(--line)}.stat:nth-child(-n+2){border-top:0}.stat b{font-size:18px}}
+.cal-card>.note{margin:0;padding:12px 20px}
+.cal-head{padding:16px 20px}
+.cal-dow{font:600 12px var(--f-body);letter-spacing:.04em}
+.cal-day{min-height:84px;padding:6px}
+.cal-day.off{background:color-mix(in srgb,var(--bg) 60%,var(--surface))}
+.cal-num{font:500 13px var(--f-body);font-variant-numeric:tabular-nums;transition:background-color .18s var(--ease)}
+.ev{border:0;border-radius:6px;background:var(--chip);padding:4px 7px 4px 18px;position:relative;font-size:12.5px}
+.ev::before{content:"";position:absolute;left:7px;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:3px;background:var(--c,var(--field))}
+@media (hover:hover){button.ev:hover{background:var(--line)}}
+.ev i{font:600 10.5px var(--f-body);letter-spacing:.02em}
+.ev.pub{background:transparent;box-shadow:inset 0 0 0 1px var(--line)}
+.ev.pub::before{background:var(--ink)}
+.cl::before{border-radius:3px}
+dialog{border-radius:12px}
+.tip{font:13px/1.35 var(--f-body);border-radius:6px}
+/* Nav icons: Streamline Core outline, Craftwork "Core Essential UI Icons" pack (free, Craftwork Commercial License) */
+.side nav.tabs button svg{stroke-width:1.05}
 </style>

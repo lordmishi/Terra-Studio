@@ -6,15 +6,15 @@
     </div>
     <span class="layer side-label">Ruang kerja</span>
     <nav class="tabs" role="tablist" aria-label="Menu" aria-orientation="vertical">
-      <button role="tab" id="t-dash" aria-selected="true" data-tab="dash"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v4h-7zM13 10h7v10h-7zM4 13h7v7H4z"/></svg><span>Dashboard</span></button>
-      <button role="tab" id="t-ideas" aria-selected="false" data-tab="ideas"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg><span>Ide &amp; jadwal</span></button>
-      <button role="tab" id="t-script" aria-selected="false" data-tab="script"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6zM14 3v5h5M9 12h7M9 16h7"/></svg><span>Kerangka naskah</span></button>
-      <button role="tab" id="t-seo" aria-selected="false" data-tab="seo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM20 20l-4-4"/></svg><span>Paket SEO</span></button>
-      <button role="tab" id="t-thumb" aria-selected="false" data-tab="thumb"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18v14H3zM3 15l5-5 4 4 3-3 6 6"/></svg><span>Thumbnail</span></button>
-      <button role="tab" id="t-growth" aria-selected="false" data-tab="growth"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg><span>Data &amp; cuan</span></button>
-      <button role="tab" id="t-settings" aria-selected="false" data-tab="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM19 12l2-1-1-3-2 .2-1.3-1.3.2-2-3-1-1 2h-1.8l-1-2-3 1 .2 2L6 7.2 4 7l-1 3 2 1v1.8l-2 1 1 3 2-.2 1.3 1.3-.2 2 3 1 1-2h1.8l1 2 3-1-.2-2 1.3-1.3 2 .2 1-3-2-1z"/></svg><span>Pengaturan</span></button>
+      <button role="tab" id="t-dash" aria-selected="true" data-tab="dash"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M12 9.5a1 1 0 0 1 1 1V12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-1.5a1 1 0 0 1 1-1z"/><path d="M7 1a1 1 0 0 1 1 1v4.5a1 1 0 0 1-1 1H1.932a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"/><path d="M12.469 1a.5.5 0 0 1 .5.5v1.25a.5.5 0 0 1-.5.5H10.5a.5.5 0 0 1-.5-.5V1.5a.5.5 0 0 1 .5-.5z"/><path d="M12.469 5.25a.5.5 0 0 1 .5.5V7a.5.5 0 0 1-.5.5H10.5A.5.5 0 0 1 10 7V5.75a.5.5 0 0 1 .5-.5z"/></svg><span>Dashboard</span></button>
+      <button role="tab" id="t-ideas" aria-selected="false" data-tab="ideas"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M11.5 5.031a4.5 4.5 0 1 0-6.5 4v1.5a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1.5a4.48 4.48 0 0 0 2.5-4"/><path d="M5 13.5h4"/></svg><span>Ide &amp; jadwal</span></button>
+      <button role="tab" id="t-script" aria-selected="false" data-tab="script"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M10 3.5v8a2 2 0 0 1-2 2H.5a2 2 0 0 0 2-2v-9a2 2 0 0 1 2-2h7.25"/><path d="M11.75.5a1.75 1.75 0 0 1 1.75 1.75V3a.5.5 0 0 1-.5.5h-3V2.25A1.75 1.75 0 0 1 11.75.5"/><path d="M6 4h1.5"/><path d="M5 7h2.5"/><path d="M5 10h2.5"/></svg><span>Kerangka naskah</span></button>
+      <button role="tab" id="t-seo" aria-selected="false" data-tab="seo"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 13.5a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13"/><path d="M6.5 9a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/><path d="M10 10 8.27 8.27"/></svg><span>Paket SEO</span></button>
+      <button role="tab" id="t-thumb" aria-selected="false" data-tab="thumb"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M1.5 13.5h11a1 1 0 0 0 1-1v-11a1 1 0 0 0-1-1h-11a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1"/><path d="m1.75 13.5 7.3-6.88a.5.5 0 0 1 .64 0l3.81 2.73"/><path d="M4.5 6a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/></svg><span>Thumbnail</span></button>
+      <button role="tab" id="t-growth" aria-selected="false" data-tab="growth"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="m1.24 6.54 11.5-5.23"/><path d="m10.59.5 2.15.81-.8 2.15"/><path d="M13.25 13.5h-2.5v-7a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 .5.5z"/><path d="M8.25 13.5h-2.5V8a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 .5.5z"/><path d="M3.25 13.5H.75v-4a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 .5.5z"/></svg><span>Data &amp; cuan</span></button>
+      <button role="tab" id="t-settings" aria-selected="false" data-tab="settings"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="m5.23 2.25.43-1.11A1 1 0 0 1 6.59.5h.82a1 1 0 0 1 .93.64l.43 1.11 1.46.84 1.18-.18a1 1 0 0 1 1 .49l.4.7a1 1 0 0 1-.08 1.13l-.73.93v1.68l.75.93a1 1 0 0 1 .08 1.13l-.4.7a1 1 0 0 1-1 .49l-1.18-.18-1.46.84-.43 1.11a1 1 0 0 1-.93.64h-.84a1 1 0 0 1-.93-.64l-.43-1.11-1.46-.84-1.18.18a1 1 0 0 1-1-.49l-.4-.7a1 1 0 0 1 .08-1.13L2 7.84V6.16l-.75-.93a1 1 0 0 1-.08-1.13l.4-.7a1 1 0 0 1 1-.49l1.18.18zM5 7a2 2 0 1 0 4 0 2 2 0 0 0-4 0"/></svg><span>Pengaturan</span></button>
     </nav>
-    <p class="side-foot">Terra Studio · versi 1.5</p>
+    <p class="side-foot">Terra Studio versi 1.6</p>
   </aside>
   <main class="main">
     <header class="topbar">
@@ -23,7 +23,7 @@
     </header>
 <div class="wrap">
   <div class="banner" id="banner-key" hidden>
-    <span><strong>Mode langganan claude.ai.</strong> Tombol AI akan menyiapkan perintah untuk Anda salin ke claude.ai, tanpa biaya tambahan. Supaya otomatis, isi API key di Pengaturan (bayar per pemakaian).</span> <button type="button" class="btn ghost" data-goto="settings">Buka Pengaturan</button><button type="button" class="btn ghost" id="banner-close">Tutup</button>
+    <span><strong>Mode salin-tempel ke claude.ai.</strong> Supaya hasil AI langsung jadi di aplikasi tanpa biaya, pilih Gemini di Pengaturan dan tempel API key gratis dari Google.</span> <button type="button" class="btn ghost" data-goto="settings">Buka Pengaturan</button><button type="button" class="btn ghost" id="banner-close">Tutup</button>
   </div>
 
   <!-- DASHBOARD -->
@@ -182,7 +182,7 @@
       <div class="grid2" style="margin-top:16px" id="g-extra"></div>
 
       <div class="card" style="margin-top:16px">
-        <span class="layer">Semua video panjang · klik judul kolom untuk mengurutkan</span>
+        <span class="layer">Semua video panjang, klik judul kolom untuk mengurutkan</span>
         <h3>Performa per video</h3>
         <div style="overflow-x:auto"><table class="vt" id="g-table"></table></div>
       </div>
@@ -211,23 +211,57 @@
     <div class="grid2">
       <form class="tool" id="f-key">
         <h2>Koneksi AI</h2>
-        <p class="hint">Dua cara memakai AI. <strong>Tanpa API key</strong>: tiap tombol AI menyiapkan perintah untuk disalin ke claude.ai, memakai langganan Anda tanpa biaya tambahan. <strong>Dengan API key</strong>: hasil keluar otomatis, tapi ditagih Anthropic per pemakaian dan terpisah dari langganan. Buat kunci di <a href="https://platform.claude.com/settings/keys" target="_blank" rel="noopener">platform.claude.com</a>, isi saldo, lalu tempel di sini.</p>
-        <label for="cfg-key">API key<input id="cfg-key" type="password" autocomplete="off" placeholder="sk-ant-..."></label>
-        <p class="note" id="cfg-key-hint"></p>
-        <label for="cfg-model">Model
-          <select id="cfg-model">
-            <option value="claude-sonnet-5-5">Claude Sonnet 5.5: disarankan, seimbang (sekitar Rp500 sampai 1.500 per generate)</option>
-            <option value="claude-opus-5-5">Claude Opus 5.5: hasil terbaik (sekitar Rp1.000 sampai 3.000)</option>
-            <option value="claude-haiku-5-5">Claude Haiku 5.5: paling hemat (di bawah Rp100)</option>
+        <label for="cfg-provider">Cara memakai AI
+          <select id="cfg-provider">
+            <option value="manual">Salin-tempel ke claude.ai (pakai langganan, tanpa biaya)</option>
+            <option value="gemini">Gemini otomatis (kuota gratis dari Google)</option>
+            <option value="claude">Claude otomatis (API berbayar, hasil terbaik)</option>
           </select>
         </label>
-        <label for="cfg-effort">Kedalaman berpikir
-          <select id="cfg-effort"><option value="low">Rendah (cepat, murah)</option><option value="medium" selected>Sedang</option><option value="high">Tinggi (lebih teliti, lebih mahal)</option></select>
-        </label>
-        <p class="note">Perkiraan biaya kasar untuk satu kali generate dengan kedalaman Sedang. Setelah tiap generate, biaya perkiraannya muncul di bawah tombol. Biaya asli tercatat di console.anthropic.com.</p>
-        <p class="note" id="cfg-spent"></p>
-        <div class="chips"><button class="btn" type="submit">Simpan</button><button class="btn ghost" type="button" id="cfg-test">Uji koneksi</button><button class="btn ghost" type="button" id="cfg-clear">Hapus API key</button></div>
+        <p class="hint" id="prov-hint"></p>
+        <div id="grp-gemini" class="grp">
+          <ol class="steps"><li>Buka <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a> dan masuk dengan akun Google.</li><li>Klik <strong>Create API key</strong>, lalu salin kuncinya.</li><li>Tempel di bawah, klik Simpan, lalu Uji koneksi.</li></ol>
+          <label for="cfg-gkey">API key Gemini<input id="cfg-gkey" type="password" autocomplete="off" placeholder="AIza..."></label>
+          <p class="note" id="cfg-gkey-hint"></p>
+          <label for="cfg-gmodel">Model Gemini<select id="cfg-gmodel"><option value="">Otomatis: Gemini Flash terbaru</option></select></label>
+          <div class="chips"><button class="btn ghost" type="button" id="cfg-gmodels">Muat daftar model</button><button class="btn ghost" type="button" id="cfg-gclear">Hapus kunci Gemini</button></div>
+          <p class="note">Di kuota gratis, Google bisa memakai isi permintaan untuk meningkatkan modelnya, dan ada batas jumlah permintaan per menit dan per hari.</p>
+        </div>
+        <div id="grp-claude" class="grp">
+          <label for="cfg-key">API key Claude<input id="cfg-key" type="password" autocomplete="off" placeholder="sk-ant-..."></label>
+          <p class="note" id="cfg-key-hint"></p>
+          <label for="cfg-model">Model
+            <select id="cfg-model">
+              <option value="claude-sonnet-5-5">Claude Sonnet 5.5: disarankan, seimbang (sekitar Rp500 sampai 1.500 per generate)</option>
+              <option value="claude-opus-5-5">Claude Opus 5.5: hasil terbaik (sekitar Rp1.000 sampai 3.000)</option>
+              <option value="claude-haiku-5-5">Claude Haiku 5.5: paling hemat (di bawah Rp100)</option>
+            </select>
+          </label>
+          <label for="cfg-effort">Kedalaman berpikir
+            <select id="cfg-effort"><option value="low">Rendah (cepat, murah)</option><option value="medium" selected>Sedang</option><option value="high">Tinggi (lebih teliti, lebih mahal)</option></select>
+          </label>
+          <p class="note">Buat kunci di <a href="https://platform.claude.com/settings/keys" target="_blank" rel="noopener">platform.claude.com</a> dan isi saldo (terpisah dari langganan claude.ai). Perkiraan biaya muncul setelah tiap generate.</p>
+          <p class="note" id="cfg-spent"></p>
+          <div class="chips"><button class="btn ghost" type="button" id="cfg-clear">Hapus kunci Claude</button></div>
+        </div>
+        <div class="chips"><button class="btn" type="submit">Simpan</button><button class="btn ghost" type="button" id="cfg-test">Uji koneksi</button></div>
         <div class="status" id="s-key" role="status"></div>
+      </form>
+
+      <form class="tool" id="f-voice">
+        <h2>Suara (ElevenLabs)</h2>
+        <p class="hint">Mengubah naskah narasi penuh jadi file MP3 voice over. Memakai kuota karakter dari langganan ElevenLabs Anda, tanpa biaya tambahan.</p>
+        <ol class="steps"><li>Buka <a href="https://elevenlabs.io/app/settings/api-keys" target="_blank" rel="noopener">elevenlabs.io/app/settings/api-keys</a>.</li><li>Klik <strong>Create API key</strong>. Izinkan Text to Speech, Voices, Models dan User (baca).</li><li>Tempel di bawah, lalu klik Muat suara.</li></ol>
+        <label for="cfg-ekey">API key ElevenLabs<input id="cfg-ekey" type="password" autocomplete="off" placeholder="sk_..."></label>
+        <p class="note" id="cfg-ekey-hint"></p>
+        <div class="chips"><button class="btn ghost" type="button" id="cfg-eload">Muat suara</button></div>
+        <div id="eleven-quota" class="note"></div>
+        <label for="cfg-evoice">Suara narator<select id="cfg-evoice"><option value="">Klik Muat suara dulu</option></select></label>
+        <div id="cfg-epreview"></div>
+        <label for="cfg-emodel">Model suara<select id="cfg-emodel"><option value="">Otomatis: Multilingual v2 (paling natural)</option></select></label>
+        <div class="chips"><button class="btn" type="submit">Simpan</button><button class="btn ghost" type="button" id="cfg-eclear">Hapus kunci ElevenLabs</button></div>
+        <p class="note" id="cfg-adir"></p>
+        <div class="status" id="s-voice" role="status"></div>
       </form>
 
       <form class="tool" id="f-profile">
@@ -306,7 +340,7 @@ function autoWins(){if(!YT||!YT.videos)return "";const top=longForm().sort((a,b)
 /* Claude via the local app */
 /* rough cost: USD per million tokens (input, output), shown in rupiah at a fixed rate */
 const PRICE={"claude-opus-5-5":[4,20],"claude-sonnet-5-5":[2,10],"claude-haiku-5-5":[0.1,0.5]},KURS=16500;
-function costRp(model,u){const k=Object.keys(PRICE).find(m=>(model||"").startsWith(m));if(!u)return 0;const [i,o]=k?PRICE[k]:[5,25];return (u.input_tokens*i+u.output_tokens*o)/1e6*KURS}
+function costRp(model,u,provider){if(provider==="gemini")return 0;const k=Object.keys(PRICE).find(m=>(model||"").startsWith(m));if(!u)return 0;const [i,o]=k?PRICE[k]:[5,25];return (u.input_tokens*i+u.output_tokens*o)/1e6*KURS}
 let LAST={};
 async function remember(key,data){LAST[key]={at:Date.now(),data};await api("/api/last",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({key,value:LAST[key]})})}
 function spentText(){const s=LAST._spent?.data;const m=new Date().toISOString().slice(0,7);return s&&s.month===m?`Perkiraan biaya AI bulan ini: Rp${nf(Math.round(s.rp))} dari ${s.n} kali generate.`:"Belum ada biaya AI bulan ini."}
@@ -330,18 +364,18 @@ function manualAsk(statusEl,prompt){
       box.remove();res(d)};
   })}
 async function ask(statusEl,btn,prompt,key){
-  if(!CFG.has_key){const full=channelContext()+"\n\n"+prompt+"\n\nReply directly in this chat (not as an artifact or file) with ONLY valid JSON, no markdown fences, no text before or after.";
+  if(!CFG.provider){const full=channelContext()+"\n\n"+prompt+"\n\nReply directly in this chat (not as an artifact or file) with ONLY valid JSON, no markdown fences, no text before or after.";
     const data=await manualAsk(statusEl,full);
-    if(data){statusEl.className="status";statusEl.textContent="Selesai · "+new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})+" · lewat claude.ai · hasil tersimpan";if(key)remember(key,data).catch(()=>{})}
+    if(data){statusEl.className="status";statusEl.textContent="Selesai, "+new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})+", lewat claude.ai, hasil tersimpan";if(key)remember(key,data).catch(()=>{})}
     return data}
-  statusEl.className="status";statusEl.textContent="Claude sedang menulis… (biasanya 20 sampai 90 detik)";btn.disabled=true;
+  statusEl.className="status";statusEl.textContent="AI sedang menulis… (biasanya 20 sampai 90 detik)";btn.disabled=true;
   try{
     const j=await api("/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:channelContext()+"\n\n"+prompt+"\n\nReturn ONLY valid JSON, no markdown fences, no text before or after."})});
-    const rp=costRp(j.model,j.usage);if(rp)addSpent(rp).catch(()=>{});
+    const rp=costRp(j.model,j.usage,j.provider);if(rp)addSpent(rp).catch(()=>{});
     if(j.error)throw j;
     const data=parseJSON(j.text);
     if(!data)throw{error:"Jawaban Claude tidak bisa dibaca. Tekan tombolnya sekali lagi."};
-    statusEl.textContent="Selesai · "+new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})+(rp?` · biaya sekitar Rp${nf(Math.max(1,Math.round(rp)))}`:"")+" · hasil tersimpan";
+    statusEl.textContent="Selesai, "+new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})+(j.provider==="gemini"?", lewat Gemini":rp?`, biaya sekitar Rp${nf(Math.max(1,Math.round(rp)))}`:"")+", hasil tersimpan";
     if(key)remember(key,data).catch(()=>{});
     return data;
   }catch(e){statusEl.className="status err";statusEl.textContent=e.error||("Gagal: "+(e.message||"coba lagi."));return null}
@@ -378,7 +412,7 @@ const ACT_COLORS=["var(--accent)","var(--moss)","var(--muted)","var(--warn)","va
 const ROMAN=["I","II","III","IV","V","VI","VII"];
 let lastOutline=null;
 function renderScript(s){lastOutline=s;const acts=s.acts||[],total=acts.reduce((a,x)=>a+(+x.words||0),0)||1;
-  $("#o-script").innerHTML=head("Kerangka · "+(s.title||""))+`<div class="card"><span class="layer">Cold open</span><p style="font-size:19px">${esc(s.cold_open)}</p>
+  $("#o-script").innerHTML=head("Kerangka: "+(s.title||""))+`<div class="card"><span class="layer">Cold open</span><p style="font-size:19px">${esc(s.cold_open)}</p>
   <div class="strata" aria-label="Proporsi kata per babak">${acts.map((a,i)=>`<span style="width:${((+a.words||0)/total*100).toFixed(1)}%;background:${ACT_COLORS[i%7]}" title="Babak ${i+1}: ${esc(a.words)} kata"></span>`).join("")}</div>
   ${acts.map((a,i)=>`<div class="act"><div class="num">${ROMAN[i]||i+1}<small>${esc(a.words)} kata</small></div><div style="min-width:0"><h3>${esc(a.name)}</h3><ul>${(a.beats||[]).map(b=>`<li>${esc(b)}</li>`).join("")}</ul>${a.open_loop?`<p class="note"><strong>Open loop:</strong> ${esc(a.open_loop)}</p>`:""}${a.cta?`<p class="note"><strong>CTA:</strong> ${esc(a.cta)}</p>`:""}</div></div>`).join("")}</div>
   ${(s.visuals?.length)?`<div class="card"><span class="layer">Daftar visual / B-roll</span><div class="chips" style="margin-top:8px">${s.visuals.map(v=>`<span class="chip">${esc(v)}</span>`).join("")}</div></div>`:""}
@@ -387,7 +421,23 @@ function renderScript(s){lastOutline=s;const acts=s.acts||[],total=acts.reduce((
   <div class="card"><span class="layer">Langkah berikutnya</span><h3>Naskah narasi penuh</h3><p class="note">Ubah kerangka ini jadi naskah siap dibacakan (voice over), sesuai target kata. Bisa ditempel ke Bang Story atau dibaca sendiri.</p><button type="button" class="btn" id="script-full-btn">Tulis naskah narasi penuh</button><div class="status" id="s-scriptfull" role="status"></div></div>
   <div id="o-scriptfull" class="out"></div>`}
 function renderScriptFull(f){const parts=f.narration||[],all=parts.map(p=>p.text).join("\n\n"),words=all.split(/\s+/).filter(Boolean).length,mins=(words/140).toLocaleString("id-ID",{maximumFractionDigits:1});
-  $("#o-scriptfull").innerHTML=copyBox(`Naskah narasi penuh · ${nf(words)} kata · sekitar ${mins} menit dibaca`,parts.map((p,i)=>`[${p.act||"Babak "+(i+1)}]\n${p.text}`).join("\n\n"))+(f.title?`<p class="note">Untuk kerangka: ${esc(f.title)}</p>`:"")}
+  $("#o-scriptfull").innerHTML=copyBox(`Naskah narasi penuh, ${nf(words)} kata, sekitar ${mins} menit dibaca`,parts.map((p,i)=>`[${p.act||"Babak "+(i+1)}]\n${p.text}`).join("\n\n"))+(f.title?`<p class="note">Untuk kerangka: ${esc(f.title)}</p>`:"")+voCard(f);const v=LAST.vo?.data;if(v&&v.title===(f.title||"voice over"))renderVo(v)}
+let lastNarr=null;
+function voCard(f){lastNarr=f;const chars=(f.narration||[]).reduce((n,p)=>n+(p.text||"").length,0);
+  if(!CFG.has_eleven)return `<div class="card"><span class="layer">Voice over</span><h3>Jadikan suara dengan ElevenLabs</h3><p class="note">Isi API key ElevenLabs di Pengaturan, bagian Suara, supaya naskah ini bisa langsung jadi MP3 dari aplikasi.</p><button type="button" class="btn ghost" data-goto="settings">Buka Pengaturan</button></div>`;
+  return `<div class="card"><span class="layer">Voice over</span><h3>Jadikan suara dengan ElevenLabs</h3>
+  <label for="vo-voice">Suara<select id="vo-voice">${CFG.eleven_voice?`<option value="${esc(CFG.eleven_voice)}">${esc(CFG.eleven_voice_name||CFG.eleven_voice)}</option>`:`<option value="">Pilih suara di Pengaturan dulu</option>`}</select></label>
+  <p class="note">Naskah ini sekitar ${nf(chars)} karakter, jadi memakai sekitar ${nf(chars)} karakter dari kuota ElevenLabs Anda. Naskah panjang dipecah per bagian lalu disambung jadi satu file.</p>
+  <button type="button" class="btn" id="vo-btn">Buat voice over (${nf(chars)} karakter)</button><div class="status" id="s-vo" role="status"></div><div id="o-vo"></div></div>`}
+function renderVo(j){$("#o-vo").innerHTML=`<audio controls preload="metadata" src="/api/audio/${encodeURIComponent(j.file)}" style="width:100%;margin-top:12px"></audio><p class="note">Tersimpan di ${esc(j.path)}</p><div class="chips"><button type="button" class="btn ghost" id="vo-open">Buka folder</button><a class="btn ghost" href="/api/audio/${encodeURIComponent(j.file)}" download="${esc(j.file)}">Unduh MP3</a></div>`}
+document.addEventListener("click",async e=>{
+  if(e.target.closest("#vo-open")){api("/api/open-folder",{method:"POST",headers:{"Content-Type":"application/json"},body:"{}"});return}
+  const b=e.target.closest("#vo-btn");if(!b||!lastNarr)return;const st=$("#s-vo"),voice=$("#vo-voice").value;
+  if(!voice){st.className="status err";st.textContent="Pilih suara dulu di Pengaturan, bagian Suara.";return}
+  b.disabled=true;st.className="status";st.textContent="Membuat suara… naskah 1.800 kata biasanya butuh 1 sampai 3 menit. Jangan tutup aplikasi.";
+  const j=await api("/api/eleven/tts",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({title:lastNarr.title||"voice over",parts:lastNarr.narration.map(p=>p.text),voice})});b.disabled=false;
+  if(j.error){st.className="status err";st.textContent=j.error;return}
+  st.textContent=`Selesai: ${nf(j.chars)} karakter, ${j.chunks} bagian, ${(j.bytes/1048576).toLocaleString("id-ID",{maximumFractionDigits:1})} MB.`;j.title=lastNarr.title||"voice over";renderVo(j);remember("vo",j).catch(()=>{})});
 document.addEventListener("click",async e=>{const b=e.target.closest("#script-full-btn");if(!b||!lastOutline)return;
   const w=+$("#script-words").value||1800;
   const data=await ask($("#s-scriptfull"),b,`Write the complete voice-over narration for this documentary, following the outline below act by act. About ${w} words in total; keep each act close to its planned word count. Spoken style: short clear sentences, vivid but accurate, no stage directions, no headings inside the text, no bracketed notes. Open with the cold open. Keep open loops and the soft CTAs where the outline puts them. Mark anything uncertain by phrasing it carefully ("scientists think", "the fossils suggest") rather than inventing facts.
@@ -404,8 +454,8 @@ JSON shape: {"title":"","cold_open":"","flow_style":"","acts":[{"name":"","words
 /* ---------- SEO ---------- */
 function renderSEO(s){const tags=(s.tags||[]).join(", ");
   $("#o-seo").innerHTML=head("Paket SEO")+(s.keywords?`<div class="card"><span class="layer">Kata kunci</span><p><strong>Utama:</strong> ${esc(s.keywords.primary)}</p><p><strong>Pendukung:</strong> ${esc((s.keywords.secondary||[]).join(", "))}</p><p class="note">Masukkan kata kunci utama ke judul, kalimat pertama deskripsi, dan ucapkan di 30 detik pertama narasi (YouTube membaca transkrip).</p></div>`:"")
-  +`<div class="card"><span class="layer">Pilihan judul</span><ol class="titles">${(s.titles||[]).map(t=>`<li>${esc(t.text)}<span class="len">${String(t.text||"").length} kar · ${esc(t.angle||"")}</span></li>`).join("")}</ol><p class="note">Usahakan di bawah 60 karakter agar tidak terpotong di HP. Uji 2 sampai 3 judul dengan fitur Test &amp; Compare di YouTube Studio.</p></div>`
-  +copyBox("Deskripsi (dengan chapter)",s.description||"")+copyBox("Hashtag",(s.hashtags||[]).join(" "))+copyBox(`Tag · ${tags.length}/500 karakter`,tags)+copyBox("Komentar sematan",s.pinned_comment||"")+(s.community_post?copyBox("Postingan Komunitas YouTube (hari tayang)",s.community_post):"")}
+  +`<div class="card"><span class="layer">Pilihan judul</span><ol class="titles">${(s.titles||[]).map(t=>`<li>${esc(t.text)}<span class="len">${String(t.text||"").length} kar, ${esc(t.angle||"")}</span></li>`).join("")}</ol><p class="note">Usahakan di bawah 60 karakter agar tidak terpotong di HP. Uji 2 sampai 3 judul dengan fitur Test &amp; Compare di YouTube Studio.</p></div>`
+  +copyBox("Deskripsi (dengan chapter)",s.description||"")+copyBox("Hashtag",(s.hashtags||[]).join(" "))+copyBox(`Tag (${tags.length}/500 karakter)`,tags)+copyBox("Komentar sematan",s.pinned_comment||"")+(s.community_post?copyBox("Postingan Komunitas YouTube (hari tayang)",s.community_post):"")}
 $("#f-seo").addEventListener("submit",async e=>{e.preventDefault();
   const data=await ask($("#s-seo"),e.submitter||$("#f-seo .btn"),`Create a YouTube SEO pack. Topic: ${val("#seo-topic")}. Key facts or outline: ${val("#seo-facts")||"none given"}. Video length: ${$("#seo-mins").value} minutes.
 First pick ONE primary search keyword (what a viewer would actually type) and 2-3 secondary keywords. Give 5 title options (each under 60 characters, honest, varied angles, at least 3 containing the primary keyword or the subject's common name; "angle" is a 1-2 word Indonesian label). A description: strong first 2 lines (shown in search) with the primary keyword in the first sentence, 1 short paragraph, a CHAPTERS list with plausible timestamps spread over the length starting at 00:00, placeholders [membership link] and [merch link], then 3 hashtags at the end. 3 hashtags. 10-15 tags, total under 450 characters, mixing broad and long-tail phrases. A pinned comment that asks a question to spark replies. A YouTube Community post for release day (under 600 characters, one surprising fact, then a 3-4 option poll written as a list).
@@ -446,7 +496,7 @@ function renderGrowth(){
   if(!has){$("#meter").innerHTML="";return}
   MONTHS=monthly();
   const t=YT.totals||{};
-  $("#g-range").textContent="Data YouTube Studio"+(YT.range?" · "+YT.range:"")+(YT.imported_at?" · diimpor "+new Date(YT.imported_at).toLocaleDateString("id-ID"):"");
+  $("#g-range").textContent="Data YouTube Studio"+(YT.range?", "+YT.range:"")+(YT.imported_at?", diimpor "+new Date(YT.imported_at).toLocaleDateString("id-ID"):"");
   const k=[];if(t.views!=null)k.push([nf(t.views),"total views"]);if(t.hours!=null)k.push([nf(t.hours),"jam tonton"]);if(t.subs!=null)k.push([(t.subs>=0?"+":"")+nf(t.subs),"subscriber bersih"]);if(t.revenue!=null)k.push([money(t.revenue),"estimasi pendapatan"]);if(YT.daily?.length)k.push([nf(lastDays(30)),"views 30 hari terakhir"]);
   $("#g-kpis").innerHTML=k.map(([b,l])=>`<div><b>${b}</b><span>${l}</span></div>`).join("");
   if(YT.daily?.length>=60){const a=lastDays(30),b=lastDays(30,30),pct=b?Math.round((a/b-1)*100):0;$("#meter").innerHTML=`<span class="layer">Views 30 hari terakhir</span><b>${nf(a)}</b> <span class="${a<b?"no":"ok"}">${a<b?"turun":"naik"} ${Math.abs(pct)}%</span> dibanding 30 hari sebelumnya`}
@@ -525,7 +575,7 @@ $("#g-table").addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&
 
 function extras(){const out=[];
   if(YT.traffic?.length){const tot=YT.traffic.reduce((s,r)=>s+r.views,0)||1;out.push(`<div class="card"><span class="layer">Sumber traffic</span><h3>Dari mana penonton datang</h3><div style="overflow-x:auto"><table><tr><th>Sumber</th><th>Views</th><th>CTR</th></tr>${YT.traffic.slice(0,8).map(r=>`<tr><td>${esc(r.name)}</td><td>${f1(r.views/tot*100)}%</td><td>${r.ctr!=null?f1(r.ctr)+"%":"tidak ada"}</td></tr>`).join("")}</table></div><p class="note">Browse features = beranda YouTube. Beranda hanya menaruh video yang CTR dan durasi tontonnya bagus.</p></div>`)}
-  if(YT.geo?.length){out.push(`<div class="card"><span class="layer">Negara · pendapatan per 1.000 views</span><h3>Penonton mana yang paling bernilai</h3><div style="overflow-x:auto"><table><tr><th>Negara</th><th>Views</th><th>${cur()} / 1.000</th></tr>${YT.geo.slice(0,10).map(r=>{const rpm=r.views?(r.rev||0)/r.views*1000:0;return `<tr><td>${esc(r.name)}</td><td>${nf(r.views)}</td><td>${money(rpm)}</td></tr>`}).join("")}</table></div></div>`)}
+  if(YT.geo?.length){out.push(`<div class="card"><span class="layer">Pendapatan per 1.000 views menurut negara</span><h3>Penonton mana yang paling bernilai</h3><div style="overflow-x:auto"><table><tr><th>Negara</th><th>Views</th><th>${cur()} / 1.000</th></tr>${YT.geo.slice(0,10).map(r=>{const rpm=r.views?(r.rev||0)/r.views*1000:0;return `<tr><td>${esc(r.name)}</td><td>${nf(r.views)}</td><td>${money(rpm)}</td></tr>`}).join("")}</table></div></div>`)}
   if(YT.age?.rows?.length){out.push(`<div class="card"><span class="layer">Umur dan gender</span><h3>Siapa penontonnya</h3><div style="overflow-x:auto"><table><tr>${YT.age.headers.map(h=>`<th>${esc(h)}</th>`).join("")}</tr>${YT.age.rows.slice(0,20).map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</table></div></div>`)}
   $("#g-extra").innerHTML=out.join("");$("#g-extra").hidden=!out.length}
 
@@ -562,19 +612,63 @@ $("#file-import").addEventListener("change",async e=>{const files=[...e.target.f
 const PROFILE_FIELDS=[["name","#pf-name"],["lang","#pf-lang"],["length","#pf-length"],["niche","#pf-niche"],["audience","#pf-audience"],["wins","#pf-wins"],["money","#pf-money"],["style","#pf-style"]];
 async function loadConfig(){CFG=await api("/api/config");if(CFG.error){CFG={profile:{}};return}
   $("#cfg-model").value=CFG.model||"claude-sonnet-5-5";$("#cfg-effort").value=CFG.effort||"medium";
-  $("#cfg-key-hint").textContent=CFG.has_key?"Tersimpan: kunci berakhiran "+CFG.key_hint+". Kosongkan kolom untuk tetap memakai kunci ini.":"Belum ada kunci tersimpan. Tombol AI memakai salin-tempel ke claude.ai.";
-  $("#banner-key").hidden=!!CFG.has_key||store.get("banner-off",false);$("#cfg-dir").textContent=CFG.dir||"";
+  $("#cfg-key-hint").textContent=CFG.has_key?"Tersimpan: kunci berakhiran "+CFG.key_hint+". Kosongkan kolom untuk tetap memakai kunci ini.":"Belum ada kunci Claude tersimpan.";
+  $("#banner-key").hidden=!!CFG.provider||store.get("banner-off",false);
+  $("#cfg-provider").value=CFG.provider_choice&&CFG.provider_choice!==""?CFG.provider_choice:(CFG.provider||"manual");showProv();
+  $("#cfg-gkey-hint").textContent=CFG.has_gemini?"Tersimpan: kunci berakhiran "+CFG.gemini_hint+". Kosongkan kolom untuk tetap memakai kunci ini.":"Belum ada kunci Gemini tersimpan.";
+  if(CFG.gemini_model&&![...$("#cfg-gmodel").options].some(o=>o.value===CFG.gemini_model))$("#cfg-gmodel").insertAdjacentHTML("beforeend",`<option value="${esc(CFG.gemini_model)}">${esc(CFG.gemini_model)}</option>`);$("#cfg-gmodel").value=CFG.gemini_model||"";$("#cfg-dir").textContent=CFG.dir||"";voiceFields();if(lastNarr&&$("#o-scriptfull"))renderScriptFull(lastNarr);
   const p=CFG.profile||{};PROFILE_FIELDS.forEach(([k,id])=>{if(p[k]!=null)$(id).value=p[k]});
-  $("#hdr-channel").textContent=p.name?"Studio kerja · "+p.name:"Studio kerja channel YouTube"}
+  $("#hdr-channel").textContent=p.name?p.name:"Studio kerja channel YouTube"}
 function readProfile(){const p={};PROFILE_FIELDS.forEach(([k,id])=>p[k]=$(id).value.trim());return p}
 async function saveConfig(extra,st){const body={model:$("#cfg-model").value,effort:$("#cfg-effort").value,profile:readProfile(),...extra};const j=await api("/api/config",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
   if(j.error){st.className="status err";st.textContent=j.error;return false}st.className="status";st.textContent="Tersimpan.";await loadConfig();return true}
-$("#f-key").addEventListener("submit",async e=>{e.preventDefault();const k=$("#cfg-key").value.trim();if(k&&!k.startsWith("sk-ant-")){$("#s-key").className="status err";$("#s-key").textContent="API key Anthropic diawali sk-ant-. Periksa lagi kunci yang ditempel.";return}if(await saveConfig(k?{api_key:k}:{},$("#s-key")))$("#cfg-key").value=""});
-$("#cfg-test").addEventListener("click",async e=>{const st=$("#s-key");const k=$("#cfg-key").value.trim();if(k){if(!await saveConfig({api_key:k},st))return;$("#cfg-key").value=""}st.className="status";st.textContent="Menguji…";e.currentTarget.disabled=true;
-  const j=await api("/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:"Reply with exactly: OK",test:true})});e.currentTarget.disabled=false;
-  const rp=costRp(j.model,j.usage);if(rp)addSpent(rp).catch(()=>{});
-  if(j.error){st.className="status err";st.textContent=j.error}else{st.className="status";st.textContent="Berhasil terhubung ke "+(j.model||"Claude")+"."}});
-$("#cfg-clear").addEventListener("click",async()=>{if(await saveConfig({clear_key:true},$("#s-key")))$("#s-key").textContent="API key dihapus. Tombol AI sekarang memakai salin-tempel ke claude.ai."});
+const PROV_HINT={manual:"Tiap tombol AI menyiapkan perintah untuk disalin ke claude.ai. Gratis karena memakai langganan Anda, tapi perlu salin-tempel.",gemini:"Hasil langsung muncul di aplikasi. Pakai API key gratis dari Google AI Studio.",claude:"Hasil langsung muncul di aplikasi dengan kualitas terbaik. Ditagih Anthropic per pemakaian, terpisah dari langganan claude.ai."};
+function showProv(){const v=$("#cfg-provider").value;$("#prov-hint").textContent=PROV_HINT[v]||"";$("#grp-gemini").hidden=v!=="gemini";$("#grp-claude").hidden=v!=="claude"}
+$("#cfg-provider").addEventListener("change",showProv);
+function keyFields(st){const k=$("#cfg-key").value.trim(),g=$("#cfg-gkey").value.trim(),x={provider:$("#cfg-provider").value,gemini_model:$("#cfg-gmodel").value};
+  if(k){if(!k.startsWith("sk-ant-")){st.className="status err";st.textContent="API key Claude diawali sk-ant-. Periksa lagi kunci yang ditempel.";return null}x.api_key=k}
+  if(g){if(!/^[A-Za-z0-9_\-]{20,}$/.test(g)){st.className="status err";st.textContent="API key Gemini tidak terlihat benar. Salin ulang dari AI Studio.";return null}x.gemini_key=g}
+  return x}
+$("#f-key").addEventListener("submit",async e=>{e.preventDefault();const st=$("#s-key"),x=keyFields(st);if(!x)return;
+  if(x.provider==="gemini"&&!x.gemini_key&&!CFG.has_gemini){st.className="status err";st.textContent="Tempel dulu API key Gemini.";return}
+  if(x.provider==="claude"&&!x.api_key&&!CFG.has_key){st.className="status err";st.textContent="Tempel dulu API key Claude.";return}
+  if(await saveConfig(x,st)){$("#cfg-key").value="";$("#cfg-gkey").value=""}});
+$("#cfg-test").addEventListener("click",async e=>{const st=$("#s-key"),btn=e.currentTarget,x=keyFields(st);if(!x)return;if(!await saveConfig(x,st))return;$("#cfg-key").value="";$("#cfg-gkey").value="";
+  if(!CFG.provider){st.className="status";st.textContent="Mode salin-tempel aktif. Tidak ada koneksi yang perlu diuji.";return}
+  st.className="status";st.textContent="Menguji…";btn.disabled=true;
+  const j=await api("/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:"Reply with exactly: OK",test:true})});btn.disabled=false;
+  const rp=costRp(j.model,j.usage,j.provider);if(rp)addSpent(rp).catch(()=>{});
+  if(j.error){st.className="status err";st.textContent=j.error}else{st.className="status";st.textContent="Berhasil terhubung ke "+(j.model||"AI")+"."}});
+$("#cfg-gmodels").addEventListener("click",async e=>{const st=$("#s-key"),g=$("#cfg-gkey").value.trim();st.className="status";st.textContent="Memuat daftar model…";
+  const j=await api("/api/gemini-models",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({key:g})});
+  if(j.error){st.className="status err";st.textContent=j.error;return}fillGModels(j.models||[],j.default);st.textContent=`${(j.models||[]).length} model tersedia. Pilihan otomatis: ${j.default||"-"}.`});
+function fillGModels(list,def){const sel=$("#cfg-gmodel"),cur=sel.value||CFG.gemini_model||"";sel.innerHTML=`<option value="">Otomatis: ${esc(def||"Gemini Flash terbaru")}</option>`+list.map(m=>`<option value="${esc(m)}">${esc(m)}</option>`).join("");sel.value=list.includes(cur)?cur:""}
+$("#cfg-gclear").addEventListener("click",async()=>{if(await saveConfig({clear_gemini:true,provider:$("#cfg-provider").value==="gemini"?"manual":$("#cfg-provider").value},$("#s-key")))$("#s-key").textContent="Kunci Gemini dihapus."});
+$("#cfg-clear").addEventListener("click",async()=>{if(await saveConfig({clear_key:true,provider:$("#cfg-provider").value==="claude"?"manual":$("#cfg-provider").value},$("#s-key")))$("#s-key").textContent="Kunci Claude dihapus."});
+/* ElevenLabs */
+let EVOICES=[];
+function voiceFields(){$("#cfg-ekey-hint").textContent=CFG.has_eleven?"Tersimpan: kunci berakhiran "+CFG.eleven_hint+". Kosongkan kolom untuk tetap memakai kunci ini.":"Belum ada kunci ElevenLabs tersimpan.";
+  const vs=$("#cfg-evoice");if(CFG.eleven_voice&&![...vs.options].some(o=>o.value===CFG.eleven_voice))vs.innerHTML=`<option value="${esc(CFG.eleven_voice)}">${esc(CFG.eleven_voice_name||CFG.eleven_voice)}</option>`;vs.value=CFG.eleven_voice||"";
+  const ms=$("#cfg-emodel");if(CFG.eleven_model&&![...ms.options].some(o=>o.value===CFG.eleven_model))ms.insertAdjacentHTML("beforeend",`<option value="${esc(CFG.eleven_model)}">${esc(CFG.eleven_model)}</option>`);ms.value=CFG.eleven_model||"";
+  $("#cfg-adir").textContent=CFG.audio_dir?"File MP3 disimpan di "+CFG.audio_dir:"";showPreview()}
+function showPreview(){const v=EVOICES.find(x=>x.id===$("#cfg-evoice").value);$("#cfg-epreview").innerHTML=v?.preview?`<p class="note">${esc(v.desc||"")}</p><audio controls preload="none" src="${esc(v.preview)}" style="width:100%"></audio>`:""}
+$("#cfg-evoice").addEventListener("change",showPreview);
+$("#cfg-eload").addEventListener("click",async e=>{const st=$("#s-voice"),k=$("#cfg-ekey").value.trim(),b=e.currentTarget;
+  if(!k&&!CFG.has_eleven){st.className="status err";st.textContent="Tempel dulu API key ElevenLabs.";return}
+  st.className="status";st.textContent="Memuat suara dan kuota…";b.disabled=true;
+  const j=await api("/api/eleven/info",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({key:k})});b.disabled=false;
+  if(j.error){st.className="status err";st.textContent=j.error;return}
+  EVOICES=j.voices||[];const cur=$("#cfg-evoice").value||CFG.eleven_voice;
+  $("#cfg-evoice").innerHTML=`<option value="">Pilih suara</option>`+EVOICES.map(v=>`<option value="${esc(v.id)}">${esc(v.name)}${v.desc?", "+esc(v.desc):""}</option>`).join("");$("#cfg-evoice").value=EVOICES.some(v=>v.id===cur)?cur:"";
+  const mc=$("#cfg-emodel").value||CFG.eleven_model;$("#cfg-emodel").innerHTML=`<option value="">Otomatis: Multilingual v2 (paling natural)</option>`+(j.models||[]).map(m=>`<option value="${esc(m.id)}">${esc(m.name)}</option>`).join("");$("#cfg-emodel").value=(j.models||[]).some(m=>m.id===mc)?mc:"";
+  const reset=j.reset?new Date(j.reset*1000).toLocaleDateString("id-ID",{day:"numeric",month:"long"}):"";
+  $("#eleven-quota").innerHTML=`<div class="qbar" role="img" aria-label="Kuota terpakai ${nf(j.used)} dari ${nf(j.limit)} karakter"><span style="width:${j.limit?Math.min(100,j.used/j.limit*100).toFixed(1):0}%"></span></div>Paket ${esc(j.tier||"-")}: sisa <strong>${nf(j.left)}</strong> dari ${nf(j.limit)} karakter${reset?", diisi ulang "+reset:""}. Satu video 1.800 kata sekitar 11.000 karakter.`;
+  st.textContent=`${EVOICES.length} suara dimuat. Pilih satu, dengarkan contohnya, lalu Simpan.`;showPreview()});
+$("#f-voice").addEventListener("submit",async e=>{e.preventDefault();const st=$("#s-voice"),k=$("#cfg-ekey").value.trim(),sel=$("#cfg-evoice");
+  if(!k&&!CFG.has_eleven){st.className="status err";st.textContent="Tempel dulu API key ElevenLabs.";return}
+  const x={eleven_model:$("#cfg-emodel").value};if(k)x.eleven_key=k;if(sel.value){x.eleven_voice=sel.value;x.eleven_voice_name=EVOICES.find(v=>v.id===sel.value)?.name||sel.selectedOptions[0]?.textContent||""}
+  if(await saveConfig(x,st)){$("#cfg-ekey").value="";st.textContent=CFG.eleven_voice?"Tersimpan. Tombol voice over muncul di bawah naskah narasi penuh.":"Kunci tersimpan. Klik Muat suara lalu pilih narator."}});
+$("#cfg-eclear").addEventListener("click",async()=>{if(await saveConfig({clear_eleven:true},$("#s-voice")))$("#s-voice").textContent="Kunci ElevenLabs dihapus."});
 $("#f-profile").addEventListener("submit",async e=>{e.preventDefault();await saveConfig({},$("#s-profile"))});
 $("#pf-export").addEventListener("click",async e=>{const t=JSON.stringify(readProfile(),null,2),b=e.currentTarget;$("#pf-json").hidden=false;$("#pf-json").value=t;try{await navigator.clipboard.writeText(t);b.textContent="Tersalin"}catch{$("#pf-json").select();b.textContent="Tekan Ctrl+C"}});
 $("#pf-import").addEventListener("click",()=>{const ta=$("#pf-json");if(ta.hidden){ta.hidden=false;ta.value="";ta.placeholder="Tempel profil JSON di sini, lalu klik Tempel profil lagi";ta.focus();return}
@@ -612,8 +706,8 @@ function renderStats(){const today=isoDay(new Date()),lf=longForm(),sh=(YT?.vide
 function renderCal(){const y=calMonth.getFullYear(),m=calMonth.getMonth(),first=new Date(y,m,1),days=new Date(y,m+1,0).getDate(),lead=(first.getDay()+6)%7,today=isoDay(new Date());
   $("#cal-title").textContent=first.toLocaleDateString("id-ID",{month:"long",year:"numeric"});
   const byDay={};const add=(d,html)=>{(byDay[d]=byDay[d]||[]).push(html)};
-  (YT?.videos||[]).forEach(v=>{if(v.d&&v.d.startsWith(`${y}-${String(m+1).padStart(2,"0")}`))add(v.d,`<span class="ev pub" title="${esc(v.t)} · ${nf(v.v)} views"><i>${v.dur<120?"Shorts":"Tayang"}</i>${esc(v.t)}</span>`)});
-  plans().forEach(p=>add(p.date,`<button type="button" class="ev ${esc(p.type)}${p.status==="tayang"?" done":""}" data-plan-id="${esc(p.id)}" title="${esc(p.title)} · ${STATUS_LABEL[p.status]||""}"><i>${STATUS_LABEL[p.status]||""}</i>${esc(p.title)}</button>`));
+  (YT?.videos||[]).forEach(v=>{if(v.d&&v.d.startsWith(`${y}-${String(m+1).padStart(2,"0")}`))add(v.d,`<span class="ev pub" title="${esc(v.t)}, ${nf(v.v)} views"><i>${v.dur<120?"Shorts":"Tayang"}</i>${esc(v.t)}</span>`)});
+  plans().forEach(p=>add(p.date,`<button type="button" class="ev ${esc(p.type)}${p.status==="tayang"?" done":""}" data-plan-id="${esc(p.id)}" title="${esc(p.title)}, ${STATUS_LABEL[p.status]||""}"><i>${STATUS_LABEL[p.status]||""}</i>${esc(p.title)}</button>`));
   const head=["Sen","Sel","Rab","Kam","Jum","Sab","Min"].map(d=>`<div class="cal-dow" role="columnheader">${d}</div>`).join("");
   let cells="";for(let i=0;i<lead;i++)cells+=`<div class="cal-day off" aria-hidden="true"></div>`;
   for(let d=1;d<=days;d++){const iso=`${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
@@ -621,7 +715,7 @@ function renderCal(){const y=calMonth.getFullYear(),m=calMonth.getMonth(),first=
   const tail=(7-(lead+days)%7)%7;for(let i=0;i<tail;i++)cells+=`<div class="cal-day off" aria-hidden="true"></div>`;
   $("#cal").innerHTML=head+cells}
 function renderUpcoming(){const today=isoDay(new Date()),list=plans().filter(p=>p.date>=today&&p.status!=="tayang").slice(0,8);
-  $("#d-upcoming").innerHTML=`<span class="layer">Berikutnya</span><h3>Rencana yang akan datang</h3>`+(list.length?`<ul class="up">${list.map(p=>`<li><span class="date">${new Date(p.date+"T12:00:00").toLocaleDateString("id-ID",{weekday:"short",day:"numeric",month:"short"})}</span><button type="button" class="linkish" data-plan-id="${esc(p.id)}">${esc(p.title)}</button><span class="chip">${TYPE_LABEL[p.type]||""} · ${STATUS_LABEL[p.status]||""}</span></li>`).join("")}</ul>`:`<p class="note">Belum ada rencana. Klik tanggal di kalender, atau buat ide di menu Ide &amp; jadwal lalu klik "Masukkan ke kalender".</p>`)}
+  $("#d-upcoming").innerHTML=`<span class="layer">Berikutnya</span><h3>Rencana yang akan datang</h3>`+(list.length?`<ul class="up">${list.map(p=>`<li><span class="date">${new Date(p.date+"T12:00:00").toLocaleDateString("id-ID",{weekday:"short",day:"numeric",month:"short"})}</span><button type="button" class="linkish" data-plan-id="${esc(p.id)}">${esc(p.title)}</button><span class="chip">${TYPE_LABEL[p.type]||""}, ${STATUS_LABEL[p.status]||""}</span></li>`).join("")}</ul>`:`<p class="note">Belum ada rencana. Klik tanggal di kalender, atau buat ide di menu Ide &amp; jadwal lalu klik "Masukkan ke kalender".</p>`)}
 function renderDash(){if(!$("#d-stats"))return;renderStats();renderCal();renderUpcoming()}
 let editing=null;
 function openPlan(p){editing=p.id?p:null;$("#plan-dlg-title").textContent=editing?"Ubah rencana":"Rencana baru";$("#pl-title").value=p.title||"";$("#pl-date").value=p.date||isoDay(new Date());$("#pl-type").value=p.type||"video";$("#pl-status").value=p.status||"ide";$("#pl-note").value=p.note||"";$("#pl-del").hidden=!editing;$("#pl-tools").hidden=!editing;$("#plan-dlg").showModal();$("#pl-title").focus()}
