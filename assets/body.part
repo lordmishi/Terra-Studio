@@ -1,7 +1,7 @@
 <div class="shell">
   <aside class="side">
     <div class="brand">
-      <svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect x="2" y="2" width="28" height="28" rx="6"/><path d="M6 22h20M6 17h20M6 12h20" /><circle cx="21" cy="12" r="2.5"/></svg>
+      <svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="6"/><path d="M7 10h18M7 15h15"/><rect class="layer-b" x="6" y="18.5" width="20" height="7" rx="2"/><circle cx="17.5" cy="22" r="1.8"/></svg>
       <div><b>Terra Studio</b><small id="hdr-channel">Studio kerja channel YouTube</small></div>
     </div>
     <span class="layer side-label">Ruang kerja</span>
@@ -14,7 +14,7 @@
       <button role="tab" id="t-growth" aria-selected="false" data-tab="growth"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg><span>Data &amp; cuan</span></button>
       <button role="tab" id="t-settings" aria-selected="false" data-tab="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM19 12l2-1-1-3-2 .2-1.3-1.3.2-2-3-1-1 2h-1.8l-1-2-3 1 .2 2L6 7.2 4 7l-1 3 2 1v1.8l-2 1 1 3 2-.2 1.3 1.3-.2 2 3 1 1-2h1.8l1 2 3-1-.2-2 1.3-1.3 2 .2 1-3-2-1z"/></svg><span>Pengaturan</span></button>
     </nav>
-    <p class="side-foot">Terra Studio · versi 1.4</p>
+    <p class="side-foot">Terra Studio · versi 1.5</p>
   </aside>
   <main class="main">
     <header class="topbar">
@@ -251,7 +251,12 @@
     <div class="card" style="margin-top:16px">
       <span class="layer">Aplikasi</span>
       <h3>Data dan aplikasi</h3>
-      <p class="note">Semua pengaturan, API key, dan data Studio disimpan hanya di komputer ini, di folder <code id="cfg-dir"></code>. Aplikasi otomatis berhenti beberapa saat setelah jendelanya ditutup.</p>
+      <p class="note">Semua pengaturan, data Studio, rencana kalender, dan hasil AI disimpan hanya di komputer ini, di folder <code id="cfg-dir"></code>. API key disimpan terenkripsi dengan pengaman Windows. Aplikasi otomatis berhenti beberapa saat setelah jendelanya ditutup.</p>
+      <h3 style="margin-top:14px">Backup</h3>
+      <p class="note">Simpan file backup (profil, data Studio, kalender, hasil AI) ke folder Downloads, lalu salin ke flashdisk atau Google Drive. API key tidak ikut demi keamanan. Pulihkan di komputer baru atau setelah instal ulang Windows.</p>
+      <div class="chips"><button type="button" class="btn ghost" id="backup-save">Simpan backup</button><button type="button" class="btn ghost" id="backup-load">Pulihkan dari backup</button></div>
+      <input type="file" id="backup-file" accept=".json,application/json" hidden>
+      <div class="confirm" id="backup-confirm" hidden><span id="backup-confirm-text"></span> <button type="button" class="btn ghost" id="backup-yes">Ya, pulihkan</button> <button type="button" class="btn ghost" id="backup-no">Batal</button></div>
       <div class="chips"><button type="button" class="btn ghost" data-import>Impor data Studio (.zip/.csv)</button><button type="button" class="btn ghost" id="data-clear">Hapus data Studio</button><button type="button" class="btn ghost" id="app-quit">Tutup aplikasi</button></div>
       <div class="confirm" id="data-clear-confirm" hidden>Hapus semua data Studio yang sudah diimpor? <button type="button" class="btn ghost" id="data-clear-yes">Ya, hapus</button> <button type="button" class="btn ghost" id="data-clear-no">Batal</button></div>
       <div class="status" id="s-app" role="status"></div>
@@ -371,13 +376,24 @@ JSON shape: {"ideas":[{"title":"","era":"period/place or sub-topic, short","hook
 /* ---------- SCRIPT ---------- */
 const ACT_COLORS=["var(--accent)","var(--moss)","var(--muted)","var(--warn)","var(--ink)","var(--field)","var(--accent)"];
 const ROMAN=["I","II","III","IV","V","VI","VII"];
-function renderScript(s){const acts=s.acts||[],total=acts.reduce((a,x)=>a+(+x.words||0),0)||1;
+let lastOutline=null;
+function renderScript(s){lastOutline=s;const acts=s.acts||[],total=acts.reduce((a,x)=>a+(+x.words||0),0)||1;
   $("#o-script").innerHTML=head("Kerangka · "+(s.title||""))+`<div class="card"><span class="layer">Cold open</span><p style="font-size:19px">${esc(s.cold_open)}</p>
   <div class="strata" aria-label="Proporsi kata per babak">${acts.map((a,i)=>`<span style="width:${((+a.words||0)/total*100).toFixed(1)}%;background:${ACT_COLORS[i%7]}" title="Babak ${i+1}: ${esc(a.words)} kata"></span>`).join("")}</div>
   ${acts.map((a,i)=>`<div class="act"><div class="num">${ROMAN[i]||i+1}<small>${esc(a.words)} kata</small></div><div style="min-width:0"><h3>${esc(a.name)}</h3><ul>${(a.beats||[]).map(b=>`<li>${esc(b)}</li>`).join("")}</ul>${a.open_loop?`<p class="note"><strong>Open loop:</strong> ${esc(a.open_loop)}</p>`:""}${a.cta?`<p class="note"><strong>CTA:</strong> ${esc(a.cta)}</p>`:""}</div></div>`).join("")}</div>
   ${(s.visuals?.length)?`<div class="card"><span class="layer">Daftar visual / B-roll</span><div class="chips" style="margin-top:8px">${s.visuals.map(v=>`<span class="chip">${esc(v)}</span>`).join("")}</div></div>`:""}
   ${acts.some(a=>a.flow_prompts?.length)?copyBox("Prompt video untuk Google Flow (satu per klip 8 detik)",acts.map((a,i)=>(a.flow_prompts||[]).map((f,j)=>`[Babak ${i+1}.${j+1}] ${f}${s.flow_style?" Style: "+s.flow_style:""}`).join("\n\n")).filter(Boolean).join("\n\n"))+`<p class="note">Tempel satu prompt per klip di Flow. Gaya visual sudah disisipkan di tiap prompt supaya antar klip tetap konsisten.</p>`:""}
-  ${(s.fact_check?.length)?`<div class="card"><span class="layer">Wajib dicek ulang sebelum rekaman</span><ul>${s.fact_check.map(v=>`<li>${esc(v)}</li>`).join("")}</ul></div>`:""}`}
+  ${(s.fact_check?.length)?`<div class="card"><span class="layer">Wajib dicek ulang sebelum rekaman</span><ul>${s.fact_check.map(v=>`<li>${esc(v)}</li>`).join("")}</ul></div>`:""}
+  <div class="card"><span class="layer">Langkah berikutnya</span><h3>Naskah narasi penuh</h3><p class="note">Ubah kerangka ini jadi naskah siap dibacakan (voice over), sesuai target kata. Bisa ditempel ke Bang Story atau dibaca sendiri.</p><button type="button" class="btn" id="script-full-btn">Tulis naskah narasi penuh</button><div class="status" id="s-scriptfull" role="status"></div></div>
+  <div id="o-scriptfull" class="out"></div>`}
+function renderScriptFull(f){const parts=f.narration||[],all=parts.map(p=>p.text).join("\n\n"),words=all.split(/\s+/).filter(Boolean).length,mins=(words/140).toLocaleString("id-ID",{maximumFractionDigits:1});
+  $("#o-scriptfull").innerHTML=copyBox(`Naskah narasi penuh · ${nf(words)} kata · sekitar ${mins} menit dibaca`,parts.map((p,i)=>`[${p.act||"Babak "+(i+1)}]\n${p.text}`).join("\n\n"))+(f.title?`<p class="note">Untuk kerangka: ${esc(f.title)}</p>`:"")}
+document.addEventListener("click",async e=>{const b=e.target.closest("#script-full-btn");if(!b||!lastOutline)return;
+  const w=+$("#script-words").value||1800;
+  const data=await ask($("#s-scriptfull"),b,`Write the complete voice-over narration for this documentary, following the outline below act by act. About ${w} words in total; keep each act close to its planned word count. Spoken style: short clear sentences, vivid but accurate, no stage directions, no headings inside the text, no bracketed notes. Open with the cold open. Keep open loops and the soft CTAs where the outline puts them. Mark anything uncertain by phrasing it carefully ("scientists think", "the fossils suggest") rather than inventing facts.
+Outline JSON: ${JSON.stringify({title:lastOutline.title,cold_open:lastOutline.cold_open,acts:(lastOutline.acts||[]).map(a=>({name:a.name,words:a.words,beats:a.beats,open_loop:a.open_loop,cta:a.cta}))})}
+JSON shape: {"title":"","narration":[{"act":"act name","text":"narration paragraphs for this act"}]}`,"scriptfull");
+  if(data?.narration?.length)renderScriptFull(data)});
 $("#f-script").addEventListener("submit",async e=>{e.preventDefault();const w=+$("#script-words").value||1800,n=Math.min(7,Math.max(3,+$("#script-acts").value||5));
   const data=await ask($("#s-script"),e.submitter||$("#f-script .btn"),`Build a detailed ${n}-act outline for a documentary script. Topic: ${val("#script-topic")}. Central question: ${val("#script-angle")||"choose the strongest one"}. Tone: ${$("#script-tone").value}. Target length: about ${w} words total (act word counts must add up to about ${w}).
 Include a vivid 2-3 sentence cold open that pays off within the first 30 seconds, 3-5 beats per act, open loops across act breaks for retention, at most two soft CTAs (membership or merch from the profile) placed where they don't break the story, a visual/B-roll list, and facts to double-check.
@@ -564,6 +580,17 @@ $("#pf-export").addEventListener("click",async e=>{const t=JSON.stringify(readPr
 $("#pf-import").addEventListener("click",()=>{const ta=$("#pf-json");if(ta.hidden){ta.hidden=false;ta.value="";ta.placeholder="Tempel profil JSON di sini, lalu klik Tempel profil lagi";ta.focus();return}
   let p;try{p=JSON.parse(ta.value)}catch{$("#s-profile").className="status err";$("#s-profile").textContent="Teks itu bukan JSON profil yang valid.";return}
   PROFILE_FIELDS.forEach(([k,id])=>{if(p[k]!=null)$(id).value=p[k]});ta.hidden=true;saveConfig({},$("#s-profile"))});
+$("#backup-save").addEventListener("click",async()=>{const st=$("#s-app");const j=await api("/api/backup");if(j.error){st.className="status err";st.textContent=j.error;return}
+  const name=`terra-studio-backup-${isoDay(new Date())}.json`,url=URL.createObjectURL(new Blob([JSON.stringify(j)],{type:"application/json"})),a=document.createElement("a");a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);
+  st.className="status";st.textContent=`Backup disimpan sebagai ${name} di folder Downloads.`});
+let pendingBackup=null;
+$("#backup-load").addEventListener("click",()=>$("#backup-file").click());
+$("#backup-file").addEventListener("change",async e=>{const f=e.target.files[0];e.target.value="";if(!f)return;const st=$("#s-app");let j;try{j=JSON.parse(await f.text())}catch{st.className="status err";st.textContent="File itu bukan backup Terra Studio.";return}
+  if(j.app!=="terra-studio"){st.className="status err";st.textContent="File itu bukan backup Terra Studio.";return}
+  pendingBackup=j;$("#backup-confirm-text").textContent=`Ganti data sekarang dengan backup tanggal ${new Date(j.created*1000).toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"})}?`;$("#backup-confirm").hidden=false});
+$("#backup-no").addEventListener("click",()=>{pendingBackup=null;$("#backup-confirm").hidden=true});
+$("#backup-yes").addEventListener("click",async()=>{if(!pendingBackup)return;const st=$("#s-app");const j=await api("/api/restore",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(pendingBackup)});pendingBackup=null;$("#backup-confirm").hidden=true;
+  if(j.error){st.className="status err";st.textContent=j.error;return}st.className="status";st.textContent="Backup dipulihkan.";await loadConfig();await loadData();await loadLast();renderDash()});
 $("#data-clear").addEventListener("click",()=>$("#data-clear-confirm").hidden=false);
 $("#data-clear-no").addEventListener("click",()=>$("#data-clear-confirm").hidden=true);
 $("#data-clear-yes").addEventListener("click",async()=>{await api("/api/data",{method:"DELETE"});$("#data-clear-confirm").hidden=true;$("#s-app").className="status";$("#s-app").textContent="Data Studio dihapus.";await loadData()});
@@ -615,7 +642,7 @@ document.addEventListener("click",async e=>{
   if(e.target.closest("#plan-all")){const btns=[...document.querySelectorAll("#o-ideas [data-plan]:not([disabled])")];const add=btns.map((b,i)=>({id:Date.now().toString(36)+i+Math.random().toString(36).slice(2,5),title:b.dataset.plan,date:b.dataset.date,type:"video",status:"ide",note:""}));btns.forEach(b=>{b.textContent="Masuk kalender";b.disabled=true});if(add.length)await savePlans([...plans(),...add]);e.target.textContent=add.length?`${add.length} ide masuk kalender`:"Semua sudah di kalender"}
 });
 
-const RENDER={ideas:d=>d?.ideas?.length&&(renderIdeas(d.ideas),true),script:d=>d?.acts?.length&&(renderScript(d),true),seo:d=>d?.titles&&(renderSEO(d),true),thumb:d=>d?.concepts?.length&&(renderThumb(d.concepts),true),shorts:d=>d?.shorts?.length&&(renderShorts(d.shorts),true),ai:d=>d&&(renderAI(d),true)};
+const RENDER={ideas:d=>d?.ideas?.length&&(renderIdeas(d.ideas),true),script:d=>d?.acts?.length&&(renderScript(d),true),scriptfull:d=>d?.narration?.length&&$("#o-scriptfull")&&(renderScriptFull(d),true),seo:d=>d?.titles&&(renderSEO(d),true),thumb:d=>d?.concepts?.length&&(renderThumb(d.concepts),true),shorts:d=>d?.shorts?.length&&(renderShorts(d.shorts),true),ai:d=>d&&(renderAI(d),true)};
 async function loadLast(){const j=await api("/api/last");if(!j||j.error)return;LAST=j;
   for(const [k,f] of Object.entries(RENDER)){const r=LAST[k];if(!r)continue;try{if(f(r.data)){const st=$("#s-"+k);if(st){st.className="status";st.textContent="Hasil terakhir, dibuat "+new Date(r.at).toLocaleString("id-ID",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})+". Tidak memakai saldo lagi."}}}catch{}}
   $("#cfg-spent").textContent=spentText()}

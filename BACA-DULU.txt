@@ -1,4 +1,4 @@
-TERRA STUDIO 1.4 (Windows 10/11, 64-bit)
+TERRA STUDIO 1.5 (Windows 10/11, 64-bit)
 =========================================
 
 Aplikasi PC untuk channel YouTube: ide video dan kalender, naskah per babak,
@@ -23,6 +23,10 @@ Klik tanggal untuk menambah rencana (video, Shorts, atau post komunitas),
 klik rencana untuk mengubah status: Ide, Naskah, Rekam, Edit, Siap upload,
 Sudah tayang. Dari menu Ide & jadwal, klik "Masukkan ke kalender".
 Aplikasi tidak mengunggah video ke YouTube; upload tetap lewat YouTube Studio.
+
+NASKAH PENUH
+Setelah kerangka naskah jadi, klik "Tulis naskah narasi penuh" untuk naskah
+voice over siap baca (bisa ditempel ke Bang Story).
 
 GOOGLE FLOW
 Kerangka naskah menghasilkan prompt video per klip 8 detik, dan menu
@@ -73,9 +77,15 @@ IMPOR DATA YOUTUBE STUDIO
 
 DI MANA DATA DISIMPAN
 %APPDATA%\TerraStudio\
-  config.json  = API key, model, profil (API key tersimpan di PC ini saja)
+  config.json  = model, profil, dan API key (terenkripsi dengan pengaman
+                 Windows, hanya bisa dibuka akun Windows Anda)
   data.json    = data Studio yang sudah diimpor
-  last.json    = hasil AI terakhir tiap alat dan catatan biaya
+  last.json    = hasil AI terakhir, rencana kalender, dan catatan biaya
+
+BACKUP
+Pengaturan > Backup > "Simpan backup" menyimpan file .json ke folder Downloads
+(profil, data Studio, kalender, hasil AI; API key tidak ikut). Simpan file itu
+di flashdisk atau Google Drive. Untuk memulihkan: "Pulihkan dari backup".
 Tidak ada data yang dikirim ke mana pun selain ke API Anthropic saat Anda
 klik Generate.
 

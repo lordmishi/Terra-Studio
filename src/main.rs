@@ -34,7 +34,12 @@ const MAX_UPLOAD: u64 = 60 * 1024 * 1024;
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(default)]
 struct Config {
+    /// Plaintext key, in memory only. On Windows it is written to disk
+    /// encrypted (`api_key_dpapi`); older plaintext files are migrated on load.
+    #[serde(skip_serializing_if = "String::is_empty")]
     api_key: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
+    api_key_dpapi: String,
     model: String,
     effort: String,
     profile: Value,
@@ -44,6 +49,7 @@ impl Default for Config {
     fn default() -> Self {
         Config {
             api_key: String::new(),
+            api_key_dpapi: String::new(),
             model: MODELS[1].into(),
             effort: "medium".into(),
             profile: json!({}),
@@ -72,10 +78,102 @@ fn write_atomic(path: &Path, data: &[u8]) -> std::io::Result<()> {
 }
 
 fn load_config(dir: &Path) -> Config {
-    fs::read_to_string(dir.join("config.json"))
+    let mut c: Config = fs::read_to_string(dir.join("config.json"))
         .ok()
         .and_then(|s| serde_json::from_str(&s).ok())
-        .unwrap_or_default()
+        .unwrap_or_default();
+    if !c.api_key_dpapi.is_empty() {
+        c.api_key = from_hex(&c.api_key_dpapi).and_then(|b| secret::unprotect(&b)).unwrap_or_default();
+    } else if !c.api_key.is_empty() && secret::AVAILABLE {
+        // Plaintext key from an older version: rewrite it encrypted.
+        let _ = save_config(dir, &c);
+    }
+    c
+}
+
+/// Writes config.json with the API key encrypted for the current Windows user.
+fn save_config(dir: &Path, c: &Config) -> Result<(), String> {
+    let mut disk = c.clone();
+    disk.api_key_dpapi.clear();
+    if !c.api_key.is_empty() {
+        if let Some(enc) = secret::protect(c.api_key.as_bytes()) {
+            disk.api_key_dpapi = to_hex(&enc);
+            disk.api_key.clear();
+        }
+    }
+    let bytes = serde_json::to_vec_pretty(&disk).map_err(|e| e.to_string())?;
+    write_atomic(&dir.join("config.json"), &bytes).map_err(|e| e.to_string())
+}
+
+fn to_hex(b: &[u8]) -> String {
+    b.iter().map(|x| format!("{x:02x}")).collect()
+}
+
+fn from_hex(s: &str) -> Option<Vec<u8>> {
+    if s.len() % 2 != 0 {
+        return None;
+    }
+    (0..s.len()).step_by(2).map(|i| u8::from_str_radix(s.get(i..i + 2)?, 16).ok()).collect()
+}
+
+/// Windows DPAPI: data encrypted this way can only be decrypted by the same
+/// Windows user account, so a copied config.json does not leak the key.
+#[cfg(windows)]
+mod secret {
+    use std::ffi::c_void;
+    pub const AVAILABLE: bool = true;
+    #[repr(C)]
+    struct Blob {
+        len: u32,
+        data: *mut u8,
+    }
+    #[link(name = "crypt32")]
+    extern "system" {
+        fn CryptProtectData(input: *const Blob, descr: *const u16, entropy: *const Blob, reserved: *mut c_void,
+            prompt: *mut c_void, flags: u32, output: *mut Blob) -> i32;
+        fn CryptUnprotectData(input: *const Blob, descr: *mut *mut u16, entropy: *const Blob, reserved: *mut c_void,
+            prompt: *mut c_void, flags: u32, output: *mut Blob) -> i32;
+    }
+    #[link(name = "kernel32")]
+    extern "system" {
+        fn LocalFree(mem: *mut c_void) -> *mut c_void;
+    }
+    const CRYPTPROTECT_UI_FORBIDDEN: u32 = 0x1;
+    fn run(input: &[u8], encrypt: bool) -> Option<Vec<u8>> {
+        let inp = Blob { len: input.len() as u32, data: input.as_ptr() as *mut u8 };
+        let mut out = Blob { len: 0, data: std::ptr::null_mut() };
+        let ok = unsafe {
+            if encrypt {
+                CryptProtectData(&inp, std::ptr::null(), std::ptr::null(), std::ptr::null_mut(), std::ptr::null_mut(), CRYPTPROTECT_UI_FORBIDDEN, &mut out)
+            } else {
+                CryptUnprotectData(&inp, std::ptr::null_mut(), std::ptr::null(), std::ptr::null_mut(), std::ptr::null_mut(), CRYPTPROTECT_UI_FORBIDDEN, &mut out)
+            }
+        };
+        if ok == 0 || out.data.is_null() {
+            return None;
+        }
+        let v = unsafe { std::slice::from_raw_parts(out.data, out.len as usize).to_vec() };
+        unsafe { LocalFree(out.data as *mut c_void) };
+        Some(v)
+    }
+    pub fn protect(b: &[u8]) -> Option<Vec<u8>> {
+        run(b, true)
+    }
+    pub fn unprotect(b: &[u8]) -> Option<String> {
+        run(b, false).and_then(|v| String::from_utf8(v).ok())
+    }
+}
+
+/// Development builds on other systems keep the key in plaintext.
+#[cfg(not(windows))]
+mod secret {
+    pub const AVAILABLE: bool = false;
+    pub fn protect(_: &[u8]) -> Option<Vec<u8>> {
+        None
+    }
+    pub fn unprotect(_: &[u8]) -> Option<String> {
+        None
+    }
 }
 
 /// Serialises read-modify-write of last.json.
@@ -311,9 +409,7 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
             if v["profile"].is_object() {
                 c.profile = v["profile"].clone();
             }
-            let saved = serde_json::to_vec_pretty(&*c).map_err(|e| e.to_string()).and_then(|bytes| {
-                write_atomic(&dir.join("config.json"), &bytes).map_err(|e| e.to_string())
-            });
+            let saved = save_config(dir, &c);
             drop(c);
             match saved {
                 Ok(()) => respond_json(req, 200, json!({"ok": true})),
@@ -330,6 +426,51 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
             respond_json(req, code, out)
         }
         (Method::Get, "/api/data") => respond_json(req, 200, load_data(dir)),
+        // Backup: profile, settings (never the API key), Studio data, plans and AI results.
+        (Method::Get, "/api/backup") => {
+            let c = cfg.lock().unwrap().clone();
+            respond_json(req, 200, json!({
+                "app": "terra-studio", "version": 1, "created": now(),
+                "settings": {"model": c.model, "effort": c.effort, "profile": c.profile},
+                "data": load_data(dir),
+                "last": load_json(&dir.join("last.json")),
+            }))
+        }
+        (Method::Post, "/api/restore") => {
+            let v = match read_json(&mut req, MAX_UPLOAD) {
+                Ok(v) => v,
+                Err(e) => return respond_json(req, 400, json!({"error": e})),
+            };
+            if v["app"] != "terra-studio" {
+                return respond_json(req, 400, json!({"error": "File ini bukan backup Terra Studio."}));
+            }
+            let result = (|| -> Result<(), String> {
+                if v["data"].is_object() {
+                    let _g = DATA_JSON_LOCK.lock().unwrap();
+                    write_atomic(&dir.join("data.json"), v["data"].to_string().as_bytes()).map_err(|e| e.to_string())?;
+                }
+                if v["last"].is_object() {
+                    let _g = LAST_JSON_LOCK.lock().unwrap();
+                    write_atomic(&dir.join("last.json"), v["last"].to_string().as_bytes()).map_err(|e| e.to_string())?;
+                }
+                let mut c = cfg.lock().unwrap();
+                let st = &v["settings"];
+                if let Some(m) = st["model"].as_str().filter(|m| MODELS.contains(m)) {
+                    c.model = m.to_string();
+                }
+                if let Some(e) = st["effort"].as_str().filter(|e| ["low", "medium", "high"].contains(e)) {
+                    c.effort = e.to_string();
+                }
+                if st["profile"].is_object() {
+                    c.profile = st["profile"].clone();
+                }
+                save_config(dir, &c)
+            })();
+            match result {
+                Ok(()) => respond_json(req, 200, json!({"ok": true})),
+                Err(e) => respond_json(req, 500, json!({"error": format!("Gagal memulihkan backup: {e}")})),
+            }
+        }
         // Last AI result per tool, so reopening the app does not cost a new call.
         (Method::Get, "/api/last") => respond_json(req, 200, load_json(&dir.join("last.json"))),
         (Method::Post, "/api/last") => {
@@ -729,6 +870,19 @@ mod tests {
         parse_csv(&csv("Estimated revenue) (USD"), &mut d).unwrap();
         assert!(d["currency"].is_null());
         assert_eq!(d["videos"].as_array().unwrap().len(), 1);
+    }
+
+    #[test]
+    fn hex_round_trip_and_plain_config() {
+        assert_eq!(from_hex(&to_hex(&[0, 15, 255])), Some(vec![0, 15, 255]));
+        assert_eq!(from_hex("abc"), None);
+        let dir = std::env::temp_dir().join(format!("ts-test-{}", now()));
+        fs::create_dir_all(&dir).unwrap();
+        let mut c = Config::default();
+        c.api_key = "sk-ant-x".into();
+        save_config(&dir, &c).unwrap();
+        assert_eq!(load_config(&dir).api_key, "sk-ant-x");
+        let _ = fs::remove_dir_all(&dir);
     }
 
     #[test]
