@@ -284,11 +284,30 @@ fn load_json(path: &Path) -> Value {
 }
 
 fn main() {
-    // Second launch: the app is already running, so just open another window.
+    // Second launch: the same version is already running, so just open another window.
+    // An older version (after an update) is asked to quit so the new exe takes over.
     for &p in &PORTS {
-        if ping(p) {
-            open_window(p);
-            return;
+        match ping(p) {
+            Some(v) if v == PING_ID => {
+                open_window(p);
+                return;
+            }
+            Some(_) => {
+                let _ = ureq::AgentBuilder::new()
+                    .timeout(Duration::from_millis(1500))
+                    .try_proxy_from_env(false)
+                    .build()
+                    .post(&format!("http://127.0.0.1:{p}/api/quit"))
+                    .set("X-Terra", "1")
+                    .call();
+                for _ in 0..20 {
+                    std::thread::sleep(Duration::from_millis(150));
+                    if ping(p).is_none() {
+                        break;
+                    }
+                }
+            }
+            None => {}
         }
     }
     let Some((server, port)) = PORTS
@@ -337,16 +356,19 @@ fn open_browser(url: &str) {
     }
 }
 
-fn ping(port: u16) -> bool {
+const PING_ID: &str = concat!("terra-studio ", env!("CARGO_PKG_VERSION"));
+
+/// Some(id) when a Terra Studio (any version) answers on this port.
+fn ping(port: u16) -> Option<String> {
     ureq::AgentBuilder::new()
         .timeout(Duration::from_millis(800))
+        .try_proxy_from_env(false)
         .build()
         .get(&format!("http://127.0.0.1:{port}/api/ping"))
         .call()
         .ok()
         .and_then(|r| r.into_string().ok())
-        .map(|s| s == "terra-studio")
-        .unwrap_or(false)
+        .filter(|s| s.starts_with("terra-studio"))
 }
 
 fn open_window(port: u16) {
@@ -462,7 +484,7 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
         (Method::Get, "/") | (Method::Get, "/index.html") => {
             respond(req, 200, "text/html; charset=utf-8", PAGE.as_bytes().to_vec())
         }
-        (Method::Get, "/api/ping") => respond(req, 200, "text/plain", b"terra-studio".to_vec()),
+        (Method::Get, "/api/ping") => respond(req, 200, "text/plain", PING_ID.as_bytes().to_vec()),
         (Method::Post, "/api/heartbeat") => {
             last_seen.store(now(), Ordering::Relaxed);
             respond_json(req, 200, json!({"ok": true}))

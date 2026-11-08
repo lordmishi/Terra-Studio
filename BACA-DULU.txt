@@ -1,5 +1,10 @@
-TERRA STUDIO 1.7 (Windows 10/11, 64-bit)
+TERRA STUDIO 1.7.1 (Windows 10/11, 64-bit)
 =========================================
+
+UPDATE KE VERSI BARU (mulai 1.7.1)
+Cukup ekstrak zip baru lalu buka TerraStudio.exe. Kalau versi lama masih
+jalan, versi baru otomatis menutupnya. Data dan pengaturan tidak hilang
+(tersimpan di %APPDATA%\TerraStudio).
 
 Aplikasi PC untuk channel YouTube: ide video dan kalender, naskah per babak,
 judul/deskripsi/tag, teks thumbnail, ide Shorts (di menu Data & cuan), dan
