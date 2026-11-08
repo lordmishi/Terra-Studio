@@ -14,7 +14,7 @@
       <button role="tab" id="t-growth" aria-selected="false" data-tab="growth"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="m1.24 6.54 11.5-5.23"/><path d="m10.59.5 2.15.81-.8 2.15"/><path d="M13.25 13.5h-2.5v-7a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 .5.5z"/><path d="M8.25 13.5h-2.5V8a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 .5.5z"/><path d="M3.25 13.5H.75v-4a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 .5.5z"/></svg><span>Data &amp; cuan</span></button>
       <button role="tab" id="t-settings" aria-selected="false" data-tab="settings"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="m5.23 2.25.43-1.11A1 1 0 0 1 6.59.5h.82a1 1 0 0 1 .93.64l.43 1.11 1.46.84 1.18-.18a1 1 0 0 1 1 .49l.4.7a1 1 0 0 1-.08 1.13l-.73.93v1.68l.75.93a1 1 0 0 1 .08 1.13l-.4.7a1 1 0 0 1-1 .49l-1.18-.18-1.46.84-.43 1.11a1 1 0 0 1-.93.64h-.84a1 1 0 0 1-.93-.64l-.43-1.11-1.46-.84-1.18.18a1 1 0 0 1-1-.49l-.4-.7a1 1 0 0 1 .08-1.13L2 7.84V6.16l-.75-.93a1 1 0 0 1-.08-1.13l.4-.7a1 1 0 0 1 1-.49l1.18.18zM5 7a2 2 0 1 0 4 0 2 2 0 0 0-4 0"/></svg><span>Pengaturan</span></button>
     </nav>
-    <p class="side-foot">Terra Studio versi 1.6.1</p>
+    <p class="side-foot">Terra Studio versi 1.7</p>
   </aside>
   <main class="main">
     <header class="topbar">
@@ -142,7 +142,7 @@
 
     <div id="g-full" hidden>
       <div class="card">
-        <div class="out-head"><span class="layer" id="g-range">Data YouTube Studio</span><span class="chips"><button type="button" class="btn ghost" data-import>Impor data baru</button></span></div>
+        <div class="out-head"><span class="layer" id="g-range">Data YouTube Studio</span><span class="chips"><button type="button" class="btn ghost" data-ytsync hidden>Tarik dari YouTube</button><button type="button" class="btn ghost" data-import>Impor data baru</button></span></div>
         <h3>Rapor channel</h3>
         <div class="kpis" id="g-kpis"></div>
         <p style="margin:14px 0 0;font-weight:700">Views per bulan: kapan channel naik, kapan turun?</p>
@@ -246,6 +246,32 @@
         </div>
         <div class="chips"><button class="btn" type="submit">Simpan</button><button class="btn ghost" type="button" id="cfg-test">Uji koneksi</button></div>
         <div class="status" id="s-key" role="status"></div>
+      </form>
+
+      <form class="tool" id="f-yt">
+        <h2>YouTube Studio</h2>
+        <p class="hint" id="yt-state">Sambungkan channel supaya angka di dashboard dan Data &amp; cuan diperbarui otomatis, tanpa ekspor manual.</p>
+        <div id="yt-on" class="grp" hidden>
+          <p style="margin:0"><strong id="yt-name"></strong></p>
+          <p class="note" id="yt-last" style="margin:0"></p>
+          <div class="chips"><button class="btn" type="button" id="yt-sync">Tarik data sekarang</button><button class="btn ghost" type="button" id="yt-off">Putuskan</button></div>
+        </div>
+        <details id="yt-setup">
+          <summary>Langkah sekali saja di Google Cloud (sekitar 15 menit, gratis)</summary>
+          <ol class="steps">
+            <li>Buka <a href="https://console.cloud.google.com/projectcreate" target="_blank" rel="noopener">console.cloud.google.com</a> dengan akun Google pemilik channel. Buat project baru, misalnya <strong>Terra Studio</strong>.</li>
+            <li>Di <a href="https://console.cloud.google.com/apis/library" target="_blank" rel="noopener">API Library</a>, cari lalu klik <strong>Enable</strong> untuk <strong>YouTube Data API v3</strong> dan <strong>YouTube Analytics API</strong>.</li>
+            <li>Buka <a href="https://console.cloud.google.com/auth/overview" target="_blank" rel="noopener">Google Auth Platform</a>, klik Get started. Nama aplikasi: Terra Studio, pilih <strong>External</strong>, isi email Anda.</li>
+            <li>Di menu <strong>Audience</strong>, klik <strong>Publish app</strong> supaya izinnya tidak kedaluwarsa tiap 7 hari.</li>
+            <li>Di menu <strong>Clients</strong>, klik Create client, pilih jenis <strong>Desktop app</strong>. Salin Client ID dan Client secret ke bawah.</li>
+          </ol>
+        </details>
+        <label for="yt-id">Client ID<input id="yt-id" autocomplete="off" placeholder="....apps.googleusercontent.com"></label>
+        <label for="yt-secret">Client secret<input id="yt-secret" type="password" autocomplete="off" placeholder="GOCSPX-..."></label>
+        <p class="note" id="yt-secret-hint"></p>
+        <div class="chips"><button class="btn" type="submit" id="yt-connect">Simpan dan hubungkan YouTube</button></div>
+        <p class="note">Google akan menampilkan "Google hasn't verified this app". Itu wajar karena aplikasinya milik Anda sendiri: klik Continue. Impressions dan CTR tidak tersedia lewat sambungan ini, jadi angka itu tetap diambil dari ekspor Studio terakhir.</p>
+        <div class="status" id="s-yt" role="status"></div>
       </form>
 
       <form class="tool" id="f-voice">
@@ -616,7 +642,7 @@ async function loadConfig(){CFG=await api("/api/config");if(CFG.error){CFG={prof
   $("#banner-key").hidden=!!CFG.provider||store.get("banner-off",false);
   $("#cfg-provider").value=CFG.provider_choice&&CFG.provider_choice!==""?CFG.provider_choice:(CFG.provider||"manual");showProv();
   $("#cfg-gkey-hint").textContent=CFG.has_gemini?"Tersimpan: kunci berakhiran "+CFG.gemini_hint+". Kosongkan kolom untuk tetap memakai kunci ini.":"Belum ada kunci Gemini tersimpan.";
-  if(CFG.gemini_model&&![...$("#cfg-gmodel").options].some(o=>o.value===CFG.gemini_model))$("#cfg-gmodel").insertAdjacentHTML("beforeend",`<option value="${esc(CFG.gemini_model)}">${esc(CFG.gemini_model)}</option>`);$("#cfg-gmodel").value=CFG.gemini_model||"";$("#cfg-dir").textContent=CFG.dir||"";voiceFields();if(lastNarr&&$("#o-scriptfull"))renderScriptFull(lastNarr);
+  if(CFG.gemini_model&&![...$("#cfg-gmodel").options].some(o=>o.value===CFG.gemini_model))$("#cfg-gmodel").insertAdjacentHTML("beforeend",`<option value="${esc(CFG.gemini_model)}">${esc(CFG.gemini_model)}</option>`);$("#cfg-gmodel").value=CFG.gemini_model||"";$("#cfg-dir").textContent=CFG.dir||"";voiceFields();ytFields();if(lastNarr&&$("#o-scriptfull"))renderScriptFull(lastNarr);
   const p=CFG.profile||{};PROFILE_FIELDS.forEach(([k,id])=>{if(p[k]!=null)$(id).value=p[k]});
   $("#hdr-channel").textContent=p.name?p.name:"Studio kerja channel YouTube"}
 function readProfile(){const p={};PROFILE_FIELDS.forEach(([k,id])=>p[k]=$(id).value.trim());return p}
@@ -669,6 +695,30 @@ $("#f-voice").addEventListener("submit",async e=>{e.preventDefault();const st=$(
   const x={eleven_model:$("#cfg-emodel").value};if(k)x.eleven_key=k;if(sel.value){x.eleven_voice=sel.value;x.eleven_voice_name=EVOICES.find(v=>v.id===sel.value)?.name||sel.selectedOptions[0]?.textContent||""}
   if(await saveConfig(x,st)){$("#cfg-ekey").value="";st.textContent=CFG.eleven_voice?"Tersimpan. Tombol voice over muncul di bawah naskah narasi penuh.":"Kunci tersimpan. Klik Muat suara lalu pilih narator."}});
 $("#cfg-eclear").addEventListener("click",async()=>{if(await saveConfig({clear_eleven:true},$("#s-voice")))$("#s-voice").textContent="Kunci ElevenLabs dihapus."});
+/* YouTube Studio */
+function ytFields(){const on=!!CFG.yt_connected;$("#yt-on").hidden=!on;$("#yt-setup").open=!CFG.yt_client_id;
+  $("#yt-name").textContent=on?(CFG.yt_channel?"Terhubung: "+CFG.yt_channel:"Terhubung"):"";
+  $("#yt-last").textContent=CFG.yt_synced?"Terakhir ditarik "+new Date(CFG.yt_synced*1000).toLocaleString("id-ID",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})+". Data ditarik otomatis tiap aplikasi dibuka.":"Belum pernah ditarik.";
+  $("#yt-connect").textContent=on?"Hubungkan ulang":"Simpan dan hubungkan YouTube";
+  if(!$("#yt-id").value)$("#yt-id").value=CFG.yt_client_id||"";
+  $("#yt-secret-hint").textContent=CFG.has_yt_secret?"Client secret tersimpan. Kosongkan kolom untuk tetap memakainya.":"";
+  document.querySelectorAll("[data-ytsync]").forEach(b=>b.hidden=!on)}
+async function ytSync(st,btn){if(btn)btn.disabled=true;if(st){st.className="status";st.textContent="Menarik data dari YouTube…"}
+  const j=await api("/api/yt/sync",{method:"POST",headers:{"Content-Type":"application/json"},body:"{}"});if(btn)btn.disabled=false;
+  if(j.error){if(st){st.className="status err";st.textContent=j.error}return false}
+  if(st)st.textContent=`Selesai: ${nf(j.videos)} video, ${nf(j.days)} hari data (${j.range}).${j.revenue?"":" Pendapatan tidak ikut karena akun ini tidak memberi akses data pendapatan."}`;
+  await loadConfig();await loadData();return true}
+$("#f-yt").addEventListener("submit",async e=>{e.preventDefault();const st=$("#s-yt"),id=$("#yt-id").value.trim(),sec=$("#yt-secret").value.trim();
+  if(!/\.apps\.googleusercontent\.com$/.test(id)){st.className="status err";st.textContent="Client ID diakhiri .apps.googleusercontent.com. Salin ulang dari Google Cloud.";return}
+  if(!sec&&!CFG.has_yt_secret){st.className="status err";st.textContent="Tempel juga Client secret.";return}
+  const x={yt_client_id:id};if(sec)x.yt_secret=sec;if(!await saveConfig(x,st))return;$("#yt-secret").value="";
+  const j=await api("/api/yt/connect",{method:"POST",headers:{"Content-Type":"application/json"},body:"{}"});
+  if(j.error){st.className="status err";st.textContent=j.error;return}
+  st.className="status";st.innerHTML=`Halaman login Google terbuka di browser. Pilih akun pemilik channel dan izinkan, lalu kembali ke sini. Kalau tidak terbuka, <a href="${esc(j.url)}" target="_blank" rel="noopener">klik di sini</a>.`;
+  const t0=Date.now(),iv=setInterval(async()=>{await loadConfig();if(CFG.yt_connected){clearInterval(iv);st.textContent="YouTube terhubung. Menarik data…";ytSync(st)}else if(Date.now()-t0>300000)clearInterval(iv)},3000)});
+$("#yt-sync").addEventListener("click",e=>ytSync($("#s-yt"),e.currentTarget));
+$("#yt-off").addEventListener("click",async()=>{if(await saveConfig({clear_yt:true},$("#s-yt")))$("#s-yt").textContent="Sambungan YouTube diputus. Data yang sudah ditarik tetap ada."});
+document.addEventListener("click",e=>{const b=e.target.closest("[data-ytsync]");if(b)ytSync($("#s-import")||null,b)});
 $("#f-profile").addEventListener("submit",async e=>{e.preventDefault();await saveConfig({},$("#s-profile"))});
 $("#pf-export").addEventListener("click",async e=>{const t=JSON.stringify(readProfile(),null,2),b=e.currentTarget;$("#pf-json").hidden=false;$("#pf-json").value=t;try{await navigator.clipboard.writeText(t);b.textContent="Tersalin"}catch{$("#pf-json").select();b.textContent="Tekan Ctrl+C"}});
 $("#pf-import").addEventListener("click",()=>{const ta=$("#pf-json");if(ta.hidden){ta.hidden=false;ta.value="";ta.placeholder="Tempel profil JSON di sini, lalu klik Tempel profil lagi";ta.focus();return}
@@ -740,5 +790,6 @@ const RENDER={ideas:d=>d?.ideas?.length&&(renderIdeas(d.ideas),true),script:d=>d
 async function loadLast(){const j=await api("/api/last");if(!j||j.error)return;LAST=j;
   for(const [k,f] of Object.entries(RENDER)){const r=LAST[k];if(!r)continue;try{if(f(r.data)){const st=$("#s-"+k);if(st){st.className="status";st.textContent="Hasil terakhir, dibuat "+new Date(r.at).toLocaleString("id-ID",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})+". Tidak memakai saldo lagi."}}}catch{}}
   $("#cfg-spent").textContent=spentText()}
-(async()=>{await loadConfig();await loadData();await loadLast();show(store.get("tab","dash"))})();
+(async()=>{await loadConfig();await loadData();await loadLast();show(store.get("tab","dash"));
+  if(CFG.yt_connected&&Date.now()/1000-(CFG.yt_synced||0)>6*3600)ytSync(null,null)})();
 </script>

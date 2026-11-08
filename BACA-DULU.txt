@@ -1,4 +1,4 @@
-TERRA STUDIO 1.6.1 (Windows 10/11, 64-bit)
+TERRA STUDIO 1.7 (Windows 10/11, 64-bit)
 =========================================
 
 Aplikasi PC untuk channel YouTube: ide video dan kalender, naskah per babak,
@@ -92,7 +92,28 @@ Kalau punya file profil .json (misalnya profil-terra.json), buka dengan
 Notepad, salin semua isinya, lalu di Pengaturan klik "Tempel profil (JSON)",
 tempel, dan klik tombol itu sekali lagi.
 
-IMPOR DATA YOUTUBE STUDIO
+SAMBUNG LANGSUNG KE YOUTUBE (baru di 1.7)
+Angka channel ditarik otomatis tiap aplikasi dibuka, tanpa ekspor manual.
+Langkah sekali saja di Google Cloud (gratis, sekitar 15 menit):
+1. Buka https://console.cloud.google.com dengan akun Google pemilik
+   channel. Buat project baru, misalnya "Terra Studio".
+2. Menu APIs & Services > Library: aktifkan (Enable) "YouTube Data API v3"
+   dan "YouTube Analytics API".
+3. Buka Google Auth Platform (https://console.cloud.google.com/auth/overview),
+   klik Get started. Nama aplikasi: Terra Studio, pilih External, isi email.
+4. Menu Audience: klik "Publish app" supaya izinnya tidak kedaluwarsa
+   tiap 7 hari.
+5. Menu Clients: Create client, jenis "Desktop app". Salin Client ID dan
+   Client secret.
+6. Di aplikasi: Pengaturan > YouTube Studio, tempel keduanya, klik
+   "Simpan dan hubungkan YouTube". Browser membuka login Google: pilih akun
+   channel, klik Continue pada peringatan "Google hasn't verified this app"
+   (wajar, karena aplikasinya milik Anda sendiri), lalu izinkan.
+Yang ditarik: views harian, jam tonton, subscriber, pendapatan, dan angka
+per video. Impressions dan CTR tidak tersedia lewat jalur ini, jadi tetap
+diambil dari ekspor Studio terakhir.
+
+IMPOR DATA YOUTUBE STUDIO (cara manual)
 1. YouTube Studio > Analytics > Advanced mode (Lihat selengkapnya).
 2. Pilih rentang tanggal (misalnya Lifetime), tab Content.
 3. Klik ikon Export (panah ke bawah) > Comma-separated values (.csv).
@@ -102,7 +123,8 @@ IMPOR DATA YOUTUBE STUDIO
 
 DI MANA DATA DISIMPAN
 %APPDATA%\TerraStudio\
-  config.json  = model, profil, dan API key Claude/Gemini/ElevenLabs (terenkripsi dengan pengaman
+  config.json  = model, profil, API key Claude/Gemini/ElevenLabs, dan izin
+                 YouTube (terenkripsi dengan pengaman
                  Windows, hanya bisa dibuka akun Windows Anda)
   data.json    = data Studio yang sudah diimpor
   last.json    = hasil AI terakhir, rencana kalender, dan catatan biaya
@@ -112,7 +134,8 @@ Pengaturan > Backup > "Simpan backup" menyimpan file .json ke folder Downloads
 (profil, data Studio, kalender, hasil AI; API key tidak ikut). Simpan file itu
 di flashdisk atau Google Drive. Untuk memulihkan: "Pulihkan dari backup".
 Data hanya dikirim ke layanan yang Anda pakai: Anthropic atau Google saat
-Generate, dan ElevenLabs saat membuat voice over.
+Generate, ElevenLabs saat membuat voice over, dan Google saat menarik data
+YouTube.
 
 MENUTUP APLIKASI
 Tutup jendelanya. Aplikasi berhenti sendiri sekitar 3 menit kemudian.

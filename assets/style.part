@@ -251,4 +251,6 @@ form.tool{align-content:start}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;min-height:0;line-height:1;white-space:nowrap;align-self:start}
 .btn.ghost{height:40px}
 .btn.icon{width:40px;padding:0}
+#yt-setup summary{cursor:pointer;font-weight:600;min-height:40px;display:flex;align-items:center;transition:color .18s var(--ease)}
+@media (hover:hover){#yt-setup summary:hover{color:var(--accent)}}
 </style>

@@ -55,6 +55,18 @@ struct Config {
     eleven_voice: String,
     eleven_voice_name: String,
     eleven_model: String,
+    /// YouTube (Google OAuth "Desktop app" client the user creates in Google Cloud).
+    yt_client_id: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
+    yt_secret: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
+    yt_secret_dpapi: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
+    yt_refresh: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
+    yt_refresh_dpapi: String,
+    yt_channel: String,
+    yt_synced: u64,
     model: String,
     effort: String,
     profile: Value,
@@ -74,6 +86,13 @@ impl Default for Config {
             eleven_voice: String::new(),
             eleven_voice_name: String::new(),
             eleven_model: String::new(),
+            yt_client_id: String::new(),
+            yt_secret: String::new(),
+            yt_secret_dpapi: String::new(),
+            yt_refresh: String::new(),
+            yt_refresh_dpapi: String::new(),
+            yt_channel: String::new(),
+            yt_synced: 0,
             model: MODELS[1].into(),
             effort: "medium".into(),
             profile: json!({}),
@@ -107,7 +126,8 @@ fn load_config(dir: &Path) -> Config {
         .and_then(|s| serde_json::from_str(&s).ok())
         .unwrap_or_default();
     // A key still in plaintext comes from an older version or a failed encryption.
-    let had_plain = !c.api_key.is_empty() || !c.gemini_key.is_empty() || !c.eleven_key.is_empty();
+    let had_plain = !c.api_key.is_empty() || !c.gemini_key.is_empty() || !c.eleven_key.is_empty()
+        || !c.yt_secret.is_empty() || !c.yt_refresh.is_empty();
     let open = |enc: &str| from_hex(enc).and_then(|b| secret::unprotect(&b)).unwrap_or_default();
     if !c.api_key_dpapi.is_empty() {
         c.api_key = open(&c.api_key_dpapi);
@@ -117,6 +137,12 @@ fn load_config(dir: &Path) -> Config {
     }
     if !c.eleven_key_dpapi.is_empty() {
         c.eleven_key = open(&c.eleven_key_dpapi);
+    }
+    if !c.yt_secret_dpapi.is_empty() {
+        c.yt_secret = open(&c.yt_secret_dpapi);
+    }
+    if !c.yt_refresh_dpapi.is_empty() {
+        c.yt_refresh = open(&c.yt_refresh_dpapi);
     }
     if had_plain && secret::AVAILABLE {
         let _ = save_config(dir, &c);
@@ -130,6 +156,21 @@ fn save_config(dir: &Path, c: &Config) -> Result<(), String> {
     disk.api_key_dpapi.clear();
     disk.gemini_key_dpapi.clear();
     disk.eleven_key_dpapi.clear();
+    disk.yt_secret_dpapi.clear();
+    disk.yt_refresh_dpapi.clear();
+    for (plain, enc) in [(&c.yt_secret, &mut disk.yt_secret_dpapi), (&c.yt_refresh, &mut disk.yt_refresh_dpapi)] {
+        if !plain.is_empty() {
+            if let Some(e) = secret::protect(plain.as_bytes()) {
+                *enc = to_hex(&e);
+            }
+        }
+    }
+    if !disk.yt_secret_dpapi.is_empty() {
+        disk.yt_secret.clear();
+    }
+    if !disk.yt_refresh_dpapi.is_empty() {
+        disk.yt_refresh.clear();
+    }
     if !c.eleven_key.is_empty() {
         if let Some(enc) = secret::protect(c.eleven_key.as_bytes()) {
             disk.eleven_key_dpapi = to_hex(&enc);
@@ -284,6 +325,18 @@ fn main() {
     }
 }
 
+/// Opens a URL in the user's normal browser (Google sign-in should not run inside the app window).
+fn open_browser(url: &str) {
+    #[cfg(windows)]
+    {
+        let _ = Command::new("rundll32").args(["url.dll,FileProtocolHandler", url]).spawn();
+    }
+    #[cfg(not(windows))]
+    {
+        let _ = Command::new("xdg-open").arg(url).spawn();
+    }
+}
+
 fn ping(port: u16) -> bool {
     ureq::AgentBuilder::new()
         .timeout(Duration::from_millis(800))
@@ -433,6 +486,11 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
                     "eleven_voice_name": c.eleven_voice_name,
                     "eleven_model": c.eleven_model,
                     "audio_dir": eleven::out_dir(dir).display().to_string(),
+                    "yt_client_id": c.yt_client_id,
+                    "has_yt_secret": !c.yt_secret.is_empty(),
+                    "yt_connected": !c.yt_refresh.is_empty(),
+                    "yt_channel": c.yt_channel,
+                    "yt_synced": c.yt_synced,
                     "key_hint": hint,
                     "model": c.model,
                     "effort": c.effort,
@@ -449,6 +507,16 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
             let mut c = cfg.lock().unwrap();
             if v["clear_key"].as_bool() == Some(true) {
                 c.api_key.clear();
+            }
+            if v["clear_yt"].as_bool() == Some(true) {
+                c.yt_refresh.clear();
+                c.yt_channel.clear();
+            }
+            if let Some(x) = v["yt_client_id"].as_str().map(str::trim).filter(|x| x.len() < 200 && x.ends_with(".apps.googleusercontent.com")) {
+                c.yt_client_id = x.to_string();
+            }
+            if let Some(x) = v["yt_secret"].as_str().map(str::trim).filter(|x| !x.is_empty() && x.len() < 200) {
+                c.yt_secret = x.to_string();
             }
             if v["clear_eleven"].as_bool() == Some(true) {
                 c.eleven_key.clear();
@@ -556,6 +624,51 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
             match eleven::speak(&c, dir, v["title"].as_str().unwrap_or("voice over"), &parts, &voice) {
                 Ok(out) => respond_json(req, 200, out),
                 Err(e) => respond_json(req, 502, json!({"error": e})),
+            }
+        }
+        (Method::Post, "/api/yt/connect") => {
+            let c = cfg.lock().unwrap().clone();
+            match youtube::auth_url(&c, port) {
+                Ok(url) => {
+                    open_browser(&url);
+                    respond_json(req, 200, json!({"url": url}))
+                }
+                Err(e) => respond_json(req, 400, json!({"error": e})),
+            }
+        }
+        (Method::Get, "/oauth/callback") => {
+            let q = req.url().split_once('?').map(|(_, q)| q.to_string()).unwrap_or_default();
+            let get = |k: &str| q.split('&').find_map(|kv| kv.split_once('=').filter(|(a, _)| *a == k).map(|(_, b)| percent_decode(b)));
+            let result = match (get("code"), get("state"), get("error")) {
+                (_, _, Some(err)) => Err(format!("Google menolak izin ({err}).")),
+                (Some(code), Some(state), None) => {
+                    let c = cfg.lock().unwrap().clone();
+                    youtube::finish(&c, port, &code, &state).and_then(|refresh| {
+                        let mut c = cfg.lock().unwrap();
+                        c.yt_refresh = refresh;
+                        save_config(dir, &c)
+                    })
+                }
+                _ => Err("Balasan Google tidak lengkap. Coba hubungkan lagi.".into()),
+            };
+            let (title, msg) = match &result {
+                Ok(()) => ("Terhubung", "YouTube sudah terhubung ke Terra Studio. Tutup tab ini dan kembali ke aplikasi, lalu klik Tarik data sekarang.".to_string()),
+                Err(e) => ("Gagal", e.clone()),
+            };
+            let html = format!("<!doctype html><meta charset=utf-8><title>Terra Studio</title><body style=\"font:18px system-ui;margin:15vh auto;max-width:520px;padding:0 16px;color:#1C1F1A\"><h1 style=\"font-size:24px\">{title}</h1><p>{}</p></body>", msg.replace('<', "&lt;"));
+            respond(req, 200, "text/html; charset=utf-8", html.into_bytes())
+        }
+        (Method::Post, "/api/yt/sync") => {
+            let c = cfg.lock().unwrap().clone();
+            match youtube::sync(&c, dir) {
+                Ok((channel, summary)) => {
+                    let mut c = cfg.lock().unwrap();
+                    c.yt_channel = channel;
+                    c.yt_synced = now();
+                    let _ = save_config(dir, &c);
+                    respond_json(req, 200, summary)
+                }
+                Err(e) => respond_json(req, 400, json!({"error": e})),
             }
         }
         (Method::Post, "/api/open-folder") => {
@@ -1456,5 +1569,294 @@ mod tests {
         assert_eq!(percent_decode("a%20"), "a ");
         assert_eq!(percent_decode("%e2%82"), "\u{fffd}");
         assert_eq!(percent_decode("x%%é"), "x%%é");
+    }
+}
+
+/// YouTube Analytics through Google OAuth. The user creates an OAuth client of type
+/// "Desktop app" in their own Google Cloud project; Google allows any loopback port
+/// for that type, so the redirect lands on this app's own local server.
+mod youtube {
+    use super::*;
+    use std::collections::hash_map::RandomState;
+    use std::hash::{BuildHasher, Hasher};
+
+    const SCOPES: &str = "https://www.googleapis.com/auth/youtube.readonly https://www.googleapis.com/auth/yt-analytics.readonly https://www.googleapis.com/auth/yt-analytics-monetary.readonly";
+    static STATE: Mutex<String> = Mutex::new(String::new());
+
+    fn agent() -> ureq::Agent {
+        ureq::AgentBuilder::new()
+            .timeout_connect(Duration::from_secs(15))
+            .timeout(Duration::from_secs(60))
+            .try_proxy_from_env(true)
+            .build()
+    }
+
+    fn random_hex() -> String {
+        (0..2)
+            .map(|i| {
+                let mut h = RandomState::new().build_hasher();
+                h.write_u64(now() ^ i);
+                format!("{:016x}", h.finish())
+            })
+            .collect()
+    }
+
+    fn redirect(port: u16) -> String {
+        format!("http://127.0.0.1:{port}/oauth/callback")
+    }
+
+    fn enc(s: &str) -> String {
+        s.bytes()
+            .map(|b| match b {
+                b'A'..=b'Z' | b'a'..=b'z' | b'0'..=b'9' | b'-' | b'_' | b'.' | b'~' => (b as char).to_string(),
+                _ => format!("%{b:02X}"),
+            })
+            .collect()
+    }
+
+    fn friendly(code: u16, body: &str) -> String {
+        let v: Value = serde_json::from_str(body).unwrap_or(Value::Null);
+        let msg = v["error"]["message"].as_str().or(v["error_description"].as_str()).or(v["error"].as_str()).unwrap_or("").to_string();
+        let low = msg.to_lowercase();
+        match code {
+            0 => format!("Tidak bisa terhubung ke Google. Periksa koneksi internet. ({body})"),
+            400 if low.contains("invalid_grant") || low.contains("expired") || low.contains("revoked") => {
+                "Izin YouTube sudah kedaluwarsa atau dicabut. Klik Hubungkan YouTube lagi.".into()
+            }
+            401 => "Client ID atau Client secret ditolak Google. Periksa lagi di Pengaturan.".into(),
+            403 if low.contains("has not been used") || low.contains("disabled") => {
+                "API YouTube belum diaktifkan di Google Cloud. Aktifkan YouTube Data API v3 dan YouTube Analytics API (langkah 2).".into()
+            }
+            403 => format!("Google menolak akses: {msg}"),
+            _ => format!("Google gagal (kode {code}): {msg}"),
+        }
+    }
+
+    fn post_form(url: &str, form: &[(&str, &str)]) -> Result<Value, String> {
+        match agent().post(url).send_form(form) {
+            Ok(r) => r.into_json().map_err(|e| friendly(0, &e.to_string())),
+            Err(ureq::Error::Status(code, r)) => Err(friendly(code, &r.into_string().unwrap_or_default())),
+            Err(e) => Err(friendly(0, &e.to_string())),
+        }
+    }
+
+    fn get(token: &str, url: &str) -> Result<Value, (u16, String)> {
+        match agent().get(url).set("Authorization", &format!("Bearer {token}")).call() {
+            Ok(r) => r.into_json().map_err(|e| (0, friendly(0, &e.to_string()))),
+            Err(ureq::Error::Status(code, r)) => Err((code, friendly(code, &r.into_string().unwrap_or_default()))),
+            Err(e) => Err((0, friendly(0, &e.to_string()))),
+        }
+    }
+
+    pub fn auth_url(c: &Config, port: u16) -> Result<String, String> {
+        if c.yt_client_id.is_empty() || c.yt_secret.is_empty() {
+            return Err("Isi dan simpan dulu Client ID dan Client secret dari Google Cloud.".into());
+        }
+        let state = random_hex();
+        *STATE.lock().unwrap() = state.clone();
+        Ok(format!(
+            "https://accounts.google.com/o/oauth2/v2/auth?client_id={}&redirect_uri={}&response_type=code&scope={}&access_type=offline&prompt=consent&state={state}",
+            enc(&c.yt_client_id),
+            enc(&redirect(port)),
+            enc(SCOPES)
+        ))
+    }
+
+    /// Exchanges the one-time code for a long-lived refresh token.
+    pub fn finish(c: &Config, port: u16, code: &str, state: &str) -> Result<String, String> {
+        {
+            let mut s = STATE.lock().unwrap();
+            if s.is_empty() || *s != state {
+                return Err("Sesi login tidak cocok. Klik Hubungkan YouTube lagi dari aplikasi.".into());
+            }
+            s.clear();
+        }
+        let r = redirect(port);
+        let v = post_form(
+            "https://oauth2.googleapis.com/token",
+            &[("code", code), ("client_id", &c.yt_client_id), ("client_secret", &c.yt_secret), ("redirect_uri", &r), ("grant_type", "authorization_code")],
+        )?;
+        v["refresh_token"].as_str().map(String::from).ok_or_else(|| "Google tidak memberi izin jangka panjang. Klik Hubungkan YouTube lagi.".into())
+    }
+
+    fn access_token(c: &Config) -> Result<String, String> {
+        if c.yt_refresh.is_empty() {
+            return Err("YouTube belum terhubung. Klik Hubungkan YouTube dulu.".into());
+        }
+        let v = post_form(
+            "https://oauth2.googleapis.com/token",
+            &[("refresh_token", &c.yt_refresh), ("client_id", &c.yt_client_id), ("client_secret", &c.yt_secret), ("grant_type", "refresh_token")],
+        )?;
+        v["access_token"].as_str().map(String::from).ok_or_else(|| "Google tidak memberi token akses.".into())
+    }
+
+    /// Days since 1970-01-01 -> "YYYY-MM-DD" (proleptic Gregorian).
+    pub fn ymd(days: i64) -> String {
+        let z = days + 719_468;
+        let era = z.div_euclid(146_097);
+        let doe = z - era * 146_097;
+        let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365;
+        let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
+        let mp = (5 * doy + 2) / 153;
+        let d = doy - (153 * mp + 2) / 5 + 1;
+        let m = if mp < 10 { mp + 3 } else { mp - 9 };
+        let y = yoe + era * 400 + i64::from(m <= 2);
+        format!("{y:04}-{m:02}-{d:02}")
+    }
+
+    /// ISO 8601 duration "PT1H2M3S" -> seconds.
+    pub fn iso_secs(s: &str) -> u64 {
+        let (mut total, mut n) = (0u64, 0u64);
+        for ch in s.chars() {
+            match ch {
+                '0'..='9' => n = n * 10 + ch.to_digit(10).unwrap() as u64,
+                'H' => { total += n * 3600; n = 0 }
+                'M' => { total += n * 60; n = 0 }
+                'S' => { total += n; n = 0 }
+                'D' => { total += n * 86_400; n = 0 }
+                _ => n = 0,
+            }
+        }
+        total
+    }
+
+    const YTA: &str = "https://youtubeanalytics.googleapis.com/v2/reports?ids=channel%3D%3DMINE&currency=IDR";
+
+    /// Runs a report with revenue; if the channel or token has no revenue access, runs it again without.
+    fn report(token: &str, q: &str, with_rev: &str, without_rev: &str) -> Result<(Value, bool), String> {
+        match get(token, &format!("{YTA}&{q}&metrics={}", enc(with_rev))) {
+            Ok(v) => Ok((v, true)),
+            Err((403, _)) => get(token, &format!("{YTA}&{q}&metrics={}", enc(without_rev))).map(|v| (v, false)).map_err(|e| e.1),
+            Err(e) => Err(e.1),
+        }
+    }
+
+    fn col(v: &Value, name: &str) -> Option<usize> {
+        v["columnHeaders"].as_array()?.iter().position(|h| h["name"] == name)
+    }
+
+    /// Pulls channel, daily views, totals and per-video stats into data.json.
+    pub fn sync(c: &Config, dir: &Path) -> Result<(String, Value), String> {
+        let token = access_token(c)?;
+        let ch = get(&token, "https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&mine=true").map_err(|e| e.1)?;
+        let ch = ch["items"].get(0).cloned().ok_or("Akun Google ini tidak punya channel YouTube. Login dengan akun pemilik channel.")?;
+        let channel = ch["snippet"]["title"].as_str().unwrap_or("").to_string();
+        let start = ch["snippet"]["publishedAt"].as_str().and_then(|s| s.get(..10)).unwrap_or("2015-01-01").to_string();
+        let end = ymd((now() / 86_400) as i64 - 1);
+        let range = format!("startDate={start}&endDate={end}");
+
+        let daily = get(&token, &format!("{YTA}&{range}&metrics=views&dimensions=day&sort=day")).map_err(|e| e.1)?;
+        let daily: Vec<Value> = daily["rows"].as_array().into_iter().flatten().map(|r| json!([r[0], r[1].as_f64().unwrap_or(0.0) as i64])).collect();
+
+        let (tot, has_rev) = report(
+            &token,
+            &range,
+            "views,estimatedMinutesWatched,subscribersGained,subscribersLost,estimatedRevenue",
+            "views,estimatedMinutesWatched,subscribersGained,subscribersLost",
+        )?;
+        let t = tot["rows"].get(0).cloned().unwrap_or(json!([0, 0, 0, 0, 0]));
+        let f = |i: usize| t.get(i).and_then(Value::as_f64).unwrap_or(0.0);
+
+        let (vids, _) = report(
+            &token,
+            &format!("{range}&dimensions=video&sort=-views&maxResults=200"),
+            "views,estimatedMinutesWatched,subscribersGained,estimatedRevenue",
+            "views,estimatedMinutesWatched,subscribersGained",
+        )?;
+        let rows: Vec<Value> = vids["rows"].as_array().cloned().unwrap_or_default();
+        let ids: Vec<String> = rows.iter().filter_map(|r| r[0].as_str().map(String::from)).collect();
+        let mut meta: std::collections::HashMap<String, (String, String, u64)> = Default::default();
+        for batch in ids.chunks(50) {
+            let v = get(&token, &format!("https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id={}", batch.join(","))).map_err(|e| e.1)?;
+            for it in v["items"].as_array().into_iter().flatten() {
+                meta.insert(
+                    it["id"].as_str().unwrap_or("").into(),
+                    (
+                        it["snippet"]["title"].as_str().unwrap_or("").into(),
+                        it["snippet"]["publishedAt"].as_str().and_then(|s| s.get(..10)).unwrap_or("").into(),
+                        iso_secs(it["contentDetails"]["duration"].as_str().unwrap_or("")),
+                    ),
+                );
+            }
+        }
+
+        let _guard = DATA_JSON_LOCK.lock().unwrap();
+        let old = load_data(dir);
+        // The Analytics API has no impressions or CTR; keep them from the last Studio export.
+        let old_by_title: std::collections::HashMap<String, Value> = old["videos"]
+            .as_array()
+            .into_iter()
+            .flatten()
+            .filter_map(|v| v["t"].as_str().map(|t| (t.to_string(), v.clone())))
+            .collect();
+        let (iv, im, is, ir) = (col(&vids, "views"), col(&vids, "estimatedMinutesWatched"), col(&vids, "subscribersGained"), col(&vids, "estimatedRevenue"));
+        let num_at = |r: &Value, i: Option<usize>| i.and_then(|i| r.get(i)).and_then(Value::as_f64).unwrap_or(0.0);
+        let videos: Vec<Value> = rows
+            .iter()
+            .filter_map(|r| {
+                let (title, date, dur) = meta.get(r[0].as_str()?)?.clone();
+                let mut v = json!({
+                    "t": title, "d": date, "dur": dur,
+                    "v": num_at(r, iv) as i64,
+                    "h": (num_at(r, im) / 60.0 * 10.0).round() / 10.0,
+                    "s": num_at(r, is) as i64,
+                });
+                if ir.is_some() {
+                    v["rev"] = json!(num_at(r, ir));
+                }
+                if let Some(o) = old_by_title.get(&title) {
+                    for k in ["imp", "ctr"] {
+                        if !o[k].is_null() {
+                            v[k] = o[k].clone();
+                        }
+                    }
+                }
+                Some(v)
+            })
+            .collect();
+
+        let mut totals = json!({
+            "views": f(0) as i64,
+            "hours": (f(1) / 60.0 * 10.0).round() / 10.0,
+            "subs": (f(2) - f(3)) as i64,
+        });
+        if has_rev {
+            totals["revenue"] = json!(f(4));
+        }
+        for k in ["imp", "ctr"] {
+            if !old["totals"][k].is_null() {
+                totals[k] = old["totals"][k].clone();
+            }
+        }
+        let mut data = if old.is_object() { old } else { json!({}) };
+        data["daily"] = json!(daily);
+        data["videos"] = json!(videos);
+        data["totals"] = totals;
+        data["currency"] = json!("IDR");
+        data["range"] = json!(format!("{start} sampai {end}"));
+        data["imported_at"] = json!(now() * 1000);
+        data["source"] = json!("youtube-api");
+        let bytes = serde_json::to_vec(&data).map_err(|e| e.to_string())?;
+        write_atomic(&dir.join("data.json"), &bytes).map_err(|e| format!("Gagal menyimpan data: {e}"))?;
+        let summary = json!({"channel": channel, "videos": videos.len(), "days": daily.len(), "revenue": has_rev, "range": data["range"]});
+        Ok((channel, summary))
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+        #[test]
+        fn dates_and_durations() {
+            assert_eq!(ymd(0), "1970-01-01");
+            assert_eq!(ymd(20_765), "2026-11-08");
+            assert_eq!(ymd(11_016), "2000-02-29");
+            assert_eq!(iso_secs("PT8M36S"), 516);
+            assert_eq!(iso_secs("PT1H0M5S"), 3605);
+            assert_eq!(iso_secs("PT59S"), 59);
+        }
+        #[test]
+        fn url_encoding() {
+            assert_eq!(enc("http://127.0.0.1:47815/oauth/callback"), "http%3A%2F%2F127.0.0.1%3A47815%2Foauth%2Fcallback");
+        }
     }
 }
