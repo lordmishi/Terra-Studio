@@ -1,8 +1,15 @@
 TERRA STUDIO 1.8 (Windows 10/11, 64-bit)
 =======================================
 
+CARA PASANG
+Paling mudah: klik dua kali TerraStudio-Setup-1.8.0.exe, lalu Berikutnya
+dan Pasang. Tidak perlu izin admin. Shortcut "Terra Studio" muncul di
+Start Menu dan desktop. Uninstall lewat Settings > Apps.
+Versi zip (tanpa install): klik "Extract all" dulu, jangan jalankan
+TerraStudio.exe langsung dari dalam zip.
+
 UPDATE KE VERSI BARU
-Cukup ekstrak zip baru lalu buka TerraStudio.exe. Kalau versi lama masih
+Jalankan installer versi baru, atau ekstrak zip baru lalu buka TerraStudio.exe. Kalau versi lama masih
 jalan, versi baru otomatis menutupnya. Data dan pengaturan tidak hilang
 (tersimpan di %APPDATA%\TerraStudio).
 
