@@ -1,4 +1,4 @@
-TERRA STUDIO 1.2 (Windows 10/11, 64-bit)
+TERRA STUDIO 1.3 (Windows 10/11, 64-bit)
 =========================================
 
 Aplikasi PC untuk channel YouTube: ide video dan kalender, naskah per babak,
@@ -16,8 +16,20 @@ CARA MULAI
      sudah ada di PC). Tidak perlu install apa pun.
 3. Buka menu Pengaturan.
 
-API KEY ANTHROPIC (wajib untuk fitur AI)
-1. Buka https://console.anthropic.com dan daftar/masuk.
+DUA CARA MEMAKAI AI
+A. Tanpa API key (pakai langganan claude.ai, tanpa biaya tambahan)
+   Klik tombol AI mana saja. Aplikasi menyiapkan perintah:
+   1. Klik "Salin perintah".
+   2. Buka claude.ai, mulai chat baru, tempel, kirim.
+   3. Salin seluruh jawaban Claude, tempel di kotak "Jawaban dari claude.ai",
+      lalu klik "Pakai jawaban". Hasilnya tampil dan tersimpan.
+B. Dengan API key (otomatis, bayar per pemakaian, terpisah dari langganan)
+   Ikuti langkah di bawah. Untuk kembali ke cara A, klik "Hapus API key"
+   di Pengaturan.
+
+API KEY ANTHROPIC (opsional, untuk cara B)
+1. Buka https://platform.claude.com dan daftar/masuk (akun terpisah dari
+   langganan claude.ai).
 2. Menu Billing: isi saldo (kartu kredit/debit). Minimal biasanya 5 USD.
 3. Menu API Keys: Create Key, salin kuncinya (diawali sk-ant-).
 4. Tempel di Pengaturan > API key, klik Simpan, lalu klik "Uji koneksi".

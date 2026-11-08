@@ -289,6 +289,9 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
                 Err(e) => return respond_json(req, 400, json!({"error": e})),
             };
             let mut c = cfg.lock().unwrap();
+            if v["clear_key"].as_bool() == Some(true) {
+                c.api_key.clear();
+            }
             if let Some(k) = v["api_key"].as_str() {
                 let k = k.trim();
                 if !k.is_empty() {

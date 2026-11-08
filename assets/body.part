@@ -9,7 +9,7 @@
   </header>
 
   <div class="banner" id="banner-key" hidden>
-    <strong>Generator AI belum aktif.</strong> Masukkan API key Anthropic di tab Pengaturan. <button type="button" class="btn ghost" data-goto="settings">Buka Pengaturan</button>
+    <span><strong>Mode langganan claude.ai.</strong> Tombol AI akan menyiapkan perintah untuk Anda salin ke claude.ai, tanpa biaya tambahan. Supaya otomatis, isi API key di Pengaturan (bayar per pemakaian).</span> <button type="button" class="btn ghost" data-goto="settings">Buka Pengaturan</button>
   </div>
 
   <nav class="tabs" role="tablist" aria-label="Alat">
@@ -177,7 +177,7 @@
     <div class="grid2">
       <form class="tool" id="f-key">
         <h2>Koneksi AI</h2>
-        <p class="hint">Generator memakai API Anthropic (Claude) dengan kunci milik Anda sendiri. Biaya ditagih Anthropic per pemakaian. Buat kunci di <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com</a>, isi saldo, lalu tempel di sini.</p>
+        <p class="hint">Dua cara memakai AI. <strong>Tanpa API key</strong>: tiap tombol AI menyiapkan perintah untuk disalin ke claude.ai, memakai langganan Anda tanpa biaya tambahan. <strong>Dengan API key</strong>: hasil keluar otomatis, tapi ditagih Anthropic per pemakaian dan terpisah dari langganan. Buat kunci di <a href="https://platform.claude.com/settings/keys" target="_blank" rel="noopener">platform.claude.com</a>, isi saldo, lalu tempel di sini.</p>
         <label for="cfg-key">API key<input id="cfg-key" type="password" autocomplete="off" placeholder="sk-ant-..."></label>
         <p class="note" id="cfg-key-hint"></p>
         <label for="cfg-model">Model
@@ -192,7 +192,7 @@
         </label>
         <p class="note">Perkiraan biaya kasar untuk satu kali generate dengan kedalaman Sedang. Setelah tiap generate, biaya perkiraannya muncul di bawah tombol. Biaya asli tercatat di console.anthropic.com.</p>
         <p class="note" id="cfg-spent"></p>
-        <div class="chips"><button class="btn" type="submit">Simpan</button><button class="btn ghost" type="button" id="cfg-test">Uji koneksi</button></div>
+        <div class="chips"><button class="btn" type="submit">Simpan</button><button class="btn ghost" type="button" id="cfg-test">Uji koneksi</button><button class="btn ghost" type="button" id="cfg-clear">Hapus API key</button></div>
         <div class="status" id="s-key" role="status"></div>
       </form>
 
@@ -225,7 +225,7 @@
   </section>
 
   <input type="file" id="file-import" accept=".zip,.csv" multiple hidden>
-  <footer>Terra Studio · versi 1.1 · Generator memakai Claude dari Anthropic dengan API key Anda.</footer>
+  <footer>Terra Studio · versi 1.3 · Generator memakai Claude dari Anthropic dengan API key Anda.</footer>
 </div>
 
 <script>
@@ -270,7 +270,29 @@ let LAST={};
 async function remember(key,data){LAST[key]={at:Date.now(),data};await api("/api/last",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({key,value:LAST[key]})})}
 function spentText(){const s=LAST._spent?.data;const m=new Date().toISOString().slice(0,7);return s&&s.month===m?`Perkiraan biaya AI bulan ini: Rp${nf(Math.round(s.rp))} dari ${s.n} kali generate.`:"Belum ada biaya AI bulan ini."}
 async function addSpent(rp){const m=new Date().toISOString().slice(0,7);let s=LAST._spent?.data;if(!s||s.month!==m)s={month:m,rp:0,n:0};s.rp+=rp;s.n+=1;await remember("_spent",s);const el=$("#cfg-spent");if(el)el.textContent=spentText()}
+/* Without an API key, the prompt is copied to claude.ai (the user's own
+   subscription) and the reply is pasted back. */
+function manualAsk(statusEl,prompt){
+  const old=statusEl.nextElementSibling;if(old&&old.classList.contains("manual"))old.remove();
+  const box=document.createElement("div");box.className="card manual";const id="mp"+Math.random().toString(36).slice(2,8);
+  box.innerHTML=`<span class="layer">Pakai langganan claude.ai</span>
+  <ol class="steps"><li>Salin perintah di bawah.</li><li>Buka <a href="https://claude.ai/new" target="_blank" rel="noopener">claude.ai</a>, mulai chat baru, tempel, lalu kirim.</li><li>Salin seluruh jawaban Claude, tempel di kotak paling bawah, lalu klik <strong>Pakai jawaban</strong>.</li></ol>
+  <div class="copybox" style="margin-top:52px"><button type="button" class="btn ghost" data-copy="${id}" data-label="Salin perintah">Salin perintah</button><pre id="${id}" style="max-height:160px">${esc(prompt)}</pre></div>
+  <label style="margin-top:12px">Jawaban dari claude.ai<textarea rows="5" placeholder="Tempel jawaban di sini"></textarea></label>
+  <div class="confirm"><button type="button" class="btn" data-act="use">Pakai jawaban</button><button type="button" class="btn ghost" data-act="cancel">Batal</button></div>
+  <div class="status" role="status"></div>`;
+  statusEl.after(box);statusEl.className="status";statusEl.textContent="Menunggu jawaban dari claude.ai.";
+  return new Promise(res=>{
+    box.querySelector('[data-act="cancel"]').onclick=()=>{box.remove();statusEl.textContent="";res(null)};
+    box.querySelector('[data-act="use"]').onclick=()=>{const d=parseJSON(box.querySelector("textarea").value);const st=box.querySelector(".status");
+      if(!d){st.className="status err";st.textContent="Jawaban tidak terbaca. Pastikan seluruh jawaban Claude tersalin, dari tanda { pertama sampai } terakhir.";return}
+      box.remove();res(d)};
+  })}
 async function ask(statusEl,btn,prompt,key){
+  if(!CFG.has_key){const full=channelContext()+"\n\n"+prompt+"\n\nReply directly in this chat (not as an artifact or file) with ONLY valid JSON, no markdown fences, no text before or after.";
+    const data=await manualAsk(statusEl,full);
+    if(data){statusEl.className="status";statusEl.textContent="Selesai · "+new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})+" · lewat claude.ai · hasil tersimpan";if(key)remember(key,data).catch(()=>{})}
+    return data}
   statusEl.className="status";statusEl.textContent="Claude sedang menulis… (biasanya 20 sampai 90 detik)";btn.disabled=true;
   try{
     const j=await api("/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:channelContext()+"\n\n"+prompt+"\n\nReturn ONLY valid JSON, no markdown fences, no text before or after."})});
@@ -486,7 +508,7 @@ $("#file-import").addEventListener("change",async e=>{const files=[...e.target.f
 const PROFILE_FIELDS=[["name","#pf-name"],["lang","#pf-lang"],["length","#pf-length"],["niche","#pf-niche"],["audience","#pf-audience"],["wins","#pf-wins"],["money","#pf-money"],["style","#pf-style"]];
 async function loadConfig(){CFG=await api("/api/config");if(CFG.error){CFG={profile:{}};return}
   $("#cfg-model").value=CFG.model||"claude-sonnet-5-5";$("#cfg-effort").value=CFG.effort||"medium";
-  $("#cfg-key-hint").textContent=CFG.has_key?"Tersimpan: kunci berakhiran "+CFG.key_hint+". Kosongkan kolom untuk tetap memakai kunci ini.":"Belum ada kunci tersimpan.";
+  $("#cfg-key-hint").textContent=CFG.has_key?"Tersimpan: kunci berakhiran "+CFG.key_hint+". Kosongkan kolom untuk tetap memakai kunci ini.":"Belum ada kunci tersimpan. Tombol AI memakai salin-tempel ke claude.ai.";
   $("#banner-key").hidden=!!CFG.has_key;$("#cfg-dir").textContent=CFG.dir||"";
   const p=CFG.profile||{};PROFILE_FIELDS.forEach(([k,id])=>{if(p[k]!=null)$(id).value=p[k]});
   $("#hdr-channel").textContent=p.name?"Studio kerja · "+p.name:"Studio kerja channel YouTube"}
@@ -498,6 +520,7 @@ $("#cfg-test").addEventListener("click",async e=>{const st=$("#s-key");const k=$
   const j=await api("/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:"Reply with exactly: OK",test:true})});e.currentTarget.disabled=false;
   const rp=costRp(j.model,j.usage);if(rp)addSpent(rp).catch(()=>{});
   if(j.error){st.className="status err";st.textContent=j.error}else{st.className="status";st.textContent="Berhasil terhubung ke "+(j.model||"Claude")+"."}});
+$("#cfg-clear").addEventListener("click",async()=>{if(await saveConfig({clear_key:true},$("#s-key")))$("#s-key").textContent="API key dihapus. Tombol AI sekarang memakai salin-tempel ke claude.ai."});
 $("#f-profile").addEventListener("submit",async e=>{e.preventDefault();await saveConfig({},$("#s-profile"))});
 $("#pf-export").addEventListener("click",async e=>{const t=JSON.stringify(readProfile(),null,2),b=e.currentTarget;$("#pf-json").hidden=false;$("#pf-json").value=t;try{await navigator.clipboard.writeText(t);b.textContent="Tersalin"}catch{$("#pf-json").select();b.textContent="Tekan Ctrl+C"}});
 $("#pf-import").addEventListener("click",()=>{const ta=$("#pf-json");if(ta.hidden){ta.hidden=false;ta.value="";ta.placeholder="Tempel profil JSON di sini, lalu klik Tempel profil lagi";ta.focus();return}
