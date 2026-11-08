@@ -1,4 +1,4 @@
-TERRA STUDIO 1.3 (Windows 10/11, 64-bit)
+TERRA STUDIO 1.4 (Windows 10/11, 64-bit)
 =========================================
 
 Aplikasi PC untuk channel YouTube: ide video dan kalender, naskah per babak,
@@ -15,6 +15,18 @@ CARA MULAI
    - Aplikasi terbuka sebagai jendela sendiri (memakai Edge atau Chrome yang
      sudah ada di PC). Tidak perlu install apa pun.
 3. Buka menu Pengaturan.
+
+DASHBOARD DAN KALENDER KONTEN
+Halaman pertama berisi angka channel (setelah data Studio diimpor) dan
+kalender bulanan. Video yang sudah tayang muncul otomatis dari data Studio.
+Klik tanggal untuk menambah rencana (video, Shorts, atau post komunitas),
+klik rencana untuk mengubah status: Ide, Naskah, Rekam, Edit, Siap upload,
+Sudah tayang. Dari menu Ide & jadwal, klik "Masukkan ke kalender".
+Aplikasi tidak mengunggah video ke YouTube; upload tetap lewat YouTube Studio.
+
+GOOGLE FLOW
+Kerangka naskah menghasilkan prompt video per klip 8 detik, dan menu
+Thumbnail menghasilkan prompt gambar. Salin lalu tempel di Google Flow.
 
 DUA CARA MEMAKAI AI
 A. Tanpa API key (pakai langganan claude.ai, tanpa biaya tambahan)

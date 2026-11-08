@@ -1,28 +1,62 @@
-<div class="wrap">
-  <header class="top">
-    <div>
-      <span class="layer" id="hdr-channel">Studio kerja channel YouTube</span>
-      <h1>Terra Studio</h1>
-      <p class="sub">Cari ide, susun naskah, siapkan SEO dan thumbnail, lalu baca data channel untuk tahu apa yang perlu dibenahi. Hasil AI ditulis dalam bahasa konten channel Anda.</p>
+<div class="shell">
+  <aside class="side">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect x="2" y="2" width="28" height="28" rx="6"/><path d="M6 22h20M6 17h20M6 12h20" /><circle cx="21" cy="12" r="2.5"/></svg>
+      <div><b>Terra Studio</b><small id="hdr-channel">Studio kerja channel YouTube</small></div>
     </div>
-    <div class="meter" id="meter"></div>
-  </header>
-
+    <span class="layer side-label">Ruang kerja</span>
+    <nav class="tabs" role="tablist" aria-label="Menu" aria-orientation="vertical">
+      <button role="tab" id="t-dash" aria-selected="true" data-tab="dash"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v4h-7zM13 10h7v10h-7zM4 13h7v7H4z"/></svg><span>Dashboard</span></button>
+      <button role="tab" id="t-ideas" aria-selected="false" data-tab="ideas"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg><span>Ide &amp; jadwal</span></button>
+      <button role="tab" id="t-script" aria-selected="false" data-tab="script"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6zM14 3v5h5M9 12h7M9 16h7"/></svg><span>Kerangka naskah</span></button>
+      <button role="tab" id="t-seo" aria-selected="false" data-tab="seo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM20 20l-4-4"/></svg><span>Paket SEO</span></button>
+      <button role="tab" id="t-thumb" aria-selected="false" data-tab="thumb"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18v14H3zM3 15l5-5 4 4 3-3 6 6"/></svg><span>Thumbnail</span></button>
+      <button role="tab" id="t-growth" aria-selected="false" data-tab="growth"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg><span>Data &amp; cuan</span></button>
+      <button role="tab" id="t-settings" aria-selected="false" data-tab="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM19 12l2-1-1-3-2 .2-1.3-1.3.2-2-3-1-1 2h-1.8l-1-2-3 1 .2 2L6 7.2 4 7l-1 3 2 1v1.8l-2 1 1 3 2-.2 1.3 1.3-.2 2 3 1 1-2h1.8l1 2 3-1-.2-2 1.3-1.3 2 .2 1-3-2-1z"/></svg><span>Pengaturan</span></button>
+    </nav>
+    <p class="side-foot">Terra Studio · versi 1.4</p>
+  </aside>
+  <main class="main">
+    <header class="topbar">
+      <div><h1 id="page-title">Dashboard</h1><div class="meter" id="meter"></div></div>
+      <div class="actions"><button type="button" class="btn ghost" data-goto="growth">Perbarui data Studio</button><button type="button" class="btn" id="plan-new">Jadwalkan konten</button></div>
+    </header>
+<div class="wrap">
   <div class="banner" id="banner-key" hidden>
-    <span><strong>Mode langganan claude.ai.</strong> Tombol AI akan menyiapkan perintah untuk Anda salin ke claude.ai, tanpa biaya tambahan. Supaya otomatis, isi API key di Pengaturan (bayar per pemakaian).</span> <button type="button" class="btn ghost" data-goto="settings">Buka Pengaturan</button>
+    <span><strong>Mode langganan claude.ai.</strong> Tombol AI akan menyiapkan perintah untuk Anda salin ke claude.ai, tanpa biaya tambahan. Supaya otomatis, isi API key di Pengaturan (bayar per pemakaian).</span> <button type="button" class="btn ghost" data-goto="settings">Buka Pengaturan</button><button type="button" class="btn ghost" id="banner-close">Tutup</button>
   </div>
 
-  <nav class="tabs" role="tablist" aria-label="Alat">
-    <button role="tab" id="t-ideas" aria-selected="true" data-tab="ideas">Ide &amp; kalender</button>
-    <button role="tab" id="t-script" aria-selected="false" data-tab="script">Kerangka naskah</button>
-    <button role="tab" id="t-seo" aria-selected="false" data-tab="seo">Paket SEO</button>
-    <button role="tab" id="t-thumb" aria-selected="false" data-tab="thumb">Thumbnail</button>
-    <button role="tab" id="t-growth" aria-selected="false" data-tab="growth">Data &amp; cuan</button>
-    <button role="tab" id="t-settings" aria-selected="false" data-tab="settings">Pengaturan</button>
-  </nav>
+  <!-- DASHBOARD -->
+  <section id="p-dash" role="tabpanel" aria-labelledby="t-dash">
+    <div class="stats" id="d-stats"></div>
+    <div class="card cal-card">
+      <div class="cal-head">
+        <h2 id="cal-title">Kalender</h2>
+        <div class="cal-legend"><span class="cl pub">Sudah tayang</span><span class="cl video">Rencana video</span><span class="cl short">Rencana Shorts</span><span class="cl post">Rencana post</span></div>
+        <div class="cal-nav"><button type="button" class="btn ghost" id="cal-today">Bulan ini</button><button type="button" class="btn ghost icon" id="cal-prev" aria-label="Bulan sebelumnya">&lsaquo;</button><button type="button" class="btn ghost icon" id="cal-next" aria-label="Bulan berikutnya">&rsaquo;</button></div>
+      </div>
+      <div class="cal" id="cal" role="grid" aria-labelledby="cal-title"></div>
+      <p class="note">Klik tanggal untuk menambah rencana, klik rencana untuk mengubah statusnya. Video yang sudah tayang diambil dari data Studio yang diimpor.</p>
+    </div>
+    <div class="card" id="d-upcoming"></div>
+  </section>
+
+  <dialog id="plan-dlg" aria-labelledby="plan-dlg-title">
+    <form method="dialog" id="plan-form" class="tool">
+      <h2 id="plan-dlg-title">Rencana konten</h2>
+      <label for="pl-title">Judul<input id="pl-title" required maxlength="140"></label>
+      <div class="row2">
+        <label for="pl-date">Tanggal tayang<input id="pl-date" type="date" required></label>
+        <label for="pl-type">Jenis<select id="pl-type"><option value="video">Video panjang</option><option value="short">Shorts</option><option value="post">Post komunitas</option></select></label>
+      </div>
+      <label for="pl-status">Status<select id="pl-status"><option value="ide">Ide</option><option value="naskah">Naskah</option><option value="rekam">Rekam / voice over</option><option value="edit">Edit</option><option value="siap">Siap upload</option><option value="tayang">Sudah tayang</option></select></label>
+      <label for="pl-note">Catatan<textarea id="pl-note" rows="3"></textarea></label>
+      <div class="confirm"><button class="btn" value="save" id="pl-save">Simpan</button><button class="btn ghost" value="cancel" formnovalidate>Batal</button><button class="btn ghost danger" type="button" id="pl-del">Hapus</button><button class="btn ghost" type="button" id="pl-tools">Buka di Naskah &amp; SEO</button></div>
+    </form>
+  </dialog>
 
   <!-- IDEAS -->
-  <section class="panel" id="p-ideas" role="tabpanel" aria-labelledby="t-ideas">
+  <section class="panel" id="p-ideas" role="tabpanel" aria-labelledby="t-ideas" hidden>
     <form class="tool" id="f-ideas">
       <h2>Generator ide video</h2>
       <p class="hint">Topik dengan hook kuat, dijadwalkan otomatis. Kalau data Studio sudah diimpor, judul video lama dipakai agar tidak ada ide yang berulang, dan video terlaris dijadikan acuan.</p>
@@ -225,7 +259,9 @@
   </section>
 
   <input type="file" id="file-import" accept=".zip,.csv" multiple hidden>
-  <footer>Terra Studio · versi 1.3 · Generator memakai Claude dari Anthropic dengan API key Anda.</footer>
+  <footer>Generator memakai Claude dari Anthropic, lewat langganan claude.ai atau API key Anda.</footer>
+</div>
+  </main>
 </div>
 
 <script>
@@ -240,7 +276,7 @@ const beat=()=>fetch("/api/heartbeat",{method:"POST",headers:{"X-Terra":"1"}}).c
 
 /* tabs */
 const tabs=[...document.querySelectorAll("nav.tabs button")];
-function show(name){tabs.forEach(b=>{const on=b.dataset.tab===name;b.setAttribute("aria-selected",on);if(on)b.scrollIntoView({block:"nearest",inline:"nearest"});$("#p-"+b.dataset.tab).hidden=!on});store.set("tab",name);if(name==="growth")requestAnimationFrame(()=>{if(YT)chart()})}
+function show(name){if(!$("#p-"+name))name="dash";tabs.forEach(b=>{const on=b.dataset.tab===name;b.setAttribute("aria-selected",on);if(on){b.scrollIntoView({block:"nearest",inline:"nearest"});$("#page-title").textContent=b.textContent.trim()}$("#p-"+b.dataset.tab).hidden=!on});store.set("tab",name);if(name==="dash")renderDash();if(name==="growth")requestAnimationFrame(()=>{if(YT)chart()})}
 tabs.forEach(b=>b.addEventListener("click",()=>show(b.dataset.tab)));
 document.addEventListener("click",e=>{const g=e.target.closest("[data-goto]");if(g)show(g.dataset.goto)});
 
@@ -323,7 +359,7 @@ const fmtDate=d=>d.toLocaleDateString("id-ID",{weekday:"short",day:"numeric",mon
 function renderIdeas(list){
   const dates=schedule(list.length,+$("#ideas-freq").value,$("#ideas-start").value||new Date().toISOString().slice(0,10));
   const plan=list.map((x,i)=>`${dates[i].toISOString().slice(0,10)}  ${x.title}`).join("\n");
-  $("#o-ideas").innerHTML=head("Kalender konten")+`<div class="ideas">${list.map((x,i)=>`<article class="card"><div class="date">${fmtDate(dates[i])}</div><h3>${esc(x.title)}</h3><div class="meta"><span>${esc(x.era)}</span><span>Potensi: ${esc(x.potential)}</span></div><p><strong>Hook:</strong> ${esc(x.hook)}</p><p class="note">${esc(x.why)}</p><button type="button" class="btn ghost" data-use="${esc(x.title)}">Pakai di semua alat</button></article>`).join("")}</div>`+copyBox("Jadwal (salin ke catatan atau kalender)",plan);
+  $("#o-ideas").innerHTML=head("Kalender konten")+`<div class="ideas">${list.map((x,i)=>`<article class="card"><div class="date">${fmtDate(dates[i])}</div><h3>${esc(x.title)}</h3><div class="meta"><span>${esc(x.era)}</span><span>Potensi: ${esc(x.potential)}</span></div><p><strong>Hook:</strong> ${esc(x.hook)}</p><p class="note">${esc(x.why)}</p><div class="chips"><button type="button" class="btn ghost" data-use="${esc(x.title)}">Pakai di semua alat</button><button type="button" class="btn ghost" data-plan="${esc(x.title)}" data-date="${dates[i].toISOString().slice(0,10)}">Masukkan ke kalender</button></div></article>`).join("")}</div><div class="chips"><button type="button" class="btn ghost" id="plan-all">Masukkan semua ke kalender</button></div>`+copyBox("Jadwal (salin ke catatan atau kalender)",plan);
 }
 document.addEventListener("click",e=>{const b=e.target.closest("[data-use]");if(!b)return;["#script-topic","#seo-topic","#thumb-topic","#shorts-topic"].forEach(id=>$(id).value=b.dataset.use);$("#thumb-title").value=b.dataset.use;b.textContent="Terisi di Naskah, SEO, Thumbnail, Shorts"});
 $("#f-ideas").addEventListener("submit",async e=>{e.preventDefault();const n=Math.min(12,Math.max(3,+$("#ideas-n").value||6));
@@ -340,11 +376,13 @@ function renderScript(s){const acts=s.acts||[],total=acts.reduce((a,x)=>a+(+x.wo
   <div class="strata" aria-label="Proporsi kata per babak">${acts.map((a,i)=>`<span style="width:${((+a.words||0)/total*100).toFixed(1)}%;background:${ACT_COLORS[i%7]}" title="Babak ${i+1}: ${esc(a.words)} kata"></span>`).join("")}</div>
   ${acts.map((a,i)=>`<div class="act"><div class="num">${ROMAN[i]||i+1}<small>${esc(a.words)} kata</small></div><div style="min-width:0"><h3>${esc(a.name)}</h3><ul>${(a.beats||[]).map(b=>`<li>${esc(b)}</li>`).join("")}</ul>${a.open_loop?`<p class="note"><strong>Open loop:</strong> ${esc(a.open_loop)}</p>`:""}${a.cta?`<p class="note"><strong>CTA:</strong> ${esc(a.cta)}</p>`:""}</div></div>`).join("")}</div>
   ${(s.visuals?.length)?`<div class="card"><span class="layer">Daftar visual / B-roll</span><div class="chips" style="margin-top:8px">${s.visuals.map(v=>`<span class="chip">${esc(v)}</span>`).join("")}</div></div>`:""}
+  ${acts.some(a=>a.flow_prompts?.length)?copyBox("Prompt video untuk Google Flow (satu per klip 8 detik)",acts.map((a,i)=>(a.flow_prompts||[]).map((f,j)=>`[Babak ${i+1}.${j+1}] ${f}${s.flow_style?" Style: "+s.flow_style:""}`).join("\n\n")).filter(Boolean).join("\n\n"))+`<p class="note">Tempel satu prompt per klip di Flow. Gaya visual sudah disisipkan di tiap prompt supaya antar klip tetap konsisten.</p>`:""}
   ${(s.fact_check?.length)?`<div class="card"><span class="layer">Wajib dicek ulang sebelum rekaman</span><ul>${s.fact_check.map(v=>`<li>${esc(v)}</li>`).join("")}</ul></div>`:""}`}
 $("#f-script").addEventListener("submit",async e=>{e.preventDefault();const w=+$("#script-words").value||1800,n=Math.min(7,Math.max(3,+$("#script-acts").value||5));
   const data=await ask($("#s-script"),e.submitter||$("#f-script .btn"),`Build a detailed ${n}-act outline for a documentary script. Topic: ${val("#script-topic")}. Central question: ${val("#script-angle")||"choose the strongest one"}. Tone: ${$("#script-tone").value}. Target length: about ${w} words total (act word counts must add up to about ${w}).
 Include a vivid 2-3 sentence cold open that pays off within the first 30 seconds, 3-5 beats per act, open loops across act breaks for retention, at most two soft CTAs (membership or merch from the profile) placed where they don't break the story, a visual/B-roll list, and facts to double-check.
-JSON shape: {"title":"","cold_open":"","acts":[{"name":"","words":0,"beats":[""],"open_loop":"","cta":""}],"visuals":[""],"fact_check":[""]}. Exactly ${n} acts. Use "" for open_loop or cta when not needed.`,"script");
+Also write a "flow_style" line (one sentence, English) fixing one consistent visual style, lighting and camera look for the whole video, and for every act 2-4 "flow_prompts": English text-to-video prompts for Google Flow (Veo), each describing one 8-second shot (subject, action, setting, camera movement, lighting), self-contained (repeat key subject details, no references like "same as before"), scientifically accurate anatomy, no on-screen text, 16:9.
+JSON shape: {"title":"","cold_open":"","flow_style":"","acts":[{"name":"","words":0,"beats":[""],"open_loop":"","cta":"","flow_prompts":[""]}],"visuals":[""],"fact_check":[""]}. Exactly ${n} acts. Use "" for open_loop or cta when not needed.`,"script");
   if(data?.acts?.length)renderScript(data)});
 
 /* ---------- SEO ---------- */
@@ -359,10 +397,10 @@ JSON shape: {"keywords":{"primary":"","secondary":[""]},"titles":[{"text":"","an
   if(data?.titles)renderSEO(data)});
 
 /* ---------- THUMB ---------- */
-function renderThumb(list){$("#o-thumb").innerHTML=head("Konsep thumbnail")+`<div class="thumbs">${list.map((c,i)=>{const id="tp"+i+Math.random().toString(36).slice(2,6);return `<article class="card"><div class="thumb-text">${esc(c.text)}</div><h3 style="margin-top:12px">${esc(c.name)}</h3><p><strong>Komposisi:</strong> ${esc(c.composition)}</p><p class="note"><strong>Kenapa diklik:</strong> ${esc(c.why)}</p><div class="copybox" style="margin-top:52px"><button type="button" class="btn ghost" data-copy="${id}" data-label="Salin prompt">Salin prompt</button><pre id="${id}">${esc(c.prompt)}</pre></div></article>`}).join("")}</div><p class="note">Aturan cepat: maksimal 4 kata, satu subjek besar, kontras tinggi, tetap terbaca di ukuran kecil HP. Teks thumbnail melengkapi judul, jangan mengulangnya.</p>`}
+function renderThumb(list){$("#o-thumb").innerHTML=head("Konsep thumbnail")+`<div class="thumbs">${list.map((c,i)=>{const id="tp"+i+Math.random().toString(36).slice(2,6);return `<article class="card"><div class="thumb-text">${esc(c.text)}</div><h3 style="margin-top:12px">${esc(c.name)}</h3><p><strong>Komposisi:</strong> ${esc(c.composition)}</p><p class="note"><strong>Kenapa diklik:</strong> ${esc(c.why)}</p><div class="copybox" style="margin-top:52px"><button type="button" class="btn ghost" data-copy="${id}" data-label="Salin untuk Flow">Salin untuk Flow</button><pre id="${id}">${esc(c.prompt)}</pre></div></article>`}).join("")}</div><p class="note">Aturan cepat: maksimal 4 kata, satu subjek besar, kontras tinggi, tetap terbaca di ukuran kecil HP. Teks thumbnail melengkapi judul, jangan mengulangnya.</p>`}
 $("#f-thumb").addEventListener("submit",async e=>{e.preventDefault();
   const data=await ask($("#s-thumb"),e.submitter||$("#f-thumb .btn"),`Create 3 distinct YouTube thumbnail concepts. Topic: ${val("#thumb-topic")}. Video title: ${val("#thumb-title")||"not decided"}. Visual style: ${$("#thumb-style").value}.
-Each concept: "name" short Indonesian label, "text" overlay of max 4 words, uppercase, that complements (not repeats) the title, "composition" one sentence, "why" one sentence in Indonesian on why it gets clicks, "prompt" a detailed text-to-image prompt in English (16:9, leave space for text, accurate anatomy and details).
+Each concept: "name" short Indonesian label, "text" overlay of max 4 words, uppercase, that complements (not repeats) the title, "composition" one sentence, "why" one sentence in Indonesian on why it gets clicks, "prompt" a detailed text-to-image prompt in English for Google Flow / Imagen (16:9, leave empty space for the overlay text, do not render any text in the image, accurate anatomy and details).
 JSON shape: {"concepts":[{"name":"","text":"","composition":"","why":"","prompt":""}]}`,"thumb");
   if(data?.concepts?.length)renderThumb(data.concepts)});
 
@@ -509,7 +547,7 @@ const PROFILE_FIELDS=[["name","#pf-name"],["lang","#pf-lang"],["length","#pf-len
 async function loadConfig(){CFG=await api("/api/config");if(CFG.error){CFG={profile:{}};return}
   $("#cfg-model").value=CFG.model||"claude-sonnet-5-5";$("#cfg-effort").value=CFG.effort||"medium";
   $("#cfg-key-hint").textContent=CFG.has_key?"Tersimpan: kunci berakhiran "+CFG.key_hint+". Kosongkan kolom untuk tetap memakai kunci ini.":"Belum ada kunci tersimpan. Tombol AI memakai salin-tempel ke claude.ai.";
-  $("#banner-key").hidden=!!CFG.has_key;$("#cfg-dir").textContent=CFG.dir||"";
+  $("#banner-key").hidden=!!CFG.has_key||store.get("banner-off",false);$("#cfg-dir").textContent=CFG.dir||"";
   const p=CFG.profile||{};PROFILE_FIELDS.forEach(([k,id])=>{if(p[k]!=null)$(id).value=p[k]});
   $("#hdr-channel").textContent=p.name?"Studio kerja · "+p.name:"Studio kerja channel YouTube"}
 function readProfile(){const p={};PROFILE_FIELDS.forEach(([k,id])=>p[k]=$(id).value.trim());return p}
@@ -533,10 +571,53 @@ $("#app-quit").addEventListener("click",async()=>{await fetch("/api/quit",{metho
 
 async function loadData(){const j=await api("/api/data");YT=(j&&!j.error&&(j.videos||j.daily))?j:null;
   if(YT&&YT.daily?.length){const ld=new Date(YT.daily[YT.daily.length-1][0]+"T12:00:00"),dim=new Date(ld.getFullYear(),ld.getMonth()+1,0).getDate();YT.partialLast=ld.getDate()<dim}
-  renderGrowth()}
+  renderGrowth();renderDash()}
+/* ---------- DASHBOARD & CALENDAR ---------- */
+const TYPE_LABEL={video:"Video",short:"Shorts",post:"Post"},STATUS_LABEL={ide:"Ide",naskah:"Naskah",rekam:"Rekam",edit:"Edit",siap:"Siap upload",tayang:"Sudah tayang"};
+const plans=()=>LAST.plans?.data||[];
+async function savePlans(list){list.sort((a,b)=>a.date.localeCompare(b.date));await remember("plans",list);renderDash()}
+const isoDay=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+let calMonth=(()=>{const d=new Date();return new Date(d.getFullYear(),d.getMonth(),1)})();
+function renderStats(){const today=isoDay(new Date()),lf=longForm(),sh=(YT?.videos||[]).filter(v=>v.dur<120),t=YT?.totals||{};
+  const upcoming=plans().filter(p=>p.date>=today&&p.status!=="tayang").length;
+  const cards=[["Video panjang",YT?nf(lf.length):"-"],["Shorts",YT?nf(sh.length):"-"],["Views 30 hari",YT?.daily?.length?nf(lastDays(30)):"-"],["Subscriber bersih",t.subs!=null?(t.subs>=0?"+":"")+nf(t.subs):"-"],["Terjadwal",nf(upcoming)],["Estimasi pendapatan",t.revenue!=null?money(t.revenue):"-"]];
+  $("#d-stats").innerHTML=cards.map(([l,v])=>`<div class="stat"><span>${l}</span><b>${v}</b></div>`).join("")+(YT?"":`<p class="note stats-note">Angka channel muncul setelah data YouTube Studio diimpor di menu Data &amp; cuan.</p>`)}
+function renderCal(){const y=calMonth.getFullYear(),m=calMonth.getMonth(),first=new Date(y,m,1),days=new Date(y,m+1,0).getDate(),lead=(first.getDay()+6)%7,today=isoDay(new Date());
+  $("#cal-title").textContent=first.toLocaleDateString("id-ID",{month:"long",year:"numeric"});
+  const byDay={};const add=(d,html)=>{(byDay[d]=byDay[d]||[]).push(html)};
+  (YT?.videos||[]).forEach(v=>{if(v.d&&v.d.startsWith(`${y}-${String(m+1).padStart(2,"0")}`))add(v.d,`<span class="ev pub" title="${esc(v.t)} · ${nf(v.v)} views"><i>${v.dur<120?"Shorts":"Tayang"}</i>${esc(v.t)}</span>`)});
+  plans().forEach(p=>add(p.date,`<button type="button" class="ev ${esc(p.type)}${p.status==="tayang"?" done":""}" data-plan-id="${esc(p.id)}" title="${esc(p.title)} · ${STATUS_LABEL[p.status]||""}"><i>${STATUS_LABEL[p.status]||""}</i>${esc(p.title)}</button>`));
+  const head=["Sen","Sel","Rab","Kam","Jum","Sab","Min"].map(d=>`<div class="cal-dow" role="columnheader">${d}</div>`).join("");
+  let cells="";for(let i=0;i<lead;i++)cells+=`<div class="cal-day off" aria-hidden="true"></div>`;
+  for(let d=1;d<=days;d++){const iso=`${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    cells+=`<div class="cal-day${iso===today?" today":""}" role="gridcell"><button type="button" class="cal-num" data-new="${iso}" aria-label="Tambah rencana ${d} ${$("#cal-title").textContent}">${d}</button>${(byDay[iso]||[]).join("")}</div>`}
+  const tail=(7-(lead+days)%7)%7;for(let i=0;i<tail;i++)cells+=`<div class="cal-day off" aria-hidden="true"></div>`;
+  $("#cal").innerHTML=head+cells}
+function renderUpcoming(){const today=isoDay(new Date()),list=plans().filter(p=>p.date>=today&&p.status!=="tayang").slice(0,8);
+  $("#d-upcoming").innerHTML=`<span class="layer">Berikutnya</span><h3>Rencana yang akan datang</h3>`+(list.length?`<ul class="up">${list.map(p=>`<li><span class="date">${new Date(p.date+"T12:00:00").toLocaleDateString("id-ID",{weekday:"short",day:"numeric",month:"short"})}</span><button type="button" class="linkish" data-plan-id="${esc(p.id)}">${esc(p.title)}</button><span class="chip">${TYPE_LABEL[p.type]||""} · ${STATUS_LABEL[p.status]||""}</span></li>`).join("")}</ul>`:`<p class="note">Belum ada rencana. Klik tanggal di kalender, atau buat ide di menu Ide &amp; jadwal lalu klik "Masukkan ke kalender".</p>`)}
+function renderDash(){if(!$("#d-stats"))return;renderStats();renderCal();renderUpcoming()}
+let editing=null;
+function openPlan(p){editing=p.id?p:null;$("#plan-dlg-title").textContent=editing?"Ubah rencana":"Rencana baru";$("#pl-title").value=p.title||"";$("#pl-date").value=p.date||isoDay(new Date());$("#pl-type").value=p.type||"video";$("#pl-status").value=p.status||"ide";$("#pl-note").value=p.note||"";$("#pl-del").hidden=!editing;$("#pl-tools").hidden=!editing;$("#plan-dlg").showModal();$("#pl-title").focus()}
+$("#plan-form").addEventListener("submit",async e=>{if(e.submitter?.value!=="save")return;const list=plans().filter(x=>!editing||x.id!==editing.id);
+  list.push({id:editing?.id||Date.now().toString(36)+Math.random().toString(36).slice(2,6),title:$("#pl-title").value.trim(),date:$("#pl-date").value,type:$("#pl-type").value,status:$("#pl-status").value,note:$("#pl-note").value.trim()});
+  const d=new Date($("#pl-date").value+"T12:00:00");calMonth=new Date(d.getFullYear(),d.getMonth(),1);await savePlans(list)});
+$("#pl-del").addEventListener("click",async()=>{if(!editing)return;$("#plan-dlg").close();await savePlans(plans().filter(x=>x.id!==editing.id))});
+$("#pl-tools").addEventListener("click",()=>{const t=$("#pl-title").value.trim();$("#plan-dlg").close();["#script-topic","#seo-topic","#thumb-topic","#shorts-topic"].forEach(id=>$(id).value=t);$("#thumb-title").value=t;show("script")});
+$("#banner-close").addEventListener("click",()=>{store.set("banner-off",true);$("#banner-key").hidden=true});
+$("#plan-new").addEventListener("click",()=>openPlan({}));
+$("#cal-prev").addEventListener("click",()=>{calMonth=new Date(calMonth.getFullYear(),calMonth.getMonth()-1,1);renderCal()});
+$("#cal-next").addEventListener("click",()=>{calMonth=new Date(calMonth.getFullYear(),calMonth.getMonth()+1,1);renderCal()});
+$("#cal-today").addEventListener("click",()=>{const d=new Date();calMonth=new Date(d.getFullYear(),d.getMonth(),1);renderCal()});
+document.addEventListener("click",async e=>{
+  const n=e.target.closest("[data-new]");if(n)return openPlan({date:n.dataset.new});
+  const pi=e.target.closest("[data-plan-id]");if(pi){const p=plans().find(x=>x.id===pi.dataset.planId);if(p)openPlan(p);return}
+  const pl=e.target.closest("[data-plan]");if(pl){await savePlans([...plans(),{id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),title:pl.dataset.plan,date:pl.dataset.date,type:"video",status:"ide",note:""}]);pl.textContent="Masuk kalender";pl.disabled=true;return}
+  if(e.target.closest("#plan-all")){const btns=[...document.querySelectorAll("#o-ideas [data-plan]:not([disabled])")];const add=btns.map((b,i)=>({id:Date.now().toString(36)+i+Math.random().toString(36).slice(2,5),title:b.dataset.plan,date:b.dataset.date,type:"video",status:"ide",note:""}));btns.forEach(b=>{b.textContent="Masuk kalender";b.disabled=true});if(add.length)await savePlans([...plans(),...add]);e.target.textContent=add.length?`${add.length} ide masuk kalender`:"Semua sudah di kalender"}
+});
+
 const RENDER={ideas:d=>d?.ideas?.length&&(renderIdeas(d.ideas),true),script:d=>d?.acts?.length&&(renderScript(d),true),seo:d=>d?.titles&&(renderSEO(d),true),thumb:d=>d?.concepts?.length&&(renderThumb(d.concepts),true),shorts:d=>d?.shorts?.length&&(renderShorts(d.shorts),true),ai:d=>d&&(renderAI(d),true)};
 async function loadLast(){const j=await api("/api/last");if(!j||j.error)return;LAST=j;
   for(const [k,f] of Object.entries(RENDER)){const r=LAST[k];if(!r)continue;try{if(f(r.data)){const st=$("#s-"+k);if(st){st.className="status";st.textContent="Hasil terakhir, dibuat "+new Date(r.at).toLocaleString("id-ID",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})+". Tidak memakai saldo lagi."}}}catch{}}
   $("#cfg-spent").textContent=spentText()}
-(async()=>{await loadConfig();await loadData();await loadLast();show(store.get("tab","ideas"))})();
+(async()=>{await loadConfig();await loadData();await loadLast();show(store.get("tab","dash"))})();
 </script>
