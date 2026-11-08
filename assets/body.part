@@ -225,7 +225,7 @@
   </section>
 
   <input type="file" id="file-import" accept=".zip,.csv" multiple hidden>
-  <footer>Terra Studio · versi 1.0 · Generator memakai Claude dari Anthropic dengan API key Anda.</footer>
+  <footer>Terra Studio · versi 1.1 · Generator memakai Claude dari Anthropic dengan API key Anda.</footer>
 </div>
 
 <script>
@@ -265,7 +265,7 @@ function autoWins(){if(!YT||!YT.videos)return "";const top=longForm().sort((a,b)
 /* Claude via the local app */
 /* rough cost: USD per million tokens (input, output), shown in rupiah at a fixed rate */
 const PRICE={"claude-opus-5-5":[4,20],"claude-sonnet-5-5":[2,10],"claude-haiku-5-5":[0.1,0.5]},KURS=16500;
-function costRp(model,u){const k=Object.keys(PRICE).find(m=>(model||"").startsWith(m));if(!k||!u)return 0;const [i,o]=PRICE[k];return (u.input_tokens*i+u.output_tokens*o)/1e6*KURS}
+function costRp(model,u){const k=Object.keys(PRICE).find(m=>(model||"").startsWith(m));if(!u)return 0;const [i,o]=k?PRICE[k]:[5,25];return (u.input_tokens*i+u.output_tokens*o)/1e6*KURS}
 let LAST={};
 async function remember(key,data){LAST[key]={at:Date.now(),data};await api("/api/last",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({key,value:LAST[key]})})}
 function spentText(){const s=LAST._spent?.data;const m=new Date().toISOString().slice(0,7);return s&&s.month===m?`Perkiraan biaya AI bulan ini: Rp${nf(Math.round(s.rp))} dari ${s.n} kali generate.`:"Belum ada biaya AI bulan ini."}
@@ -274,12 +274,12 @@ async function ask(statusEl,btn,prompt,key){
   statusEl.className="status";statusEl.textContent="Claude sedang menulis… (biasanya 20 sampai 90 detik)";btn.disabled=true;
   try{
     const j=await api("/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:channelContext()+"\n\n"+prompt+"\n\nReturn ONLY valid JSON, no markdown fences, no text before or after."})});
+    const rp=costRp(j.model,j.usage);if(rp)addSpent(rp).catch(()=>{});
     if(j.error)throw j;
     const data=parseJSON(j.text);
     if(!data)throw{error:"Jawaban Claude tidak bisa dibaca. Tekan tombolnya sekali lagi."};
-    const rp=costRp(j.model,j.usage);
     statusEl.textContent="Selesai · "+new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})+(rp?` · biaya sekitar Rp${nf(Math.max(1,Math.round(rp)))}`:"")+" · hasil tersimpan";
-    if(key)remember(key,data).catch(()=>{});if(rp)addSpent(rp).catch(()=>{});
+    if(key)remember(key,data).catch(()=>{});
     return data;
   }catch(e){statusEl.className="status err";statusEl.textContent=e.error||("Gagal: "+(e.message||"coba lagi."));return null}
   finally{btn.disabled=false}
@@ -374,8 +374,9 @@ function renderGrowth(){
   const k=[];if(t.views!=null)k.push([nf(t.views),"total views"]);if(t.hours!=null)k.push([nf(t.hours),"jam tonton"]);if(t.subs!=null)k.push([(t.subs>=0?"+":"")+nf(t.subs),"subscriber bersih"]);if(t.revenue!=null)k.push([money(t.revenue),"estimasi pendapatan"]);if(YT.daily?.length)k.push([nf(lastDays(30)),"views 30 hari terakhir"]);
   $("#g-kpis").innerHTML=k.map(([b,l])=>`<div><b>${b}</b><span>${l}</span></div>`).join("");
   if(YT.daily?.length>=60){const a=lastDays(30),b=lastDays(30,30),pct=b?Math.round((a/b-1)*100):0;$("#meter").innerHTML=`<span class="layer">Views 30 hari terakhir</span><b>${nf(a)}</b> <span class="${a<b?"no":"ok"}">${a<b?"turun":"naik"} ${Math.abs(pct)}%</span> dibanding 30 hari sebelumnya`}
+  if(!(YT.daily?.length>=60))$("#meter").innerHTML="";
   if(MONTHS.length){chart();$("#g-mtable").innerHTML=`<tr><th>Bulan</th><th>Views</th></tr>`+MONTHS.map(([m,v],i)=>`<tr><td>${mLabel(m,i)}</td><td>${nf(v)}</td></tr>`).join("")}
-  else{$("#g-chart-wrap").hidden=true}
+  $("#g-chart-wrap").hidden=!MONTHS.length;
   diagnose();table();extras();incomeSetup();
   const titles=(YT.videos||[]).filter(v=>v.dur>=120).map(v=>v.t);if(titles.length&&!$("#ideas-avoid").value)$("#ideas-avoid").value=titles.join("; ");
 }
@@ -482,24 +483,26 @@ $("#file-import").addEventListener("change",async e=>{const files=[...e.target.f
   st.textContent=msgs.length?"Terimpor: "+msgs.join(", ")+".":"Tidak ada tabel yang dikenali di file itu. Pastikan file berasal dari Export Studio mode lanjutan.";await loadData()});
 
 /* settings */
+const PROFILE_FIELDS=[["name","#pf-name"],["lang","#pf-lang"],["length","#pf-length"],["niche","#pf-niche"],["audience","#pf-audience"],["wins","#pf-wins"],["money","#pf-money"],["style","#pf-style"]];
 async function loadConfig(){CFG=await api("/api/config");if(CFG.error){CFG={profile:{}};return}
   $("#cfg-model").value=CFG.model||"claude-sonnet-5-5";$("#cfg-effort").value=CFG.effort||"medium";
   $("#cfg-key-hint").textContent=CFG.has_key?"Tersimpan: kunci berakhiran "+CFG.key_hint+". Kosongkan kolom untuk tetap memakai kunci ini.":"Belum ada kunci tersimpan.";
   $("#banner-key").hidden=!!CFG.has_key;$("#cfg-dir").textContent=CFG.dir||"";
-  const p=CFG.profile||{};[["name","#pf-name"],["lang","#pf-lang"],["length","#pf-length"],["niche","#pf-niche"],["audience","#pf-audience"],["wins","#pf-wins"],["money","#pf-money"],["style","#pf-style"]].forEach(([k,id])=>{if(p[k]!=null)$(id).value=p[k]});
+  const p=CFG.profile||{};PROFILE_FIELDS.forEach(([k,id])=>{if(p[k]!=null)$(id).value=p[k]});
   $("#hdr-channel").textContent=p.name?"Studio kerja · "+p.name:"Studio kerja channel YouTube"}
-function readProfile(){const p={};[["name","#pf-name"],["lang","#pf-lang"],["length","#pf-length"],["niche","#pf-niche"],["audience","#pf-audience"],["wins","#pf-wins"],["money","#pf-money"],["style","#pf-style"]].forEach(([k,id])=>p[k]=$(id).value.trim());return p}
+function readProfile(){const p={};PROFILE_FIELDS.forEach(([k,id])=>p[k]=$(id).value.trim());return p}
 async function saveConfig(extra,st){const body={model:$("#cfg-model").value,effort:$("#cfg-effort").value,profile:readProfile(),...extra};const j=await api("/api/config",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
   if(j.error){st.className="status err";st.textContent=j.error;return false}st.className="status";st.textContent="Tersimpan.";await loadConfig();return true}
 $("#f-key").addEventListener("submit",async e=>{e.preventDefault();const k=$("#cfg-key").value.trim();if(k&&!k.startsWith("sk-ant-")){$("#s-key").className="status err";$("#s-key").textContent="API key Anthropic diawali sk-ant-. Periksa lagi kunci yang ditempel.";return}if(await saveConfig(k?{api_key:k}:{},$("#s-key")))$("#cfg-key").value=""});
 $("#cfg-test").addEventListener("click",async e=>{const st=$("#s-key");const k=$("#cfg-key").value.trim();if(k){if(!await saveConfig({api_key:k},st))return;$("#cfg-key").value=""}st.className="status";st.textContent="Menguji…";e.currentTarget.disabled=true;
   const j=await api("/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:"Reply with exactly: OK",test:true})});e.currentTarget.disabled=false;
+  const rp=costRp(j.model,j.usage);if(rp)addSpent(rp).catch(()=>{});
   if(j.error){st.className="status err";st.textContent=j.error}else{st.className="status";st.textContent="Berhasil terhubung ke "+(j.model||"Claude")+"."}});
 $("#f-profile").addEventListener("submit",async e=>{e.preventDefault();await saveConfig({},$("#s-profile"))});
 $("#pf-export").addEventListener("click",async e=>{const t=JSON.stringify(readProfile(),null,2),b=e.currentTarget;$("#pf-json").hidden=false;$("#pf-json").value=t;try{await navigator.clipboard.writeText(t);b.textContent="Tersalin"}catch{$("#pf-json").select();b.textContent="Tekan Ctrl+C"}});
 $("#pf-import").addEventListener("click",()=>{const ta=$("#pf-json");if(ta.hidden){ta.hidden=false;ta.value="";ta.placeholder="Tempel profil JSON di sini, lalu klik Tempel profil lagi";ta.focus();return}
   let p;try{p=JSON.parse(ta.value)}catch{$("#s-profile").className="status err";$("#s-profile").textContent="Teks itu bukan JSON profil yang valid.";return}
-  [["name","#pf-name"],["lang","#pf-lang"],["length","#pf-length"],["niche","#pf-niche"],["audience","#pf-audience"],["wins","#pf-wins"],["money","#pf-money"],["style","#pf-style"]].forEach(([k,id])=>{if(p[k]!=null)$(id).value=p[k]});ta.hidden=true;saveConfig({},$("#s-profile"))});
+  PROFILE_FIELDS.forEach(([k,id])=>{if(p[k]!=null)$(id).value=p[k]});ta.hidden=true;saveConfig({},$("#s-profile"))});
 $("#data-clear").addEventListener("click",()=>$("#data-clear-confirm").hidden=false);
 $("#data-clear-no").addEventListener("click",()=>$("#data-clear-confirm").hidden=true);
 $("#data-clear-yes").addEventListener("click",async()=>{await api("/api/data",{method:"DELETE"});$("#data-clear-confirm").hidden=true;$("#s-app").className="status";$("#s-app").textContent="Data Studio dihapus.";await loadData()});

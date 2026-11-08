@@ -78,7 +78,12 @@ fn load_config(dir: &Path) -> Config {
         .unwrap_or_default()
 }
 
-static LAST_LOCK: Mutex<()> = Mutex::new(());
+/// Serialises read-modify-write of last.json.
+static LAST_JSON_LOCK: Mutex<()> = Mutex::new(());
+/// Serialises read-modify-write of data.json (import and delete).
+static DATA_JSON_LOCK: Mutex<()> = Mutex::new(());
+/// Largest size one CSV inside a ZIP may expand to.
+const MAX_CSV: u64 = 100 * 1024 * 1024;
 
 fn load_data(dir: &Path) -> Value {
     load_json(&dir.join("data.json"))
@@ -231,6 +236,12 @@ fn read_body(req: &mut Request, limit: u64) -> Result<Vec<u8>, String> {
     Ok(buf)
 }
 
+/// Reads a JSON request body; malformed JSON becomes an empty object.
+fn read_json(req: &mut Request, limit: u64) -> Result<Value, String> {
+    let body = read_body(req, limit)?;
+    Ok(serde_json::from_slice(&body).unwrap_or_else(|_| json!({})))
+}
+
 fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_seen: &AtomicU64) {
     let path = req.url().split('?').next().unwrap_or("/").to_string();
     let method = req.method().clone();
@@ -273,11 +284,10 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
             )
         }
         (Method::Post, "/api/config") => {
-            let body = match read_body(&mut req, 256 * 1024) {
-                Ok(b) => b,
+            let v = match read_json(&mut req, 256 * 1024) {
+                Ok(v) => v,
                 Err(e) => return respond_json(req, 400, json!({"error": e})),
             };
-            let v: Value = serde_json::from_slice(&body).unwrap_or_else(|_| json!({}));
             let mut c = cfg.lock().unwrap();
             if let Some(k) = v["api_key"].as_str() {
                 let k = k.trim();
@@ -308,11 +318,10 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
             }
         }
         (Method::Post, "/api/generate") => {
-            let body = match read_body(&mut req, 512 * 1024) {
-                Ok(b) => b,
+            let v = match read_json(&mut req, 512 * 1024) {
+                Ok(v) => v,
                 Err(e) => return respond_json(req, 400, json!({"error": e})),
             };
-            let v: Value = serde_json::from_slice(&body).unwrap_or_else(|_| json!({}));
             let c = cfg.lock().unwrap().clone();
             let (code, out) = generate(&c, v["prompt"].as_str().unwrap_or(""), v["test"].as_bool().unwrap_or(false));
             respond_json(req, code, out)
@@ -321,15 +330,14 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
         // Last AI result per tool, so reopening the app does not cost a new call.
         (Method::Get, "/api/last") => respond_json(req, 200, load_json(&dir.join("last.json"))),
         (Method::Post, "/api/last") => {
-            let body = match read_body(&mut req, 2 * 1024 * 1024) {
-                Ok(b) => b,
+            let v = match read_json(&mut req, 2 * 1024 * 1024) {
+                Ok(v) => v,
                 Err(e) => return respond_json(req, 400, json!({"error": e})),
             };
-            let v: Value = serde_json::from_slice(&body).unwrap_or_else(|_| json!({}));
             let Some(key) = v["key"].as_str().filter(|k| k.len() <= 32) else {
                 return respond_json(req, 400, json!({"error": "bad key"}));
             };
-            let _guard = LAST_LOCK.lock().unwrap();
+            let _guard = LAST_JSON_LOCK.lock().unwrap();
             let path = dir.join("last.json");
             let mut all = load_json(&path);
             all[key] = v["value"].clone();
@@ -339,6 +347,7 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
             }
         }
         (Method::Delete, "/api/data") => {
+            let _guard = DATA_JSON_LOCK.lock().unwrap();
             let _ = fs::remove_file(dir.join("data.json"));
             respond_json(req, 200, json!({"ok": true}))
         }
@@ -419,7 +428,7 @@ fn generate(c: &Config, prompt: &str, test: bool) -> (u16, Value) {
         Ok(resp) => {
             let stop = resp["stop_reason"].as_str().unwrap_or("");
             if stop == "refusal" {
-                return (422, json!({"error": "Claude menolak permintaan ini. Ubah topik atau kata-katanya, lalu coba lagi."}));
+                return (422, json!({"error": "Claude menolak permintaan ini. Ubah topik atau kata-katanya, lalu coba lagi.", "model": resp["model"], "usage": usage(&resp)}));
             }
             let text: String = resp["content"]
                 .as_array()
@@ -438,7 +447,7 @@ fn generate(c: &Config, prompt: &str, test: bool) -> (u16, Value) {
                 } else {
                     "Claude tidak mengirim jawaban. Coba lagi."
                 };
-                return (502, json!({"error": why}));
+                return (502, json!({"error": why, "model": resp["model"], "usage": usage(&resp)}));
             }
             (
                 200,
@@ -446,10 +455,7 @@ fn generate(c: &Config, prompt: &str, test: bool) -> (u16, Value) {
                     "text": text,
                     "model": resp["model"],
                     "stop_reason": stop,
-                    "usage": {
-                        "input_tokens": resp["usage"]["input_tokens"].as_u64().unwrap_or(0),
-                        "output_tokens": resp["usage"]["output_tokens"].as_u64().unwrap_or(0),
-                    }
+                    "usage": usage(&resp),
                 }),
             )
         }
@@ -462,17 +468,29 @@ fn generate(c: &Config, prompt: &str, test: bool) -> (u16, Value) {
             let friendly = match code {
                 0 => format!("Tidak bisa terhubung ke api.anthropic.com. Periksa koneksi internet. ({api_msg})"),
                 401 => "API key ditolak. Periksa kunci di tab Pengaturan.".to_string(),
-                403 => format!("Akses ditolak oleh Anthropic: {api_msg}"),
+                403 => format!("Akses ditolak oleh Anthropic. Pesan asli: {api_msg}"),
                 _ if lower.contains("credit") || lower.contains("billing") => {
                     "Saldo API habis. Isi saldo di console.anthropic.com, bagian Billing.".to_string()
                 }
                 429 => "Batas pemakaian tercapai. Tunggu sebentar lalu coba lagi.".to_string(),
                 500..=599 => "Server Claude sedang sibuk. Coba lagi beberapa saat lagi.".to_string(),
-                _ => format!("Permintaan gagal ({code}): {api_msg}"),
+                _ => format!("Permintaan gagal (kode {code}). Pesan asli: {api_msg}"),
             };
             (502, json!({"error": friendly}))
         }
     }
+}
+
+/// Token counts for cost display. With fallbacks, every attempt is billed, so
+/// the per-attempt list is summed when present.
+fn usage(resp: &Value) -> Value {
+    let sum = |key: &str| -> u64 {
+        match resp["usage"]["iterations"].as_array() {
+            Some(list) if !list.is_empty() => list.iter().map(|it| it[key].as_u64().unwrap_or(0)).sum(),
+            _ => resp["usage"][key].as_u64().unwrap_or(0),
+        }
+    };
+    json!({"input_tokens": sum("input_tokens"), "output_tokens": sum("output_tokens")})
 }
 
 fn call_claude(key: &str, body: &Value, fallback: bool) -> Result<Value, (u16, String)> {
@@ -501,6 +519,7 @@ fn call_claude(key: &str, body: &Value, fallback: bool) -> Result<Value, (u16, S
 // ------------------------------------------------------- YouTube Studio data
 
 fn import(bytes: &[u8], filename: &str, dir: &Path) -> Result<Vec<String>, String> {
+    let _guard = DATA_JSON_LOCK.lock().unwrap();
     let mut data = load_data(dir);
     if !data.is_object() {
         data = json!({});
@@ -515,7 +534,10 @@ fn import(bytes: &[u8], filename: &str, dir: &Path) -> Result<Vec<String>, Strin
                 continue;
             }
             let mut raw = Vec::new();
-            f.read_to_end(&mut raw).map_err(|e| e.to_string())?;
+            (&mut f).take(MAX_CSV + 1).read_to_end(&mut raw).map_err(|e| e.to_string())?;
+            if raw.len() as u64 > MAX_CSV {
+                return Err("Isi file .zip terlalu besar.".into());
+            }
             if let Some(label) = parse_csv(&String::from_utf8_lossy(&raw), &mut data) {
                 found.push(label);
             }
@@ -563,7 +585,7 @@ fn opt_num(s: &str) -> Option<f64> {
 fn iso_date(s: &str) -> String {
     let s = s.trim();
     if s.len() >= 10 && s.as_bytes()[4] == b'-' {
-        return s[..10].to_string();
+        return s.get(..10).unwrap_or("").to_string();
     }
     const MONTHS: [&str; 12] = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
     let parts: Vec<&str> = s.split(|c: char| c == ' ' || c == ',').filter(|p| !p.is_empty()).collect();
@@ -630,8 +652,14 @@ fn parse_csv(text: &str, data: &mut Value) -> Option<String> {
             }
             if let Some(i) = revenue {
                 let h = &headers[i];
-                if let (Some(a), Some(b)) = (h.find('('), h.find(')')) {
-                    data["currency"] = json!(h[a + 1..b].trim());
+                // Only a short alphabetic code (IDR, USD) is kept, because the UI
+                // inserts it into the page.
+                let code: String = match (h.find('('), h.rfind(')')) {
+                    (Some(a), Some(b)) if a < b => h[a + 1..b].trim().to_string(),
+                    _ => String::new(),
+                };
+                if !code.is_empty() && code.len() <= 5 && code.chars().all(|c| c.is_ascii_alphabetic()) {
+                    data["currency"] = json!(code.to_ascii_uppercase());
                 }
             }
             let n = videos.len();
@@ -686,14 +714,38 @@ mod tests {
     use super::*;
 
     #[test]
+    fn currency_header_is_sanitised() {
+        let csv = |h: &str| format!("Content,Video title,Views,{h}\nTotal,,10,5\nabc,Hi,10,5\n");
+        let mut d = json!({});
+        parse_csv(&csv("Estimated revenue (IDR)"), &mut d).unwrap();
+        assert_eq!(d["currency"], "IDR");
+        let mut d = json!({});
+        parse_csv(&csv("Estimated revenue (<img src=x onerror=alert(1)>)"), &mut d).unwrap();
+        assert!(d["currency"].is_null());
+        let mut d = json!({});
+        parse_csv(&csv("Estimated revenue) (USD"), &mut d).unwrap();
+        assert!(d["currency"].is_null());
+        assert_eq!(d["videos"].as_array().unwrap().len(), 1);
+    }
+
+    #[test]
+    fn usage_sums_fallback_attempts() {
+        let r = json!({"usage": {"input_tokens": 5, "output_tokens": 7,
+            "iterations": [{"input_tokens": 100, "output_tokens": 0}, {"input_tokens": 5, "output_tokens": 7}]}});
+        assert_eq!(usage(&r), json!({"input_tokens": 105, "output_tokens": 7}));
+        assert_eq!(usage(&json!({"usage": {"input_tokens": 1, "output_tokens": 2}})), json!({"input_tokens": 1, "output_tokens": 2}));
+    }
+
+    #[test]
     fn dates() {
         assert_eq!(iso_date("Mar 14, 2026"), "2026-03-14");
         assert_eq!(iso_date("2024-08-25"), "2024-08-25");
         assert_eq!(
-            date_range("Content 2024-08-25_2026-11-07 Terra Time Capsules.zip").as_deref(),
+            date_range("Content 2024-08-25_2026-11-07 My Channel.zip").as_deref(),
             Some("2024-08-25 sampai 2026-11-07")
         );
         assert_eq!(percent_decode("Content%202024.zip"), "Content 2024.zip");
+        assert_eq!(iso_date("2024-08-2é"), "");
         assert_eq!(percent_decode("a%20"), "a ");
         assert_eq!(percent_decode("%e2%82"), "\u{fffd}");
         assert_eq!(percent_decode("x%%é"), "x%%é");

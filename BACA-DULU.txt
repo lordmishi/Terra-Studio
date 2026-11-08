@@ -1,8 +1,9 @@
-TERRA STUDIO 1.1 (Windows 10/11, 64-bit)
+TERRA STUDIO 1.2 (Windows 10/11, 64-bit)
 =========================================
 
-Aplikasi PC untuk channel YouTube: ide video, naskah per babak, judul/deskripsi/tag,
-teks thumbnail, dan analisis data YouTube Studio. AI-nya memakai Claude lewat
+Aplikasi PC untuk channel YouTube: ide video dan kalender, naskah per babak,
+judul/deskripsi/tag, teks thumbnail, ide Shorts (di menu Data & cuan), dan
+analisis data YouTube Studio. AI-nya memakai Claude lewat
 API key milik Anda sendiri. Tidak perlu login claude.ai.
 
 CARA MULAI
@@ -34,9 +35,9 @@ Pantau pemakaian di console.anthropic.com > Usage.
 
 PROFIL CHANNEL
 Isi profil di Pengaturan supaya hasil AI sesuai channel Anda.
-Untuk Terra Time Capsules: buka profil-terra.json dengan Notepad, salin
-semua isinya, lalu di Pengaturan klik "Tempel profil (JSON)", tempel,
-dan klik tombol itu sekali lagi.
+Kalau punya file profil .json (misalnya profil-terra.json), buka dengan
+Notepad, salin semua isinya, lalu di Pengaturan klik "Tempel profil (JSON)",
+tempel, dan klik tombol itu sekali lagi.
 
 IMPOR DATA YOUTUBE STUDIO
 1. YouTube Studio > Analytics > Advanced mode (Lihat selengkapnya).
@@ -59,10 +60,11 @@ Tutup jendelanya. Aplikasi berhenti sendiri sekitar 3 menit kemudian.
 Atau klik "Tutup aplikasi" di Pengaturan.
 
 MASALAH UMUM
-- "Gagal terhubung" / sertifikat: antivirus yang memindai HTTPS kadang
+- "Tidak bisa terhubung ke api.anthropic.com" / sertifikat: antivirus yang memindai HTTPS kadang
   menghalangi. Coba izinkan TerraStudio.exe di antivirus.
-- "Saldo/kredit habis": isi Billing di console.anthropic.com.
+- "Saldo API habis": isi Billing di console.anthropic.com.
 - Jendela tidak muncul: buka browser ke http://127.0.0.1:47815
+  (kalau port itu dipakai program lain, coba 47816, 47817, atau 47818)
 
 Folder "source" berisi kode sumber Rust (untuk pengembang).
 Build: cargo build --release --target x86_64-pc-windows-gnu
