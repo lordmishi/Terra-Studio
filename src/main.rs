@@ -1,5 +1,5 @@
 // Terra Studio: a local desktop toolkit for YouTube creators.
-// Serves the UI on 127.0.0.1, opens it in an app-style browser window, proxies
+// Serves the UI on 127.0.0.1, shows it in its own WebView2 window (browser fallback), proxies
 // generation requests to the Anthropic Messages API with the user's own key,
 // and imports YouTube Studio CSV/ZIP exports. Everything is stored per user
 // in %APPDATA%\TerraStudio.
@@ -289,7 +289,20 @@ fn main() {
     for &p in &PORTS {
         match ping(p) {
             Some(v) if v == PING_ID => {
-                open_window(p);
+                // Bring the running app's own window to the front; fall back to a browser window.
+                let shown = ureq::AgentBuilder::new()
+                    .timeout(Duration::from_millis(1500))
+                    .try_proxy_from_env(false)
+                    .build()
+                    .post(&format!("http://127.0.0.1:{p}/api/show"))
+                    .set("X-Terra", "1")
+                    .call()
+                    .ok()
+                    .and_then(|r| r.into_json::<Value>().ok())
+                    .is_some_and(|j| j["shown"] == true);
+                if !shown {
+                    open_window(p);
+                }
                 return;
             }
             Some(_) => {
@@ -328,19 +341,123 @@ fn main() {
         let last_seen = last_seen.clone();
         std::thread::spawn(move || loop {
             std::thread::sleep(Duration::from_secs(10));
-            if now().saturating_sub(last_seen.load(Ordering::Relaxed)) > IDLE_EXIT_SECS {
+            // With the app's own window, closing it ends the process, so no idle timer is needed.
+            if !NATIVE.load(Ordering::Relaxed)
+                && now().saturating_sub(last_seen.load(Ordering::Relaxed)) > IDLE_EXIT_SECS
+            {
                 std::process::exit(0);
             }
         });
     }
 
-    open_window(port);
+    let web_dir = dir.join("webview");
+    let serve = move || {
+        for req in server.incoming_requests() {
+            let cfg = cfg.clone();
+            let dir = dir.clone();
+            let last_seen = last_seen.clone();
+            std::thread::spawn(move || handle(req, port, &cfg, &dir, &last_seen));
+        }
+    };
 
-    for req in server.incoming_requests() {
-        let cfg = cfg.clone();
-        let dir = dir.clone();
-        let last_seen = last_seen.clone();
-        std::thread::spawn(move || handle(req, port, &cfg, &dir, &last_seen));
+    #[cfg(windows)]
+    {
+        std::thread::spawn(serve);
+        // Runs until the window closes. Returns only if WebView2 is unavailable.
+        native::run(port, web_dir);
+        open_window(port);
+        loop {
+            std::thread::park();
+        }
+    }
+    #[cfg(not(windows))]
+    {
+        let _ = web_dir;
+        open_window(port);
+        serve();
+    }
+}
+
+/// True while the app shows its own WebView2 window (Windows).
+static NATIVE: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+/// The app's own window: WebView2 (built into Windows 10/11) inside a native frame,
+/// so no Edge or Chrome process opens. Falls back to the browser window if WebView2 is missing.
+#[cfg(windows)]
+mod native {
+    use std::path::PathBuf;
+    use std::sync::atomic::Ordering;
+    use std::sync::{Mutex, OnceLock};
+    use tao::dpi::{LogicalSize, PhysicalSize};
+    use tao::event::{Event, WindowEvent};
+    use tao::event_loop::{ControlFlow, EventLoopBuilder, EventLoopProxy};
+    use tao::platform::windows::IconExtWindows;
+    use tao::window::{Icon, WindowBuilder};
+    use wry::{WebContext, WebViewBuilder};
+
+    static PROXY: OnceLock<Mutex<EventLoopProxy<()>>> = OnceLock::new();
+
+    /// Asks the window to come to the front. False when there is no native window.
+    pub fn show() -> bool {
+        PROXY.get().and_then(|p| p.lock().ok().map(|p| p.send_event(()).is_ok())).unwrap_or(false)
+    }
+
+    fn local(url: &str, port: u16) -> bool {
+        url.starts_with(&format!("http://127.0.0.1:{port}/")) || url == "about:blank"
+    }
+
+    pub fn run(port: u16, data_dir: PathBuf) {
+        let event_loop = EventLoopBuilder::<()>::with_user_event().build();
+        let Ok(window) = WindowBuilder::new()
+            .with_title("Terra Studio")
+            .with_inner_size(LogicalSize::new(1440.0, 920.0))
+            .with_min_inner_size(LogicalSize::new(1024.0, 680.0))
+            .with_window_icon(Icon::from_resource(1, Some(PhysicalSize::new(64, 64))).ok())
+            .build(&event_loop)
+        else {
+            return;
+        };
+        let _ = std::fs::create_dir_all(&data_dir);
+        let mut ctx = WebContext::new(Some(data_dir));
+        let url = format!("http://127.0.0.1:{port}/");
+        let webview = WebViewBuilder::with_web_context(&mut ctx)
+            .with_url(&url)
+            .with_background_color((15, 14, 12, 255))
+            .with_navigation_handler(move |u| {
+                if local(&u, port) {
+                    return true;
+                }
+                super::open_browser(&u);
+                false
+            })
+            .with_new_window_req_handler(move |u| {
+                if !local(&u, port) {
+                    super::open_browser(&u);
+                }
+                false
+            })
+            .build(&window);
+        let Ok(webview) = webview else {
+            drop(window);
+            return;
+        };
+        super::NATIVE.store(true, Ordering::Relaxed);
+        let _ = PROXY.set(Mutex::new(event_loop.create_proxy()));
+        event_loop.run(move |event, _, flow| {
+            *flow = ControlFlow::Wait;
+            let _ = (&webview, &ctx);
+            match event {
+                Event::UserEvent(()) => {
+                    window.set_minimized(false);
+                    window.set_visible(true);
+                    window.set_focus();
+                }
+                Event::WindowEvent { event: WindowEvent::CloseRequested, .. } => {
+                    std::process::exit(0);
+                }
+                _ => {}
+            }
+        });
     }
 }
 
@@ -483,6 +600,13 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
     match (method, path.as_str()) {
         (Method::Get, "/") | (Method::Get, "/index.html") => {
             respond(req, 200, "text/html; charset=utf-8", PAGE.as_bytes().to_vec())
+        }
+        // Fonts ship inside the exe so the app looks the same offline.
+        (Method::Get, "/fonts/archivo.woff2") => {
+            respond(req, 200, "font/woff2", include_bytes!("../assets/archivo.woff2").to_vec())
+        }
+        (Method::Get, "/fonts/familjen.woff2") => {
+            respond(req, 200, "font/woff2", include_bytes!("../assets/familjen.woff2").to_vec())
         }
         (Method::Get, "/api/ping") => respond(req, 200, "text/plain", PING_ID.as_bytes().to_vec()),
         (Method::Post, "/api/heartbeat") => {
@@ -781,6 +905,53 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
                 Err(e) => respond_json(req, 400, json!({"error": e})),
             }
         }
+        (Method::Post, "/api/thumb") | (Method::Delete, "/api/thumb") => {
+            let id = query_param(req.url(), "id").unwrap_or_default();
+            let Some(stem) = thumb_stem(&id) else {
+                return respond_json(req, 400, json!({"error": "id tidak valid"}));
+            };
+            let tdir = dir.join("thumbs");
+            for ext in ["jpg", "png", "webp"] {
+                let _ = fs::remove_file(tdir.join(format!("{stem}.{ext}")));
+            }
+            if *req.method() == Method::Delete {
+                return respond_json(req, 200, json!({"ok": true}));
+            }
+            let body = match read_body(&mut req, 8 * 1024 * 1024) {
+                Ok(b) => b,
+                Err(e) => return respond_json(req, 400, json!({"error": e})),
+            };
+            let ext = match body.get(..12) {
+                Some(h) if h.starts_with(&[0xFF, 0xD8, 0xFF]) => "jpg",
+                Some(h) if h.starts_with(b"\x89PNG") => "png",
+                Some(h) if h.starts_with(b"RIFF") && &h[8..12] == b"WEBP" => "webp",
+                _ => return respond_json(req, 400, json!({"error": "Pilih gambar JPG, PNG, atau WebP."})),
+            };
+            let _ = fs::create_dir_all(&tdir);
+            match fs::write(tdir.join(format!("{stem}.{ext}")), &body) {
+                Ok(()) => respond_json(req, 200, json!({"ok": true})),
+                Err(e) => respond_json(req, 500, json!({"error": format!("Gagal menyimpan gambar: {e}")})),
+            }
+        }
+        (Method::Get, p) if p.starts_with("/api/thumb/") => {
+            let id = percent_decode(&p["/api/thumb/".len()..]);
+            let found = thumb_stem(&id).and_then(|stem| {
+                [("jpg", "image/jpeg"), ("png", "image/png"), ("webp", "image/webp")]
+                    .iter()
+                    .find_map(|(ext, ct)| fs::read(dir.join("thumbs").join(format!("{stem}.{ext}"))).ok().map(|b| (b, *ct)))
+            });
+            match found {
+                Some((bytes, ct)) => respond(req, 200, ct, bytes),
+                None => respond_json(req, 404, json!({"error": "not found"})),
+            }
+        }
+        (Method::Post, "/api/show") => {
+            #[cfg(windows)]
+            let shown = native::show();
+            #[cfg(not(windows))]
+            let shown = false;
+            respond_json(req, 200, json!({"shown": shown}));
+        }
         (Method::Post, "/api/quit") => {
             respond_json(req, 200, json!({"ok": true}));
             std::thread::sleep(Duration::from_millis(300));
@@ -796,6 +967,18 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
         }
         _ => respond_json(req, 404, json!({"error": "not found"})),
     }
+}
+
+/// Plan ids become file names, so only short alphanumeric ids are accepted.
+fn thumb_stem(id: &str) -> Option<String> {
+    (!id.is_empty() && id.len() <= 40 && id.chars().all(|c| c.is_ascii_alphanumeric())).then(|| id.to_string())
+}
+
+fn query_param(url: &str, key: &str) -> Option<String> {
+    url.split_once('?')?.1.split('&').find_map(|kv| {
+        let (k, v) = kv.split_once('=')?;
+        (k == key).then(|| percent_decode(v))
+    })
 }
 
 fn percent_decode(s: &str) -> String {
@@ -817,7 +1000,7 @@ fn percent_decode(s: &str) -> String {
     String::from_utf8_lossy(&out).into_owned()
 }
 
-// ---------------------------------------------------------------- Claude API
+// Claude API
 
 /// The provider used for generation: an explicit choice wins, otherwise
 /// whichever key is saved (Claude first). Empty means copy-paste mode.
@@ -959,7 +1142,7 @@ fn call_claude(key: &str, body: &Value, fallback: bool) -> Result<Value, (u16, S
     }
 }
 
-// ---------------------------------------------------------------- Gemini API
+// Gemini API
 
 mod gemini {
     use super::*;
@@ -1119,7 +1302,7 @@ mod gemini {
     }
 }
 
-// ------------------------------------------------------------ ElevenLabs TTS
+// ElevenLabs text to speech
 
 mod eleven {
     use super::*;
@@ -1318,7 +1501,7 @@ mod eleven {
     }
 }
 
-// ------------------------------------------------------- YouTube Studio data
+// YouTube Studio data
 
 /// First start on a PC: pick up files shipped next to the exe, so the user does not
 /// have to paste the profile or import the Studio export by hand.

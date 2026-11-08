@@ -1,10 +1,8 @@
+<a class="skip" href="#main">Lewati ke konten</a>
 <div class="shell">
-  <aside class="side">
-    <div class="brand">
-      <svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="6"/><path d="M7 10h18M7 15h15"/><rect class="layer-b" x="6" y="18.5" width="20" height="7" rx="2"/><circle cx="17.5" cy="22" r="1.8"/></svg>
-      <div><b>Terra Studio</b><small id="hdr-channel">Studio kerja channel YouTube</small></div>
-    </div>
-    <span class="layer side-label">Ruang kerja</span>
+  <aside class="rail">
+    <h1 class="sr">Terra Studio</h1>
+    <svg class="logo" viewBox="0 0 32 32" role="img" aria-label="Terra Studio"><rect x="1" y="1" width="30" height="30" rx="8"/><path d="M7 10h18M7 15h15"/><rect class="layer-b" x="6" y="18.5" width="20" height="7" rx="2"/><circle cx="17.5" cy="22" r="1.8"/></svg>
     <nav class="tabs" role="tablist" aria-label="Menu" aria-orientation="vertical">
       <button role="tab" id="t-dash" aria-selected="true" data-tab="dash"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M12 9.5a1 1 0 0 1 1 1V12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-1.5a1 1 0 0 1 1-1z"/><path d="M7 1a1 1 0 0 1 1 1v4.5a1 1 0 0 1-1 1H1.932a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"/><path d="M12.469 1a.5.5 0 0 1 .5.5v1.25a.5.5 0 0 1-.5.5H10.5a.5.5 0 0 1-.5-.5V1.5a.5.5 0 0 1 .5-.5z"/><path d="M12.469 5.25a.5.5 0 0 1 .5.5V7a.5.5 0 0 1-.5.5H10.5A.5.5 0 0 1 10 7V5.75a.5.5 0 0 1 .5-.5z"/></svg><span>Dashboard</span></button>
       <button role="tab" id="t-ideas" aria-selected="false" data-tab="ideas"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M11.5 5.031a4.5 4.5 0 1 0-6.5 4v1.5a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1.5a4.48 4.48 0 0 0 2.5-4"/><path d="M5 13.5h4"/></svg><span>Ide &amp; jadwal</span></button>
@@ -14,12 +12,25 @@
       <button role="tab" id="t-growth" aria-selected="false" data-tab="growth"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="m1.24 6.54 11.5-5.23"/><path d="m10.59.5 2.15.81-.8 2.15"/><path d="M13.25 13.5h-2.5v-7a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 .5.5z"/><path d="M8.25 13.5h-2.5V8a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 .5.5z"/><path d="M3.25 13.5H.75v-4a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 .5.5z"/></svg><span>Data &amp; cuan</span></button>
       <button role="tab" id="t-settings" aria-selected="false" data-tab="settings"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="m5.23 2.25.43-1.11A1 1 0 0 1 6.59.5h.82a1 1 0 0 1 .93.64l.43 1.11 1.46.84 1.18-.18a1 1 0 0 1 1 .49l.4.7a1 1 0 0 1-.08 1.13l-.73.93v1.68l.75.93a1 1 0 0 1 .08 1.13l-.4.7a1 1 0 0 1-1 .49l-1.18-.18-1.46.84-.43 1.11a1 1 0 0 1-.93.64h-.84a1 1 0 0 1-.93-.64l-.43-1.11-1.46-.84-1.18.18a1 1 0 0 1-1-.49l-.4-.7a1 1 0 0 1 .08-1.13L2 7.84V6.16l-.75-.93a1 1 0 0 1-.08-1.13l.4-.7a1 1 0 0 1 1-.49l1.18.18zM5 7a2 2 0 1 0 4 0 2 2 0 0 0-4 0"/></svg><span>Pengaturan</span></button>
     </nav>
-    <p class="side-foot">Terra Studio versi 1.7.1</p>
+    <div class="rail-sp"></div>
+    <button type="button" class="rail-plus" id="rail-plus" aria-label="Rencana konten baru" data-tip="Rencana baru">+</button>
+    <button type="button" class="skin" id="skin-tog" aria-label="Ganti tema" data-tip="Tema: batu / lumut"><i></i></button>
+    <p class="ver">v1.8</p>
   </aside>
-  <main class="main">
+  <aside class="side" aria-label="Kalender dan jadwal">
+    <div class="box calw">
+      <div class="calw-hd"><span class="calw-ic"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M1.5 2.5h11a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1zM.5 6h13M4 .5v3M10 .5v3"/></svg></span><div><h2>Kalender upload</h2><small id="mc-sub">Rencana dan video tayang</small></div><button type="button" class="ic-btn" data-goto="dash" id="mc-open" aria-label="Buka kalender bulan di Dashboard"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M4 10 10 4M5 4h5v5"/></svg></button></div>
+      <div class="pills" role="group" aria-label="Jenis konten" id="mc-pills"><button type="button" aria-pressed="true" data-f="all">Semua</button><button type="button" aria-pressed="false" data-f="video">Video</button><button type="button" aria-pressed="false" data-f="short">Shorts</button><button type="button" aria-pressed="false" data-f="post">Post</button></div>
+      <div class="mc" id="mc" role="group" aria-label="Kalender bulan ini, pakai tombol panah untuk pindah tanggal"></div>
+      <div class="mc-ft"><button type="button" class="ic-btn" id="mc-prev" aria-label="Bulan sebelumnya">&larr;</button><b id="mc-title"></b><button type="button" class="ic-btn" id="mc-next" aria-label="Bulan berikutnya">&rarr;</button></div>
+    </div>
+    <div class="next" id="next-up"></div>
+    <div class="box stages"><h2>Status produksi</h2><ul id="stages"></ul></div>
+  </aside>
+  <main class="main" id="main">
     <header class="topbar">
-      <div><h1 id="page-title">Dashboard</h1><div class="meter" id="meter"></div></div>
-      <div class="actions"><button type="button" class="btn ghost" data-goto="growth">Perbarui data Studio</button><button type="button" class="btn" id="plan-new">Jadwalkan konten</button></div>
+      <div><h2 id="page-title" class="page-title">Dashboard</h2><div class="meter" id="meter"></div></div>
+      <div class="actions"><span class="ch-name" id="hdr-channel"></span><button type="button" class="btn ghost" data-goto="growth">Perbarui data Studio</button></div>
     </header>
 <div class="wrap">
   <div class="banner" id="banner-key" hidden>
@@ -28,17 +39,28 @@
 
   <!-- DASHBOARD -->
   <section id="p-dash" role="tabpanel" aria-labelledby="t-dash">
-    <div class="stats" id="d-stats"></div>
-    <div class="card cal-card">
-      <div class="cal-head">
-        <h2 id="cal-title">Kalender</h2>
-        <div class="cal-legend"><span class="cl pub">Sudah tayang</span><span class="cl video">Rencana video</span><span class="cl short">Rencana Shorts</span><span class="cl post">Rencana post</span></div>
-        <div class="cal-nav"><button type="button" class="btn ghost" id="cal-today">Bulan ini</button><button type="button" class="btn ghost icon" id="cal-prev" aria-label="Bulan sebelumnya">&lsaquo;</button><button type="button" class="btn ghost icon" id="cal-next" aria-label="Bulan berikutnya">&rsaquo;</button></div>
+    <div class="paper">
+      <div class="pp-head">
+        <h2 class="disp" id="wk-title">7 hari ke depan</h2>
+        <div class="seg" role="group" aria-label="Tampilan"><button type="button" aria-pressed="true" data-view="week">7 hari</button><button type="button" aria-pressed="false" data-view="month">Bulan</button></div>
+        <div class="pp-nav"><button type="button" class="btn ghost" id="wk-today">Hari ini</button><button type="button" class="btn ghost icon" id="wk-prev" aria-label="Sebelumnya">&lsaquo;</button><button type="button" class="btn ghost icon" id="wk-next" aria-label="Berikutnya">&rsaquo;</button></div>
       </div>
-      <div class="cal" id="cal" role="grid" aria-labelledby="cal-title"></div>
-      <p class="note">Klik tanggal untuk menambah rencana, klik rencana untuk mengubah statusnya. Video yang sudah tayang diambil dari data Studio yang diimpor.</p>
+      <div class="pp-row">
+        <label class="search"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M6 11a5 5 0 1 0 0-10 5 5 0 0 0 0 10M13.5 13.5 9.6 9.6"/></svg><input id="pp-q" type="search" placeholder="Cari rencana atau video" aria-label="Cari rencana atau video"></label>
+        <button type="button" class="btn" id="plan-new">+ Jadwalkan konten</button>
+      </div>
+      <div id="wk" class="wk"></div>
+      <div id="cal-wrap" hidden>
+        <div class="cal-legend"><span class="cl pub">Sudah tayang</span><span class="cl video">Rencana video</span><span class="cl short">Rencana Shorts</span><span class="cl post">Rencana post</span></div>
+        <div class="cal" id="cal" role="group" aria-label="Kalender bulan"></div>
+      </div>
+      <p class="pp-note" id="pp-note">Klik kotak + untuk menambah rencana, klik kartu untuk mengubah status atau menambah thumbnail.</p>
     </div>
-    <div class="card" id="d-upcoming"></div>
+    <div class="bot">
+      <div class="box vchart"><div class="bx-hd"><div><h2>Views harian</h2><p class="sub" id="vc-sub"></p></div><button type="button" class="ic-btn" data-goto="growth" aria-label="Buka Data dan cuan"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M1 13h12M3.5 10V7M7 10V3M10.5 10V5.5"/></svg></button></div><div id="vc" class="vc"><p class="loading">Memuat data…</p></div></div>
+      <div class="box topv"><div class="bx-hd"><div><h2>Video teratas</h2><p class="sub">Views dan CTR, sepanjang data</p></div></div><ul id="topv"><li class="loading">Memuat data…</li></ul></div>
+      <div class="box sum"><h2>Ringkasan</h2><div id="sum"><p class="loading">Memuat data…</p></div></div>
+    </div>
   </section>
 
   <dialog id="plan-dlg" aria-labelledby="plan-dlg-title">
@@ -51,6 +73,7 @@
       </div>
       <label for="pl-status">Status<select id="pl-status"><option value="ide">Ide</option><option value="naskah">Naskah</option><option value="rekam">Rekam / voice over</option><option value="edit">Edit</option><option value="siap">Siap upload</option><option value="tayang">Sudah tayang</option></select></label>
       <label for="pl-note">Catatan<textarea id="pl-note" rows="3"></textarea></label>
+      <div class="pl-thumb"><span id="pl-thumb-box"></span><div><span class="lbl">Thumbnail (opsional)</span><div class="chips"><button type="button" class="btn ghost" id="pl-thumb-pick">Pilih gambar</button><button type="button" class="btn ghost" id="pl-thumb-del" hidden>Hapus gambar</button></div><input type="file" id="pl-thumb-file" accept="image/jpeg,image/png,image/webp" hidden></div></div>
       <div class="confirm"><button class="btn" value="save" id="pl-save">Simpan</button><button class="btn ghost" value="cancel" formnovalidate>Batal</button><button class="btn ghost danger" type="button" id="pl-del">Hapus</button><button class="btn ghost" type="button" id="pl-tools">Buka di Naskah &amp; SEO</button></div>
     </form>
   </dialog>
@@ -311,9 +334,9 @@
     <div class="card" style="margin-top:16px">
       <span class="layer">Aplikasi</span>
       <h3>Data dan aplikasi</h3>
-      <p class="note">Semua pengaturan, data Studio, rencana kalender, dan hasil AI disimpan hanya di komputer ini, di folder <code id="cfg-dir"></code>. API key disimpan terenkripsi dengan pengaman Windows. Aplikasi otomatis berhenti beberapa saat setelah jendelanya ditutup.</p>
+      <p class="note">Semua pengaturan, data Studio, rencana kalender, dan hasil AI disimpan hanya di komputer ini, di folder <code id="cfg-dir"></code>. API key disimpan terenkripsi dengan pengaman Windows. Menutup jendela Terra Studio berarti menutup aplikasinya. Versi 1.8.0.</p>
       <h3 style="margin-top:14px">Backup</h3>
-      <p class="note">Simpan file backup (profil, data Studio, kalender, hasil AI) ke folder Downloads, lalu salin ke flashdisk atau Google Drive. API key tidak ikut demi keamanan. Pulihkan di komputer baru atau setelah instal ulang Windows.</p>
+      <p class="note">Simpan file backup (profil, data Studio, kalender, hasil AI) ke folder Downloads, lalu salin ke flashdisk atau Google Drive. API key dan gambar thumbnail rencana tidak ikut. Pulihkan di komputer baru atau setelah instal ulang Windows.</p>
       <div class="chips"><button type="button" class="btn ghost" id="backup-save">Simpan backup</button><button type="button" class="btn ghost" id="backup-load">Pulihkan dari backup</button></div>
       <input type="file" id="backup-file" accept=".json,application/json" hidden>
       <div class="confirm" id="backup-confirm" hidden><span id="backup-confirm-text"></span> <button type="button" class="btn ghost" id="backup-yes">Ya, pulihkan</button> <button type="button" class="btn ghost" id="backup-no">Batal</button></div>
@@ -341,7 +364,8 @@ const beat=()=>fetch("/api/heartbeat",{method:"POST",headers:{"X-Terra":"1"}}).c
 
 /* tabs */
 const tabs=[...document.querySelectorAll("nav.tabs button")];
-function show(name){if(!$("#p-"+name))name="dash";tabs.forEach(b=>{const on=b.dataset.tab===name;b.setAttribute("aria-selected",on);if(on){b.scrollIntoView({block:"nearest",inline:"nearest"});$("#page-title").textContent=b.textContent.trim()}$("#p-"+b.dataset.tab).hidden=!on});store.set("tab",name);if(name==="dash")renderDash();if(name==="growth")requestAnimationFrame(()=>{if(YT)chart()})}
+// The first show() skips scrollIntoView: Chromium moves the Tab starting point there, past the skip link.
+function show(name,first){if(!$("#p-"+name))name="dash";tabs.forEach(b=>{const on=b.dataset.tab===name;b.setAttribute("aria-selected",on);if(on){if(!first)b.scrollIntoView({block:"nearest",inline:"nearest"});$("#page-title").textContent=b.textContent.trim()}$("#p-"+b.dataset.tab).hidden=!on});store.set("tab",name);if(name==="dash")renderDash();if(name==="growth")requestAnimationFrame(()=>{if(YT)chart()})}
 tabs.forEach(b=>b.addEventListener("click",()=>show(b.dataset.tab)));
 document.addEventListener("click",e=>{const g=e.target.closest("[data-goto]");if(g)show(g.dataset.goto)});
 
@@ -417,7 +441,7 @@ document.addEventListener("click",e=>{const b=e.target.closest("[data-copy]");if
 const head=t=>`<div class="out-head"><span class="layer">${esc(t)}</span></div>`;
 const val=id=>$(id).value.trim();
 
-/* ---------- IDEAS ---------- */
+/* Ideas */
 $("#ideas-start").value=new Date().toISOString().slice(0,10);
 function schedule(n,perMonth,startISO){const gap=Math.round(30/perMonth),d=new Date(startISO+"T12:00:00"),out=[];for(let i=0;i<n;i++){const x=new Date(d);x.setDate(d.getDate()+i*gap);out.push(x)}return out}
 const fmtDate=d=>d.toLocaleDateString("id-ID",{weekday:"short",day:"numeric",month:"short",year:"numeric"});
@@ -433,7 +457,7 @@ Base the choices on what has worked for this channel. Titles under 60 characters
 JSON shape: {"ideas":[{"title":"","era":"period/place or sub-topic, short","hook":"one-sentence cold-open hook","why":"why it can perform for this channel (Indonesian, one sentence)","potential":"one of: Sedang, Tinggi, Sangat tinggi (Indonesian)"}]}`,"ideas");
   if(data?.ideas?.length)renderIdeas(data.ideas)});
 
-/* ---------- SCRIPT ---------- */
+/* Script outline */
 const ACT_COLORS=["var(--accent)","var(--moss)","var(--muted)","var(--warn)","var(--ink)","var(--field)","var(--accent)"];
 const ROMAN=["I","II","III","IV","V","VI","VII"];
 let lastOutline=null;
@@ -477,7 +501,7 @@ Also write a "flow_style" line (one sentence, English) fixing one consistent vis
 JSON shape: {"title":"","cold_open":"","flow_style":"","acts":[{"name":"","words":0,"beats":[""],"open_loop":"","cta":"","flow_prompts":[""]}],"visuals":[""],"fact_check":[""]}. Exactly ${n} acts. Use "" for open_loop or cta when not needed.`,"script");
   if(data?.acts?.length)renderScript(data)});
 
-/* ---------- SEO ---------- */
+/* SEO pack */
 function renderSEO(s){const tags=(s.tags||[]).join(", ");
   $("#o-seo").innerHTML=head("Paket SEO")+(s.keywords?`<div class="card"><span class="layer">Kata kunci</span><p><strong>Utama:</strong> ${esc(s.keywords.primary)}</p><p><strong>Pendukung:</strong> ${esc((s.keywords.secondary||[]).join(", "))}</p><p class="note">Masukkan kata kunci utama ke judul, kalimat pertama deskripsi, dan ucapkan di 30 detik pertama narasi (YouTube membaca transkrip).</p></div>`:"")
   +`<div class="card"><span class="layer">Pilihan judul</span><ol class="titles">${(s.titles||[]).map(t=>`<li>${esc(t.text)}<span class="len">${String(t.text||"").length} kar, ${esc(t.angle||"")}</span></li>`).join("")}</ol><p class="note">Usahakan di bawah 60 karakter agar tidak terpotong di HP. Uji 2 sampai 3 judul dengan fitur Test &amp; Compare di YouTube Studio.</p></div>`
@@ -488,7 +512,7 @@ First pick ONE primary search keyword (what a viewer would actually type) and 2-
 JSON shape: {"keywords":{"primary":"","secondary":[""]},"titles":[{"text":"","angle":""}],"description":"","hashtags":[""],"tags":[""],"pinned_comment":"","community_post":""}`,"seo");
   if(data?.titles)renderSEO(data)});
 
-/* ---------- THUMB ---------- */
+/* Thumbnail */
 function renderThumb(list){$("#o-thumb").innerHTML=head("Konsep thumbnail")+`<div class="thumbs">${list.map((c,i)=>{const id="tp"+i+Math.random().toString(36).slice(2,6);return `<article class="card"><div class="thumb-text">${esc(c.text)}</div><h3 style="margin-top:12px">${esc(c.name)}</h3><p><strong>Komposisi:</strong> ${esc(c.composition)}</p><p class="note"><strong>Kenapa diklik:</strong> ${esc(c.why)}</p><div class="copybox" style="margin-top:52px"><button type="button" class="btn ghost" data-copy="${id}" data-label="Salin untuk Flow">Salin untuk Flow</button><pre id="${id}">${esc(c.prompt)}</pre></div></article>`}).join("")}</div><p class="note">Aturan cepat: maksimal 4 kata, satu subjek besar, kontras tinggi, tetap terbaca di ukuran kecil HP. Teks thumbnail melengkapi judul, jangan mengulangnya.</p>`}
 $("#f-thumb").addEventListener("submit",async e=>{e.preventDefault();
   const data=await ask($("#s-thumb"),e.submitter||$("#f-thumb .btn"),`Create 3 distinct YouTube thumbnail concepts. Topic: ${val("#thumb-topic")}. Video title: ${val("#thumb-title")||"not decided"}. Visual style: ${$("#thumb-style").value}.
@@ -496,7 +520,7 @@ Each concept: "name" short Indonesian label, "text" overlay of max 4 words, uppe
 JSON shape: {"concepts":[{"name":"","text":"","composition":"","why":"","prompt":""}]}`,"thumb");
   if(data?.concepts?.length)renderThumb(data.concepts)});
 
-/* ---------- SHORTS ---------- */
+/* Shorts */
 function renderShorts(list){$("#o-shorts").innerHTML=head("Ide Shorts")+list.map(s=>`<div class="card"><h3>${esc(s.title)}</h3><p><strong>Detik 0 sampai 2:</strong> ${esc(s.hook)}</p><p class="note">${esc(s.outline)}</p><div class="meta"><span>${esc(s.length)}</span><span>CTA: ${esc(s.cta)}</span></div></div>`).join("")}
 $("#f-shorts").addEventListener("submit",async e=>{e.preventDefault();
   const data=await ask($("#s-shorts"),e.submitter||$("#f-shorts .btn"),`Turn this long video into 5 YouTube Shorts ideas (vertical, under 60 seconds) that send viewers to the full video. Source video: ${val("#shorts-topic")}. Best moments: ${val("#shorts-facts")||"pick the most surprising"}.
@@ -504,10 +528,11 @@ Each: "title" (under 50 characters), "hook" what happens in the first 2 seconds 
 JSON shape: {"shorts":[{"title":"","hook":"","outline":"","length":"","cta":""}]}`,"shorts");
   if(data?.shorts?.length)renderShorts(data.shorts)});
 
-/* ---------- DATA & GROWTH ---------- */
+/* Data and growth */
 const nf=n=>Math.round(n||0).toLocaleString("id-ID");
 const f1=n=>(n||0).toLocaleString("id-ID",{maximumFractionDigits:1});
 const cur=()=>(YT&&YT.currency)||"IDR";
+const moneyShort=n=>cur()==="IDR"&&Math.abs(n)>=1e6?"Rp"+(n/1e6).toLocaleString("id-ID",{maximumFractionDigits:1})+" jt":money(n);
 const money=n=>{const c=cur();return c==="IDR"?"Rp"+nf(n):c==="USD"?"$"+nf(n):nf(n)+" "+c};
 const longForm=()=>(YT&&YT.videos||[]).filter(v=>v.dur>=120);
 const BN=["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
@@ -535,7 +560,7 @@ function renderGrowth(){
 
 function chart(){
   const svg=$("#g-chart");if(!svg||!MONTHS.length)return;const W=Math.max(560,svg.clientWidth||560),H=240,pl=48,pb=26,pt=26,data=MONTHS;
-  const peak=Math.max(...data.map(d=>d[1]),1),step=niceStep(peak/4),max=step*4,bw=(W-pl-8)/data.length,y=v=>pt+(H-pt-pb)*(1-v/max),base=H-pb,mono='font-family="IBM Plex Mono,monospace"';
+  const peak=Math.max(...data.map(d=>d[1]),1),step=niceStep(peak/4),max=step*4,bw=(W-pl-8)/data.length,y=v=>pt+(H-pt-pb)*(1-v/max),base=H-pb,mono='font-family="Familjen Grotesk,system-ui,sans-serif"';
   let g="";for(let t=0;t<=max;t+=step)g+=`<line x1="${pl}" x2="${W-4}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)"/><text x="${pl-6}" y="${y(t)+4}" text-anchor="end" font-size="11" fill="var(--muted)" ${mono}>${short(t)}</text>`;
   const peakI=data.reduce((b,d,i)=>d[1]>data[b][1]?i:b,0),lastFull=YT.partialLast?data.length-2:data.length-1;
   data.forEach(([m,v],i)=>{const w=Math.max(2,bw-2),x=pl+i*bw+1,top=y(v),r=Math.min(4,w/2,base-top);
@@ -644,7 +669,7 @@ async function loadConfig(){CFG=await api("/api/config");if(CFG.error){CFG={prof
   $("#cfg-gkey-hint").textContent=CFG.has_gemini?"Tersimpan: kunci berakhiran "+CFG.gemini_hint+". Kosongkan kolom untuk tetap memakai kunci ini.":"Belum ada kunci Gemini tersimpan.";
   if(CFG.gemini_model&&![...$("#cfg-gmodel").options].some(o=>o.value===CFG.gemini_model))$("#cfg-gmodel").insertAdjacentHTML("beforeend",`<option value="${esc(CFG.gemini_model)}">${esc(CFG.gemini_model)}</option>`);$("#cfg-gmodel").value=CFG.gemini_model||"";$("#cfg-dir").textContent=CFG.dir||"";voiceFields();ytFields();if(lastNarr&&$("#o-scriptfull"))renderScriptFull(lastNarr);
   const p=CFG.profile||{};PROFILE_FIELDS.forEach(([k,id])=>{if(p[k]!=null)$(id).value=p[k]});
-  $("#hdr-channel").textContent=p.name?p.name:"Studio kerja channel YouTube"}
+  $("#hdr-channel").textContent=p.name||""}
 function readProfile(){const p={};PROFILE_FIELDS.forEach(([k,id])=>p[k]=$(id).value.trim());return p}
 async function saveConfig(extra,st){const body={model:$("#cfg-model").value,effort:$("#cfg-effort").value,profile:readProfile(),...extra};const j=await api("/api/config",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
   if(j.error){st.className="status err";st.textContent=j.error;return false}st.className="status";st.textContent="Tersimpan.";await loadConfig();return true}
@@ -743,43 +768,107 @@ $("#app-quit").addEventListener("click",async()=>{await fetch("/api/quit",{metho
 async function loadData(){const j=await api("/api/data");YT=(j&&!j.error&&(j.videos||j.daily))?j:null;
   if(YT&&YT.daily?.length){const ld=new Date(YT.daily[YT.daily.length-1][0]+"T12:00:00"),dim=new Date(ld.getFullYear(),ld.getMonth()+1,0).getDate();YT.partialLast=ld.getDate()<dim}
   renderGrowth();renderDash()}
-/* ---------- DASHBOARD & CALENDAR ---------- */
+/* Dashboard and calendar */
 const TYPE_LABEL={video:"Video",short:"Shorts",post:"Post"},STATUS_LABEL={ide:"Ide",naskah:"Naskah",rekam:"Rekam",edit:"Edit",siap:"Siap upload",tayang:"Sudah tayang"};
 const plans=()=>LAST.plans?.data||[];
 async function savePlans(list){list.sort((a,b)=>a.date.localeCompare(b.date));await remember("plans",list);renderDash()}
 const isoDay=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
 let calMonth=(()=>{const d=new Date();return new Date(d.getFullYear(),d.getMonth(),1)})();
-function renderStats(){const today=isoDay(new Date()),lf=longForm(),sh=(YT?.videos||[]).filter(v=>v.dur<120),t=YT?.totals||{};
-  const upcoming=plans().filter(p=>p.date>=today&&p.status!=="tayang").length;
-  const cards=[["Video panjang",YT?nf(lf.length):"-"],["Shorts",YT?nf(sh.length):"-"],["Views 30 hari",YT?.daily?.length?nf(lastDays(30)):"-"],["Subscriber bersih",t.subs!=null?(t.subs>=0?"+":"")+nf(t.subs):"-"],["Terjadwal",nf(upcoming)],["Estimasi pendapatan",t.revenue!=null?money(t.revenue):"-"]];
-  $("#d-stats").innerHTML=cards.map(([l,v])=>`<div class="stat"><span>${l}</span><b>${v}</b></div>`).join("")+(YT?"":`<p class="note stats-note">Angka channel muncul setelah data YouTube Studio diimpor di menu Data &amp; cuan.</p>`)}
+let mcMonth=new Date(calMonth),weekStart=(()=>{const d=new Date();d.setHours(12,0,0,0);return d})();
+let view="week",typeF="all",query="",mcFocus=null;
+const STAGES=["ide","naskah","rekam","edit","siap","tayang"];
+const DOW=["Min","Sen","Sel","Rab","Kam","Jum","Sab"];
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const match=p=>(typeF==="all"||p.type===typeF)&&(!query||(p.title||"").toLowerCase().includes(query));
+const pubs=()=>(YT?.videos||[]).filter(v=>v.d&&(typeF==="all"||(typeF==="short"?v.dur<120:typeF==="video"&&v.dur>=120))&&(!query||(v.t||"").toLowerCase().includes(query)));
+const thumbUrl=p=>p.thumb?`/api/thumb/${encodeURIComponent(p.id)}?v=${encodeURIComponent(p.thumb)}`:"";
+function cardHTML(p){const st=STAGES.indexOf(p.status),pct=Math.round((Math.max(st,0)+1)/STAGES.length*100),cls=p.status==="ide"?"ide":p.type;
+  return `<button type="button" class="k ${esc(cls)}${p.status==="tayang"?" tayang":""}" data-plan-id="${esc(p.id)}">${p.thumb?`<img src="${thumbUrl(p)}" alt="">`:""}<span class="in"><span class="lb">${p.status==="ide"?"Ide, ":""}${TYPE_LABEL[p.type]||""}</span><span class="tt">${esc(p.title)}</span><span class="pg" role="img" aria-label="Status ${esc(STATUS_LABEL[p.status]||"")}"><i style="width:${pct}%"></i></span><span class="ft">${esc(STATUS_LABEL[p.status]||"")}</span></span></button>`}
+function renderWeek(){const today=isoDay(new Date()),end=addDays(weekStart,6);
+  $("#wk-title").textContent=weekStart.getMonth()===end.getMonth()?`${weekStart.getDate()} sampai ${end.getDate()} ${BN[end.getMonth()]} ${end.getFullYear()}`:`${weekStart.getDate()} ${BN[weekStart.getMonth()]} sampai ${end.getDate()} ${BN[end.getMonth()]}`;
+  let h="";for(let i=0;i<7;i++){const d=addDays(weekStart,i),iso=isoDay(d);
+    const items=plans().filter(p=>p.date===iso&&match(p)).map(cardHTML).join("")+pubs().filter(v=>v.d===iso).map(v=>`<div class="k pub"><span class="in"><span class="lb">Tayang, ${v.dur<120?"Shorts":"video panjang"}</span><span class="tt">${esc(v.t)}</span><span class="ft">${nf(v.v)} views</span></span></div>`).join("");
+    h+=`<div class="day${iso===today?" today":""}"><div class="dh"><b>${d.getDate()}</b>${DOW[d.getDay()]}</div>${items}<button type="button" class="add" data-new="${iso}" aria-label="Tambah rencana ${d.getDate()} ${BN[d.getMonth()]}">+ Tambah</button></div>`}
+  $("#wk").innerHTML=h}
 function renderCal(){const y=calMonth.getFullYear(),m=calMonth.getMonth(),first=new Date(y,m,1),days=new Date(y,m+1,0).getDate(),lead=(first.getDay()+6)%7,today=isoDay(new Date());
-  $("#cal-title").textContent=first.toLocaleDateString("id-ID",{month:"long",year:"numeric"});
-  const byDay={};const add=(d,html)=>{(byDay[d]=byDay[d]||[]).push(html)};
-  (YT?.videos||[]).forEach(v=>{if(v.d&&v.d.startsWith(`${y}-${String(m+1).padStart(2,"0")}`))add(v.d,`<span class="ev pub" title="${esc(v.t)}, ${nf(v.v)} views"><i>${v.dur<120?"Shorts":"Tayang"}</i>${esc(v.t)}</span>`)});
-  plans().forEach(p=>add(p.date,`<button type="button" class="ev ${esc(p.type)}${p.status==="tayang"?" done":""}" data-plan-id="${esc(p.id)}" title="${esc(p.title)}, ${STATUS_LABEL[p.status]||""}"><i>${STATUS_LABEL[p.status]||""}</i>${esc(p.title)}</button>`));
-  const head=["Sen","Sel","Rab","Kam","Jum","Sab","Min"].map(d=>`<div class="cal-dow" role="columnheader">${d}</div>`).join("");
+  const title=first.toLocaleDateString("id-ID",{month:"long",year:"numeric"});if(view==="month")$("#wk-title").textContent=title;
+  const byDay={};const add=(d,html)=>{(byDay[d]=byDay[d]||[]).push(html)};const pre=`${y}-${String(m+1).padStart(2,"0")}`;
+  pubs().forEach(v=>{if(v.d.startsWith(pre))add(v.d,`<span class="ev pub" title="${esc(v.t)}, ${nf(v.v)} views"><i>${v.dur<120?"Shorts":"Tayang"}</i>${esc(v.t)}</span>`)});
+  plans().filter(match).forEach(p=>add(p.date,`<button type="button" class="ev ${esc(p.type)}${p.status==="tayang"?" done":""}" data-plan-id="${esc(p.id)}" title="${esc(p.title)}, ${STATUS_LABEL[p.status]||""}"><i>${STATUS_LABEL[p.status]||""}</i>${esc(p.title)}</button>`));
+  const head=["Sen","Sel","Rab","Kam","Jum","Sab","Min"].map(d=>`<div class="cal-dow" aria-hidden="true">${d}</div>`).join("");
   let cells="";for(let i=0;i<lead;i++)cells+=`<div class="cal-day off" aria-hidden="true"></div>`;
-  for(let d=1;d<=days;d++){const iso=`${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
-    cells+=`<div class="cal-day${iso===today?" today":""}" role="gridcell"><button type="button" class="cal-num" data-new="${iso}" aria-label="Tambah rencana ${d} ${$("#cal-title").textContent}">${d}</button>${(byDay[iso]||[]).join("")}</div>`}
+  for(let d=1;d<=days;d++){const iso=`${pre}-${String(d).padStart(2,"0")}`;
+    cells+=`<div class="cal-day${iso===today?" today":""}"><button type="button" class="cal-num" data-new="${iso}" aria-label="Tambah rencana ${d} ${title}">${d}</button>${(byDay[iso]||[]).join("")}</div>`}
   const tail=(7-(lead+days)%7)%7;for(let i=0;i<tail;i++)cells+=`<div class="cal-day off" aria-hidden="true"></div>`;
   $("#cal").innerHTML=head+cells}
-function renderUpcoming(){const today=isoDay(new Date()),list=plans().filter(p=>p.date>=today&&p.status!=="tayang").slice(0,8);
-  $("#d-upcoming").innerHTML=`<span class="layer">Berikutnya</span><h3>Rencana yang akan datang</h3>`+(list.length?`<ul class="up">${list.map(p=>`<li><span class="date">${new Date(p.date+"T12:00:00").toLocaleDateString("id-ID",{weekday:"short",day:"numeric",month:"short"})}</span><button type="button" class="linkish" data-plan-id="${esc(p.id)}">${esc(p.title)}</button><span class="chip">${TYPE_LABEL[p.type]||""}, ${STATUS_LABEL[p.status]||""}</span></li>`).join("")}</ul>`:`<p class="note">Belum ada rencana. Klik tanggal di kalender, atau buat ide di menu Ide &amp; jadwal lalu klik "Masukkan ke kalender".</p>`)}
-function renderDash(){if(!$("#d-stats"))return;renderStats();renderCal();renderUpcoming()}
-let editing=null;
-function openPlan(p){editing=p.id?p:null;$("#plan-dlg-title").textContent=editing?"Ubah rencana":"Rencana baru";$("#pl-title").value=p.title||"";$("#pl-date").value=p.date||isoDay(new Date());$("#pl-type").value=p.type||"video";$("#pl-status").value=p.status||"ide";$("#pl-note").value=p.note||"";$("#pl-del").hidden=!editing;$("#pl-tools").hidden=!editing;$("#plan-dlg").showModal();$("#pl-title").focus()}
+function renderMini(){const y=mcMonth.getFullYear(),m=mcMonth.getMonth(),days=new Date(y,m+1,0).getDate(),lead=(new Date(y,m,1).getDay()+6)%7,today=isoDay(new Date()),pre=`${y}-${String(m+1).padStart(2,"0")}`;
+  $("#mc-title").textContent=new Date(y,m,1).toLocaleDateString("id-ID",{month:"long",year:"numeric"});
+  const kind={},pub={};plans().filter(match).forEach(p=>{if(p.date.startsWith(pre)&&!kind[p.date])kind[p.date]=p.type});pubs().forEach(v=>{if(v.d.startsWith(pre))pub[v.d]=1});
+  // One tab stop for the whole month; arrow keys move between days.
+  const stop=mcFocus&&mcFocus.startsWith(pre)?mcFocus:today.startsWith(pre)?today:pre+"-01";
+  let h=["S","S","R","K","J","S","M"].map(d=>`<span class="dow" aria-hidden="true">${d}</span>`).join("");for(let i=0;i<lead;i++)h+=`<span class="d e" aria-hidden="true"></span>`;
+  for(let d=1;d<=days;d++){const iso=`${pre}-${String(d).padStart(2,"0")}`,k=kind[iso];
+    h+=`<button type="button" tabindex="${iso===stop?0:-1}" class="d${k?" "+k:""}${pub[iso]?" pub":""}${iso===today?" today":""}" data-day="${iso}" aria-label="${d} ${$("#mc-title").textContent}${k?", ada rencana "+(TYPE_LABEL[k]||""):""}${pub[iso]?", ada video tayang":""}">${d}</button>`}
+  $("#mc").innerHTML=h;
+  const n=plans().filter(p=>p.date.startsWith(pre)&&p.status!=="tayang").length;$("#mc-sub").textContent=n?`${n} rencana bulan ini`:"Belum ada rencana bulan ini"}
+function renderNext(){const today=isoDay(new Date()),p=plans().filter(x=>x.date>=today&&x.status!=="tayang")[0],el=$("#next-up");
+  if(!p){el.className="next noimg";el.innerHTML=`<div class="top"><span>Upload berikutnya</span></div><h3>Belum ada jadwal</h3><p>Buat rencana video supaya jadwal upload kelihatan di sini.</p><div class="row"><button type="button" class="p" data-act="new">Buat rencana</button></div>`;return}
+  const d=new Date(p.date+"T12:00:00"),days=Math.round((d-new Date(today+"T12:00:00"))/864e5),when=days===0?"Hari ini":days===1?"Besok":`${days} hari lagi`;
+  el.className="next"+(p.thumb?"":" noimg");
+  el.innerHTML=`<div class="top"><span>${d.toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"short"})}</span><span class="badge">${when}</span></div><h3>${esc(p.title)}</h3><div class="row"><button type="button" class="p" data-act="tools" data-id="${esc(p.id)}">Buka naskah</button><button type="button" class="s" data-plan-id="${esc(p.id)}">Ubah</button></div>${p.thumb?`<img class="stk" src="${thumbUrl(p)}" alt="">`:""}`}
+function renderStages(){const today=isoDay(new Date()),list=plans().filter(p=>p.date>=today&&p.status!=="tayang");const C={ide:"var(--accent)",naskah:"var(--bone)",rekam:"var(--stone)",edit:"var(--rust)",siap:"var(--ok)"};
+  $("#stages").innerHTML=STAGES.slice(0,5).map(s=>`<li style="--c:${C[s]}"><i></i>${STATUS_LABEL[s]}<b>${list.filter(p=>p.status===s).length}</b></li>`).join("")}
+function renderViews(){const el=$("#vc"),d=YT?.daily||[];
+  if(d.length<14){$("#vc-sub").textContent="";el.innerHTML=`<p class="empty-s" style="grid-column:1/-1">Grafik muncul setelah data Studio diimpor atau YouTube tersambung.</p>`;return}
+  const cur=d.slice(-7),prev=d.slice(-14,-7),sum=cur.reduce((a,x)=>a+x[1],0),psum=prev.reduce((a,x)=>a+x[1],0),top=niceStep(Math.max(...cur.map(x=>x[1]),...prev.map(x=>x[1]),1)/4)*4;
+  $("#vc-sub").innerHTML=`7 hari terakhir: <b>${nf(sum)}</b> views, minggu sebelumnya ${nf(psum)}`;
+  const best=cur.reduce((b,x,i)=>x[1]>cur[b][1]?i:b,0);
+  el.innerHTML=`<div class="ax" aria-hidden="true">${[4,3,2,1,0].map(i=>`<span>${short(top*i/4)}</span>`).join("")}</div><div class="bars">${cur.map((x,i)=>{const dt=new Date(x[0]+"T12:00:00");return `<button type="button" class="b${i===best?" on":""}" data-i="${i}" aria-label="${DOW[dt.getDay()]} ${dt.getDate()} ${BN[dt.getMonth()]}: ${nf(x[1])} views, minggu sebelumnya ${nf(prev[i][1])}"><span class="g" style="height:${prev[i][1]/top*100}%"></span><span class="f" style="height:${x[1]/top*100}%"></span><span class="lbl">${DOW[dt.getDay()]}</span></button>`}).join("")}<div class="tp" id="vc-tp" aria-hidden="true"></div></div>`;
+  const tip=i=>{const x=cur[i],dt=new Date(x[0]+"T12:00:00"),b=el.querySelector(`.b[data-i="${i}"]`),tp=$("#vc-tp");el.querySelectorAll(".b").forEach(z=>z.classList.toggle("on",z===b));
+    tp.innerHTML=`<p><b>${DOW[dt.getDay()]} ${dt.getDate()} ${BN[dt.getMonth()]}</b></p><p><i class="sq a"></i>Minggu ini<span>${nf(x[1])}</span></p><p><i class="sq c"></i>Minggu sebelumnya<span>${nf(prev[i][1])}</span></p>`;
+    const bars=el.querySelector(".bars"),bw=bars.clientWidth,left=b.offsetLeft+b.offsetWidth+8,h=bars.clientHeight-24;tp.style.left=(left+172>bw?b.offsetLeft-180:left)+"px";tp.style.top=Math.max(0,h-h*x[1]/top-10)+"px"};
+  el.querySelectorAll(".b").forEach(b=>{const f=()=>tip(+b.dataset.i);b.addEventListener("mouseenter",f);b.addEventListener("focus",f)});
+  el.querySelector(".bars").addEventListener("mouseleave",()=>tip(best));requestAnimationFrame(()=>tip(best))}
+function renderTop(){const list=longForm().sort((a,b)=>b.v-a.v).slice(0,4);
+  $("#topv").innerHTML=list.length?list.map(v=>`<li><span class="pl" aria-hidden="true"><svg viewBox="0 0 14 14"><path d="M4 2.5v9l7.5-4.5z"/></svg></span><span class="t" title="${esc(v.t)}">${esc(v.t)}</span><span class="v">${nf(v.v)}</span>${v.ctr?`<span class="c">${(+v.ctr).toLocaleString("id-ID",{maximumFractionDigits:1})}%</span>`:""}</li>`).join(""):`<li class="empty-s">Belum ada data video.</li>`}
+function renderSum(){const t=YT?.totals||{},has=YT?.daily?.length>=60;let pct="";
+  if(has){const a=lastDays(30),b=lastDays(30,30);if(b){const p=Math.round((a/b-1)*100);pct=`<em class="${p<0?"dn":"upc"}">${p>0?"+":""}${p}%</em>`}}
+  const today=isoDay(new Date()),up=plans().filter(p=>p.date>=today&&p.status!=="tayang").length;
+  $("#sum").innerHTML=`<div class="st"><span>Views 30 hari</span><b>${YT?.daily?.length?nf(lastDays(30)):"-"}${pct}</b></div><div class="st"><span>Subscriber bersih</span><b>${t.subs!=null?(t.subs>=0?"+":"")+nf(t.subs):"-"}</b></div><div class="st"><span>Estimasi pendapatan</span><b>${t.revenue!=null?moneyShort(t.revenue):"-"}</b></div><div class="st"><span>Rencana terjadwal</span><b>${nf(up)}</b></div>`}
+function renderBoard(){$("#wk").hidden=view!=="week";$("#cal-wrap").hidden=view!=="month";if(view==="week")renderWeek();else renderCal()}
+function renderDash(){if(!$("#wk"))return;renderBoard();renderMini();renderNext();renderStages();renderViews();renderTop();renderSum()}
+let editing=null,pendingThumb=undefined;
+function openPlan(p){editing=p.id?p:null;pendingThumb=undefined;$("#plan-dlg-title").textContent=editing?"Ubah rencana":"Rencana baru";$("#pl-title").value=p.title||"";$("#pl-date").value=p.date||isoDay(new Date());$("#pl-type").value=p.type||"video";$("#pl-status").value=p.status||"ide";$("#pl-note").value=p.note||"";$("#pl-del").hidden=!editing;$("#pl-tools").hidden=!editing;
+  setThumbPreview(p.thumb?thumbUrl(p):"");$("#plan-dlg").showModal();$("#pl-title").focus()}
+function setThumbPreview(src){$("#pl-thumb-box").innerHTML=src?`<img src="${esc(src)}" alt="">`:"";$("#pl-thumb-del").hidden=!src}
+$("#pl-thumb-pick").addEventListener("click",()=>$("#pl-thumb-file").click());
+$("#pl-thumb-file").addEventListener("change",e=>{const f=e.target.files[0];e.target.value="";if(!f)return;if(f.size>8*1024*1024){alert("Gambar terlalu besar, maksimal 8 MB.");return}pendingThumb=f;setThumbPreview(URL.createObjectURL(f))});
+$("#pl-thumb-del").addEventListener("click",()=>{pendingThumb=null;setThumbPreview("")});
 $("#plan-form").addEventListener("submit",async e=>{if(e.submitter?.value!=="save")return;const list=plans().filter(x=>!editing||x.id!==editing.id);
-  list.push({id:editing?.id||Date.now().toString(36)+Math.random().toString(36).slice(2,6),title:$("#pl-title").value.trim(),date:$("#pl-date").value,type:$("#pl-type").value,status:$("#pl-status").value,note:$("#pl-note").value.trim()});
-  const d=new Date($("#pl-date").value+"T12:00:00");calMonth=new Date(d.getFullYear(),d.getMonth(),1);await savePlans(list)});
-$("#pl-del").addEventListener("click",async()=>{if(!editing)return;$("#plan-dlg").close();await savePlans(plans().filter(x=>x.id!==editing.id))});
-$("#pl-tools").addEventListener("click",()=>{const t=$("#pl-title").value.trim();$("#plan-dlg").close();["#script-topic","#seo-topic","#thumb-topic","#shorts-topic"].forEach(id=>$(id).value=t);$("#thumb-title").value=t;show("script")});
+  const id=editing?.id||Date.now().toString(36)+Math.random().toString(36).slice(2,6);let thumb=editing?.thumb||"";
+  if(pendingThumb){const r=await api("/api/thumb?id="+encodeURIComponent(id),{method:"POST",headers:{"Content-Type":pendingThumb.type||"application/octet-stream"},body:pendingThumb});if(r.ok)thumb=String(Date.now());else alert(r.error||"Thumbnail gagal disimpan.")}
+  else if(pendingThumb===null&&thumb){await api("/api/thumb?id="+encodeURIComponent(id),{method:"DELETE"});thumb=""}
+  list.push({id,title:$("#pl-title").value.trim(),date:$("#pl-date").value,type:$("#pl-type").value,status:$("#pl-status").value,note:$("#pl-note").value.trim(),...(thumb?{thumb}:{})});
+  const d=new Date($("#pl-date").value+"T12:00:00");calMonth=new Date(d.getFullYear(),d.getMonth(),1);mcMonth=new Date(calMonth);await savePlans(list)});
+$("#pl-del").addEventListener("click",async()=>{if(!editing)return;$("#plan-dlg").close();if(editing.thumb)await api("/api/thumb?id="+encodeURIComponent(editing.id),{method:"DELETE"});await savePlans(plans().filter(x=>x.id!==editing.id))});
+const toTools=t=>{["#script-topic","#seo-topic","#thumb-topic","#shorts-topic"].forEach(id=>$(id).value=t);$("#thumb-title").value=t;show("script")};
+$("#pl-tools").addEventListener("click",()=>{const t=$("#pl-title").value.trim();$("#plan-dlg").close();toTools(t)});
 $("#banner-close").addEventListener("click",()=>{store.set("banner-off",true);$("#banner-key").hidden=true});
-$("#plan-new").addEventListener("click",()=>openPlan({}));
-$("#cal-prev").addEventListener("click",()=>{calMonth=new Date(calMonth.getFullYear(),calMonth.getMonth()-1,1);renderCal()});
-$("#cal-next").addEventListener("click",()=>{calMonth=new Date(calMonth.getFullYear(),calMonth.getMonth()+1,1);renderCal()});
-$("#cal-today").addEventListener("click",()=>{const d=new Date();calMonth=new Date(d.getFullYear(),d.getMonth(),1);renderCal()});
+$("#plan-new").addEventListener("click",()=>openPlan({}));$("#rail-plus").addEventListener("click",()=>openPlan({}));
+$("#skin-tog").addEventListener("click",()=>{const k=document.documentElement.dataset.skin==="lumut"?"batu":"lumut";document.documentElement.dataset.skin=k;store.set("skin",k);if(YT&&!$("#p-growth").hidden)chart()});
+document.querySelectorAll(".seg button").forEach(b=>b.addEventListener("click",()=>{view=b.dataset.view;document.querySelectorAll(".seg button").forEach(x=>x.setAttribute("aria-pressed",x===b));renderBoard()}));
+const shift=n=>{if(view==="week")weekStart=addDays(weekStart,7*n);else calMonth=new Date(calMonth.getFullYear(),calMonth.getMonth()+n,1);renderBoard()};
+$("#wk-prev").addEventListener("click",()=>shift(-1));$("#wk-next").addEventListener("click",()=>shift(1));
+$("#wk-today").addEventListener("click",()=>{const d=new Date();d.setHours(12,0,0,0);weekStart=d;calMonth=new Date(d.getFullYear(),d.getMonth(),1);renderBoard()});
+$("#pp-q").addEventListener("input",e=>{query=e.target.value.trim().toLowerCase();renderBoard();renderMini()});
+document.querySelectorAll("#mc-pills button").forEach(b=>b.addEventListener("click",()=>{typeF=b.dataset.f;document.querySelectorAll("#mc-pills button").forEach(x=>x.setAttribute("aria-pressed",x===b));renderMini();renderBoard()}));
+$("#mc-prev").addEventListener("click",()=>{mcMonth=new Date(mcMonth.getFullYear(),mcMonth.getMonth()-1,1);renderMini()});
+$("#mc-next").addEventListener("click",()=>{mcMonth=new Date(mcMonth.getFullYear(),mcMonth.getMonth()+1,1);renderMini()});
+$("#mc").addEventListener("keydown",e=>{const b=e.target.closest("[data-day]"),step={ArrowLeft:-1,ArrowRight:1,ArrowUp:-7,ArrowDown:7}[e.key];if(!b||step==null)return;e.preventDefault();
+  const d=addDays(new Date(b.dataset.day+"T12:00:00"),step);mcFocus=isoDay(d);mcMonth=new Date(d.getFullYear(),d.getMonth(),1);renderMini();$(`#mc [data-day="${mcFocus}"]`).focus()});
 document.addEventListener("click",async e=>{
+  const day=e.target.closest("[data-day]");if(day){const d=new Date(day.dataset.day+"T12:00:00");weekStart=d;mcFocus=day.dataset.day;calMonth=new Date(d.getFullYear(),d.getMonth(),1);view="week";document.querySelectorAll(".seg button").forEach(x=>x.setAttribute("aria-pressed",x.dataset.view==="week"));show("dash");return}
+  const act=e.target.closest("[data-act]");if(act){if(act.dataset.act==="new")return openPlan({});const p=plans().find(x=>x.id===act.dataset.id);if(p)toTools(p.title);return}
   const n=e.target.closest("[data-new]");if(n)return openPlan({date:n.dataset.new});
   const pi=e.target.closest("[data-plan-id]");if(pi){const p=plans().find(x=>x.id===pi.dataset.planId);if(p)openPlan(p);return}
   const pl=e.target.closest("[data-plan]");if(pl){await savePlans([...plans(),{id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),title:pl.dataset.plan,date:pl.dataset.date,type:"video",status:"ide",note:""}]);pl.textContent="Masuk kalender";pl.disabled=true;return}
@@ -790,6 +879,6 @@ const RENDER={ideas:d=>d?.ideas?.length&&(renderIdeas(d.ideas),true),script:d=>d
 async function loadLast(){const j=await api("/api/last");if(!j||j.error)return;LAST=j;
   for(const [k,f] of Object.entries(RENDER)){const r=LAST[k];if(!r)continue;try{if(f(r.data)){const st=$("#s-"+k);if(st){st.className="status";st.textContent="Hasil terakhir, dibuat "+new Date(r.at).toLocaleString("id-ID",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})+". Tidak memakai saldo lagi."}}}catch{}}
   $("#cfg-spent").textContent=spentText()}
-(async()=>{await loadConfig();await loadData();await loadLast();show(store.get("tab","dash"));
+(async()=>{await loadConfig();await loadData();await loadLast();show(store.get("tab","dash"),true);
   if(CFG.yt_connected&&Date.now()/1000-(CFG.yt_synced||0)>6*3600)ytSync(null,null)})();
 </script>

@@ -1,0 +1,4 @@
+archivo.woff2: Archivo, Copyright 2020 The Archivo Project Authors (https://github.com/Omnibus-Type/Archivo)
+familjen.woff2: Familjen Grotesk, Copyright 2022 The Familjen Grotesk Project Authors (https://github.com/Familjen-Grotesk/Familjen-Grotesk)
+Both are licensed under the SIL Open Font License 1.1: https://openfontlicense.org
+Latin subsets as served by Google Fonts.

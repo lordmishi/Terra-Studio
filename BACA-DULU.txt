@@ -1,10 +1,29 @@
-TERRA STUDIO 1.7.1 (Windows 10/11, 64-bit)
-=========================================
+TERRA STUDIO 1.8 (Windows 10/11, 64-bit)
+=======================================
 
-UPDATE KE VERSI BARU (mulai 1.7.1)
+UPDATE KE VERSI BARU
 Cukup ekstrak zip baru lalu buka TerraStudio.exe. Kalau versi lama masih
 jalan, versi baru otomatis menutupnya. Data dan pengaturan tidak hilang
 (tersimpan di %APPDATA%\TerraStudio).
+
+BARU DI 1.8
+- Jendela aplikasi sendiri. Tidak lagi lewat jendela Edge; tidak ada
+  tab, tidak ada alamat web. Ikon Terra Studio di taskbar.
+- Desain baru: menu ikon di kiri, kalender upload kecil, kartu
+  "Upload berikutnya", papan 7 hari / bulan, grafik views harian,
+  video teratas, dan ringkasan.
+- Dua tema: batu (gelap) dan lumut (hijau). Ganti lewat tombol tema
+  di bawah menu kiri.
+- Thumbnail di rencana: buka rencana, klik "Pilih gambar" (JPG, PNG,
+  atau WebP, maksimal 8 MB). Gambarnya tampil di kartu kalender.
+- Font sudah ada di dalam aplikasi, tampilan sama walau PC offline.
+- Bisa dipakai penuh dengan keyboard (Tab, panah di kalender kecil).
+
+PENTING: FILE WebView2Loader.dll
+Biarkan WebView2Loader.dll di folder yang sama dengan TerraStudio.exe.
+Tanpa file itu TerraStudio.exe tidak mau jalan. Jendela aplikasi memakai
+Microsoft WebView2 yang sudah terpasang di Windows 10/11. Kalau WebView2
+bermasalah, aplikasi otomatis membuka jendela Edge seperti versi lama.
 
 Aplikasi PC untuk channel YouTube: ide video dan kalender, naskah per babak,
 judul/deskripsi/tag, teks thumbnail, ide Shorts (di menu Data & cuan), dan
@@ -17,8 +36,7 @@ CARA MULAI
    - Kalau muncul "Windows protected your PC" (SmartScreen): klik "More info",
      lalu "Run anyway". Ini muncul karena file .exe belum ditandatangani
      (code signing), bukan karena virus.
-   - Aplikasi terbuka sebagai jendela sendiri (memakai Edge atau Chrome yang
-     sudah ada di PC). Tidak perlu install apa pun.
+   - Aplikasi terbuka sebagai jendela sendiri. Tidak perlu install apa pun.
 3. Saat pertama dibuka, aplikasi otomatis mengisi profil channel dari
    profil-terra.json dan mengimpor data YouTube Studio dari file
    Content_....zip yang ada di folder yang sama dengan TerraStudio.exe.
@@ -26,11 +44,14 @@ CARA MULAI
 4. Buka menu Pengaturan untuk memilih cara memakai AI.
 
 DASHBOARD DAN KALENDER KONTEN
-Halaman pertama berisi angka channel (setelah data Studio diimpor) dan
-kalender bulanan. Video yang sudah tayang muncul otomatis dari data Studio.
-Klik tanggal untuk menambah rencana (video, Shorts, atau post komunitas),
-klik rencana untuk mengubah status: Ide, Naskah, Rekam, Edit, Siap upload,
-Sudah tayang. Dari menu Ide & jadwal, klik "Masukkan ke kalender".
+Halaman pertama berisi papan rencana 7 hari ke depan (tombol "Bulan" untuk
+kalender sebulan), grafik views harian, video teratas, dan ringkasan.
+Video yang sudah tayang muncul otomatis dari data Studio.
+Klik "+ Tambah" atau "+ Jadwalkan konten" untuk menambah rencana (video,
+Shorts, atau post komunitas), klik kartu rencana untuk mengubah status:
+Ide, Naskah, Rekam, Edit, Siap upload, Sudah tayang, atau menambah
+thumbnail. Dari menu Ide & jadwal, klik "Masukkan ke kalender".
+Kalender kecil di kiri: klik tanggal untuk melihat 7 hari mulai tanggal itu.
 Aplikasi tidak mengunggah video ke YouTube; upload tetap lewat YouTube Studio.
 
 NASKAH PENUH
@@ -133,23 +154,30 @@ DI MANA DATA DISIMPAN
                  Windows, hanya bisa dibuka akun Windows Anda)
   data.json    = data Studio yang sudah diimpor
   last.json    = hasil AI terakhir, rencana kalender, dan catatan biaya
+  thumbs\      = gambar thumbnail rencana
+  webview\     = data jendela aplikasi (boleh dihapus kalau tampilan error)
 
 BACKUP
 Pengaturan > Backup > "Simpan backup" menyimpan file .json ke folder Downloads
-(profil, data Studio, kalender, hasil AI; API key tidak ikut). Simpan file itu
+(profil, data Studio, kalender, hasil AI; API key dan gambar thumbnail
+rencana tidak ikut). Simpan file itu
 di flashdisk atau Google Drive. Untuk memulihkan: "Pulihkan dari backup".
 Data hanya dikirim ke layanan yang Anda pakai: Anthropic atau Google saat
 Generate, ElevenLabs saat membuat voice over, dan Google saat menarik data
 YouTube.
 
 MENUTUP APLIKASI
-Tutup jendelanya. Aplikasi berhenti sendiri sekitar 3 menit kemudian.
+Tutup jendelanya (tombol X). Aplikasi langsung berhenti.
 Atau klik "Tutup aplikasi" di Pengaturan.
+Kalau aplikasi sedang memakai jendela Edge cadangan, aplikasi berhenti
+sendiri sekitar 3 menit setelah jendelanya ditutup.
 
 MASALAH UMUM
 - "Tidak bisa terhubung ke api.anthropic.com" / sertifikat: antivirus yang memindai HTTPS kadang
   menghalangi. Coba izinkan TerraStudio.exe di antivirus.
 - "Saldo API habis": isi Billing di console.anthropic.com.
+- Muncul pesan "WebView2Loader.dll was not found": file itu hilang dari
+  folder. Ekstrak ulang zip, jangan pindahkan TerraStudio.exe sendirian.
 - Jendela tidak muncul: buka browser ke http://127.0.0.1:47815
   (kalau port itu dipakai program lain, coba 47816, 47817, atau 47818)
 
