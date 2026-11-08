@@ -244,4 +244,11 @@ dialog{border-radius:12px}
 .tip{font:13px/1.35 var(--f-body);border-radius:6px}
 /* Nav icons: Streamline Core outline, Craftwork "Core Essential UI Icons" pack (free, Craftwork Commercial License) */
 .side nav.tabs button svg{stroke-width:1.05}
+/* 1.6.1: forms keep their natural height inside a row; buttons never stretch */
+.grid2,.grid3,.panel{align-items:start}
+form.tool{align-content:start}
+.chips{align-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;min-height:0;line-height:1;white-space:nowrap;align-self:start}
+.btn.ghost{height:40px}
+.btn.icon{width:40px;padding:0}
 </style>

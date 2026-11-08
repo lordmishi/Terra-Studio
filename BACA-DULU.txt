@@ -1,4 +1,4 @@
-TERRA STUDIO 1.6 (Windows 10/11, 64-bit)
+TERRA STUDIO 1.6.1 (Windows 10/11, 64-bit)
 =========================================
 
 Aplikasi PC untuk channel YouTube: ide video dan kalender, naskah per babak,
@@ -14,7 +14,11 @@ CARA MULAI
      (code signing), bukan karena virus.
    - Aplikasi terbuka sebagai jendela sendiri (memakai Edge atau Chrome yang
      sudah ada di PC). Tidak perlu install apa pun.
-3. Buka menu Pengaturan.
+3. Saat pertama dibuka, aplikasi otomatis mengisi profil channel dari
+   profil-terra.json dan mengimpor data YouTube Studio dari file
+   Content_....zip yang ada di folder yang sama dengan TerraStudio.exe.
+   Jadi biarkan kedua file itu tetap di samping TerraStudio.exe.
+4. Buka menu Pengaturan untuk memilih cara memakai AI.
 
 DASHBOARD DAN KALENDER KONTEN
 Halaman pertama berisi angka channel (setelah data Studio diimpor) dan
@@ -38,7 +42,7 @@ Memakai kuota karakter langganan ElevenLabs Anda, tanpa biaya tambahan.
 4. Di Kerangka naskah, setelah naskah narasi penuh jadi, klik
    "Buat voice over". Naskah 1.800 kata sekitar 11.000 karakter dan
    butuh 1 sampai 3 menit.
-File MP3 tersimpan di Documents\Terra Studio, bisa diputar langsung di
+File MP3 tersimpan di folder Downloads, bisa diputar langsung di
 aplikasi, dan tombol "Buka folder" membuka foldernya.
 ElevenLabs hanya untuk suara. Gambar dan video tetap lewat Google Flow.
 

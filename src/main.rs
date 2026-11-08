@@ -259,7 +259,9 @@ fn main() {
     };
 
     let dir = app_dir();
-    let cfg = Arc::new(Mutex::new(load_config(&dir)));
+    let mut first = load_config(&dir);
+    first_run_setup(&dir, &mut first);
+    let cfg = Arc::new(Mutex::new(first));
     // Give the window a minute of grace to load before the idle timer counts.
     let last_seen = Arc::new(AtomicU64::new(now() + 60));
     {
@@ -1093,7 +1095,7 @@ mod eleven {
 
     pub fn out_dir(app: &Path) -> PathBuf {
         let base = std::env::var_os("USERPROFILE")
-            .map(|h| PathBuf::from(h).join("Documents").join("Terra Studio"))
+            .map(|h| PathBuf::from(h).join("Downloads"))
             .unwrap_or_else(|| app.join("audio"));
         let _ = fs::create_dir_all(&base);
         base
@@ -1182,6 +1184,33 @@ mod eleven {
 }
 
 // ------------------------------------------------------- YouTube Studio data
+
+/// First start on a PC: pick up files shipped next to the exe, so the user does not
+/// have to paste the profile or import the Studio export by hand.
+/// - profil-*.json fills an empty channel profile.
+/// - *.zip / *.csv from a YouTube Studio export are imported when no data exists yet.
+fn first_run_setup(dir: &Path, c: &mut Config) {
+    let Some(exe_dir) = std::env::current_exe().ok().and_then(|p| p.parent().map(Path::to_path_buf)) else { return };
+    let Ok(entries) = fs::read_dir(&exe_dir) else { return };
+    let files: Vec<PathBuf> = entries.flatten().map(|e| e.path()).filter(|p| p.is_file()).collect();
+    let name_of = |p: &PathBuf| p.file_name().and_then(|n| n.to_str()).unwrap_or("").to_lowercase();
+    let profile_empty = c.profile["name"].as_str().map_or(true, |n| n.trim().is_empty());
+    if profile_empty {
+        if let Some(p) = files.iter().find(|p| { let n = name_of(p); n.starts_with("profil") && n.ends_with(".json") }) {
+            if let Some(v) = fs::read(p).ok().filter(|b| b.len() < 64 * 1024).and_then(|b| serde_json::from_slice::<Value>(&b).ok()).filter(Value::is_object) {
+                c.profile = v;
+                let _ = save_config(dir, c);
+            }
+        }
+    }
+    if !dir.join("data.json").exists() {
+        for p in files.iter().filter(|p| { let n = name_of(p); n.starts_with("content_") && (n.ends_with(".zip") || n.ends_with(".csv")) }) {
+            if let Ok(b) = fs::read(p) {
+                let _ = import(&b, &name_of(p), dir);
+            }
+        }
+    }
+}
 
 fn import(bytes: &[u8], filename: &str, dir: &Path) -> Result<Vec<String>, String> {
     let _guard = DATA_JSON_LOCK.lock().unwrap();
