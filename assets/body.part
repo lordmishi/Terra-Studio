@@ -1,0 +1,516 @@
+<div class="wrap">
+  <header class="top">
+    <div>
+      <span class="layer" id="hdr-channel">Studio kerja channel YouTube</span>
+      <h1>Terra Studio</h1>
+      <p class="sub">Cari ide, susun naskah, siapkan SEO dan thumbnail, lalu baca data channel untuk tahu apa yang perlu dibenahi. Hasil AI ditulis dalam bahasa konten channel Anda.</p>
+    </div>
+    <div class="meter" id="meter"></div>
+  </header>
+
+  <div class="banner" id="banner-key" hidden>
+    <strong>Generator AI belum aktif.</strong> Masukkan API key Anthropic di tab Pengaturan. <button type="button" class="btn ghost" data-goto="settings">Buka Pengaturan</button>
+  </div>
+
+  <nav class="tabs" role="tablist" aria-label="Alat">
+    <button role="tab" id="t-ideas" aria-selected="true" data-tab="ideas">Ide &amp; kalender</button>
+    <button role="tab" id="t-script" aria-selected="false" data-tab="script">Kerangka naskah</button>
+    <button role="tab" id="t-seo" aria-selected="false" data-tab="seo">Paket SEO</button>
+    <button role="tab" id="t-thumb" aria-selected="false" data-tab="thumb">Thumbnail</button>
+    <button role="tab" id="t-growth" aria-selected="false" data-tab="growth">Data &amp; cuan</button>
+    <button role="tab" id="t-settings" aria-selected="false" data-tab="settings">Pengaturan</button>
+  </nav>
+
+  <!-- IDEAS -->
+  <section class="panel" id="p-ideas" role="tabpanel" aria-labelledby="t-ideas">
+    <form class="tool" id="f-ideas">
+      <h2>Generator ide video</h2>
+      <p class="hint">Topik dengan hook kuat, dijadwalkan otomatis. Kalau data Studio sudah diimpor, judul video lama dipakai agar tidak ada ide yang berulang, dan video terlaris dijadikan acuan.</p>
+      <label for="ideas-focus">Fokus tema (opsional)<input id="ideas-focus" placeholder="mis. predator mamalia Zaman Es"></label>
+      <div class="row2">
+        <label for="ideas-n">Jumlah ide<input id="ideas-n" type="number" min="3" max="12" value="6"></label>
+        <label for="ideas-freq">Upload / bulan
+          <select id="ideas-freq"><option value="2">2 video</option><option value="4" selected>4 video</option><option value="8">8 video</option></select>
+        </label>
+      </div>
+      <label for="ideas-start">Mulai tanggal<input id="ideas-start" type="date"></label>
+      <label for="ideas-avoid">Topik yang sudah dibuat<textarea id="ideas-avoid" placeholder="Terisi otomatis setelah impor data Studio"></textarea></label>
+      <button class="btn" type="submit">Buat ide &amp; jadwal</button>
+      <div class="status" id="s-ideas" role="status"></div>
+    </form>
+    <div class="out" id="o-ideas"><div class="empty">Ide dan jadwal upload akan muncul di sini. Isi form di samping, lalu tekan <strong>Buat ide &amp; jadwal</strong>.</div></div>
+  </section>
+
+  <!-- SCRIPT -->
+  <section class="panel" id="p-script" role="tabpanel" aria-labelledby="t-script" hidden>
+    <form class="tool" id="f-script">
+      <h2>Kerangka naskah</h2>
+      <p class="hint">Struktur per babak dengan cold open, open loop untuk menahan penonton, dan titik ajakan membership atau merch yang tidak memotong cerita.</p>
+      <label for="script-topic">Topik video<input id="script-topic" required></label>
+      <label for="script-angle">Sudut cerita / pertanyaan besar<textarea id="script-angle"></textarea></label>
+      <div class="row2">
+        <label for="script-words">Target kata<input id="script-words" type="number" min="500" max="8000" step="100" value="1800"></label>
+        <label for="script-acts">Jumlah babak<input id="script-acts" type="number" min="3" max="7" value="5"></label>
+      </div>
+      <label for="script-tone">Nada
+        <select id="script-tone"><option>Cinematic, awe and mystery</option><option>Investigative, evidence-led</option><option>Survival drama</option><option>Calm, sleep-friendly narration</option></select>
+      </label>
+      <button class="btn" type="submit">Susun kerangka</button>
+      <div class="status" id="s-script" role="status"></div>
+    </form>
+    <div class="out" id="o-script"><div class="empty">Kerangka naskah akan muncul di sini, lengkap dengan proporsi kata per babak dan daftar fakta yang wajib dicek ulang.</div></div>
+  </section>
+
+  <!-- SEO -->
+  <section class="panel" id="p-seo" role="tabpanel" aria-labelledby="t-seo" hidden>
+    <form class="tool" id="f-seo">
+      <h2>Paket SEO</h2>
+      <p class="hint">Kata kunci, 5 judul, deskripsi dengan chapter, hashtag, tag, komentar sematan, dan postingan Komunitas untuk hari tayang.</p>
+      <label for="seo-topic">Topik video<input id="seo-topic" required></label>
+      <label for="seo-facts">Fakta kunci / kerangka (opsional)<textarea id="seo-facts"></textarea></label>
+      <label for="seo-mins">Durasi video (menit)<input id="seo-mins" type="number" min="1" max="180" value="12"></label>
+      <button class="btn" type="submit">Buat paket SEO</button>
+      <div class="status" id="s-seo" role="status"></div>
+    </form>
+    <div class="out" id="o-seo"><div class="empty">Paket SEO akan muncul di sini. Setiap bagian punya tombol Salin untuk ditempel ke YouTube Studio.</div></div>
+  </section>
+
+  <!-- THUMB -->
+  <section class="panel" id="p-thumb" role="tabpanel" aria-labelledby="t-thumb" hidden>
+    <form class="tool" id="f-thumb">
+      <h2>Konsep thumbnail</h2>
+      <p class="hint">Tiga konsep berbeda: teks maksimal 4 kata, prompt gambar siap pakai, komposisi, dan alasan orang akan mengklik.</p>
+      <label for="thumb-topic">Topik video<input id="thumb-topic" required></label>
+      <label for="thumb-title">Judul yang dipakai (opsional)<input id="thumb-title"></label>
+      <label for="thumb-style">Gaya visual
+        <select id="thumb-style"><option>Photoreal cinematic</option><option>Painted illustration</option><option>Dark documentary, high contrast</option><option>Bold minimal graphic</option></select>
+      </label>
+      <button class="btn" type="submit">Buat konsep</button>
+      <div class="status" id="s-thumb" role="status"></div>
+    </form>
+    <div class="out" id="o-thumb"><div class="empty">Tiga konsep thumbnail akan muncul di sini. Prompt gambar bisa disalin ke Midjourney, Ideogram, atau generator gambar lain.</div></div>
+  </section>
+
+  <!-- GROWTH -->
+  <section id="p-growth" role="tabpanel" aria-labelledby="t-growth" hidden>
+    <div id="g-empty" class="card" hidden>
+      <span class="layer">Belum ada data</span>
+      <h3>Impor data YouTube Studio Anda</h3>
+      <ol class="steps">
+        <li>Buka YouTube Studio, lalu Analitik, lalu <strong>Mode lanjutan</strong> (Advanced mode).</li>
+        <li>Pilih rentang waktu, misalnya Sepanjang waktu.</li>
+        <li>Klik ikon unduh di kanan atas, pilih <strong>Nilai yang dipisahkan koma (.csv)</strong>. Anda mendapat file .zip.</li>
+        <li>Klik tombol di bawah dan pilih file .zip itu. Bisa diulang untuk tab Sumber traffic dan Geografi.</li>
+      </ol>
+      <button type="button" class="btn" data-import>Impor file .zip dari Studio</button>
+      <div class="status" id="s-import-empty" role="status"></div>
+    </div>
+
+    <div id="g-full" hidden>
+      <div class="card">
+        <div class="out-head"><span class="layer" id="g-range">Data YouTube Studio</span><span class="chips"><button type="button" class="btn ghost" data-import>Impor data baru</button></span></div>
+        <h3>Rapor channel</h3>
+        <div class="kpis" id="g-kpis"></div>
+        <p style="margin:14px 0 0;font-weight:700">Views per bulan: kapan channel naik, kapan turun?</p>
+        <div class="chart-wrap" id="g-chart-wrap"><svg id="g-chart" role="img" aria-label="Grafik batang views per bulan" style="width:100%;min-width:560px;height:240px;display:block"></svg><div class="tip" id="g-tip" hidden></div></div>
+        <p class="note" id="g-chart-note">Arahkan kursor atau fokus pada batang untuk angka per bulan.</p>
+        <details class="mtable"><summary>Lihat angka per bulan dalam tabel</summary><div style="overflow-x:auto"><table id="g-mtable"></table></div></details>
+        <div class="status" id="s-import" role="status"></div>
+      </div>
+
+      <div class="grid2" style="margin-top:16px">
+        <div class="card">
+          <span class="layer">Diagnosis otomatis</span>
+          <h3>Video terbaik dibanding video terbaru</h3>
+          <div style="overflow-x:auto"><table class="cmp" id="g-cmp"></table></div>
+          <ul class="diag" id="g-diag"></ul>
+          <button type="button" class="btn" id="g-ai-btn">Analisis lebih dalam dengan AI</button>
+          <div class="status" id="s-ai" role="status"></div>
+          <div id="g-ai" class="out" style="margin-top:12px"></div>
+        </div>
+        <div class="card">
+          <span class="layer">Perkiraan, bukan janji</span>
+          <h3>Simulasi pendapatan iklan</h3>
+          <div class="row2" style="margin:10px 0">
+            <label for="g-views">Views / bulan<input id="g-views" type="number" min="0" step="1000" value="10000"></label>
+            <label for="g-rpm"><span>RPM (<span class="cur">Rp</span> per 1.000 views)</span><input id="g-rpm" type="number" min="0" step="100" value="0"></label>
+          </div>
+          <div class="row2">
+            <label for="g-members">Member aktif<input id="g-members" type="number" min="0" value="0"></label>
+            <label for="g-mprice"><span>Harga member (<span class="cur">Rp</span>)</span><input id="g-mprice" type="number" min="0" step="100" value="0"></label>
+          </div>
+          <div id="g-income" style="margin-top:12px"></div>
+          <div class="chips" style="margin-top:10px" id="g-presets"></div>
+          <p class="note" id="g-rpm-note"></p>
+        </div>
+      </div>
+
+      <div class="grid2" style="margin-top:16px" id="g-extra"></div>
+
+      <div class="card" style="margin-top:16px">
+        <span class="layer">Semua video panjang · klik judul kolom untuk mengurutkan</span>
+        <h3>Performa per video</h3>
+        <div style="overflow-x:auto"><table class="vt" id="g-table"></table></div>
+      </div>
+    </div>
+
+    <div class="grid2" style="margin-top:16px">
+      <div class="card">
+        <span class="layer">Tersimpan di komputer ini</span>
+        <h3>Checklist pertumbuhan</h3>
+        <ul class="check" id="g-check"></ul>
+      </div>
+      <form class="tool" id="f-shorts">
+        <h2>Shorts dari video panjang</h2>
+        <p class="hint">Tiap video panjang bisa jadi 3 sampai 5 Shorts yang mengarahkan penonton balik ke video utuh.</p>
+        <label for="shorts-topic">Video sumber<input id="shorts-topic" required></label>
+        <label for="shorts-facts">Momen / fakta paling menarik (opsional)<textarea id="shorts-facts"></textarea></label>
+        <button class="btn" type="submit">Buat 5 ide Shorts</button>
+        <div class="status" id="s-shorts" role="status"></div>
+        <div class="out" id="o-shorts"></div>
+      </form>
+    </div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section id="p-settings" role="tabpanel" aria-labelledby="t-settings" hidden>
+    <div class="grid2">
+      <form class="tool" id="f-key">
+        <h2>Koneksi AI</h2>
+        <p class="hint">Generator memakai API Anthropic (Claude) dengan kunci milik Anda sendiri. Biaya ditagih Anthropic per pemakaian. Buat kunci di <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com</a>, isi saldo, lalu tempel di sini.</p>
+        <label for="cfg-key">API key<input id="cfg-key" type="password" autocomplete="off" placeholder="sk-ant-..."></label>
+        <p class="note" id="cfg-key-hint"></p>
+        <label for="cfg-model">Model
+          <select id="cfg-model">
+            <option value="claude-sonnet-5-5">Claude Sonnet 5.5: disarankan, seimbang (sekitar Rp500 sampai 1.500 per generate)</option>
+            <option value="claude-opus-5-5">Claude Opus 5.5: hasil terbaik (sekitar Rp1.000 sampai 3.000)</option>
+            <option value="claude-haiku-5-5">Claude Haiku 5.5: paling hemat (di bawah Rp100)</option>
+          </select>
+        </label>
+        <label for="cfg-effort">Kedalaman berpikir
+          <select id="cfg-effort"><option value="low">Rendah (cepat, murah)</option><option value="medium" selected>Sedang</option><option value="high">Tinggi (lebih teliti, lebih mahal)</option></select>
+        </label>
+        <p class="note">Perkiraan biaya kasar untuk satu kali generate dengan kedalaman Sedang. Setelah tiap generate, biaya perkiraannya muncul di bawah tombol. Biaya asli tercatat di console.anthropic.com.</p>
+        <p class="note" id="cfg-spent"></p>
+        <div class="chips"><button class="btn" type="submit">Simpan</button><button class="btn ghost" type="button" id="cfg-test">Uji koneksi</button></div>
+        <div class="status" id="s-key" role="status"></div>
+      </form>
+
+      <form class="tool" id="f-profile">
+        <h2>Profil channel</h2>
+        <p class="hint">Semua generator membaca profil ini. Makin spesifik, makin pas hasilnya.</p>
+        <label for="pf-name">Nama channel<input id="pf-name"></label>
+        <div class="row2">
+          <label for="pf-lang">Bahasa konten<input id="pf-lang" value="English"></label>
+          <label for="pf-length">Durasi video biasa<input id="pf-length" placeholder="mis. 8 sampai 14 menit"></label>
+        </div>
+        <label for="pf-niche">Niche dan topik<textarea id="pf-niche" placeholder="mis. dokumenter prasejarah: megafauna Zaman Es, dinosaurus, laut purba"></textarea></label>
+        <label for="pf-audience">Penonton<textarea id="pf-audience" placeholder="mis. 88% pria, mayoritas 45 tahun ke atas, 39% dari AS"></textarea></label>
+        <label for="pf-wins">Yang terbukti berhasil<textarea id="pf-wins" placeholder="Judul video terlaris dan polanya. Terisi otomatis dari data Studio kalau dikosongkan."></textarea></label>
+        <label for="pf-money">Membership, merch, sponsor<textarea id="pf-money" placeholder="mis. membership Field Crew dan Lead Explorers, merch koleksi Bog Titan"></textarea></label>
+        <label for="pf-style">Gaya narasi<input id="pf-style" placeholder="mis. sinematik, tenang, berwibawa"></label>
+        <div class="chips"><button class="btn" type="submit">Simpan profil</button><button class="btn ghost" type="button" id="pf-export">Salin profil (JSON)</button><button class="btn ghost" type="button" id="pf-import">Tempel profil (JSON)</button></div>
+        <textarea id="pf-json" hidden aria-label="Profil dalam format JSON"></textarea>
+        <div class="status" id="s-profile" role="status"></div>
+      </form>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <span class="layer">Aplikasi</span>
+      <h3>Data dan aplikasi</h3>
+      <p class="note">Semua pengaturan, API key, dan data Studio disimpan hanya di komputer ini, di folder <code id="cfg-dir"></code>. Aplikasi otomatis berhenti beberapa saat setelah jendelanya ditutup.</p>
+      <div class="chips"><button type="button" class="btn ghost" data-import>Impor data Studio (.zip/.csv)</button><button type="button" class="btn ghost" id="data-clear">Hapus data Studio</button><button type="button" class="btn ghost" id="app-quit">Tutup aplikasi</button></div>
+      <div class="confirm" id="data-clear-confirm" hidden>Hapus semua data Studio yang sudah diimpor? <button type="button" class="btn ghost" id="data-clear-yes">Ya, hapus</button> <button type="button" class="btn ghost" id="data-clear-no">Batal</button></div>
+      <div class="status" id="s-app" role="status"></div>
+    </div>
+  </section>
+
+  <input type="file" id="file-import" accept=".zip,.csv" multiple hidden>
+  <footer>Terra Studio · versi 1.0 · Generator memakai Claude dari Anthropic dengan API key Anda.</footer>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const store={get(k,d){try{const v=localStorage.getItem("ts-"+k);return v?JSON.parse(v):d}catch{return d}},set(k,v){try{localStorage.setItem("ts-"+k,JSON.stringify(v))}catch{}}};
+const api=async(path,opts={})=>{opts.headers={...(opts.headers||{}),"X-Terra":"1"};let r;try{r=await fetch(path,opts)}catch{return{error:"Aplikasi Terra Studio tidak berjalan. Buka lagi dari ikonnya."}}let j={};try{j=await r.json()}catch{}if(!r.ok&&!j.error)j.error="Aplikasi tidak merespons ("+r.status+").";return j};
+let CFG={profile:{}},YT=null;
+
+/* heartbeat: the app exits a while after this window closes */
+const beat=()=>fetch("/api/heartbeat",{method:"POST",headers:{"X-Terra":"1"}}).catch(()=>{});setInterval(beat,15000);beat();
+
+/* tabs */
+const tabs=[...document.querySelectorAll("nav.tabs button")];
+function show(name){tabs.forEach(b=>{const on=b.dataset.tab===name;b.setAttribute("aria-selected",on);if(on)b.scrollIntoView({block:"nearest",inline:"nearest"});$("#p-"+b.dataset.tab).hidden=!on});store.set("tab",name);if(name==="growth")requestAnimationFrame(()=>{if(YT)chart()})}
+tabs.forEach(b=>b.addEventListener("click",()=>show(b.dataset.tab)));
+document.addEventListener("click",e=>{const g=e.target.closest("[data-goto]");if(g)show(g.dataset.goto)});
+
+/* prompt context from the profile */
+function channelContext(){
+  const p=CFG.profile||{},lines=[];
+  lines.push(`You are helping the YouTube channel "${p.name||"(unnamed channel)"}".`);
+  if(p.niche)lines.push("Niche and topics: "+p.niche);
+  lines.push("Content language: "+(p.lang||"English")+". Write all video-facing text (titles, scripts, descriptions, tags, prompts) in that language.");
+  if(p.length)lines.push("Typical video length: "+p.length+".");
+  if(p.audience)lines.push("Audience: "+p.audience);
+  const wins=p.wins||autoWins();if(wins)lines.push("What has worked on this channel: "+wins);
+  if(p.money)lines.push("Monetization: "+p.money);
+  if(p.style)lines.push("Narration style: "+p.style);
+  lines.push("Keep facts accurate; flag anything uncertain instead of inventing it.");
+  lines.push("Writing rules: no em dashes or en dashes (use commas, periods, colons or parentheses); no hype words (unlock, delve, journey, testament, revolutionary, seamless, mind-blowing, game-changer); no \"it's not just X, it's Y\" constructions; no runs of short dramatic fragments; no forced lists of three; no emojis; no invented numbers, dates, names or quotes.");
+  lines.push("Fields marked as Indonesian must be written in Indonesian.");
+  return lines.join("\n");
+}
+function autoWins(){if(!YT||!YT.videos)return "";const top=longForm().sort((a,b)=>b.v-a.v).slice(0,6);if(!top.length)return "";return "Top videos by views: "+top.map(v=>`"${v.t}" (${v.v} views, CTR ${v.ctr}%)`).join("; ")+"."}
+
+/* Claude via the local app */
+/* rough cost: USD per million tokens (input, output), shown in rupiah at a fixed rate */
+const PRICE={"claude-opus-5-5":[4,20],"claude-sonnet-5-5":[2,10],"claude-haiku-5-5":[0.1,0.5]},KURS=16500;
+function costRp(model,u){const k=Object.keys(PRICE).find(m=>(model||"").startsWith(m));if(!k||!u)return 0;const [i,o]=PRICE[k];return (u.input_tokens*i+u.output_tokens*o)/1e6*KURS}
+let LAST={};
+async function remember(key,data){LAST[key]={at:Date.now(),data};await api("/api/last",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({key,value:LAST[key]})})}
+function spentText(){const s=LAST._spent?.data;const m=new Date().toISOString().slice(0,7);return s&&s.month===m?`Perkiraan biaya AI bulan ini: Rp${nf(Math.round(s.rp))} dari ${s.n} kali generate.`:"Belum ada biaya AI bulan ini."}
+async function addSpent(rp){const m=new Date().toISOString().slice(0,7);let s=LAST._spent?.data;if(!s||s.month!==m)s={month:m,rp:0,n:0};s.rp+=rp;s.n+=1;await remember("_spent",s);const el=$("#cfg-spent");if(el)el.textContent=spentText()}
+async function ask(statusEl,btn,prompt,key){
+  statusEl.className="status";statusEl.textContent="Claude sedang menulis… (biasanya 20 sampai 90 detik)";btn.disabled=true;
+  try{
+    const j=await api("/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:channelContext()+"\n\n"+prompt+"\n\nReturn ONLY valid JSON, no markdown fences, no text before or after."})});
+    if(j.error)throw j;
+    const data=parseJSON(j.text);
+    if(!data)throw{error:"Jawaban Claude tidak bisa dibaca. Tekan tombolnya sekali lagi."};
+    const rp=costRp(j.model,j.usage);
+    statusEl.textContent="Selesai · "+new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})+(rp?` · biaya sekitar Rp${nf(Math.max(1,Math.round(rp)))}`:"")+" · hasil tersimpan";
+    if(key)remember(key,data).catch(()=>{});if(rp)addSpent(rp).catch(()=>{});
+    return data;
+  }catch(e){statusEl.className="status err";statusEl.textContent=e.error||("Gagal: "+(e.message||"coba lagi."));return null}
+  finally{btn.disabled=false}
+}
+function parseJSON(t){if(!t)return null;try{return JSON.parse(t)}catch{}const a=t.indexOf("{"),b=t.lastIndexOf("}");if(a>=0&&b>a){try{return JSON.parse(t.slice(a,b+1))}catch{}}return null}
+
+function copyBox(label,text){const id="c"+Math.random().toString(36).slice(2,8);return `<div class="card"><span class="layer">${esc(label)}</span><div class="copybox" style="margin-top:52px"><button type="button" class="btn ghost" data-copy="${id}">Salin</button><pre id="${id}">${esc(text)}</pre></div></div>`}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-copy]");if(!b)return;const pre=document.getElementById(b.dataset.copy);const txt=pre.textContent;
+  const done=()=>{b.textContent="Tersalin";setTimeout(()=>b.textContent=b.dataset.label||"Salin",1500)};
+  const sel=()=>{const r=document.createRange();r.selectNodeContents(pre);const s=getSelection();s.removeAllRanges();s.addRange(r);try{document.execCommand("copy");done()}catch{b.textContent="Tekan Ctrl+C"}};
+  if(navigator.clipboard)navigator.clipboard.writeText(txt).then(done).catch(sel);else sel()});
+const head=t=>`<div class="out-head"><span class="layer">${esc(t)}</span></div>`;
+const val=id=>$(id).value.trim();
+
+/* ---------- IDEAS ---------- */
+$("#ideas-start").value=new Date().toISOString().slice(0,10);
+function schedule(n,perMonth,startISO){const gap=Math.round(30/perMonth),d=new Date(startISO+"T12:00:00"),out=[];for(let i=0;i<n;i++){const x=new Date(d);x.setDate(d.getDate()+i*gap);out.push(x)}return out}
+const fmtDate=d=>d.toLocaleDateString("id-ID",{weekday:"short",day:"numeric",month:"short",year:"numeric"});
+function renderIdeas(list){
+  const dates=schedule(list.length,+$("#ideas-freq").value,$("#ideas-start").value||new Date().toISOString().slice(0,10));
+  const plan=list.map((x,i)=>`${dates[i].toISOString().slice(0,10)}  ${x.title}`).join("\n");
+  $("#o-ideas").innerHTML=head("Kalender konten")+`<div class="ideas">${list.map((x,i)=>`<article class="card"><div class="date">${fmtDate(dates[i])}</div><h3>${esc(x.title)}</h3><div class="meta"><span>${esc(x.era)}</span><span>Potensi: ${esc(x.potential)}</span></div><p><strong>Hook:</strong> ${esc(x.hook)}</p><p class="note">${esc(x.why)}</p><button type="button" class="btn ghost" data-use="${esc(x.title)}">Pakai di semua alat</button></article>`).join("")}</div>`+copyBox("Jadwal (salin ke catatan atau kalender)",plan);
+}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-use]");if(!b)return;["#script-topic","#seo-topic","#thumb-topic","#shorts-topic"].forEach(id=>$(id).value=b.dataset.use);$("#thumb-title").value=b.dataset.use;b.textContent="Terisi di Naskah, SEO, Thumbnail, Shorts"});
+$("#f-ideas").addEventListener("submit",async e=>{e.preventDefault();const n=Math.min(12,Math.max(3,+$("#ideas-n").value||6));
+  const data=await ask($("#s-ideas"),e.submitter||$("#f-ideas .btn"),`Suggest ${n} new video ideas for this channel.${val("#ideas-focus")?" Focus: "+val("#ideas-focus")+".":""} Do not repeat or closely overlap these existing videos: ${val("#ideas-avoid")||"none listed"}.
+Base the choices on what has worked for this channel. Titles under 60 characters, clickable but honest.
+JSON shape: {"ideas":[{"title":"","era":"period/place or sub-topic, short","hook":"one-sentence cold-open hook","why":"why it can perform for this channel (Indonesian, one sentence)","potential":"one of: Sedang, Tinggi, Sangat tinggi (Indonesian)"}]}`,"ideas");
+  if(data?.ideas?.length)renderIdeas(data.ideas)});
+
+/* ---------- SCRIPT ---------- */
+const ACT_COLORS=["var(--accent)","var(--moss)","var(--muted)","var(--warn)","var(--ink)","var(--field)","var(--accent)"];
+const ROMAN=["I","II","III","IV","V","VI","VII"];
+function renderScript(s){const acts=s.acts||[],total=acts.reduce((a,x)=>a+(+x.words||0),0)||1;
+  $("#o-script").innerHTML=head("Kerangka · "+(s.title||""))+`<div class="card"><span class="layer">Cold open</span><p style="font-size:19px">${esc(s.cold_open)}</p>
+  <div class="strata" aria-label="Proporsi kata per babak">${acts.map((a,i)=>`<span style="width:${((+a.words||0)/total*100).toFixed(1)}%;background:${ACT_COLORS[i%7]}" title="Babak ${i+1}: ${esc(a.words)} kata"></span>`).join("")}</div>
+  ${acts.map((a,i)=>`<div class="act"><div class="num">${ROMAN[i]||i+1}<small>${esc(a.words)} kata</small></div><div style="min-width:0"><h3>${esc(a.name)}</h3><ul>${(a.beats||[]).map(b=>`<li>${esc(b)}</li>`).join("")}</ul>${a.open_loop?`<p class="note"><strong>Open loop:</strong> ${esc(a.open_loop)}</p>`:""}${a.cta?`<p class="note"><strong>CTA:</strong> ${esc(a.cta)}</p>`:""}</div></div>`).join("")}</div>
+  ${(s.visuals?.length)?`<div class="card"><span class="layer">Daftar visual / B-roll</span><div class="chips" style="margin-top:8px">${s.visuals.map(v=>`<span class="chip">${esc(v)}</span>`).join("")}</div></div>`:""}
+  ${(s.fact_check?.length)?`<div class="card"><span class="layer">Wajib dicek ulang sebelum rekaman</span><ul>${s.fact_check.map(v=>`<li>${esc(v)}</li>`).join("")}</ul></div>`:""}`}
+$("#f-script").addEventListener("submit",async e=>{e.preventDefault();const w=+$("#script-words").value||1800,n=Math.min(7,Math.max(3,+$("#script-acts").value||5));
+  const data=await ask($("#s-script"),e.submitter||$("#f-script .btn"),`Build a detailed ${n}-act outline for a documentary script. Topic: ${val("#script-topic")}. Central question: ${val("#script-angle")||"choose the strongest one"}. Tone: ${$("#script-tone").value}. Target length: about ${w} words total (act word counts must add up to about ${w}).
+Include a vivid 2-3 sentence cold open that pays off within the first 30 seconds, 3-5 beats per act, open loops across act breaks for retention, at most two soft CTAs (membership or merch from the profile) placed where they don't break the story, a visual/B-roll list, and facts to double-check.
+JSON shape: {"title":"","cold_open":"","acts":[{"name":"","words":0,"beats":[""],"open_loop":"","cta":""}],"visuals":[""],"fact_check":[""]}. Exactly ${n} acts. Use "" for open_loop or cta when not needed.`,"script");
+  if(data?.acts?.length)renderScript(data)});
+
+/* ---------- SEO ---------- */
+function renderSEO(s){const tags=(s.tags||[]).join(", ");
+  $("#o-seo").innerHTML=head("Paket SEO")+(s.keywords?`<div class="card"><span class="layer">Kata kunci</span><p><strong>Utama:</strong> ${esc(s.keywords.primary)}</p><p><strong>Pendukung:</strong> ${esc((s.keywords.secondary||[]).join(", "))}</p><p class="note">Masukkan kata kunci utama ke judul, kalimat pertama deskripsi, dan ucapkan di 30 detik pertama narasi (YouTube membaca transkrip).</p></div>`:"")
+  +`<div class="card"><span class="layer">Pilihan judul</span><ol class="titles">${(s.titles||[]).map(t=>`<li>${esc(t.text)}<span class="len">${String(t.text||"").length} kar · ${esc(t.angle||"")}</span></li>`).join("")}</ol><p class="note">Usahakan di bawah 60 karakter agar tidak terpotong di HP. Uji 2 sampai 3 judul dengan fitur Test &amp; Compare di YouTube Studio.</p></div>`
+  +copyBox("Deskripsi (dengan chapter)",s.description||"")+copyBox("Hashtag",(s.hashtags||[]).join(" "))+copyBox(`Tag · ${tags.length}/500 karakter`,tags)+copyBox("Komentar sematan",s.pinned_comment||"")+(s.community_post?copyBox("Postingan Komunitas YouTube (hari tayang)",s.community_post):"")}
+$("#f-seo").addEventListener("submit",async e=>{e.preventDefault();
+  const data=await ask($("#s-seo"),e.submitter||$("#f-seo .btn"),`Create a YouTube SEO pack. Topic: ${val("#seo-topic")}. Key facts or outline: ${val("#seo-facts")||"none given"}. Video length: ${$("#seo-mins").value} minutes.
+First pick ONE primary search keyword (what a viewer would actually type) and 2-3 secondary keywords. Give 5 title options (each under 60 characters, honest, varied angles, at least 3 containing the primary keyword or the subject's common name; "angle" is a 1-2 word Indonesian label). A description: strong first 2 lines (shown in search) with the primary keyword in the first sentence, 1 short paragraph, a CHAPTERS list with plausible timestamps spread over the length starting at 00:00, placeholders [membership link] and [merch link], then 3 hashtags at the end. 3 hashtags. 10-15 tags, total under 450 characters, mixing broad and long-tail phrases. A pinned comment that asks a question to spark replies. A YouTube Community post for release day (under 600 characters, one surprising fact, then a 3-4 option poll written as a list).
+JSON shape: {"keywords":{"primary":"","secondary":[""]},"titles":[{"text":"","angle":""}],"description":"","hashtags":[""],"tags":[""],"pinned_comment":"","community_post":""}`,"seo");
+  if(data?.titles)renderSEO(data)});
+
+/* ---------- THUMB ---------- */
+function renderThumb(list){$("#o-thumb").innerHTML=head("Konsep thumbnail")+`<div class="thumbs">${list.map((c,i)=>{const id="tp"+i+Math.random().toString(36).slice(2,6);return `<article class="card"><div class="thumb-text">${esc(c.text)}</div><h3 style="margin-top:12px">${esc(c.name)}</h3><p><strong>Komposisi:</strong> ${esc(c.composition)}</p><p class="note"><strong>Kenapa diklik:</strong> ${esc(c.why)}</p><div class="copybox" style="margin-top:52px"><button type="button" class="btn ghost" data-copy="${id}" data-label="Salin prompt">Salin prompt</button><pre id="${id}">${esc(c.prompt)}</pre></div></article>`}).join("")}</div><p class="note">Aturan cepat: maksimal 4 kata, satu subjek besar, kontras tinggi, tetap terbaca di ukuran kecil HP. Teks thumbnail melengkapi judul, jangan mengulangnya.</p>`}
+$("#f-thumb").addEventListener("submit",async e=>{e.preventDefault();
+  const data=await ask($("#s-thumb"),e.submitter||$("#f-thumb .btn"),`Create 3 distinct YouTube thumbnail concepts. Topic: ${val("#thumb-topic")}. Video title: ${val("#thumb-title")||"not decided"}. Visual style: ${$("#thumb-style").value}.
+Each concept: "name" short Indonesian label, "text" overlay of max 4 words, uppercase, that complements (not repeats) the title, "composition" one sentence, "why" one sentence in Indonesian on why it gets clicks, "prompt" a detailed text-to-image prompt in English (16:9, leave space for text, accurate anatomy and details).
+JSON shape: {"concepts":[{"name":"","text":"","composition":"","why":"","prompt":""}]}`,"thumb");
+  if(data?.concepts?.length)renderThumb(data.concepts)});
+
+/* ---------- SHORTS ---------- */
+function renderShorts(list){$("#o-shorts").innerHTML=head("Ide Shorts")+list.map(s=>`<div class="card"><h3>${esc(s.title)}</h3><p><strong>Detik 0 sampai 2:</strong> ${esc(s.hook)}</p><p class="note">${esc(s.outline)}</p><div class="meta"><span>${esc(s.length)}</span><span>CTA: ${esc(s.cta)}</span></div></div>`).join("")}
+$("#f-shorts").addEventListener("submit",async e=>{e.preventDefault();
+  const data=await ask($("#s-shorts"),e.submitter||$("#f-shorts .btn"),`Turn this long video into 5 YouTube Shorts ideas (vertical, under 60 seconds) that send viewers to the full video. Source video: ${val("#shorts-topic")}. Best moments: ${val("#shorts-facts")||"pick the most surprising"}.
+Each: "title" (under 50 characters), "hook" what happens in the first 2 seconds (visual + line), "outline" one sentence, "length" in Indonesian like "40 detik", "cta" short.
+JSON shape: {"shorts":[{"title":"","hook":"","outline":"","length":"","cta":""}]}`,"shorts");
+  if(data?.shorts?.length)renderShorts(data.shorts)});
+
+/* ---------- DATA & GROWTH ---------- */
+const nf=n=>Math.round(n||0).toLocaleString("id-ID");
+const f1=n=>(n||0).toLocaleString("id-ID",{maximumFractionDigits:1});
+const cur=()=>(YT&&YT.currency)||"IDR";
+const money=n=>{const c=cur();return c==="IDR"?"Rp"+nf(n):c==="USD"?"$"+nf(n):nf(n)+" "+c};
+const longForm=()=>(YT&&YT.videos||[]).filter(v=>v.dur>=120);
+const BN=["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
+function monthly(){const m=new Map();(YT.daily||[]).forEach(([d,v])=>{const k=d.slice(0,7);m.set(k,(m.get(k)||0)+v)});return [...m.entries()].sort()}
+function lastDays(n,offset=0){const d=YT.daily||[];return d.slice(Math.max(0,d.length-n-offset),d.length-offset).reduce((a,x)=>a+x[1],0)}
+let MONTHS=[];
+const mLabel=(m,i)=>BN[+m.slice(5,7)-1]+" "+m.slice(0,4)+(i===MONTHS.length-1&&YT.partialLast?" (belum penuh)":"");
+
+function renderGrowth(){
+  const has=YT&&(YT.videos?.length||YT.daily?.length);
+  $("#g-empty").hidden=!!has;$("#g-full").hidden=!has;
+  if(!has){$("#meter").innerHTML="";return}
+  MONTHS=monthly();
+  const t=YT.totals||{};
+  $("#g-range").textContent="Data YouTube Studio"+(YT.range?" · "+YT.range:"")+(YT.imported_at?" · diimpor "+new Date(YT.imported_at).toLocaleDateString("id-ID"):"");
+  const k=[];if(t.views!=null)k.push([nf(t.views),"total views"]);if(t.hours!=null)k.push([nf(t.hours),"jam tonton"]);if(t.subs!=null)k.push([(t.subs>=0?"+":"")+nf(t.subs),"subscriber bersih"]);if(t.revenue!=null)k.push([money(t.revenue),"estimasi pendapatan"]);if(YT.daily?.length)k.push([nf(lastDays(30)),"views 30 hari terakhir"]);
+  $("#g-kpis").innerHTML=k.map(([b,l])=>`<div><b>${b}</b><span>${l}</span></div>`).join("");
+  if(YT.daily?.length>=60){const a=lastDays(30),b=lastDays(30,30),pct=b?Math.round((a/b-1)*100):0;$("#meter").innerHTML=`<span class="layer">Views 30 hari terakhir</span><b>${nf(a)}</b> <span class="${a<b?"no":"ok"}">${a<b?"turun":"naik"} ${Math.abs(pct)}%</span> dibanding 30 hari sebelumnya`}
+  if(MONTHS.length){chart();$("#g-mtable").innerHTML=`<tr><th>Bulan</th><th>Views</th></tr>`+MONTHS.map(([m,v],i)=>`<tr><td>${mLabel(m,i)}</td><td>${nf(v)}</td></tr>`).join("")}
+  else{$("#g-chart-wrap").hidden=true}
+  diagnose();table();extras();incomeSetup();
+  const titles=(YT.videos||[]).filter(v=>v.dur>=120).map(v=>v.t);if(titles.length&&!$("#ideas-avoid").value)$("#ideas-avoid").value=titles.join("; ");
+}
+
+function chart(){
+  const svg=$("#g-chart");if(!svg||!MONTHS.length)return;const W=Math.max(560,svg.clientWidth||560),H=240,pl=48,pb=26,pt=26,data=MONTHS;
+  const peak=Math.max(...data.map(d=>d[1]),1),step=niceStep(peak/4),max=step*4,bw=(W-pl-8)/data.length,y=v=>pt+(H-pt-pb)*(1-v/max),base=H-pb,mono='font-family="IBM Plex Mono,monospace"';
+  let g="";for(let t=0;t<=max;t+=step)g+=`<line x1="${pl}" x2="${W-4}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)"/><text x="${pl-6}" y="${y(t)+4}" text-anchor="end" font-size="11" fill="var(--muted)" ${mono}>${short(t)}</text>`;
+  const peakI=data.reduce((b,d,i)=>d[1]>data[b][1]?i:b,0),lastFull=YT.partialLast?data.length-2:data.length-1;
+  data.forEach(([m,v],i)=>{const w=Math.max(2,bw-2),x=pl+i*bw+1,top=y(v),r=Math.min(4,w/2,base-top);
+    const d=base-top<1?"":`M${x},${base}V${top+r}Q${x},${top} ${x+r},${top}H${x+w-r}Q${x+w},${top} ${x+w},${top+r}V${base}Z`;
+    g+=`<path d="${d}" fill="var(--accent)"/><rect class="hit" data-i="${i}" x="${pl+i*bw}" y="${pt}" width="${bw}" height="${base-pt}" fill="transparent" tabindex="0" aria-label="${mLabel(m,i)}: ${nf(v)} views"/>`;
+    const mo=+m.slice(5,7);if(mo===1||i===0)g+=`<text x="${x}" y="${H-8}" font-size="11" fill="var(--muted)" ${mono}>${BN[mo-1]} ${m.slice(2,4)}</text>`;else if(data.length<=36&&mo%3===1&&i>2)g+=`<text x="${x}" y="${H-8}" font-size="11" fill="var(--muted)" ${mono}>${BN[mo-1]}</text>`;
+    if(i===peakI)g+=`<text x="${Math.min(Math.max(x+w/2,pl+30),W-40)}" y="${top-8}" text-anchor="middle" font-size="12" font-weight="500" fill="var(--ink)" ${mono}>${nf(v)}</text>`;
+    if(i===lastFull&&i!==peakI)g+=`<text x="${x+w}" y="${top-8}" text-anchor="end" font-size="12" font-weight="500" fill="var(--ink)" ${mono}>${BN[mo-1]}: ${nf(v)}</text>`});
+  svg.setAttribute("viewBox",`0 0 ${W} ${H}`);svg.innerHTML=g;
+}
+function niceStep(x){const p=Math.pow(10,Math.floor(Math.log10(Math.max(x,1)))),n=x/p;return (n<=1?1:n<=2?2:n<=2.5?2.5:n<=5?5:10)*p}
+function short(n){return n>=1e6?f1(n/1e6)+"jt":n>=1e3?f1(n/1e3)+"rb":String(n)}
+addEventListener("resize",()=>{if(YT&&!$("#p-growth").hidden)chart()});
+(function hover(){const wrap=$("#g-chart-wrap"),tip=$("#g-tip");
+  const showTip=el=>{const i=+el.dataset.i,[m,v]=MONTHS[i],r=el.getBoundingClientRect(),wr=wrap.getBoundingClientRect();tip.textContent=`${mLabel(m,i)}: ${nf(v)} views`;tip.hidden=false;let left=r.left-wr.left+wrap.scrollLeft+r.width/2;left=Math.max(90,Math.min(left,wrap.scrollWidth-90));tip.style.left=left+"px";tip.style.top=(r.top-wr.top+60)+"px"};
+  wrap.addEventListener("pointerover",e=>{const h=e.target.closest(".hit");if(h)showTip(h)});wrap.addEventListener("pointerleave",()=>tip.hidden=true);
+  wrap.addEventListener("focusin",e=>{const h=e.target.closest(".hit");if(h)showTip(h)});wrap.addEventListener("focusout",()=>tip.hidden=true)})();
+
+function stats(g){const v=g.reduce((a,x)=>a+x.v,0),h=g.reduce((a,x)=>a+x.h,0),imp=g.reduce((a,x)=>a+x.imp,0),cl=g.reduce((a,x)=>a+x.imp*x.ctr/100,0);return{n:g.length,avg:g.length?v/g.length:0,ctr:imp?cl/imp*100:0,avd:v?h*60/v:0}}
+function diagnose(){
+  const lf=longForm(),ul=$("#g-diag"),tb=$("#g-cmp");if(lf.length<4){tb.innerHTML="";ul.innerHTML="<li>Butuh data minimal 4 video panjang untuk perbandingan. Impor file Konten dari Studio.</li>";return}
+  const dates=lf.map(v=>v.d).filter(Boolean).sort(),latest=dates[dates.length-1]||"";
+  const cut=latest?new Date(new Date(latest+"T12:00:00").getTime()-90*864e5).toISOString().slice(0,10):"";
+  const top=[...lf].sort((a,b)=>b.v-a.v).slice(0,6),recent=lf.filter(v=>v.d&&v.d>cut&&!top.includes(v));
+  const a=stats(top),b=stats(recent.length?recent:lf.slice(-6));
+  tb.innerHTML=`<tr><th></th><th>6 video terbaik</th><th>${recent.length||6} video 90 hari terakhir</th></tr>
+  <tr><td>Rata-rata views</td><td>${nf(a.avg)}</td><td class="${b.avg<a.avg/3?"flag":""}">${nf(b.avg)}</td></tr>
+  <tr><td>CTR thumbnail</td><td>${f1(a.ctr)}%</td><td class="${b.ctr<a.ctr*0.75?"flag":""}">${f1(b.ctr)}%</td></tr>
+  <tr><td>Rata-rata durasi tonton</td><td>${f1(a.avd)} mnt</td><td class="${b.avd<a.avd*0.75?"flag":""}">${f1(b.avd)} mnt</td></tr>`;
+  const li=[];
+  if(b.ctr<a.ctr*0.75)li.push(`<strong>CTR turun dari ${f1(a.ctr)}% ke ${f1(b.ctr)}%.</strong> Video ditampilkan tapi jarang diklik. Perbaiki judul dan thumbnail dulu, pakai alat Paket SEO dan Thumbnail.`);
+  else li.push(`CTR video terbaru (${f1(b.ctr)}%) masih sebanding dengan video terbaik (${f1(a.ctr)}%).`);
+  if(b.avd<a.avd*0.75)li.push(`<strong>Durasi tonton turun dari ${f1(a.avd)} ke ${f1(b.avd)} menit.</strong> Penonton pergi lebih cepat. Cek grafik retensi di Studio dan perkuat cold open di alat Kerangka naskah.`);
+  li.push(`<strong>Video terlaris:</strong> ${top.slice(0,3).map(v=>esc(v.t)).join("; ")}. Cari pola topik dan sudut judul yang sama untuk ide berikutnya.`);
+  const totalRev=lf.reduce((s,v)=>s+(v.rev||0),0);if(totalRev>0){const top3=[...lf].sort((x,y)=>(y.rev||0)-(x.rev||0)).slice(0,3).reduce((s,v)=>s+(v.rev||0),0);li.push(`${Math.round(top3/totalRev*100)}% pendapatan video panjang datang dari 3 video saja.`)}
+  const sh=(YT.videos||[]).filter(v=>v.dur<120);if(sh.length){const sv=sh.reduce((s,v)=>s+v.v,0),ss=sh.reduce((s,v)=>s+v.s,0);li.push(`${sh.length} Shorts menghasilkan ${nf(sv)} views dan ${nf(ss)} subscriber.${sv/sh.length<1000?" Shorts belum bekerja; buat dari momen terkuat video panjang.":""}`)}
+  ul.innerHTML=li.map(x=>`<li>${x}</li>`).join("");
+}
+$("#g-ai-btn").addEventListener("click",async e=>{
+  const lf=longForm(),top=[...lf].sort((a,b)=>b.v-a.v).slice(0,12),rec=[...lf].sort((a,b)=>(b.d||"").localeCompare(a.d||"")).slice(0,12);
+  const row=v=>`${v.d} | ${v.t} | ${Math.round(v.dur/60)} min | ${v.v} views | CTR ${v.ctr}% | avg view ${(v.v?v.h*60/v.v:0).toFixed(1)} min | ${v.s} subs | revenue ${Math.round(v.rev||0)} ${cur()}`;
+  const extra=[YT.traffic?.length?"Traffic sources: "+YT.traffic.slice(0,8).map(r=>`${r.name} ${r.views} views CTR ${r.ctr??"n/a"}%`).join("; "):"",YT.geo?.length?"Geography: "+YT.geo.slice(0,8).map(r=>`${r.name} ${r.views} views revenue ${Math.round(r.rev||0)}`).join("; "):""].filter(Boolean).join("\n");
+  const data=await ask($("#s-ai"),e.currentTarget,`Analyse this channel's YouTube Studio data like an experienced YouTube strategist. Explain what drove the best period, why recent videos underperform (if they do), and give a concrete plan for the next 4 uploads.
+Monthly views: ${MONTHS.map(([m,v])=>m+" "+v).join(", ")}
+Top videos (date | title | length | views | CTR | avg view duration | subs | revenue):
+${top.map(row).join("\n")}
+Most recent videos:
+${rec.map(row).join("\n")}
+${extra}
+Write everything in Indonesian, plain and direct, citing the numbers above. JSON shape: {"summary":"2-3 sentences","findings":[{"title":"","detail":""}],"plan":[{"title":"","detail":""}]}`,"ai");
+  if(data)renderAI(data)
+});
+function renderAI(data){$("#g-ai").innerHTML=`<div class="card"><p>${esc(data.summary)}</p>${(data.findings||[]).length?`<h3>Temuan</h3><ul class="diag">${data.findings.map(f=>`<li><strong>${esc(f.title)}.</strong> ${esc(f.detail)}</li>`).join("")}</ul>`:""}${(data.plan||[]).length?`<h3>Rencana 4 upload berikutnya</h3><ol class="diag">${data.plan.map(f=>`<li><strong>${esc(f.title)}.</strong> ${esc(f.detail)}</li>`).join("")}</ol>`:""}</div>`}
+
+let sortKey="v",sortDir=-1;
+const COLS=[["t","Judul"],["d","Terbit"],["v","Views"],["ctr","CTR %"],["avd","Tonton (mnt)"],["s","Subs"],["rev","Pendapatan"]];
+function table(){const rows=longForm().map(x=>({...x,avd:x.v?x.h*60/x.v:0})).sort((a,b)=>(a[sortKey]>b[sortKey]?1:a[sortKey]<b[sortKey]?-1:0)*sortDir);
+  const lf=longForm(),ctrs=lf.map(v=>v.ctr).sort((a,b)=>a-b),med=ctrs[Math.floor(ctrs.length/2)]||0;
+  $("#g-table").innerHTML=`<tr>${COLS.map(([k,l])=>`<th data-k="${k}" tabindex="0" aria-sort="${k===sortKey?(sortDir>0?"ascending":"descending"):"none"}">${l}${k===sortKey?(sortDir>0?" ▲":" ▼"):""}</th>`).join("")}</tr>`+
+  rows.map(x=>`<tr><td>${esc(x.t)}</td><td>${x.d?new Date(x.d+"T12:00:00").toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"2-digit"}):""}</td><td>${nf(x.v)}</td><td class="${x.ctr>=med*1.25?"good":x.ctr<med*0.75?"flag":""}">${f1(x.ctr)}</td><td>${f1(x.avd)}</td><td>${nf(x.s)}</td><td>${money(x.rev)}</td></tr>`).join("")}
+$("#g-table").addEventListener("click",e=>{const th=e.target.closest("th");if(!th)return;const k=th.dataset.k;if(k===sortKey)sortDir*=-1;else{sortKey=k;sortDir=k==="t"?1:-1}table();$(`#g-table th[data-k="${k}"]`)?.focus()});
+$("#g-table").addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches("th")){e.preventDefault();e.target.click()}});
+
+function extras(){const out=[];
+  if(YT.traffic?.length){const tot=YT.traffic.reduce((s,r)=>s+r.views,0)||1;out.push(`<div class="card"><span class="layer">Sumber traffic</span><h3>Dari mana penonton datang</h3><div style="overflow-x:auto"><table><tr><th>Sumber</th><th>Views</th><th>CTR</th></tr>${YT.traffic.slice(0,8).map(r=>`<tr><td>${esc(r.name)}</td><td>${f1(r.views/tot*100)}%</td><td>${r.ctr!=null?f1(r.ctr)+"%":"tidak ada"}</td></tr>`).join("")}</table></div><p class="note">Browse features = beranda YouTube. Beranda hanya menaruh video yang CTR dan durasi tontonnya bagus.</p></div>`)}
+  if(YT.geo?.length){out.push(`<div class="card"><span class="layer">Negara · pendapatan per 1.000 views</span><h3>Penonton mana yang paling bernilai</h3><div style="overflow-x:auto"><table><tr><th>Negara</th><th>Views</th><th>${cur()} / 1.000</th></tr>${YT.geo.slice(0,10).map(r=>{const rpm=r.views?(r.rev||0)/r.views*1000:0;return `<tr><td>${esc(r.name)}</td><td>${nf(r.views)}</td><td>${money(rpm)}</td></tr>`}).join("")}</table></div></div>`)}
+  if(YT.age?.rows?.length){out.push(`<div class="card"><span class="layer">Umur dan gender</span><h3>Siapa penontonnya</h3><div style="overflow-x:auto"><table><tr>${YT.age.headers.map(h=>`<th>${esc(h)}</th>`).join("")}</tr>${YT.age.rows.slice(0,20).map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</table></div></div>`)}
+  $("#g-extra").innerHTML=out.join("");$("#g-extra").hidden=!out.length}
+
+function incomeSetup(){
+  document.querySelectorAll(".cur").forEach(s=>s.textContent=cur()==="IDR"?"Rp":cur());
+  const paid=longForm().filter(v=>v.rev>0&&v.v>500),rpms=paid.map(v=>v.rev/v.v*1000).sort((a,b)=>a-b);
+  const saved=store.get("sim",null);
+  if(saved){$("#g-views").value=saved.views;$("#g-rpm").value=saved.rpm;$("#g-members").value=saved.m;$("#g-mprice").value=saved.mp}
+  else if(rpms.length){$("#g-rpm").value=Math.round(rpms[Math.floor(rpms.length/2)]);$("#g-views").value=Math.round(lastDays(30)/1000)*1000||1000}
+  $("#g-rpm-note").textContent=rpms.length?`RPM video Anda yang menghasilkan berkisar ${money(rpms[0])} sampai ${money(rpms[rpms.length-1])} per 1.000 views (nilai tengah ${money(rpms[Math.floor(rpms.length/2)])}). Isi jumlah member asli dari Studio.`:"Isi RPM dari tab Pendapatan di YouTube Studio.";
+  const ms=MONTHS.map(m=>m[1]),best=ms.length?Math.max(...ms):0;
+  $("#g-presets").innerHTML=[["Sekarang (30 hari)",Math.round(lastDays(30))],["Bulan terbaik",best]].filter(p=>p[1]>0).map(([l,v])=>`<button type="button" class="btn ghost" data-views="${v}">${l}: ${nf(v)}</button>`).join("");
+  income();
+}
+function income(){const n=id=>Math.max(0,+$(id).value||0);const ads=n("#g-views")/1000*n("#g-rpm"),mem=n("#g-members")*n("#g-mprice")*0.7;
+  $("#g-income").innerHTML=`<div class="big">${money(ads+mem)}<span style="font-size:16px;font-family:var(--f-body)"> / bulan</span></div><div class="meta" style="margin-top:6px"><span>Iklan: ${money(ads)}</span><span>Membership setelah potongan YouTube 30%: ${money(mem)}</span><span>Belum termasuk merch dan sponsor</span></div>`;
+  store.set("sim",{views:n("#g-views"),rpm:n("#g-rpm"),m:n("#g-members"),mp:n("#g-mprice")})}
+$("#g-presets").addEventListener("click",e=>{const b=e.target.closest("[data-views]");if(b){$("#g-views").value=b.dataset.views;income()}});
+["#g-views","#g-rpm","#g-members","#g-mprice"].forEach(id=>$(id).addEventListener("input",income));
+
+const CHECK=[["Cek grafik retensi 3 video terakhir","Catat detik di mana penonton paling banyak pergi, lalu perbaiki pembuka video berikutnya."],["Upload di hari dan jam yang sama","Pakai kalender di alat Ide. Cocokkan dengan grafik jam aktif penonton di Studio."],["Buat 3 sampai 5 Shorts dari tiap video panjang","Tautkan ke video utuh lewat fitur Related video."],["Uji judul atau thumbnail dengan Test & Compare","Ganti thumbnail yang CTR-nya rendah setelah 48 jam."],["Buat playlist seri","Menambah jam tonton per sesi."],["Pasang end screen ke video berikutnya di seri","Mendorong penonton lanjut menonton."],["Sebut membership sekali, di momen yang pas","Jelaskan apa yang didapat member."],["Siapkan media kit sederhana untuk sponsor","Mulai menghubungi sponsor setelah views rata-rata stabil."],["Balas dan sematkan komentar di 24 jam pertama","Komentar awal memberi sinyal interaksi."],["Cek sumber tiap fakta besar","Kepercayaan penonton adalah aset jangka panjang."]];
+const done=store.get("check",{});
+$("#g-check").innerHTML=CHECK.map(([t,s],i)=>`<li><input type="checkbox" id="ck${i}" ${done[i]?"checked":""}><label for="ck${i}" style="display:block;font-weight:500">${esc(t)}<small>${esc(s)}</small></label></li>`).join("");
+$("#g-check").addEventListener("change",e=>{done[e.target.id.slice(2)]=e.target.checked;store.set("check",done)});
+
+/* import */
+let importStatus=null;
+document.addEventListener("click",e=>{const b=e.target.closest("[data-import]");if(!b)return;importStatus=b.closest("#g-empty")?$("#s-import-empty"):b.closest("#p-settings")?$("#s-app"):$("#s-import");$("#file-import").click()});
+$("#file-import").addEventListener("change",async e=>{const files=[...e.target.files];e.target.value="";if(!files.length)return;const st=importStatus||$("#s-import");st.className="status";st.textContent="Mengimpor…";
+  const msgs=[];for(const f of files){const j=await api("/api/import",{method:"POST",headers:{"X-Filename":encodeURIComponent(f.name)},body:await f.arrayBuffer()});if(j.error){st.className="status err";st.textContent=f.name+": "+j.error;return}msgs.push(...(j.found||[]))}
+  st.textContent=msgs.length?"Terimpor: "+msgs.join(", ")+".":"Tidak ada tabel yang dikenali di file itu. Pastikan file berasal dari Export Studio mode lanjutan.";await loadData()});
+
+/* settings */
+async function loadConfig(){CFG=await api("/api/config");if(CFG.error){CFG={profile:{}};return}
+  $("#cfg-model").value=CFG.model||"claude-sonnet-5-5";$("#cfg-effort").value=CFG.effort||"medium";
+  $("#cfg-key-hint").textContent=CFG.has_key?"Tersimpan: kunci berakhiran "+CFG.key_hint+". Kosongkan kolom untuk tetap memakai kunci ini.":"Belum ada kunci tersimpan.";
+  $("#banner-key").hidden=!!CFG.has_key;$("#cfg-dir").textContent=CFG.dir||"";
+  const p=CFG.profile||{};[["name","#pf-name"],["lang","#pf-lang"],["length","#pf-length"],["niche","#pf-niche"],["audience","#pf-audience"],["wins","#pf-wins"],["money","#pf-money"],["style","#pf-style"]].forEach(([k,id])=>{if(p[k]!=null)$(id).value=p[k]});
+  $("#hdr-channel").textContent=p.name?"Studio kerja · "+p.name:"Studio kerja channel YouTube"}
+function readProfile(){const p={};[["name","#pf-name"],["lang","#pf-lang"],["length","#pf-length"],["niche","#pf-niche"],["audience","#pf-audience"],["wins","#pf-wins"],["money","#pf-money"],["style","#pf-style"]].forEach(([k,id])=>p[k]=$(id).value.trim());return p}
+async function saveConfig(extra,st){const body={model:$("#cfg-model").value,effort:$("#cfg-effort").value,profile:readProfile(),...extra};const j=await api("/api/config",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+  if(j.error){st.className="status err";st.textContent=j.error;return false}st.className="status";st.textContent="Tersimpan.";await loadConfig();return true}
+$("#f-key").addEventListener("submit",async e=>{e.preventDefault();const k=$("#cfg-key").value.trim();if(k&&!k.startsWith("sk-ant-")){$("#s-key").className="status err";$("#s-key").textContent="API key Anthropic diawali sk-ant-. Periksa lagi kunci yang ditempel.";return}if(await saveConfig(k?{api_key:k}:{},$("#s-key")))$("#cfg-key").value=""});
+$("#cfg-test").addEventListener("click",async e=>{const st=$("#s-key");const k=$("#cfg-key").value.trim();if(k){if(!await saveConfig({api_key:k},st))return;$("#cfg-key").value=""}st.className="status";st.textContent="Menguji…";e.currentTarget.disabled=true;
+  const j=await api("/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:"Reply with exactly: OK",test:true})});e.currentTarget.disabled=false;
+  if(j.error){st.className="status err";st.textContent=j.error}else{st.className="status";st.textContent="Berhasil terhubung ke "+(j.model||"Claude")+"."}});
+$("#f-profile").addEventListener("submit",async e=>{e.preventDefault();await saveConfig({},$("#s-profile"))});
+$("#pf-export").addEventListener("click",async e=>{const t=JSON.stringify(readProfile(),null,2),b=e.currentTarget;$("#pf-json").hidden=false;$("#pf-json").value=t;try{await navigator.clipboard.writeText(t);b.textContent="Tersalin"}catch{$("#pf-json").select();b.textContent="Tekan Ctrl+C"}});
+$("#pf-import").addEventListener("click",()=>{const ta=$("#pf-json");if(ta.hidden){ta.hidden=false;ta.value="";ta.placeholder="Tempel profil JSON di sini, lalu klik Tempel profil lagi";ta.focus();return}
+  let p;try{p=JSON.parse(ta.value)}catch{$("#s-profile").className="status err";$("#s-profile").textContent="Teks itu bukan JSON profil yang valid.";return}
+  [["name","#pf-name"],["lang","#pf-lang"],["length","#pf-length"],["niche","#pf-niche"],["audience","#pf-audience"],["wins","#pf-wins"],["money","#pf-money"],["style","#pf-style"]].forEach(([k,id])=>{if(p[k]!=null)$(id).value=p[k]});ta.hidden=true;saveConfig({},$("#s-profile"))});
+$("#data-clear").addEventListener("click",()=>$("#data-clear-confirm").hidden=false);
+$("#data-clear-no").addEventListener("click",()=>$("#data-clear-confirm").hidden=true);
+$("#data-clear-yes").addEventListener("click",async()=>{await api("/api/data",{method:"DELETE"});$("#data-clear-confirm").hidden=true;$("#s-app").className="status";$("#s-app").textContent="Data Studio dihapus.";await loadData()});
+$("#app-quit").addEventListener("click",async()=>{await fetch("/api/quit",{method:"POST",headers:{"X-Terra":"1"}}).catch(()=>{});document.body.innerHTML='<div class="wrap"><h1>Terra Studio sudah ditutup.</h1><p class="sub">Jendela ini boleh ditutup.</p></div>'});
+
+async function loadData(){const j=await api("/api/data");YT=(j&&!j.error&&(j.videos||j.daily))?j:null;
+  if(YT&&YT.daily?.length){const ld=new Date(YT.daily[YT.daily.length-1][0]+"T12:00:00"),dim=new Date(ld.getFullYear(),ld.getMonth()+1,0).getDate();YT.partialLast=ld.getDate()<dim}
+  renderGrowth()}
+const RENDER={ideas:d=>d?.ideas?.length&&(renderIdeas(d.ideas),true),script:d=>d?.acts?.length&&(renderScript(d),true),seo:d=>d?.titles&&(renderSEO(d),true),thumb:d=>d?.concepts?.length&&(renderThumb(d.concepts),true),shorts:d=>d?.shorts?.length&&(renderShorts(d.shorts),true),ai:d=>d&&(renderAI(d),true)};
+async function loadLast(){const j=await api("/api/last");if(!j||j.error)return;LAST=j;
+  for(const [k,f] of Object.entries(RENDER)){const r=LAST[k];if(!r)continue;try{if(f(r.data)){const st=$("#s-"+k);if(st){st.className="status";st.textContent="Hasil terakhir, dibuat "+new Date(r.at).toLocaleString("id-ID",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})+". Tidak memakai saldo lagi."}}}catch{}}
+  $("#cfg-spent").textContent=spentText()}
+(async()=>{await loadConfig();await loadData();await loadLast();show(store.get("tab","ideas"))})();
+</script>

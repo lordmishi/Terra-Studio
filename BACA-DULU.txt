@@ -1,0 +1,68 @@
+TERRA STUDIO 1.1 (Windows 10/11, 64-bit)
+=========================================
+
+Aplikasi PC untuk channel YouTube: ide video, naskah per babak, judul/deskripsi/tag,
+teks thumbnail, dan analisis data YouTube Studio. AI-nya memakai Claude lewat
+API key milik Anda sendiri. Tidak perlu login claude.ai.
+
+CARA MULAI
+1. Ekstrak zip ini ke folder mana saja, misalnya Documents\TerraStudio.
+2. Klik dua kali TerraStudio.exe.
+   - Kalau muncul "Windows protected your PC" (SmartScreen): klik "More info",
+     lalu "Run anyway". Ini muncul karena file .exe belum ditandatangani
+     (code signing), bukan karena virus.
+   - Aplikasi terbuka sebagai jendela sendiri (memakai Edge atau Chrome yang
+     sudah ada di PC). Tidak perlu install apa pun.
+3. Buka menu Pengaturan.
+
+API KEY ANTHROPIC (wajib untuk fitur AI)
+1. Buka https://console.anthropic.com dan daftar/masuk.
+2. Menu Billing: isi saldo (kartu kredit/debit). Minimal biasanya 5 USD.
+3. Menu API Keys: Create Key, salin kuncinya (diawali sk-ant-).
+4. Tempel di Pengaturan > API key, klik Simpan, lalu klik "Uji koneksi".
+
+BIAYA
+Setiap kali klik Generate, saldo Anthropic terpotong sesuai panjang hasil.
+Perkiraan kasar per klik ada di samping pilihan model di Pengaturan.
+Bawaannya Sonnet (seimbang). Opus paling bagus tapi paling mahal; Haiku paling murah.
+Setelah tiap generate, perkiraan biayanya tampil di bawah tombol, dan total
+perkiraan bulan ini ada di Pengaturan.
+Hasil AI terakhir tiap alat tersimpan otomatis, jadi saat aplikasi dibuka lagi
+hasilnya masih ada tanpa memotong saldo lagi.
+Fitur Data & cuan (impor, grafik, diagnosis, simulator) gratis, tanpa API key.
+Pantau pemakaian di console.anthropic.com > Usage.
+
+PROFIL CHANNEL
+Isi profil di Pengaturan supaya hasil AI sesuai channel Anda.
+Untuk Terra Time Capsules: buka profil-terra.json dengan Notepad, salin
+semua isinya, lalu di Pengaturan klik "Tempel profil (JSON)", tempel,
+dan klik tombol itu sekali lagi.
+
+IMPOR DATA YOUTUBE STUDIO
+1. YouTube Studio > Analytics > Advanced mode (Lihat selengkapnya).
+2. Pilih rentang tanggal (misalnya Lifetime), tab Content.
+3. Klik ikon Export (panah ke bawah) > Comma-separated values (.csv).
+   YouTube memberi file .zip.
+4. Di aplikasi: menu "Data & cuan" > Impor, pilih file .zip tadi.
+   Bisa juga impor ekspor tab Traffic source, Geography, dan Viewer age.
+
+DI MANA DATA DISIMPAN
+%APPDATA%\TerraStudio\
+  config.json  = API key, model, profil (API key tersimpan di PC ini saja)
+  data.json    = data Studio yang sudah diimpor
+  last.json    = hasil AI terakhir tiap alat dan catatan biaya
+Tidak ada data yang dikirim ke mana pun selain ke API Anthropic saat Anda
+klik Generate.
+
+MENUTUP APLIKASI
+Tutup jendelanya. Aplikasi berhenti sendiri sekitar 3 menit kemudian.
+Atau klik "Tutup aplikasi" di Pengaturan.
+
+MASALAH UMUM
+- "Gagal terhubung" / sertifikat: antivirus yang memindai HTTPS kadang
+  menghalangi. Coba izinkan TerraStudio.exe di antivirus.
+- "Saldo/kredit habis": isi Billing di console.anthropic.com.
+- Jendela tidak muncul: buka browser ke http://127.0.0.1:47815
+
+Folder "source" berisi kode sumber Rust (untuk pengembang).
+Build: cargo build --release --target x86_64-pc-windows-gnu
