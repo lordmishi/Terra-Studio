@@ -46,9 +46,11 @@ Section "Terra Studio"
   File "${SRC}\TerraStudio.exe"
   File "${SRC}\WebView2Loader.dll"
   File "${SRC}\BACA-DULU.txt"
-  ; First start imports these two files from the exe folder.
-  File "${SRC}\profil-terra.json"
-  File "${SRC}\Content_*.zip"
+  ; First start imports these two files from the exe folder. -DNOCHANNEL leaves them out (GitHub build).
+  !ifndef NOCHANNEL
+    File "${SRC}\profil-terra.json"
+    File "${SRC}\Content_*.zip"
+  !endif
   WriteUninstaller "$INSTDIR\Uninstall.exe"
 
   CreateShortcut "$SMPROGRAMS\${APP}.lnk" "$INSTDIR\TerraStudio.exe" "" "$INSTDIR\TerraStudio.exe" 0
