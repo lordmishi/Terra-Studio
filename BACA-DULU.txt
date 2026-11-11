@@ -1,8 +1,8 @@
-TERRA STUDIO 1.8.1 (Windows 10/11, 64-bit)
+TERRA STUDIO 2.0.0 (Windows 10/11, 64-bit)
 =========================================
 
 CARA PASANG
-Paling mudah: klik dua kali TerraStudio-Setup-1.8.1.exe, lalu Berikutnya
+Paling mudah: klik dua kali TerraStudio-Setup-2.0.0.exe, lalu Berikutnya
 dan Pasang. Tidak perlu izin admin. Shortcut "Terra Studio" muncul di
 Start Menu dan desktop. Uninstall lewat Settings > Apps.
 Versi zip (tanpa install): klik "Extract all" dulu, jangan jalankan
@@ -12,6 +12,25 @@ UPDATE KE VERSI BARU
 Jalankan installer versi baru, atau ekstrak zip baru lalu buka TerraStudio.exe. Kalau versi lama masih
 jalan, versi baru otomatis menutupnya. Data dan pengaturan tidak hilang
 (tersimpan di %APPDATA%\TerraStudio).
+
+BARU DI 2.0
+Alat-alat yang dulu terpisah sekarang jadi satu putaran: lihat masalahnya,
+pilih topik, buat videonya, lalu belajar dari hasilnya.
+- Hari ini (halaman pertama): masalah terbesar channel dari angka Anda
+  sendiri, tiga langkah untuk minggu ini, nilai upload terakhir
+  dibanding 10 upload sebelumnya, dan video yang sedang dikerjakan.
+- Ide: pola 6 video terbaik Anda, dan setiap ide dari AI diberi skor
+  0 sampai 5 (mamalia, predator, ancaman bagi manusia, klaim ukuran,
+  belum pernah dibuat). "Mulai video" langsung membukanya di Buat video.
+- Buat video: satu tempat per video, menggantikan menu Kerangka naskah,
+  Paket SEO, dan Thumbnail. Tahapnya: 1. Paket (cek judul dan teks
+  thumbnail), 2. Hook (cek 60 detik pertama saat Anda mengetik),
+  3. Naskah & suara, 4. Terbit (SEO dan checklist upload).
+- Pelajari: grafik berapa bagian tiap video yang ditonton, dan rapor
+  tiap upload dengan satu pelajaran.
+- Kalender: papan rencana yang dulu bernama Dashboard.
+Semua angka dan cek di halaman ini dihitung di PC Anda dari data channel,
+tanpa AI dan tanpa biaya. Hanya tombol yang menyebut AI yang memakai AI.
 
 BARU DI 1.8 DAN 1.8.1
 - Logo baru Terra Studio (ikon aplikasi, taskbar, shortcut, installer).
@@ -51,14 +70,14 @@ CARA MULAI
    Jadi biarkan kedua file itu tetap di samping TerraStudio.exe.
 4. Buka menu Pengaturan untuk memilih cara memakai AI.
 
-DASHBOARD DAN KALENDER KONTEN
-Halaman pertama berisi papan rencana 7 hari ke depan (tombol "Bulan" untuk
+KALENDER KONTEN
+Menu Kalender berisi papan rencana 7 hari ke depan (tombol "Bulan" untuk
 kalender sebulan), grafik views harian, video teratas, dan ringkasan.
 Video yang sudah tayang muncul otomatis dari data Studio.
 Klik "+ Tambah" atau "+ Jadwalkan konten" untuk menambah rencana (video,
 Shorts, atau post komunitas), klik kartu rencana untuk mengubah status:
 Ide, Naskah, Rekam, Edit, Siap upload, Sudah tayang, atau menambah
-thumbnail. Dari menu Ide & jadwal, klik "Masukkan ke kalender".
+thumbnail. Dari menu Ide, klik "Ke kalender" atau "Mulai video".
 Kalender kecil di kiri: klik tanggal untuk melihat 7 hari mulai tanggal itu.
 Aplikasi tidak mengunggah video ke YouTube; upload tetap lewat YouTube Studio.
 
@@ -73,7 +92,7 @@ Memakai kuota karakter langganan ElevenLabs Anda, tanpa biaya tambahan.
 2. Di aplikasi: Pengaturan > Suara (ElevenLabs), tempel kunci, klik
    "Muat suara". Sisa kuota karakter Anda tampil di situ.
 3. Pilih suara narator (bisa didengar dulu), lalu Simpan.
-4. Di Kerangka naskah, setelah naskah narasi penuh jadi, klik
+4. Di Buat video, tahap Naskah & suara, setelah naskah narasi penuh jadi, klik
    "Buat voice over". Naskah 1.800 kata sekitar 11.000 karakter dan
    butuh 1 sampai 3 menit.
 File MP3 tersimpan di folder Downloads, bisa diputar langsung di
@@ -81,8 +100,9 @@ aplikasi, dan tombol "Buka folder" membuka foldernya.
 ElevenLabs hanya untuk suara. Gambar dan video tetap lewat Google Flow.
 
 GOOGLE FLOW
-Kerangka naskah menghasilkan prompt video per klip 8 detik, dan menu
-Thumbnail menghasilkan prompt gambar. Salin lalu tempel di Google Flow.
+Di Buat video, kerangka naskah (tahap 3) menghasilkan prompt video per klip
+8 detik, dan konsep thumbnail (tahap 1) menghasilkan prompt gambar. Salin
+lalu tempel di Google Flow.
 
 TIGA CARA MEMAKAI AI (pilih di Pengaturan > Koneksi AI)
 A. Tanpa API key (pakai langganan claude.ai, tanpa biaya tambahan)

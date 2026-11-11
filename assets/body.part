@@ -4,18 +4,18 @@
     <h1 class="sr">Terra Studio</h1>
     <img class="logo" src="/logo.png" width="40" height="40" alt="Terra Studio">
     <nav class="tabs" role="tablist" aria-label="Menu" aria-orientation="vertical">
-      <button role="tab" id="t-dash" aria-selected="true" data-tab="dash"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M12 9.5a1 1 0 0 1 1 1V12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-1.5a1 1 0 0 1 1-1z"/><path d="M7 1a1 1 0 0 1 1 1v4.5a1 1 0 0 1-1 1H1.932a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"/><path d="M12.469 1a.5.5 0 0 1 .5.5v1.25a.5.5 0 0 1-.5.5H10.5a.5.5 0 0 1-.5-.5V1.5a.5.5 0 0 1 .5-.5z"/><path d="M12.469 5.25a.5.5 0 0 1 .5.5V7a.5.5 0 0 1-.5.5H10.5A.5.5 0 0 1 10 7V5.75a.5.5 0 0 1 .5-.5z"/></svg><span>Dashboard</span></button>
-      <button role="tab" id="t-ideas" aria-selected="false" data-tab="ideas"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M11.5 5.031a4.5 4.5 0 1 0-6.5 4v1.5a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1.5a4.48 4.48 0 0 0 2.5-4"/><path d="M5 13.5h4"/></svg><span>Ide &amp; jadwal</span></button>
-      <button role="tab" id="t-script" aria-selected="false" data-tab="script"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M10 3.5v8a2 2 0 0 1-2 2H.5a2 2 0 0 0 2-2v-9a2 2 0 0 1 2-2h7.25"/><path d="M11.75.5a1.75 1.75 0 0 1 1.75 1.75V3a.5.5 0 0 1-.5.5h-3V2.25A1.75 1.75 0 0 1 11.75.5"/><path d="M6 4h1.5"/><path d="M5 7h2.5"/><path d="M5 10h2.5"/></svg><span>Kerangka naskah</span></button>
-      <button role="tab" id="t-seo" aria-selected="false" data-tab="seo"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 13.5a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13"/><path d="M6.5 9a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/><path d="M10 10 8.27 8.27"/></svg><span>Paket SEO</span></button>
-      <button role="tab" id="t-thumb" aria-selected="false" data-tab="thumb"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M1.5 13.5h11a1 1 0 0 0 1-1v-11a1 1 0 0 0-1-1h-11a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1"/><path d="m1.75 13.5 7.3-6.88a.5.5 0 0 1 .64 0l3.81 2.73"/><path d="M4.5 6a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/></svg><span>Thumbnail</span></button>
+      <button role="tab" id="t-today" aria-selected="true" data-tab="today"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M12 9.5a1 1 0 0 1 1 1V12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-1.5a1 1 0 0 1 1-1z"/><path d="M7 1a1 1 0 0 1 1 1v4.5a1 1 0 0 1-1 1H1.932a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"/><path d="M12.469 1a.5.5 0 0 1 .5.5v1.25a.5.5 0 0 1-.5.5H10.5a.5.5 0 0 1-.5-.5V1.5a.5.5 0 0 1 .5-.5z"/><path d="M12.469 5.25a.5.5 0 0 1 .5.5V7a.5.5 0 0 1-.5.5H10.5A.5.5 0 0 1 10 7V5.75a.5.5 0 0 1 .5-.5z"/></svg><span>Hari ini</span></button>
+      <button role="tab" id="t-ideas" aria-selected="false" data-tab="ideas"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M11.5 5.031a4.5 4.5 0 1 0-6.5 4v1.5a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1.5a4.48 4.48 0 0 0 2.5-4"/><path d="M5 13.5h4"/></svg><span>Ide</span></button>
+      <button role="tab" id="t-make" aria-selected="false" data-tab="make"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M10 3.5v8a2 2 0 0 1-2 2H.5a2 2 0 0 0 2-2v-9a2 2 0 0 1 2-2h7.25"/><path d="M11.75.5a1.75 1.75 0 0 1 1.75 1.75V3a.5.5 0 0 1-.5.5h-3V2.25A1.75 1.75 0 0 1 11.75.5"/><path d="M6 4h1.5"/><path d="M5 7h2.5"/><path d="M5 10h2.5"/></svg><span>Buat video</span></button>
+      <button role="tab" id="t-learn" aria-selected="false" data-tab="learn"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M.5 13.5h13"/><path d="m1.5 10 3.5-4 3 2.5 4.5-6.5"/><path d="M10.5 2h2v2"/></svg><span>Pelajari</span></button>
+      <button role="tab" id="t-dash" aria-selected="false" data-tab="dash"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M1.5 2.5h11a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1zM.5 6h13M4 .5v3M10 .5v3"/></svg><span>Kalender</span></button>
       <button role="tab" id="t-growth" aria-selected="false" data-tab="growth"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="m1.24 6.54 11.5-5.23"/><path d="m10.59.5 2.15.81-.8 2.15"/><path d="M13.25 13.5h-2.5v-7a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 .5.5z"/><path d="M8.25 13.5h-2.5V8a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 .5.5z"/><path d="M3.25 13.5H.75v-4a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 .5.5z"/></svg><span>Data &amp; cuan</span></button>
       <button role="tab" id="t-settings" aria-selected="false" data-tab="settings"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="m5.23 2.25.43-1.11A1 1 0 0 1 6.59.5h.82a1 1 0 0 1 .93.64l.43 1.11 1.46.84 1.18-.18a1 1 0 0 1 1 .49l.4.7a1 1 0 0 1-.08 1.13l-.73.93v1.68l.75.93a1 1 0 0 1 .08 1.13l-.4.7a1 1 0 0 1-1 .49l-1.18-.18-1.46.84-.43 1.11a1 1 0 0 1-.93.64h-.84a1 1 0 0 1-.93-.64l-.43-1.11-1.46-.84-1.18.18a1 1 0 0 1-1-.49l-.4-.7a1 1 0 0 1 .08-1.13L2 7.84V6.16l-.75-.93a1 1 0 0 1-.08-1.13l.4-.7a1 1 0 0 1 1-.49l1.18.18zM5 7a2 2 0 1 0 4 0 2 2 0 0 0-4 0"/></svg><span>Pengaturan</span></button>
     </nav>
     <div class="rail-sp"></div>
     <button type="button" class="rail-plus" id="rail-plus" aria-label="Rencana konten baru" data-tip="Rencana baru">+</button>
     <button type="button" class="skin" id="skin-tog" aria-label="Ganti tema" data-tip="Tema: batu / lumut"><i></i></button>
-    <p class="ver">v1.8.1</p>
+    <p class="ver">v2.0.0</p>
   </aside>
   <aside class="side" aria-label="Kalender dan jadwal">
     <div class="box calw">
@@ -37,8 +37,68 @@
     <span><strong>Mode salin-tempel ke claude.ai.</strong> Supaya hasil AI langsung jadi di aplikasi tanpa biaya, pilih Gemini di Pengaturan dan tempel API key gratis dari Google.</span> <button type="button" class="btn ghost" data-goto="settings">Buka Pengaturan</button><button type="button" class="btn ghost" id="banner-close">Tutup</button>
   </div>
 
-  <!-- DASHBOARD -->
-  <section id="p-dash" role="tabpanel" aria-labelledby="t-dash">
+  <!-- TODAY: the one thing holding the channel back, from its own numbers -->
+  <section id="p-today" role="tabpanel" aria-labelledby="t-today">
+    <div id="td-empty" class="card" hidden>
+      <span class="layer">Belum ada data video</span>
+      <h3>Hari ini butuh angka channel Anda</h3>
+      <p class="note">Sambungkan YouTube atau impor file Konten dari YouTube Studio. Setelah itu halaman ini menunjukkan masalah terbesar channel dan tiga langkah untuk minggu ini.</p>
+      <button type="button" class="btn" data-goto="growth">Buka Data &amp; cuan</button>
+    </div>
+    <div id="td-full" class="stack">
+      <div class="dx">
+        <div>
+          <span class="eyebrow">Masalah terbesar saat ini</span>
+          <h2 class="disp" id="dx-h"></h2>
+          <div id="dx-p"></div>
+          <div class="chips"><button type="button" class="btn" id="dx-go"></button><button type="button" class="btn ghost" data-goto="learn">Lihat semua upload</button></div>
+        </div>
+        <div class="cmpb" id="dx-cmp"></div>
+      </div>
+      <div class="vitals" id="td-vitals"></div>
+      <div class="td2">
+        <div class="box">
+          <h2>Minggu ini</h2>
+          <p class="sub">Tiga langkah, dipilih dari angka Anda. Centang kalau sudah.</p>
+          <ul class="moves" id="td-moves"></ul>
+        </div>
+        <div class="box">
+          <h2>Upload terakhir, dinilai</h2>
+          <p class="sub" id="td-last-sub"></p>
+          <div id="td-grade"></div>
+        </div>
+      </div>
+    </div>
+    <div class="box">
+      <div class="bx-hd"><div><h2>Video yang sedang dikerjakan</h2><p class="sub">Tiap video bergerak dari kiri ke kanan. Klik untuk membukanya di Buat video.</p></div><button type="button" class="btn ghost" id="td-new">+ Video baru</button></div>
+      <div class="pipe" id="td-pipe"></div>
+    </div>
+  </section>
+
+  <!-- LEARN: every upload graded against the channel's own best -->
+  <section id="p-learn" role="tabpanel" aria-labelledby="t-learn" hidden>
+    <div id="ln-empty" class="card" hidden>
+      <span class="layer">Belum ada data video</span>
+      <h3>Rapor muncul setelah data video masuk</h3>
+      <button type="button" class="btn" data-goto="growth">Buka Data &amp; cuan</button>
+    </div>
+    <div id="ln-full" class="stack">
+      <div class="box">
+        <h2>Berapa bagian tiap video yang ditonton</h2>
+        <p class="sub" id="ln-sub"></p>
+        <div class="rchart" id="ln-chart"></div>
+        <div class="lgd"><span><i style="background:var(--accent)"></i>20% atau lebih: dekat video terbaik</span><span><i style="background:var(--warn)"></i>Di bawah 10%: penonton pergi cepat</span><span><i style="background:var(--stone-dot)"></i>Di antaranya</span></div>
+      </div>
+      <div class="box">
+        <h2>Rapor tiap upload</h2>
+        <p class="sub">Setiap upload dibandingkan dengan 6 video terbaik Anda, dari data terakhir yang ditarik. Satu pelajaran per video untuk video berikutnya.</p>
+        <div class="tblw"><table class="rc" id="ln-cards"></table></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CALENDAR -->
+  <section id="p-dash" role="tabpanel" aria-labelledby="t-dash" hidden>
     <div class="paper">
       <div class="pp-head">
         <h2 class="disp" id="wk-title">7 hari ke depan</h2>
@@ -74,15 +134,22 @@
       <label for="pl-status">Status<select id="pl-status"><option value="ide">Ide</option><option value="naskah">Naskah</option><option value="rekam">Rekam / voice over</option><option value="edit">Edit</option><option value="siap">Siap upload</option><option value="tayang">Sudah tayang</option></select></label>
       <label for="pl-note">Catatan<textarea id="pl-note" rows="3"></textarea></label>
       <div class="pl-thumb"><span id="pl-thumb-box"></span><div><span class="lbl">Thumbnail (opsional)</span><div class="chips"><button type="button" class="btn ghost" id="pl-thumb-pick">Pilih gambar</button><button type="button" class="btn ghost" id="pl-thumb-del" hidden>Hapus gambar</button></div><input type="file" id="pl-thumb-file" accept="image/jpeg,image/png,image/webp" hidden></div></div>
-      <div class="confirm"><button class="btn" value="save" id="pl-save">Simpan</button><button class="btn ghost" value="cancel" formnovalidate>Batal</button><button class="btn ghost danger" type="button" id="pl-del">Hapus</button><button class="btn ghost" type="button" id="pl-tools">Buka di Naskah &amp; SEO</button></div>
+      <div class="confirm"><button class="btn" value="save" id="pl-save">Simpan</button><button class="btn ghost" value="cancel" formnovalidate>Batal</button><button class="btn ghost danger" type="button" id="pl-del">Hapus</button><button class="btn ghost" type="button" id="pl-tools">Buka di Buat video</button></div>
     </form>
   </dialog>
 
   <!-- IDEAS -->
-  <section class="panel" id="p-ideas" role="tabpanel" aria-labelledby="t-ideas" hidden>
+  <section id="p-ideas" role="tabpanel" aria-labelledby="t-ideas" hidden>
+    <div class="box" id="id-pattern-box">
+      <h2>Kesamaan video terbaik Anda</h2>
+      <p class="sub" id="id-pattern-sub"></p>
+      <div class="pattern" id="id-pattern"></div>
+      <p class="sub" id="id-pattern-note" style="margin-top:12px"></p>
+    </div>
+    <div class="panel">
     <form class="tool" id="f-ideas">
-      <h2>Generator ide video</h2>
-      <p class="hint">Topik dengan hook kuat, dijadwalkan otomatis. Kalau data Studio sudah diimpor, judul video lama dipakai agar tidak ada ide yang berulang, dan video terlaris dijadikan acuan.</p>
+      <h2>Cari topik berikutnya</h2>
+      <p class="hint">AI mengusulkan topik, lalu aplikasi memberi skor 0 sampai 5 menurut pola video terbaik Anda. Judul video lama dipakai supaya tidak ada ide yang berulang.</p>
       <label for="ideas-focus">Fokus tema (opsional)<input id="ideas-focus" placeholder="mis. predator mamalia Zaman Es"></label>
       <div class="row2">
         <label for="ideas-n">Jumlah ide<input id="ideas-n" type="number" min="3" max="12" value="6"></label>
@@ -92,14 +159,84 @@
       </div>
       <label for="ideas-start">Mulai tanggal<input id="ideas-start" type="date"></label>
       <label for="ideas-avoid">Topik yang sudah dibuat<textarea id="ideas-avoid" placeholder="Terisi otomatis setelah impor data Studio"></textarea></label>
-      <button class="btn" type="submit">Buat ide &amp; jadwal</button>
+      <button class="btn" type="submit">Cari ide</button>
       <div class="status" id="s-ideas" role="status"></div>
     </form>
-    <div class="out" id="o-ideas"><div class="empty">Ide dan jadwal upload akan muncul di sini. Isi form di samping, lalu tekan <strong>Buat ide &amp; jadwal</strong>.</div></div>
+    <div class="out" id="o-ideas"><div class="empty">Ide akan muncul di sini, masing-masing dengan skor kecocokan dengan video terbaik Anda. Isi form di samping, lalu tekan <strong>Cari ide</strong>.</div></div>
+    </div>
   </section>
 
-  <!-- SCRIPT -->
-  <section class="panel" id="p-script" role="tabpanel" aria-labelledby="t-script" hidden>
+  <!-- MAKE: one video, from title to upload -->
+  <section id="p-make" role="tabpanel" aria-labelledby="t-make" hidden>
+    <div class="box mk-head">
+      <div class="mk-pick">
+        <label for="mk-pick">Video<select id="mk-pick"></select></label>
+        <label for="mk-topic">Topik atau nama hewan<input id="mk-topic" placeholder="mis. Pachycrocuta" maxlength="140"></label>
+      </div>
+      <div class="mk-stages" role="tablist" aria-label="Tahap video" id="mk-stages">
+        <button type="button" role="tab" id="ms-pkg" aria-controls="mk-pkg" aria-selected="true" data-stage="pkg">1. Paket</button>
+        <button type="button" role="tab" id="ms-hook" aria-controls="mk-hook-st" aria-selected="false" data-stage="hook" tabindex="-1">2. Hook</button>
+        <button type="button" role="tab" id="ms-script" aria-controls="mk-script" aria-selected="false" data-stage="script" tabindex="-1">3. Naskah &amp; suara</button>
+        <button type="button" role="tab" id="ms-seo" aria-controls="mk-seo" aria-selected="false" data-stage="seo" tabindex="-1">4. Terbit</button>
+      </div>
+    </div>
+
+    <div id="mk-pkg" role="tabpanel" aria-labelledby="ms-pkg" class="stack">
+      <div class="td2">
+        <div class="box">
+          <h2>Judul dulu, sebelum menulis</h2>
+          <p class="sub">Kalau tidak ada judul yang bikin penasaran, ganti topik. Pilih satu judul; pilihan ini dipakai di thumbnail, hook, dan SEO.</p>
+          <label for="mk-titles" style="margin-top:12px">Calon judul, satu per baris<textarea id="mk-titles" rows="4" placeholder="The 250 lb Hyena That Ate Our Ancestors"></textarea></label>
+          <div class="tlist" id="mk-tlist" role="radiogroup" aria-label="Judul yang dipakai"></div>
+          <p class="sub" style="margin-top:10px">Cek: <b>≤60</b> muat di layar HP · <b>Ukuran</b> angka yang bisa dibayangkan · <b>Ancaman</b> bahaya bagi manusia atau saingan · <b>Nama</b> nama hewan, untuk pencarian.</p>
+          <div class="chips" style="margin-top:12px"><button type="button" class="btn ghost" id="mk-titles-ai">Minta 5 judul dari AI</button></div>
+          <div class="status" id="s-titles" role="status"></div>
+        </div>
+        <div class="box">
+          <h2>Teks thumbnail</h2>
+          <p class="sub">Maksimal 4 kata. Satu hewan, satu ancaman, kontras besar. Teks ini melengkapi judul, jangan mengulangnya.</p>
+          <label for="mk-thumbtext" style="margin-top:12px">Teks di thumbnail<input id="mk-thumbtext" maxlength="40" placeholder="ATE OUR ANCESTORS"></label>
+          <div class="mk-thumb" id="mk-thumbprev" aria-hidden="true"><span></span></div>
+          <p class="note" id="mk-thumbnote"></p>
+        </div>
+      </div>
+      <div class="panel" id="mk-thumbtool">
+    <form class="tool" id="f-thumb">
+      <h2>Konsep thumbnail</h2>
+      <p class="hint">Tiga konsep berbeda: teks maksimal 4 kata, prompt gambar siap pakai untuk Google Flow, komposisi, dan alasan orang akan mengklik.</p>
+      <label for="thumb-topic">Topik video<input id="thumb-topic" required></label>
+      <label for="thumb-title">Judul yang dipakai (opsional)<input id="thumb-title"></label>
+      <label for="thumb-style">Gaya visual
+        <select id="thumb-style"><option>Photoreal cinematic</option><option>Painted illustration</option><option>Dark documentary, high contrast</option><option>Bold minimal graphic</option></select>
+      </label>
+      <button class="btn" type="submit">Buat konsep</button>
+      <div class="status" id="s-thumb" role="status"></div>
+    </form>
+    <div class="out" id="o-thumb"><div class="empty">Tiga konsep thumbnail akan muncul di sini. Prompt gambar bisa disalin ke Google Flow.</div></div>
+      </div>
+    </div>
+
+    <div id="mk-hook-st" role="tabpanel" aria-labelledby="ms-hook" hidden>
+      <div class="td2">
+        <div class="box">
+          <h2>Hook coach: 60 detik pertama</h2>
+          <p class="sub">Di sinilah penonton Anda pergi. Video terbaik Anda langsung membuka dengan hewannya dan bahayanya. Tulis pembukaan di sini; cek di samping ikut berubah saat Anda mengetik.</p>
+          <label for="mk-hook" style="margin-top:12px">Pembukaan, dalam bahasa video<textarea id="mk-hook" rows="9" placeholder="Two million years ago, a hyena bigger than any alive today ruled the caves of what is now China…"></textarea></label>
+          <p class="note" id="mk-hook-len"></p>
+          <div class="chips"><button type="button" class="btn" id="mk-hook-ai">Perbaiki dengan AI</button><button type="button" class="btn ghost" data-stage-go="script">Lanjut ke naskah</button></div>
+          <div class="status" id="s-hook" role="status"></div>
+          <div class="out" id="o-hook"></div>
+        </div>
+        <div class="box">
+          <h2>Cek hook</h2>
+          <p class="sub">Aturan dari video Anda yang ditinggal penonton di menit pertama.</p>
+          <ul class="rules" id="mk-rules"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div id="mk-script" role="tabpanel" aria-labelledby="ms-script" hidden>
+    <div class="panel">
     <form class="tool" id="f-script">
       <h2>Kerangka naskah</h2>
       <p class="hint">Struktur per babak dengan cold open, open loop untuk menahan penonton, dan titik ajakan membership atau merch yang tidak memotong cerita.</p>
@@ -115,11 +252,12 @@
       <button class="btn" type="submit">Susun kerangka</button>
       <div class="status" id="s-script" role="status"></div>
     </form>
-    <div class="out" id="o-script"><div class="empty">Kerangka naskah akan muncul di sini, lengkap dengan proporsi kata per babak dan daftar fakta yang wajib dicek ulang.</div></div>
-  </section>
+    <div class="out" id="o-script"><div class="empty">Kerangka naskah akan muncul di sini, lengkap dengan proporsi kata per babak dan daftar fakta yang wajib dicek ulang. Hook dari tahap 2 dipakai sebagai cold open.</div></div>
+    </div>
+    </div>
 
-  <!-- SEO -->
-  <section class="panel" id="p-seo" role="tabpanel" aria-labelledby="t-seo" hidden>
+    <div id="mk-seo" role="tabpanel" aria-labelledby="ms-seo" hidden class="stack">
+    <div class="panel">
     <form class="tool" id="f-seo">
       <h2>Paket SEO</h2>
       <p class="hint">Kata kunci, 5 judul, deskripsi dengan chapter, hashtag, tag, komentar sematan, dan postingan Komunitas untuk hari tayang.</p>
@@ -130,22 +268,15 @@
       <div class="status" id="s-seo" role="status"></div>
     </form>
     <div class="out" id="o-seo"><div class="empty">Paket SEO akan muncul di sini. Setiap bagian punya tombol Salin untuk ditempel ke YouTube Studio.</div></div>
-  </section>
-
-  <!-- THUMB -->
-  <section class="panel" id="p-thumb" role="tabpanel" aria-labelledby="t-thumb" hidden>
-    <form class="tool" id="f-thumb">
-      <h2>Konsep thumbnail</h2>
-      <p class="hint">Tiga konsep berbeda: teks maksimal 4 kata, prompt gambar siap pakai, komposisi, dan alasan orang akan mengklik.</p>
-      <label for="thumb-topic">Topik video<input id="thumb-topic" required></label>
-      <label for="thumb-title">Judul yang dipakai (opsional)<input id="thumb-title"></label>
-      <label for="thumb-style">Gaya visual
-        <select id="thumb-style"><option>Photoreal cinematic</option><option>Painted illustration</option><option>Dark documentary, high contrast</option><option>Bold minimal graphic</option></select>
-      </label>
-      <button class="btn" type="submit">Buat konsep</button>
-      <div class="status" id="s-thumb" role="status"></div>
-    </form>
-    <div class="out" id="o-thumb"><div class="empty">Tiga konsep thumbnail akan muncul di sini. Prompt gambar bisa disalin ke Midjourney, Ideogram, atau generator gambar lain.</div></div>
+    </div>
+      <div class="box">
+        <h2>Checklist sebelum upload</h2>
+        <p class="sub">Tersimpan per video. Aplikasi tidak mengupload apa pun; Anda tetap upload sendiri di YouTube Studio.</p>
+        <ul class="check" id="mk-pub" style="margin-top:10px"></ul>
+        <div class="chips" style="margin-top:12px"><button type="button" class="btn ghost" id="mk-done">Tandai sudah tayang</button></div>
+        <div class="status" id="s-done" role="status"></div>
+      </div>
+    </div>
   </section>
 
   <!-- GROWTH -->
@@ -334,7 +465,7 @@
     <div class="card" style="margin-top:16px">
       <span class="layer">Aplikasi</span>
       <h3>Data dan aplikasi</h3>
-      <p class="note">Semua pengaturan, data Studio, rencana kalender, dan hasil AI disimpan hanya di komputer ini, di folder <code id="cfg-dir"></code>. API key disimpan terenkripsi dengan pengaman Windows. Menutup jendela Terra Studio berarti menutup aplikasinya. Versi 1.8.1.</p>
+      <p class="note">Semua pengaturan, data Studio, rencana kalender, dan hasil AI disimpan hanya di komputer ini, di folder <code id="cfg-dir"></code>. API key disimpan terenkripsi dengan pengaman Windows. Menutup jendela Terra Studio berarti menutup aplikasinya. Versi 2.0.0.</p>
       <h3 style="margin-top:14px">Backup</h3>
       <p class="note">Simpan file backup (profil, data Studio, kalender, hasil AI) ke folder Downloads, lalu salin ke flashdisk atau Google Drive. API key dan gambar thumbnail rencana tidak ikut. Pulihkan di komputer baru atau setelah instal ulang Windows.</p>
       <div class="chips"><button type="button" class="btn ghost" id="backup-save">Simpan backup</button><button type="button" class="btn ghost" id="backup-load">Pulihkan dari backup</button></div>
@@ -365,7 +496,11 @@ const beat=()=>fetch("/api/heartbeat",{method:"POST",headers:{"X-Terra":"1"}}).c
 /* tabs */
 const tabs=[...document.querySelectorAll("nav.tabs button")];
 // The first show() skips scrollIntoView: Chromium moves the Tab starting point there, past the skip link.
-function show(name,first){if(!$("#p-"+name))name="dash";tabs.forEach(b=>{const on=b.dataset.tab===name;b.setAttribute("aria-selected",on);if(on){if(!first)b.scrollIntoView({block:"nearest",inline:"nearest"});$("#page-title").textContent=b.textContent.trim()}$("#p-"+b.dataset.tab).hidden=!on});store.set("tab",name);if(name==="dash")renderDash();if(name==="growth")requestAnimationFrame(()=>{if(YT)chart()})}
+// 1.x had separate Script, SEO and Thumbnail pages; they now live as stages of Make.
+const OLD_TAB={script:"script",seo:"seo",thumb:"pkg"};
+function show(name,first){if(OLD_TAB[name]){mkStage(OLD_TAB[name]);name="make"}if(!tabs.some(b=>b.dataset.tab===name))name="today";tabs.forEach(b=>{const on=b.dataset.tab===name;b.setAttribute("aria-selected",on);if(on){if(!first)b.scrollIntoView({block:"nearest",inline:"nearest"});$("#page-title").textContent=b.textContent.trim()}$("#p-"+b.dataset.tab).hidden=!on});
+  $(".shell").dataset.tab=name;store.set("tab",name);$("#main").scrollTop=0;
+  if(name==="dash")renderDash();if(name==="today")renderToday();if(name==="learn")renderLearn();if(name==="ideas")renderPattern();if(name==="make")renderMake();if(name==="growth")requestAnimationFrame(()=>{if(YT)chart()})}
 tabs.forEach(b=>b.addEventListener("click",()=>show(b.dataset.tab)));
 document.addEventListener("click",e=>{const g=e.target.closest("[data-goto]");if(g)show(g.dataset.goto)});
 
@@ -448,13 +583,25 @@ const fmtDate=d=>d.toLocaleDateString("id-ID",{weekday:"short",day:"numeric",mon
 function renderIdeas(list){
   const dates=schedule(list.length,+$("#ideas-freq").value,$("#ideas-start").value||new Date().toISOString().slice(0,10));
   const plan=list.map((x,i)=>`${dates[i].toISOString().slice(0,10)}  ${x.title}`).join("\n");
-  $("#o-ideas").innerHTML=head("Kalender konten")+`<div class="ideas">${list.map((x,i)=>`<article class="card"><div class="date">${fmtDate(dates[i])}</div><h3>${esc(x.title)}</h3><div class="meta"><span>${esc(x.era)}</span><span>Potensi: ${esc(x.potential)}</span></div><p><strong>Hook:</strong> ${esc(x.hook)}</p><p class="note">${esc(x.why)}</p><div class="chips"><button type="button" class="btn ghost" data-use="${esc(x.title)}">Pakai di semua alat</button><button type="button" class="btn ghost" data-plan="${esc(x.title)}" data-date="${dates[i].toISOString().slice(0,10)}">Masukkan ke kalender</button></div></article>`).join("")}</div><div class="chips"><button type="button" class="btn ghost" id="plan-all">Masukkan semua ke kalender</button></div>`+copyBox("Jadwal (salin ke catatan atau kalender)",plan);
+  const scored=list.map((x,i)=>({...x,date:isoDay(dates[i]),...fitOf(x)})).sort((a,b)=>b.score-a.score);
+  $("#o-ideas").innerHTML=head("Topik berikutnya, diurutkan menurut skor")+`<div class="idea-list">${scored.map(x=>`<article class="idea2"><div class="fit" style="--p:${x.score*20}" role="img" aria-label="Skor ${x.score} dari 5"><span>${x.score}</span></div><div style="min-width:0"><h3>${esc(x.title)}</h3><div class="tags">${x.tags.map(([ok,t])=>`<span class="tag ${ok?"y":"n"}">${ok?"✓ ":""}${esc(t)}</span>`).join("")}</div><p class="note" style="margin:8px 0 0"><strong>Hook:</strong> ${esc(x.hook)}</p><p class="note" style="margin:4px 0 0">${esc(x.why)}</p></div><div class="idea-act"><button type="button" class="btn${x.score<3?" ghost":""}" data-start="${esc(x.title)}" data-topic="${esc(x.subject||"")}" data-date="${x.date}">Mulai video</button><button type="button" class="btn ghost" data-plan="${esc(x.title)}" data-date="${x.date}">Ke kalender, ${esc(fmtShort(x.date))}</button></div></article>`).join("")}</div><div class="chips"><button type="button" class="btn ghost" id="plan-all">Masukkan semua ke kalender</button></div>`+copyBox("Jadwal (salin ke catatan atau kalender)",plan);
 }
-document.addEventListener("click",e=>{const b=e.target.closest("[data-use]");if(!b)return;["#script-topic","#seo-topic","#thumb-topic","#shorts-topic"].forEach(id=>$(id).value=b.dataset.use);$("#thumb-title").value=b.dataset.use;b.textContent="Terisi di Naskah, SEO, Thumbnail, Shorts"});
+const fmtShort=iso=>new Date(iso+"T12:00:00").toLocaleDateString("id-ID",{day:"numeric",month:"short"});
+// Score an idea against the winners' pattern. The AI only says what the animal is; the app checks the channel history itself.
+function fitOf(x){const subj=String(x.subject||"").trim(),key=subj.split(/[\s,(]+/).find(w=>w.length>=4)||"";
+  const prev=key?longForm().filter(v=>(v.t||"").toLowerCase().includes(key.toLowerCase())).sort((a,b)=>(b.d||"").localeCompare(a.d||""))[0]:null;
+  const tags=[[!!x.mammal,"Mamalia"],[!!x.predator,"Predator"],[!!x.threat,"Ancaman bagi manusia"],[!!x.size,"Klaim ukuran"],[!prev,prev?`Sudah dibuat ${fmtShort(prev.d)}, ${f1(share(prev))}% ditonton`:"Belum pernah dibuat"]];
+  return {tags,score:tags.filter(t=>t[0]).length}}
+document.addEventListener("click",async e=>{const b=e.target.closest("[data-start]");if(!b)return;
+  let p=plans().find(x=>x.title===b.dataset.start);
+  if(!p){p={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),title:b.dataset.start,date:b.dataset.date||isoDay(new Date()),type:"video",status:"ide",note:""};await savePlans([...plans(),p])}
+  if(b.dataset.topic){work(p.id).topic=b.dataset.topic;saveWork()}
+  openMake(p.id,"pkg")});
 $("#f-ideas").addEventListener("submit",async e=>{e.preventDefault();const n=Math.min(12,Math.max(3,+$("#ideas-n").value||6));
   const data=await ask($("#s-ideas"),e.submitter||$("#f-ideas .btn"),`Suggest ${n} new video ideas for this channel.${val("#ideas-focus")?" Focus: "+val("#ideas-focus")+".":""} Do not repeat or closely overlap these existing videos: ${val("#ideas-avoid")||"none listed"}.
-Base the choices on what has worked for this channel. Titles under 60 characters, clickable but honest.
-JSON shape: {"ideas":[{"title":"","era":"period/place or sub-topic, short","hook":"one-sentence cold-open hook","why":"why it can perform for this channel (Indonesian, one sentence)","potential":"one of: Sedang, Tinggi, Sangat tinggi (Indonesian)"}]}`,"ideas");
+Base the choices on what has worked for this channel: ${patternText()||"giant prehistoric mammals, predators, framed as a threat to humans or rivals"}. Titles under 60 characters, clickable but honest, naming the animal.
+For each idea also answer honestly about the main animal: "subject" its usual name, "mammal" true if it is a mammal, "predator" true if it hunted or scavenged large prey, "threat" true if the video frames it as a danger to humans or our ancestors (only when the evidence supports it), "size" true if the title states a size, weight or record.
+JSON shape: {"ideas":[{"title":"","subject":"","mammal":true,"predator":true,"threat":true,"size":true,"hook":"one-sentence cold-open hook","why":"why it can perform for this channel (Indonesian, one sentence)"}]}`,"ideas");
   if(data?.ideas?.length)renderIdeas(data.ideas)});
 
 /* Script outline */
@@ -496,7 +643,7 @@ JSON shape: {"title":"","narration":[{"act":"act name","text":"narration paragra
   if(data?.narration?.length)renderScriptFull(data)});
 $("#f-script").addEventListener("submit",async e=>{e.preventDefault();const w=+$("#script-words").value||1800,n=Math.min(7,Math.max(3,+$("#script-acts").value||5));
   const data=await ask($("#s-script"),e.submitter||$("#f-script .btn"),`Build a detailed ${n}-act outline for a documentary script. Topic: ${val("#script-topic")}. Central question: ${val("#script-angle")||"choose the strongest one"}. Tone: ${$("#script-tone").value}. Target length: about ${w} words total (act word counts must add up to about ${w}).
-Include a vivid 2-3 sentence cold open that pays off within the first 30 seconds, 3-5 beats per act, open loops across act breaks for retention, at most two soft CTAs (membership or merch from the profile) placed where they don't break the story, a visual/B-roll list, and facts to double-check.
+${hookForScript()}Include a vivid 2-3 sentence cold open that pays off within the first 30 seconds, 3-5 beats per act, open loops across act breaks for retention, at most two soft CTAs (membership or merch from the profile) placed where they don't break the story, a visual/B-roll list, and facts to double-check.
 Also write a "flow_style" line (one sentence, English) fixing one consistent visual style, lighting and camera look for the whole video, and for every act 2-4 "flow_prompts": English text-to-video prompts for Google Flow (Veo), each describing one 8-second shot (subject, action, setting, camera movement, lighting), self-contained (repeat key subject details, no references like "same as before"), scientifically accurate anatomy, no on-screen text, 16:9.
 JSON shape: {"title":"","cold_open":"","flow_style":"","acts":[{"name":"","words":0,"beats":[""],"open_loop":"","cta":"","flow_prompts":[""]}],"visuals":[""],"fact_check":[""]}. Exactly ${n} acts. Use "" for open_loop or cta when not needed.`,"script");
   if(data?.acts?.length)renderScript(data)});
@@ -767,11 +914,11 @@ $("#app-quit").addEventListener("click",async()=>{await fetch("/api/quit",{metho
 
 async function loadData(){const j=await api("/api/data");YT=(j&&!j.error&&(j.videos||j.daily))?j:null;
   if(YT&&YT.daily?.length){const ld=new Date(YT.daily[YT.daily.length-1][0]+"T12:00:00"),dim=new Date(ld.getFullYear(),ld.getMonth()+1,0).getDate();YT.partialLast=ld.getDate()<dim}
-  renderGrowth();renderDash()}
+  renderGrowth();renderDash();renderToday();renderLearn();renderPattern()}
 /* Dashboard and calendar */
 const TYPE_LABEL={video:"Video",short:"Shorts",post:"Post"},STATUS_LABEL={ide:"Ide",naskah:"Naskah",rekam:"Rekam",edit:"Edit",siap:"Siap upload",tayang:"Sudah tayang"};
 const plans=()=>LAST.plans?.data||[];
-async function savePlans(list){list.sort((a,b)=>a.date.localeCompare(b.date));await remember("plans",list);renderDash()}
+async function savePlans(list){list.sort((a,b)=>a.date.localeCompare(b.date));await remember("plans",list);renderDash();renderPipe();if(!$("#p-make").hidden)renderMake()}
 const isoDay=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
 let calMonth=(()=>{const d=new Date();return new Date(d.getFullYear(),d.getMonth(),1)})();
 let mcMonth=new Date(calMonth),weekStart=(()=>{const d=new Date();d.setHours(12,0,0,0);return d})();
@@ -815,7 +962,7 @@ function renderNext(){const today=isoDay(new Date()),p=plans().filter(x=>x.date>
   if(!p){el.className="next noimg";el.innerHTML=`<div class="top"><span>Upload berikutnya</span></div><h3>Belum ada jadwal</h3><p>Buat rencana video supaya jadwal upload kelihatan di sini.</p><div class="row"><button type="button" class="p" data-act="new">Buat rencana</button></div>`;return}
   const d=new Date(p.date+"T12:00:00"),days=Math.round((d-new Date(today+"T12:00:00"))/864e5),when=days===0?"Hari ini":days===1?"Besok":`${days} hari lagi`;
   el.className="next"+(p.thumb?"":" noimg");
-  el.innerHTML=`<div class="top"><span>${d.toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"short"})}</span><span class="badge">${when}</span></div><h3>${esc(p.title)}</h3><div class="row"><button type="button" class="p" data-act="tools" data-id="${esc(p.id)}">Buka naskah</button><button type="button" class="s" data-plan-id="${esc(p.id)}">Ubah</button></div>${p.thumb?`<img class="stk" src="${thumbUrl(p)}" alt="">`:""}`}
+  el.innerHTML=`<div class="top"><span>${d.toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"short"})}</span><span class="badge">${when}</span></div><h3>${esc(p.title)}</h3><div class="row"><button type="button" class="p" data-act="tools" data-id="${esc(p.id)}">Kerjakan</button><button type="button" class="s" data-plan-id="${esc(p.id)}">Ubah</button></div>${p.thumb?`<img class="stk" src="${thumbUrl(p)}" alt="">`:""}`}
 function renderStages(){const today=isoDay(new Date()),list=plans().filter(p=>p.date>=today&&p.status!=="tayang");const C={ide:"var(--accent)",naskah:"var(--bone)",rekam:"var(--stone)",edit:"var(--rust)",siap:"var(--ok)"};
   $("#stages").innerHTML=STAGES.slice(0,5).map(s=>`<li style="--c:${C[s]}"><i></i>${STATUS_LABEL[s]}<b>${list.filter(p=>p.status===s).length}</b></li>`).join("")}
 function renderViews(){const el=$("#vc"),d=YT?.daily||[];
@@ -851,8 +998,7 @@ $("#plan-form").addEventListener("submit",async e=>{if(e.submitter?.value!=="sav
   list.push({id,title:$("#pl-title").value.trim(),date:$("#pl-date").value,type:$("#pl-type").value,status:$("#pl-status").value,note:$("#pl-note").value.trim(),...(thumb?{thumb}:{})});
   const d=new Date($("#pl-date").value+"T12:00:00");calMonth=new Date(d.getFullYear(),d.getMonth(),1);mcMonth=new Date(calMonth);await savePlans(list)});
 $("#pl-del").addEventListener("click",async()=>{if(!editing)return;$("#plan-dlg").close();if(editing.thumb)await api("/api/thumb?id="+encodeURIComponent(editing.id),{method:"DELETE"});await savePlans(plans().filter(x=>x.id!==editing.id))});
-const toTools=t=>{["#script-topic","#seo-topic","#thumb-topic","#shorts-topic"].forEach(id=>$(id).value=t);$("#thumb-title").value=t;show("script")};
-$("#pl-tools").addEventListener("click",()=>{const t=$("#pl-title").value.trim();$("#plan-dlg").close();toTools(t)});
+$("#pl-tools").addEventListener("click",()=>{$("#plan-dlg").close();if(editing)openMake(editing.id)});
 $("#banner-close").addEventListener("click",()=>{store.set("banner-off",true);$("#banner-key").hidden=true});
 $("#plan-new").addEventListener("click",()=>openPlan({}));$("#rail-plus").addEventListener("click",()=>openPlan({}));
 $("#skin-tog").addEventListener("click",()=>{const k=document.documentElement.dataset.skin==="lumut"?"batu":"lumut";document.documentElement.dataset.skin=k;store.set("skin",k);if(YT&&!$("#p-growth").hidden)chart()});
@@ -868,17 +1014,189 @@ $("#mc").addEventListener("keydown",e=>{const b=e.target.closest("[data-day]"),s
   const d=addDays(new Date(b.dataset.day+"T12:00:00"),step);mcFocus=isoDay(d);mcMonth=new Date(d.getFullYear(),d.getMonth(),1);renderMini();$(`#mc [data-day="${mcFocus}"]`).focus()});
 document.addEventListener("click",async e=>{
   const day=e.target.closest("[data-day]");if(day){const d=new Date(day.dataset.day+"T12:00:00");weekStart=d;mcFocus=day.dataset.day;calMonth=new Date(d.getFullYear(),d.getMonth(),1);view="week";document.querySelectorAll(".seg button").forEach(x=>x.setAttribute("aria-pressed",x.dataset.view==="week"));show("dash");return}
-  const act=e.target.closest("[data-act]");if(act){if(act.dataset.act==="new")return openPlan({});const p=plans().find(x=>x.id===act.dataset.id);if(p)toTools(p.title);return}
+  const act=e.target.closest("[data-act]");if(act){if(act.dataset.act==="new")return openPlan({});const p=plans().find(x=>x.id===act.dataset.id);if(p)openMake(p.id);return}
   const n=e.target.closest("[data-new]");if(n)return openPlan({date:n.dataset.new});
   const pi=e.target.closest("[data-plan-id]");if(pi){const p=plans().find(x=>x.id===pi.dataset.planId);if(p)openPlan(p);return}
   const pl=e.target.closest("[data-plan]");if(pl){await savePlans([...plans(),{id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),title:pl.dataset.plan,date:pl.dataset.date,type:"video",status:"ide",note:""}]);pl.textContent="Masuk kalender";pl.disabled=true;return}
   if(e.target.closest("#plan-all")){const btns=[...document.querySelectorAll("#o-ideas [data-plan]:not([disabled])")];const add=btns.map((b,i)=>({id:Date.now().toString(36)+i+Math.random().toString(36).slice(2,5),title:b.dataset.plan,date:b.dataset.date,type:"video",status:"ide",note:""}));btns.forEach(b=>{b.textContent="Masuk kalender";b.disabled=true});if(add.length)await savePlans([...plans(),...add]);e.target.textContent=add.length?`${add.length} ide masuk kalender`:"Semua sudah di kalender"}
 });
 
-const RENDER={ideas:d=>d?.ideas?.length&&(renderIdeas(d.ideas),true),script:d=>d?.acts?.length&&(renderScript(d),true),scriptfull:d=>d?.narration?.length&&$("#o-scriptfull")&&(renderScriptFull(d),true),seo:d=>d?.titles&&(renderSEO(d),true),thumb:d=>d?.concepts?.length&&(renderThumb(d.concepts),true),shorts:d=>d?.shorts?.length&&(renderShorts(d.shorts),true),ai:d=>d&&(renderAI(d),true)};
+/* 2.0 growth loop: Today, Learn, Ideas pattern and the Make workspace.
+   Everything here is plain rules on the channel's own numbers; only the buttons that say "AI" call a model. */
+const med=a=>{const b=a.filter(x=>x!=null&&!isNaN(x)).sort((x,y)=>x-y),m=b.length>>1;return b.length?(b.length%2?b[m]:(b[m-1]+b[m])/2):null};
+const share=v=>v&&v.v&&v.dur?Math.min(100,v.h*3600/v.v/v.dur*100):null;
+const avdMin=v=>v&&v.v?v.h*60/v.v:null;
+const ctrOf=v=>v&&v.ctr>0?+v.ctr:null,impOf=v=>v&&v.imp>0?+v.imp:null;
+const uploads=()=>longForm().filter(v=>v.d&&v.v>0).sort((a,b)=>a.d.localeCompare(b.d));
+const winners=()=>[...longForm()].sort((a,b)=>b.v-a.v).slice(0,6);
+const range=(a,fmt)=>{const b=a.filter(x=>x!=null);if(!b.length)return "-";const lo=Math.min(...b),hi=Math.max(...b);return fmt(lo)===fmt(hi)?fmt(lo):fmt(lo)+" sampai "+fmt(hi)};
+const THREAT=/hunt|killer|kill|butcher|predator|\bate\b|eats?\b|eating|devour|terror|deadl|monster|crush|apex|nightmare|fear|slaughter|ripper|stalk|prey|bite|jaw|savage|beast|menace|danger|attack|blood/i;
+// In spoken openings, putting people in the scene also counts as the danger.
+const HOOK_DANGER=new RegExp(THREAT.source+"|ancestors|humans|our species|people",'i');
+const SIZE=/\d|giant|biggest|largest|huge|colossal|massive|\bton|\blbs?\b|pound|feet|foot|meter|metre|tall|titan|mega|heaviest|strongest/i;
+const dataEnd=()=>YT?.daily?.length?YT.daily[YT.daily.length-1][0]:isoDay(new Date());
+const daysBetween=(a,b)=>Math.round((new Date(b+"T12:00:00")-new Date(a+"T12:00:00"))/864e5);
+const pctTxt=x=>x==null?"-":f1(x)+"%";
+function usShare(){const g=YT?.geo||[];const tv=g.reduce((s,r)=>s+(+r.views||0),0),tr=g.reduce((s,r)=>s+(+r.rev||0),0),us=g.find(r=>/united states|amerika serikat|^us$/i.test(r.name||""));
+  return us&&tv?{views:Math.round(us.views/tv*100),rev:tr?Math.round((us.rev||0)/tr*100):null}:null}
+function channelNumbers(){const up=uploads(),W=winners(),R=up.slice(-5);
+  const n={up,W,R,wS:med(W.map(share)),rS:med(R.map(share)),wC:med(W.map(ctrOf)),rC:med(R.map(ctrOf)),wI:med(W.map(impOf)),rI:med(R.map(impOf))};
+  n.ret=n.wS&&n.rS!=null&&n.rS<n.wS*0.6;n.ctr=n.wC&&n.rC!=null&&n.rC<n.wC*0.75;n.reach=n.wI&&n.rI!=null&&n.rI<n.wI*0.2;
+  n.lever=n.ret?"ret":n.ctr?"ctr":n.reach?"reach":"ok";return n}
+function lessonFor(v,n){const s=share(v),c=ctrOf(v),i=impOf(v);
+  const best=[...n.W].sort((a,b)=>(share(b)||0)-(share(a)||0))[0];
+  if(s!=null&&s<10)return `Hanya ${f1(s)}% ditonton, penonton pergi di awal. Bandingkan menit pertamanya dengan "${best?best.t:"video terbaik"}".`;
+  if(c&&n.wC&&c<n.wC*0.6)return `CTR ${f1(c)}%, jauh di bawah video terbaik (${f1(n.wC)}%). Judul atau thumbnail kurang memancing klik.`;
+  if(i&&n.wI&&i<n.wI*0.05&&s>=20)return `Penonton bertahan (${f1(s)}%), tapi YouTube hanya menampilkannya ${nf(i)} kali. Topik dan paket yang lebih kuat membuka jangkauan.`;
+  if(s>=20)return `Dekat video terbaik (${f1(s)}% ditonton). Ulangi cara membuka video ini.`;
+  return s==null?"Durasi video belum ada di data.":`${f1(s)}% ditonton, di bawah video terbaik (${f1(n.wS)}%). Masuk ke inti cerita lebih cepat.`}
+
+function spark(vals,lo,hi,color){const v=vals.filter(x=>x!=null);if(v.length<2)return "";const w=300,h=46,n=v.length,x=i=>4+i*(w-8)/(n-1),y=t=>h-4-(Math.min(hi,Math.max(lo,t))-lo)/((hi-lo)||1)*(h-8);
+  const d=v.map((t,i)=>`${i?"L":"M"}${x(i).toFixed(1)} ${y(t).toFixed(1)}`).join("");
+  return `<svg class="spk" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><path d="${d}L${x(n-1)} ${h}L${x(0)} ${h}Z" fill="${color}" fill-opacity=".14" stroke="none"/><path d="${d}" fill="none" stroke="${color}" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>`}
+
+function renderToday(){if(!$("#td-full"))return;const has=uploads().length>=6;$("#td-empty").hidden=has;$("#td-full").hidden=!has;renderPipe();if(!has)return;
+  const n=channelNumbers(),{W,R,up}=n,last8=up.slice(-8),low=last8.filter(v=>share(v)!=null&&share(v)<10).length;
+  const go=(label,fn)=>{const b=$("#dx-go");b.textContent=label;b.onclick=fn};
+  const reachTxt=n.reach?` Jangkauan juga turun: dari sekitar ${nf(n.wI)} tayangan thumbnail per video terbaik ke ${nf(n.rI)} per upload terakhir.`:"";
+  if(n.lever==="ret"){$("#dx-h").textContent="Penonton pergi di menit pertama.";
+    $("#dx-p").innerHTML=`<p>Dari ${last8.length} upload terakhir, ${low} ditonton kurang dari 10% durasinya. Video terbaik Anda ditonton ${range(W.map(share),x=>f1(x))}%.${reachTxt} YouTube cenderung memperluas jangkauan video yang membuat penonton bertahan, jadi ini yang diperbaiki dulu.</p><p><b>Perbaiki dulu:</b> 60 detik pertama setiap naskah. Thumbnail yang lebih bagus tidak banyak membantu sebelum penonton bertahan.</p>`;
+    go("Buka hook coach",()=>openMake(null,"hook"))}
+  else if(n.lever==="ctr"){$("#dx-h").textContent="Video ditampilkan, tapi jarang diklik.";
+    $("#dx-p").innerHTML=`<p>CTR 5 upload terakhir ${pctTxt(n.rC)}, video terbaik ${range(W.map(ctrOf),x=>f1(x))}%. Penonton yang mengklik masih bertahan (${pctTxt(n.rS)} ditonton), jadi masalahnya di judul dan thumbnail.</p><p><b>Perbaiki dulu:</b> paket video. Pilih judul dan thumbnail sebelum menulis naskah.</p>`;
+    go("Buka paket video",()=>openMake(null,"pkg"))}
+  else if(n.lever==="reach"){$("#dx-h").textContent="YouTube jarang menampilkan video baru Anda.";
+    $("#dx-p").innerHTML=`<p>Tayangan thumbnail per upload turun dari sekitar ${nf(n.wI)} ke ${nf(n.rI)}, padahal penonton yang datang masih bertahan dan mengklik. Topik yang lebih dekat dengan video terbaik Anda adalah cara tercepat membuka jangkauan lagi.</p>`;
+    go("Cari topik berikutnya",()=>show("ideas"))}
+  else{$("#dx-h").textContent="Upload terakhir sejalan dengan video terbaik.";
+    $("#dx-p").innerHTML=`<p>Bagian yang ditonton (${pctTxt(n.rS)}) dan CTR (${pctTxt(n.rC)}) 5 upload terakhir tidak jauh dari video terbaik Anda. Jaga jadwal dan terus pilih topik yang cocok dengan pola.</p>`;
+    go("Cari topik berikutnya",()=>show("ideas"))}
+  const sc=Math.max(40,(Math.max(n.wS||0,n.rS||0))*1.2),bar=(lbl,val,txt,w,cls)=>`<div><div class="lbl"><span>${lbl}</span><b>${val}</b></div><div class="track"><div class="fill ${cls}" style="width:${Math.max(w,3)}%">${txt}</div></div></div>`;
+  let cmp=bar("Bagian yang ditonton, 6 video terbaik",pctTxt(n.wS),`rata-rata ${f1(med(W.map(avdMin)))} mnt`,n.wS/sc*100,"win")+bar("Bagian yang ditonton, 5 upload terakhir",pctTxt(n.rS),n.rS/sc*100>18?`${f1(med(R.map(avdMin)))} mnt`:"",n.rS/sc*100,"now");
+  if(n.wI&&n.rI)cmp+=bar("Tayangan thumbnail per video terbaik",nf(n.wI),"",100,"win")+bar("Tayangan thumbnail per upload terakhir",nf(n.rI),"",n.rI/n.wI*100,"now");
+  else if(n.wC&&n.rC)cmp+=bar("CTR, 6 video terbaik",pctTxt(n.wC),"",n.wC/8*100,"win")+bar("CTR, 5 upload terakhir",pctTxt(n.rC),"",n.rC/8*100,"now");
+  $("#dx-cmp").innerHTML=cmp+`<small>Nilai tengah (median), tiap pasang batang memakai skala yang sama.</small>`;
+  const l12=up.slice(-12),vit=[
+    ["Bagian yang ditonton",pctTxt(n.rS),`terbaik ${pctTxt(n.wS)}`,spark(l12.map(share),0,40,n.ret?"var(--warn)":"var(--ok)"),n.ret?["bad","Perbaiki dulu"]:["good","Aman"]],
+    ["CTR thumbnail",n.rC==null?"-":f1(n.rC)+"%",n.wC?`terbaik ${f1(n.wC)}%`:"",spark(l12.map(ctrOf),0,8,n.ctr?"var(--warn)":"var(--ok)"),n.ctr?["bad",n.ret?"Perbaiki kedua":"Perbaiki dulu"]:["good","Aman"]],
+    ["Views per upload",nf(med(R.map(v=>v.v))),`terbaik ${nf(med(W.map(v=>v.v)))}`,spark(l12.map(v=>Math.log10(Math.max(v.v,1))),1,5.5,"var(--muted)"),["","Ikut dua di atas"]]];
+  $("#td-vitals").innerHTML=vit.map(([k,v,c,s,[cls,tag]])=>`<div class="box vital"><div class="vhd"><span class="k">${k}, 5 upload terakhir</span><span class="pill ${cls}">${tag}</span></div><div class="v">${v}<em>${c}</em></div>${s}<div class="foot"><span>12 upload lalu</span><span>terbaru</span></div></div>`).join("");
+  renderMoves(n);renderGrade(n)}
+
+const weekKey=()=>{const d=new Date();d.setDate(d.getDate()-((d.getDay()+6)%7));return isoDay(d)};
+function renderMoves(n){const us=usShare(),soon=plans().some(p=>p.status!=="tayang"&&p.date>=isoDay(new Date())&&daysBetween(isoDay(new Date()),p.date)<=7);
+  const M={ret:{t:"Tulis ulang 60 detik pertama video berikutnya",d:"Buka langsung dengan hewannya dan bahayanya. Tanpa intro channel, tanpa pemanasan \"jutaan tahun lalu\". Hook coach mengeceknya.",tag:"retensi",bad:1,go:()=>openMake(null,"hook")},
+    ctr:{t:"Siapkan 3 judul dan 2 thumbnail sebelum upload",d:`CTR 5 upload terakhir ${pctTxt(n.rC)}, video terbaik ${pctTxt(n.wC)}. Uji thumbnail dengan Test & Compare di YouTube Studio.`,tag:"klik",bad:1,go:()=>openMake(null,"pkg")},
+    topic:{t:"Pilih topik berikutnya dari Ide",d:`Video terbaik Anda: ${n.W.slice(0,2).map(v=>`"${v.t}"`).join(" dan ")}. Pilih topik dengan skor 4 atau 5.`,tag:"topik",go:()=>show("ideas")},
+    time:us?{t:"Terbitkan jam 07:00 WIB",d:`Itu malam hari di Amerika. Penonton AS membawa ${us.views}% views${us.rev!=null?` dan ${us.rev}% pendapatan`:""} Anda.`,tag:"waktu"}:null,
+    plan:soon?null:{t:"Jadwalkan upload berikutnya",d:"Belum ada video di kalender untuk 7 hari ke depan. Upload rutin membantu penonton kembali.",tag:"jadwal",go:()=>openPlan({})}};
+  const order=[n.ret&&"ret",n.ctr&&"ctr","topic","time","plan","ctr"].filter((k,i,a)=>k&&M[k]&&a.indexOf(k)===i).slice(0,3);
+  const st=LAST.week?.data?.wk===weekKey()?LAST.week.data.done:[];
+  $("#td-moves").innerHTML=order.map((k,i)=>{const m=M[k],on=st.includes(k);return `<li class="${on?"done":""}"><input type="checkbox" id="mv-${k}" data-move="${k}" ${on?"checked":""}><div><label for="mv-${k}" class="mv-t">${esc(m.t)}</label><span>${esc(m.d)}</span>${m.go?`<button type="button" class="linkish" data-move-go="${k}">Kerjakan</button>`:""}</div><span class="pill ${m.bad?"bad":""}">${m.tag}</span></li>`}).join("");
+  $("#td-moves").onclick=e=>{const g=e.target.closest("[data-move-go]");if(g)M[g.dataset.moveGo].go()};
+  $("#td-moves").onchange=e=>{const c=e.target.closest("[data-move]");if(!c)return;let done=LAST.week?.data?.wk===weekKey()?[...LAST.week.data.done]:[];done=c.checked?[...new Set([...done,c.dataset.move])]:done.filter(x=>x!==c.dataset.move);c.closest("li").classList.toggle("done",c.checked);remember("week",{wk:weekKey(),done}).catch(()=>{})}}
+function renderGrade(n){const up=n.up,L=up[up.length-1],prev=up.slice(-11,-1),age=daysBetween(L.d,dataEnd());
+  $("#td-last-sub").textContent=`${L.t} · ${fmtShort(L.d)}${age<7?`, baru ${Math.max(age,0)} hari: angka masih bergerak`:""}`;
+  const rows=[["Bagian yang ditonton",share(L),med(prev.map(share)),pctTxt],["CTR",ctrOf(L),med(prev.map(ctrOf)),pctTxt],["Tayangan thumbnail",impOf(L),med(prev.map(impOf)),nf],["Views",L.v,med(prev.map(v=>v.v)),nf]].filter(r=>r[1]!=null&&r[2]!=null);
+  $("#td-grade").innerHTML=`<div class="grade">${rows.map(([k,v,m,f])=>{const ok=v>=m;return `<div class="gr"><span>${k}</span><span class="num"><b>${f(v)}</b> <span class="muted">vs ${f(m)} biasanya</span></span><span class="pill ${ok?"good":"bad"}">${ok?"di atas biasa":"di bawah biasa"}</span></div>`}).join("")}</div><p class="sub" style="margin-top:12px"><b>Pelajaran:</b> ${esc(lessonFor(L,n))}</p>`}
+
+const PIPE=[["ide","Ide"],["naskah","Naskah"],["rekam","Suara"],["edit","Edit"],["siap","Siap upload"]];
+function renderPipe(){const el=$("#td-pipe");if(!el)return;const today=isoDay(new Date()),list=plans().filter(p=>p.type!=="post"&&p.status!=="tayang"),next=list.filter(p=>p.date>=today)[0];
+  el.innerHTML=PIPE.map(([s,l])=>{const items=list.filter(p=>p.status===s);return `<div class="st"><h3>${l} <b>${items.length}</b></h3>${items.map(p=>`<button type="button" class="pcard${p===next?" hot":""}" data-make="${esc(p.id)}"><b>${esc(p.title)}</b><small>${p.type==="short"?"Shorts, ":""}${fmtShort(p.date)}${p.date<today?", lewat jadwal":""}</small></button>`).join("")||`<span class="pempty">Kosong</span>`}</div>`}).join("")}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-make]");if(b)openMake(b.dataset.make)});
+$("#td-new").addEventListener("click",()=>openPlan({}));
+
+function renderLearn(){if(!$("#ln-full"))return;const up=uploads(),has=up.length>=6;$("#ln-empty").hidden=has;$("#ln-full").hidden=!has;if(!has)return;
+  const n=channelNumbers(),V=up.slice(-48).filter(v=>share(v)!=null),W=900,H=260,pl=34,pr=8,pt=12,pb=28,bw=(W-pl-pr)/V.length,top=Math.max(40,Math.ceil(Math.max(...V.map(share))/10)*10),y=t=>pt+(1-t/top)*(H-pt-pb);
+  $("#ln-sub").textContent=`Rata-rata bagian video yang ditonton, per upload sejak ${fmtShort(V[0].d)} ${V[0].d.slice(0,4)}. Garis putus-putus adalah 6 video terbaik Anda (${pctTxt(n.wS)}). Arahkan kursor atau fokus pada batang untuk judulnya.`;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Bagian tiap video yang ditonton, ${V.length} upload">`;
+  for(let t=0;t<=top;t+=10)s+=`<line x1="${pl}" x2="${W-pr}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)"/><text x="${pl-6}" y="${y(t)+4}" text-anchor="end" font-size="11" fill="var(--muted)" stroke="none">${t}%</text>`;
+  let lastLbl=-9;V.forEach((v,i)=>{const p=share(v),c=p>=20?"var(--accent)":p<10?"var(--warn)":"var(--stone-dot)";
+    s+=`<rect x="${pl+i*bw+1}" y="${y(p)}" width="${Math.max(bw-2,2)}" height="${y(0)-y(p)}" rx="3" fill="${c}" stroke="none"/><rect class="hit" data-i="${i}" x="${pl+i*bw}" y="${pt}" width="${bw}" height="${H-pt-pb}" fill="transparent" stroke="none" tabindex="0" aria-label="${esc(v.t)}: ${f1(p)}% ditonton"/>`;
+    if(i-lastLbl>=7&&(i===0||v.d.slice(0,7)!==V[i-1].d.slice(0,7))){lastLbl=i;s+=`<text x="${pl+i*bw}" y="${H-8}" font-size="11" fill="var(--muted)" stroke="none">${BN[+v.d.slice(5,7)-1]} ${v.d.slice(2,4)}</text>`}});
+  if(n.wS)s+=`<line x1="${pl}" x2="${W-pr}" y1="${y(n.wS)}" y2="${y(n.wS)}" stroke="var(--ink)" stroke-dasharray="4 4" stroke-width="1.2"/><text x="${W-pr}" y="${y(n.wS)-6}" text-anchor="end" font-size="11.5" fill="var(--ink)" stroke="none">terbaik ${f1(n.wS)}%</text>`;
+  const ch=$("#ln-chart");ch.innerHTML=s+`</svg><div class="ctip" hidden></div>`;const tip=ch.querySelector(".ctip");
+  const showTip=el=>{const v=V[+el.dataset.i],box=ch.getBoundingClientRect(),b=el.getBoundingClientRect();tip.innerHTML=`<b>${esc(v.t)}</b>${fmtShort(v.d)} ${v.d.slice(0,4)} · ${f1(share(v))}% ditonton (${f1(avdMin(v))} mnt) · ${nf(v.v)} views`;tip.hidden=false;tip.style.left=Math.min(Math.max(b.left-box.left-110,0),Math.max(box.width-250,0))+"px"};
+  ch.onmouseover=e=>{if(e.target.classList?.contains("hit"))showTip(e.target)};ch.onfocusin=e=>{if(e.target.classList?.contains("hit"))showTip(e.target)};ch.onmouseleave=()=>tip.hidden=true;ch.onfocusout=()=>tip.hidden=true;
+  $("#ln-cards").innerHTML=`<tr><th>Upload</th><th>Ditonton</th><th>CTR</th><th>Tayangan</th><th>Views</th><th>Nilai</th><th>Pelajaran</th></tr>`+up.slice(-8).reverse().map(v=>{const p=share(v),cls=p>=20?"good":p<10?"bad":"";return `<tr><td><b>${esc(v.t)}</b><br><span class="muted">${fmtShort(v.d)} ${v.d.slice(0,4)}</span></td><td>${pctTxt(p)}</td><td>${pctTxt(ctrOf(v))}</td><td>${impOf(v)?nf(v.imp):"-"}</td><td>${nf(v.v)}</td><td><span class="pill ${cls}">${p>=20?"dekat terbaik":p<10?"pergi cepat":"di bawah terbaik"}</span></td><td>${esc(lessonFor(v,n))}</td></tr>`}).join("")}
+
+function renderPattern(){const box=$("#id-pattern-box");if(!box)return;const W=winners(),up=uploads();box.hidden=up.length<6;if(box.hidden)return;
+  const thr=W.filter(v=>THREAT.test(v.t)).length,n=channelNumbers();
+  $("#id-pattern-sub").textContent=`Dari 6 video dengan views terbanyak (${nf(Math.min(...W.map(v=>v.v)))} views ke atas): ${W.map(v=>`"${v.t}"`).join("; ")}.`;
+  $("#id-pattern").innerHTML=[[`${thr} dari 6`,"judulnya menyebut pemangsa atau ancaman"],[range(W.map(ctrOf),x=>f1(x))+"%","CTR thumbnail"],[range(W.map(v=>v.dur/60),x=>Math.round(x))+" mnt","durasi video"],[range(W.map(share),x=>Math.round(x))+"%","bagian yang ditonton"]].map(([b,s])=>`<div><b>${b}</b><span>${s}</span></div>`).join("");
+  const miss=up.filter(v=>!W.includes(v)&&THREAT.test(v.t)&&share(v)!=null&&share(v)<10).pop();
+  $("#id-pattern-note").textContent=miss?`Topik saja tidak cukup: "${miss.t}" (${fmtShort(miss.d)}) cocok dengan polanya tapi hanya ${f1(share(miss))}% ditonton. Karena itu setiap ide tetap lewat hook coach.`:"Skor ide di bawah memakai pola ini. Topik dengan skor 4 atau 5 paling dekat dengan video terbaik Anda."}
+function patternText(){const W=winners();if(W.length<6)return "";const thr=W.filter(v=>THREAT.test(v.t)).length;
+  return `${thr} of the 6 most-viewed videos frame the animal as a predator or a threat in the title (${W.map(v=>`"${v.t}"`).join("; ")}); they run ${range(W.map(v=>v.dur/60),x=>Math.round(x))} minutes`}
+
+/* Make: one video from package to upload. Per-video work is saved under LAST.work, keyed by plan id. */
+let WORK=null,workTimer=0;
+const work=id=>{WORK=WORK||LAST.work?.data||{};const k=id||"free";return WORK[k]=WORK[k]||{}};
+const saveWork=()=>{clearTimeout(workTimer);workTimer=setTimeout(()=>remember("work",WORK).catch(()=>{}),600)};
+const mkId=()=>{const id=store.get("mk","");return plans().some(p=>p.id===id)?id:""};
+const mkPlan=()=>plans().find(p=>p.id===mkId());
+const mkW=()=>work(mkId());
+const topicKey=()=>{const t=(mkW().topic||"").trim();return (t.split(/[\s,:(]+/).find(w=>w.length>=4)||t).toLowerCase()};
+function openMake(id,stage){if(id)store.set("mk",id);else if(!mkId()){const next=plans().filter(p=>p.type!=="post"&&p.status!=="tayang")[0];if(next)store.set("mk",next.id)}if(stage)mkStage(stage);show("make")}
+function mkStage(s){const tabsEl=[...document.querySelectorAll("#mk-stages [role=tab]")];tabsEl.forEach(b=>{const on=b.dataset.stage===s;b.setAttribute("aria-selected",on);b.tabIndex=on?0:-1;document.getElementById(b.getAttribute("aria-controls")).hidden=!on});store.set("mkst",s)}
+$("#mk-stages").addEventListener("click",e=>{const b=e.target.closest("[data-stage]");if(b)mkStage(b.dataset.stage)});
+$("#mk-stages").addEventListener("keydown",e=>{const t=[...e.currentTarget.querySelectorAll("[role=tab]")],i=t.indexOf(e.target),d={ArrowRight:1,ArrowLeft:-1}[e.key];if(i<0||!d)return;e.preventDefault();const n=t[(i+d+t.length)%t.length];mkStage(n.dataset.stage);n.focus()});
+document.addEventListener("click",e=>{const b=e.target.closest("[data-stage-go]");if(b){mkStage(b.dataset.stageGo);$("#main").scrollTop=0}});
+function renderMake(){const list=plans().filter(p=>p.type!=="post"&&(p.status!=="tayang"||p.id===mkId())),id=mkId(),p=mkPlan(),w=mkW();
+  $("#mk-pick").innerHTML=list.map(x=>`<option value="${esc(x.id)}">${esc(x.title)} · ${fmtShort(x.date)}</option>`).join("")+`<option value="">Tanpa rencana, topik bebas</option>`;$("#mk-pick").value=id;
+  if(!w.topic&&p)w.topic=p.title.split(/[:,]/)[0].trim();
+  $("#mk-topic").value=w.topic||"";$("#mk-titles").value=(w.titles||(p?[p.title]:[])).join("\n");$("#mk-thumbtext").value=w.thumb||"";$("#mk-hook").value=w.hook||"";
+  const t=w.pick||p?.title||w.topic||"";["#script-topic","#seo-topic","#thumb-topic","#shorts-topic"].forEach(s=>{if(t)$(s).value=t});if(w.pick)$("#thumb-title").value=w.pick;
+  $("#mk-done").hidden=!p;$("#s-done").textContent=p?.status==="tayang"?"Video ini sudah ditandai tayang.":"";
+  mkStage(store.get("mkst","pkg"));renderTitles();renderThumbPrev();renderRules();renderPub()}
+$("#mk-pick").addEventListener("change",e=>{store.set("mk",e.target.value);renderMake()});
+$("#mk-topic").addEventListener("input",e=>{mkW().topic=e.target.value;saveWork();renderTitles();renderRules()});
+$("#mk-titles").addEventListener("input",e=>{mkW().titles=e.target.value.split("\n");saveWork();renderTitles()});
+$("#mk-thumbtext").addEventListener("input",e=>{mkW().thumb=e.target.value;saveWork();renderThumbPrev();renderRules()});
+$("#mk-hook").addEventListener("input",e=>{mkW().hook=e.target.value;saveWork();renderRules()});
+function titleChecks(t){const k=topicKey();return [[t.length<=60,"≤60"],[SIZE.test(t),"Ukuran"],[THREAT.test(t),"Ancaman"],[!!k&&t.toLowerCase().includes(k),"Nama"]]}
+function renderTitles(){const w=mkW(),list=(w.titles||[]).map(s=>s.trim()).filter(Boolean);
+  $("#mk-tlist").innerHTML=list.map((t,i)=>{const c=titleChecks(t);return `<label class="trow"><input type="radio" name="mk-pick-title" value="${i}" ${w.pick===t?"checked":""}><span class="t">${esc(t)}<small>${t.length} karakter</small></span><span class="checks">${c.map(([ok,k])=>`<i class="${ok?"y":""}">${k}<span class="sr">${ok?" lolos":" belum"}</span></i>`).join("")}</span></label>`}).join("");
+  $("#mk-tlist").onchange=e=>{w.pick=list[+e.target.value];saveWork();$("#thumb-title").value=w.pick;["#script-topic","#seo-topic","#thumb-topic","#shorts-topic"].forEach(s=>$(s).value=w.pick);renderThumbPrev()}}
+function renderThumbPrev(){const w=mkW(),t=(w.thumb||"").trim(),words=t.split(/\s+/).filter(Boolean),pick=(w.pick||"").toLowerCase();
+  $("#mk-thumbprev span").textContent=t||"Teks thumbnail";$("#mk-thumbprev").classList.toggle("ph",!t);
+  const rep=words.filter(x=>x.length>3&&pick.includes(x.toLowerCase()));
+  $("#mk-thumbnote").textContent=!t?"Ketik teks untuk melihat contohnya.":words.length>4?`${words.length} kata, terlalu banyak untuk layar HP. Potong jadi 4 kata atau kurang.`:rep.length?`Kata "${rep.join(", ")}" sudah ada di judul. Thumbnail lebih kuat kalau menambah informasi baru.`:`${words.length} kata, pas.`}
+function renderRules(){const w=mkW(),txt=(w.hook||"").trim(),words=txt.split(/\s+/).filter(Boolean),f25=words.slice(0,25).join(" ").toLowerCase(),f35=words.slice(0,35).join(" "),k=topicKey();
+  const thumbW=(w.thumb||"").toLowerCase().split(/\s+/).filter(x=>x.length>=3&&!["the","and","our","for","with","that","this","yang","dan"].includes(x));
+  const R=!txt?[[null,"Tulis pembukaan di kotak sebelah. Cek muncul saat Anda mengetik."]]:[
+    [k?f25.includes(k):null,k?"Nama hewan disebut di 10 detik pertama":"Nama hewan di 10 detik pertama: isi topik di atas dulu"],
+    [HOOK_DANGER.test(f35),"Bahaya atau ancaman disebut sebelum 0:15"],
+    [/by the end|at the end|you'll see|you will see|stay with|before this video ends|the answer|what (really )?happened|di akhir/i.test(txt),"Ada janji di akhir, supaya penonton bertahan"],
+    [!/subscribe|welcome (back )?to|this channel|hello everyone|hi everyone|hey guys|hey everyone/i.test(txt),"Tanpa intro channel atau ajakan subscribe"],
+    [thumbW.length?thumbW.some(x=>f35.toLowerCase().includes(x)):null,thumbW.length?`Kata di thumbnail ("${w.thumb.trim()}") diucapkan sebelum 0:15`:"Kata thumbnail diucapkan sebelum 0:15: isi teks thumbnail di tahap Paket dulu"],
+    [words.length>=110&&words.length<=170,`Panjang pas untuk 60 detik (110 sampai 170 kata, sekarang ${words.length})`]];
+  $("#mk-rules").innerHTML=R.map(([ok,t])=>`<li><span class="${ok===true?"y":ok===false?"n":"u"}" aria-hidden="true">${ok===true?"✓":ok===false?"✗":"–"}</span><span>${esc(t)}<span class="sr">${ok===true?", lolos":ok===false?", belum":""}</span></span></li>`).join("");
+  $("#mk-hook-len").textContent=words.length?`${words.length} kata, sekitar ${Math.round(words.length/140*60)} detik dibacakan (140 kata per menit).`:""}
+function hookForScript(){const w=mkW(),h=(w.hook||"").trim();let s="";if(w.pick)s+=`Video title: ${w.pick}. `;if(w.thumb)s+=`Thumbnail text: ${w.thumb}. `;if(h.split(/\s+/).length>=20)s+=`Use this exact opening, word for word, as the cold open and first part of act 1: """${h}"""\n`;return s}
+$("#mk-titles-ai").addEventListener("click",async e=>{const w=mkW(),topic=w.topic||mkPlan()?.title||"";const st=$("#s-titles");if(!topic){st.className="status err";st.textContent="Isi topik dulu.";return}
+  const d=await ask(st,e.currentTarget,`Write 5 YouTube title options for a documentary about: ${topic}. What works on this channel: ${patternText()||"giant prehistoric predators framed as a threat to humans"}. Each under 60 characters, honest, naming the animal, ideally with a size or number people can picture and a threat or rivalry angle. Vary the angle.
+JSON shape: {"titles":[""]}`,null);
+  if(d?.titles?.length){const cur=(w.titles||[]).map(s=>s.trim()).filter(Boolean);w.titles=[...cur,...d.titles.filter(t=>!cur.includes(t))];saveWork();$("#mk-titles").value=w.titles.join("\n");renderTitles()}});
+$("#mk-hook-ai").addEventListener("click",async e=>{const w=mkW(),topic=w.topic||mkPlan()?.title||"",st=$("#s-hook");if(!topic){st.className="status err";st.textContent="Isi topik dulu.";return}
+  const d=await ask(st,e.currentTarget,`Write 2 alternative openings (the first 60 seconds, 120-160 words each, spoken narration) for a documentary about ${topic}.${w.pick?" Title: "+w.pick+".":""}${w.thumb?" Thumbnail text: "+w.thumb+".":""}
+Rules from where this channel's viewers dropped off: name and show the animal in the first sentence; state the danger or threat before 15 seconds; say the thumbnail words before 15 seconds; promise a specific payoff at the end; no channel intro, no "subscribe", no "millions of years ago" warm-up. Keep every fact accurate; phrase uncertain claims carefully.
+${(w.hook||"").trim()?"Current draft to improve:\n"+w.hook.trim():""}
+JSON shape: {"hooks":[{"text":"","why":"one sentence in Indonesian on what changed"}]}`,"hook");
+  if(d?.hooks?.length)renderHooks(d.hooks)});
+function renderHooks(list){$("#o-hook").innerHTML=list.map((h,i)=>`<div class="card"><span class="layer">Versi ${i+1}</span><p>${esc(h.text)}</p><p class="note">${esc(h.why||"")}</p><button type="button" class="btn ghost" data-hook="${i}">Pakai versi ini</button></div>`).join("");
+  $("#o-hook").onclick=e=>{const b=e.target.closest("[data-hook]");if(!b)return;mkW().hook=list[+b.dataset.hook].text;saveWork();$("#mk-hook").value=mkW().hook;renderRules();$("#mk-hook").focus()}}
+function renderPub(){const w=mkW(),us=usShare(),best=winners()[0],done=w.pub||{};
+  const items=[["t60","Judul terpilih, di bawah 60 karakter",w.pick?`"${w.pick}"`:"Pilih judul di tahap Paket"],["thumb","Thumbnail jadi, teks maksimal 4 kata, terbaca di ukuran HP",""],["tc","Test & Compare: 2 sampai 3 thumbnail diuji di YouTube Studio",""],["desc","Deskripsi dengan chapter, kata kunci di kalimat pertama","Salin dari paket SEO di atas"],["end","End screen mengarah ke video terbaik Anda",best?`"${best.t}"`:""],["pin","Komentar sematan dengan pertanyaan",""],["time",us?"Dijadwalkan jam 07:00 WIB, malam hari di Amerika":"Jam tayang diatur di YouTube Studio",us?`Penonton AS: ${us.views}% views`:""],["comm","Post Komunitas di hari tayang",""]];
+  $("#mk-pub").innerHTML=items.map(([k,t,s])=>`<li><input type="checkbox" id="pub-${k}" data-pub="${k}" ${done[k]?"checked":""}><label for="pub-${k}">${esc(t)}${s?`<small>${esc(s)}</small>`:""}</label></li>`).join("");
+  $("#mk-pub").onchange=e=>{const c=e.target.closest("[data-pub]");if(!c)return;w.pub={...(w.pub||{}),[c.dataset.pub]:c.checked};saveWork()}}
+$("#mk-done").addEventListener("click",async()=>{const p=mkPlan();if(!p)return;await savePlans(plans().map(x=>x.id===p.id?{...x,status:"tayang"}:x));$("#s-done").className="status";$("#s-done").textContent="Ditandai tayang. Rapornya muncul di Pelajari setelah data berikutnya ditarik."});
+
+// Ideas saved by 1.x have no animal facts, so they can't be scored; leave the empty state instead.
+const RENDER={ideas:d=>d?.ideas?.length&&"subject" in d.ideas[0]&&(renderIdeas(d.ideas),true),script:d=>d?.acts?.length&&(renderScript(d),true),scriptfull:d=>d?.narration?.length&&$("#o-scriptfull")&&(renderScriptFull(d),true),seo:d=>d?.titles&&(renderSEO(d),true),thumb:d=>d?.concepts?.length&&(renderThumb(d.concepts),true),shorts:d=>d?.shorts?.length&&(renderShorts(d.shorts),true),ai:d=>d&&(renderAI(d),true)};
 async function loadLast(){const j=await api("/api/last");if(!j||j.error)return;LAST=j;
   for(const [k,f] of Object.entries(RENDER)){const r=LAST[k];if(!r)continue;try{if(f(r.data)){const st=$("#s-"+k);if(st){st.className="status";st.textContent="Hasil terakhir, dibuat "+new Date(r.at).toLocaleString("id-ID",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})+". Tidak memakai saldo lagi."}}}catch{}}
   $("#cfg-spent").textContent=spentText()}
-(async()=>{await loadConfig();await loadData();await loadLast();show(store.get("tab","dash"),true);
+(async()=>{await loadConfig();await loadData();await loadLast();show(store.get("ver2",false)?store.get("tab","today"):"today",true);store.set("ver2",true);
   if(CFG.yt_connected&&Date.now()/1000-(CFG.yt_synced||0)>6*3600)ytSync(null,null)})();
 </script>
