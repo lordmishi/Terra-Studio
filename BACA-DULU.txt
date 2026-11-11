@@ -1,8 +1,8 @@
-TERRA STUDIO 2.0.1 (Windows 10/11, 64-bit)
+TERRA STUDIO 2.0.2 (Windows 10/11, 64-bit)
 =========================================
 
 CARA PASANG
-Paling mudah: klik dua kali TerraStudio-Setup-2.0.1.exe, lalu Berikutnya
+Paling mudah: klik dua kali TerraStudio-Setup-2.0.2.exe, lalu Berikutnya
 dan Pasang. Tidak perlu izin admin. Shortcut "Terra Studio" muncul di
 Start Menu dan desktop. Uninstall lewat Settings > Apps.
 Versi zip (tanpa install): klik "Extract all" dulu, jangan jalankan
@@ -12,6 +12,13 @@ UPDATE KE VERSI BARU
 Jalankan installer versi baru, atau ekstrak zip baru lalu buka TerraStudio.exe. Kalau versi lama masih
 jalan, versi baru otomatis menutupnya. Data dan pengaturan tidak hilang
 (tersimpan di %APPDATA%\TerraStudio).
+
+BARU DI 2.0.2
+- Naskah satu klik: di Buat video, tahap 3, tekan "Buat naskah lengkap".
+  Aplikasi menyusun kerangka, menulis narasi penuh (hook Anda jadi
+  pembuka), lalu membuat voice over ElevenLabs, berurutan sendiri.
+  Hilangkan centang "Langsung tulis narasi penuh..." kalau hanya mau
+  kerangkanya.
 
 BARU DI 2.0.1
 - Tidak perlu tahu judulnya dulu. Di Buat video (atau "+ Video baru" di

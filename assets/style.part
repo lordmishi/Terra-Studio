@@ -416,6 +416,8 @@ dialog::backdrop{background:rgba(8,7,6,.6)}
 .rules li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:8px}
 .rules .y{color:var(--ok);font-weight:800}.rules .n{color:var(--warn);font-weight:800}.rules .u{color:var(--muted);font-weight:800}
 .check label{display:block;font-weight:600;cursor:pointer}
+label.cbx{display:flex;gap:10px;align-items:flex-start;font-weight:500;cursor:pointer}
+label.cbx input{margin-top:2px;flex:none}
 
 /* Narrow windows */
 @media (max-width:1180px){

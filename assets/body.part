@@ -15,7 +15,7 @@
     <div class="rail-sp"></div>
     <button type="button" class="rail-plus" id="rail-plus" aria-label="Rencana konten baru" data-tip="Rencana baru">+</button>
     <button type="button" class="skin" id="skin-tog" aria-label="Ganti tema" data-tip="Tema: batu / lumut"><i></i></button>
-    <p class="ver">v2.0.1</p>
+    <p class="ver">v2.0.2</p>
   </aside>
   <aside class="side" aria-label="Kalender dan jadwal">
     <div class="box calw">
@@ -243,10 +243,10 @@
     <div id="mk-script" role="tabpanel" aria-labelledby="ms-script" hidden>
     <div class="panel">
     <form class="tool" id="f-script">
-      <h2>Kerangka naskah</h2>
-      <p class="hint">Struktur per babak dengan cold open, open loop untuk menahan penonton, dan titik ajakan membership atau merch yang tidak memotong cerita.</p>
+      <h2>Naskah lengkap</h2>
+      <p class="hint">Satu klik: kerangka per babak, narasi penuh dengan hook Anda sebagai pembuka, lalu voice over ElevenLabs. Semua kolom sudah terisi; langsung tekan tombolnya.</p>
       <label for="script-topic">Topik video<input id="script-topic" required></label>
-      <label for="script-angle">Sudut cerita / pertanyaan besar<textarea id="script-angle"></textarea></label>
+      <label for="script-angle">Sudut cerita (opsional)<textarea id="script-angle" placeholder="Kosongkan, AI memilih yang paling kuat"></textarea></label>
       <div class="row2">
         <label for="script-words">Target kata<input id="script-words" type="number" min="500" max="8000" step="100" value="1800"></label>
         <label for="script-acts">Jumlah babak<input id="script-acts" type="number" min="3" max="7" value="5"></label>
@@ -254,7 +254,8 @@
       <label for="script-tone">Nada
         <select id="script-tone"><option>Cinematic, awe and mystery</option><option>Investigative, evidence-led</option><option>Survival drama</option><option>Calm, sleep-friendly narration</option></select>
       </label>
-      <button class="btn" type="submit">Susun kerangka</button>
+      <label class="cbx" for="script-auto"><input type="checkbox" id="script-auto" checked> Langsung tulis narasi penuh dan buat voice over</label>
+      <button class="btn" type="submit">Buat naskah lengkap</button>
       <div class="status" id="s-script" role="status"></div>
     </form>
     <div class="out" id="o-script"><div class="empty">Kerangka naskah akan muncul di sini, lengkap dengan proporsi kata per babak dan daftar fakta yang wajib dicek ulang. Hook dari tahap 2 dipakai sebagai cold open.</div></div>
@@ -470,7 +471,7 @@
     <div class="card" style="margin-top:16px">
       <span class="layer">Aplikasi</span>
       <h3>Data dan aplikasi</h3>
-      <p class="note">Semua pengaturan, data Studio, rencana kalender, dan hasil AI disimpan hanya di komputer ini, di folder <code id="cfg-dir"></code>. API key disimpan terenkripsi dengan pengaman Windows. Menutup jendela Terra Studio berarti menutup aplikasinya. Versi 2.0.1.</p>
+      <p class="note">Semua pengaturan, data Studio, rencana kalender, dan hasil AI disimpan hanya di komputer ini, di folder <code id="cfg-dir"></code>. API key disimpan terenkripsi dengan pengaman Windows. Menutup jendela Terra Studio berarti menutup aplikasinya. Versi 2.0.2.</p>
       <h3 style="margin-top:14px">Backup</h3>
       <p class="note">Simpan file backup (profil, data Studio, kalender, hasil AI) ke folder Downloads, lalu salin ke flashdisk atau Google Drive. API key dan gambar thumbnail rencana tidak ikut. Pulihkan di komputer baru atau setelah instal ulang Windows.</p>
       <div class="chips"><button type="button" class="btn ghost" id="backup-save">Simpan backup</button><button type="button" class="btn ghost" id="backup-load">Pulihkan dari backup</button></div>
@@ -634,24 +635,33 @@ function voCard(f){lastNarr=f;const chars=(f.narration||[]).reduce((n,p)=>n+(p.t
 function renderVo(j){$("#o-vo").innerHTML=`<audio controls preload="metadata" src="/api/audio/${encodeURIComponent(j.file)}" style="width:100%;margin-top:12px"></audio><p class="note">Tersimpan di ${esc(j.path)}</p><div class="chips"><button type="button" class="btn ghost" id="vo-open">Buka folder</button><a class="btn ghost" href="/api/audio/${encodeURIComponent(j.file)}" download="${esc(j.file)}">Unduh MP3</a></div>`}
 document.addEventListener("click",async e=>{
   if(e.target.closest("#vo-open")){api("/api/open-folder",{method:"POST",headers:{"Content-Type":"application/json"},body:"{}"});return}
-  const b=e.target.closest("#vo-btn");if(!b||!lastNarr)return;const st=$("#s-vo"),voice=$("#vo-voice").value;
-  if(!voice){st.className="status err";st.textContent="Pilih suara dulu di Pengaturan, bagian Suara.";return}
+  const b=e.target.closest("#vo-btn");if(b&&lastNarr)makeVoice(b)});
+async function makeVoice(b){const st=$("#s-vo"),voice=$("#vo-voice").value;
+  if(!voice){st.className="status err";st.textContent="Pilih suara dulu di Pengaturan, bagian Suara.";return null}
   b.disabled=true;st.className="status";st.textContent="Membuat suara… naskah 1.800 kata biasanya butuh 1 sampai 3 menit. Jangan tutup aplikasi.";
   const j=await api("/api/eleven/tts",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({title:lastNarr.title||"voice over",parts:lastNarr.narration.map(p=>p.text),voice})});b.disabled=false;
-  if(j.error){st.className="status err";st.textContent=j.error;return}
-  st.textContent=`Selesai: ${nf(j.chars)} karakter, ${j.chunks} bagian, ${(j.bytes/1048576).toLocaleString("id-ID",{maximumFractionDigits:1})} MB.`;j.title=lastNarr.title||"voice over";renderVo(j);remember("vo",j).catch(()=>{})});
-document.addEventListener("click",async e=>{const b=e.target.closest("#script-full-btn");if(!b||!lastOutline)return;
+  if(j.error){st.className="status err";st.textContent=j.error;return null}
+  st.textContent=`Selesai: ${nf(j.chars)} karakter, ${j.chunks} bagian, ${(j.bytes/1048576).toLocaleString("id-ID",{maximumFractionDigits:1})} MB.`;j.title=lastNarr.title||"voice over";renderVo(j);remember("vo",j).catch(()=>{});return j}
+document.addEventListener("click",e=>{const b=e.target.closest("#script-full-btn");if(b&&lastOutline)writeFull(b)});
+async function writeFull(b){
   const w=+$("#script-words").value||1800;
   const data=await ask($("#s-scriptfull"),b,`Write the complete voice-over narration for this documentary, following the outline below act by act. About ${w} words in total; keep each act close to its planned word count. Spoken style: short clear sentences, vivid but accurate, no stage directions, no headings inside the text, no bracketed notes. Open with the cold open. Keep open loops and the soft CTAs where the outline puts them. Mark anything uncertain by phrasing it carefully ("scientists think", "the fossils suggest") rather than inventing facts.
 Outline JSON: ${JSON.stringify({title:lastOutline.title,cold_open:lastOutline.cold_open,acts:(lastOutline.acts||[]).map(a=>({name:a.name,words:a.words,beats:a.beats,open_loop:a.open_loop,cta:a.cta}))})}
 JSON shape: {"title":"","narration":[{"act":"act name","text":"narration paragraphs for this act"}]}`,"scriptfull");
-  if(data?.narration?.length)renderScriptFull(data)});
+  if(data?.narration?.length){renderScriptFull(data);return data}return null}
 $("#f-script").addEventListener("submit",async e=>{e.preventDefault();const w=+$("#script-words").value||1800,n=Math.min(7,Math.max(3,+$("#script-acts").value||5));
   const data=await ask($("#s-script"),e.submitter||$("#f-script .btn"),`Build a detailed ${n}-act outline for a documentary script. Topic: ${val("#script-topic")}. Central question: ${val("#script-angle")||"choose the strongest one"}. Tone: ${$("#script-tone").value}. Target length: about ${w} words total (act word counts must add up to about ${w}).
 ${hookForScript()}Include a vivid 2-3 sentence cold open that pays off within the first 30 seconds, 3-5 beats per act, open loops across act breaks for retention, at most two soft CTAs (membership or merch from the profile) placed where they don't break the story, a visual/B-roll list, and facts to double-check.
 Also write a "flow_style" line (one sentence, English) fixing one consistent visual style, lighting and camera look for the whole video, and for every act 2-4 "flow_prompts": English text-to-video prompts for Google Flow (Veo), each describing one 8-second shot (subject, action, setting, camera movement, lighting), self-contained (repeat key subject details, no references like "same as before"), scientifically accurate anatomy, no on-screen text, 16:9.
 JSON shape: {"title":"","cold_open":"","flow_style":"","acts":[{"name":"","words":0,"beats":[""],"open_loop":"","cta":"","flow_prompts":[""]}],"visuals":[""],"fact_check":[""]}. Exactly ${n} acts. Use "" for open_loop or cta when not needed.`,"script");
-  if(data?.acts?.length)renderScript(data)});
+  if(!data?.acts?.length)return;renderScript(data);
+  // One click runs the whole chain: outline, full narration, then the ElevenLabs voice when a voice is set up.
+  if(!$("#script-auto").checked)return;const st=$("#s-script");
+  st.textContent="Langkah 2 dari 3: menulis narasi penuh…";$("#s-scriptfull").scrollIntoView({block:"center"});
+  const full=await writeFull($("#script-full-btn"));if(!full){st.textContent="Kerangka jadi. Narasi penuh gagal, tekan tombolnya di bawah untuk mencoba lagi.";return}
+  if(!(CFG.has_eleven&&CFG.eleven_voice&&$("#vo-btn"))){st.textContent="Kerangka dan narasi penuh jadi. Voice over dilewati: isi ElevenLabs di Pengaturan dulu.";return}
+  st.textContent="Langkah 3 dari 3: membuat voice over…";$("#s-vo").scrollIntoView({block:"center"});
+  const vo=await makeVoice($("#vo-btn"));st.textContent=vo?"Selesai: kerangka, narasi penuh, dan voice over MP3 sudah jadi. Prompt klip Flow ada di bawah kerangka.":"Kerangka dan narasi penuh jadi. Voice over gagal, lihat pesan di bawah."});
 
 /* SEO pack */
 function renderSEO(s){const tags=(s.tags||[]).join(", ");
