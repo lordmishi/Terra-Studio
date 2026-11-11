@@ -1,8 +1,8 @@
-TERRA STUDIO 2.1.1 (Windows 10/11, 64-bit)
+TERRA STUDIO 2.2.0 (Windows 10/11, 64-bit)
 =========================================
 
 CARA PASANG
-Paling mudah: klik dua kali TerraStudio-Setup-2.1.1.exe, lalu Berikutnya
+Paling mudah: klik dua kali TerraStudio-Setup-2.2.0.exe, lalu Berikutnya
 dan Pasang. Tidak perlu izin admin. Shortcut "Terra Studio" muncul di
 Start Menu dan desktop. Uninstall lewat Settings > Apps.
 Versi zip (tanpa install): klik "Extract all" dulu, jangan jalankan
@@ -12,6 +12,17 @@ UPDATE KE VERSI BARU
 Jalankan installer versi baru, atau ekstrak zip baru lalu buka TerraStudio.exe. Kalau versi lama masih
 jalan, versi baru otomatis menutupnya. Data dan pengaturan tidak hilang
 (tersimpan di %APPDATA%\TerraStudio).
+
+BARU DI 2.2
+- Dashboard: halaman pertama saat aplikasi dibuka, menggantikan Hari
+  ini. Isinya angka utama, grafik views (30 hari, 90 hari, 12 bulan),
+  video berikutnya dengan tombol naskah 1 klik, status produksi,
+  masalah terbesar channel dan tiga langkah minggu ini.
+- Menu samping bisa dibuka dan ditutup. Terbuka: ikon dan nama
+  halaman. Tertutup: ikon saja, halaman jadi lebih lebar. Tombolnya di
+  samping logo, atau tekan Ctrl+B. Aplikasi mengingat pilihan terakhir.
+- Kalender sekarang hanya berisi papan jadwal; grafik dan video
+  teratas pindah ke Dashboard.
 
 BARU DI 2.1.1
 - Naskah 1 klik: tombol "Buat naskah 1 klik" di bagian atas Buat video.

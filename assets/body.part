@@ -2,9 +2,13 @@
 <div class="shell">
   <aside class="rail">
     <h1 class="sr">Terra Studio</h1>
-    <img class="logo" src="/logo.png" width="40" height="40" alt="Terra Studio">
+    <div class="rail-hd">
+      <img class="logo" src="/logo.png" width="36" height="36" alt="">
+      <b class="rail-name" aria-hidden="true">Terra Studio</b>
+      <button type="button" class="nav-tog" id="nav-tog" aria-label="Tutup menu" title="Tutup menu (Ctrl+B)"><svg viewBox="0 0 14 14" aria-hidden="true"><rect x=".75" y="1.5" width="12.5" height="11" rx="2"/><path d="M5 1.5v11"/><path id="nav-tog-arrow" d="m10 5.25-1.75 1.75L10 8.75"/></svg></button>
+    </div>
     <nav class="tabs" role="tablist" aria-label="Menu" aria-orientation="vertical">
-      <button role="tab" id="t-today" aria-selected="true" data-tab="today"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M12 9.5a1 1 0 0 1 1 1V12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-1.5a1 1 0 0 1 1-1z"/><path d="M7 1a1 1 0 0 1 1 1v4.5a1 1 0 0 1-1 1H1.932a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"/><path d="M12.469 1a.5.5 0 0 1 .5.5v1.25a.5.5 0 0 1-.5.5H10.5a.5.5 0 0 1-.5-.5V1.5a.5.5 0 0 1 .5-.5z"/><path d="M12.469 5.25a.5.5 0 0 1 .5.5V7a.5.5 0 0 1-.5.5H10.5A.5.5 0 0 1 10 7V5.75a.5.5 0 0 1 .5-.5z"/></svg><span>Hari ini</span></button>
+      <button role="tab" id="t-today" aria-selected="true" data-tab="today"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M12 9.5a1 1 0 0 1 1 1V12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-1.5a1 1 0 0 1 1-1z"/><path d="M7 1a1 1 0 0 1 1 1v4.5a1 1 0 0 1-1 1H1.932a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"/><path d="M12.469 1a.5.5 0 0 1 .5.5v1.25a.5.5 0 0 1-.5.5H10.5a.5.5 0 0 1-.5-.5V1.5a.5.5 0 0 1 .5-.5z"/><path d="M12.469 5.25a.5.5 0 0 1 .5.5V7a.5.5 0 0 1-.5.5H10.5A.5.5 0 0 1 10 7V5.75a.5.5 0 0 1 .5-.5z"/></svg><span>Dashboard</span></button>
       <button role="tab" id="t-ideas" aria-selected="false" data-tab="ideas"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M11.5 5.031a4.5 4.5 0 1 0-6.5 4v1.5a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1.5a4.48 4.48 0 0 0 2.5-4"/><path d="M5 13.5h4"/></svg><span>Ide</span></button>
       <button role="tab" id="t-make" aria-selected="false" data-tab="make"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M10 3.5v8a2 2 0 0 1-2 2H.5a2 2 0 0 0 2-2v-9a2 2 0 0 1 2-2h7.25"/><path d="M11.75.5a1.75 1.75 0 0 1 1.75 1.75V3a.5.5 0 0 1-.5.5h-3V2.25A1.75 1.75 0 0 1 11.75.5"/><path d="M6 4h1.5"/><path d="M5 7h2.5"/><path d="M5 10h2.5"/></svg><span>Buat video</span></button>
       <button role="tab" id="t-learn" aria-selected="false" data-tab="learn"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M.5 13.5h13"/><path d="m1.5 10 3.5-4 3 2.5 4.5-6.5"/><path d="M10.5 2h2v2"/></svg><span>Pelajari</span></button>
@@ -13,9 +17,9 @@
       <button role="tab" id="t-settings" aria-selected="false" data-tab="settings"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="m5.23 2.25.43-1.11A1 1 0 0 1 6.59.5h.82a1 1 0 0 1 .93.64l.43 1.11 1.46.84 1.18-.18a1 1 0 0 1 1 .49l.4.7a1 1 0 0 1-.08 1.13l-.73.93v1.68l.75.93a1 1 0 0 1 .08 1.13l-.4.7a1 1 0 0 1-1 .49l-1.18-.18-1.46.84-.43 1.11a1 1 0 0 1-.93.64h-.84a1 1 0 0 1-.93-.64l-.43-1.11-1.46-.84-1.18.18a1 1 0 0 1-1-.49l-.4-.7a1 1 0 0 1 .08-1.13L2 7.84V6.16l-.75-.93a1 1 0 0 1-.08-1.13l.4-.7a1 1 0 0 1 1-.49l1.18.18zM5 7a2 2 0 1 0 4 0 2 2 0 0 0-4 0"/></svg><span>Pengaturan</span></button>
     </nav>
     <div class="rail-sp"></div>
-    <button type="button" class="rail-plus" id="rail-plus" aria-label="Rencana konten baru" data-tip="Rencana baru">+</button>
-    <button type="button" class="skin" id="skin-tog" aria-label="Ganti tema" data-tip="Tema: batu / lumut"><i></i></button>
-    <p class="ver">v2.1.1</p>
+    <button type="button" class="rail-plus" id="rail-plus" aria-label="Rencana konten baru" data-tip="Rencana baru"><i aria-hidden="true">+</i><span>Rencana baru</span></button>
+    <button type="button" class="skin" id="skin-tog" aria-label="Ganti tema" data-tip="Tema: batu / lumut"><u><i></i></u><span id="skin-name">Tema batu</span></button>
+    <p class="ver">v2.2.0</p>
   </aside>
   <aside class="side" aria-label="Kalender dan jadwal">
     <div class="box calw">
@@ -29,7 +33,7 @@
   </aside>
   <main class="main" id="main">
     <header class="topbar">
-      <div><h2 id="page-title" class="page-title">Dashboard</h2><div class="meter" id="meter"></div></div>
+      <div><h2 id="page-title" class="page-title">Dashboard</h2><div class="meter" id="meter"></div><div class="meter" id="today-sub"></div></div>
       <div class="actions"><span class="ch-name" id="hdr-channel"></span><button type="button" class="btn ghost" data-goto="growth">Perbarui data Studio</button></div>
     </header>
 <div class="wrap">
@@ -37,41 +41,50 @@
     <span><strong>Mode salin-tempel ke claude.ai.</strong> Supaya hasil AI langsung jadi di aplikasi tanpa biaya, pilih Gemini di Pengaturan dan tempel API key gratis dari Google.</span> <button type="button" class="btn ghost" data-goto="settings">Buka Pengaturan</button><button type="button" class="btn ghost" id="banner-close">Tutup</button>
   </div>
 
-  <!-- TODAY: the one thing holding the channel back, from its own numbers -->
+  <!-- DASHBOARD: the numbers, the next video and the one thing to fix -->
   <section id="p-today" role="tabpanel" aria-labelledby="t-today">
     <div id="td-empty" class="card" hidden>
       <span class="layer">Belum ada data video</span>
-      <h3>Hari ini butuh angka channel Anda</h3>
-      <p class="note">Sambungkan YouTube atau impor file Konten dari YouTube Studio. Setelah itu halaman ini menunjukkan masalah terbesar channel dan tiga langkah untuk minggu ini.</p>
+      <h3>Dashboard butuh angka channel Anda</h3>
+      <p class="note">Sambungkan YouTube atau impor file Konten dari YouTube Studio. Setelah itu halaman ini menunjukkan angka channel, masalah terbesar dan tiga langkah untuk minggu ini.</p>
       <button type="button" class="btn" data-goto="growth">Buka Data &amp; cuan</button>
     </div>
-    <div id="td-full" class="stack">
-      <div class="dx">
-        <div>
-          <span class="eyebrow">Masalah terbesar saat ini</span>
-          <h2 class="disp" id="dx-h"></h2>
-          <div id="dx-p"></div>
-          <div class="chips"><button type="button" class="btn" id="dx-go"></button><button type="button" class="btn ghost" data-goto="learn">Lihat semua upload</button></div>
-        </div>
-        <div class="cmpb" id="dx-cmp"></div>
+    <div class="kpis" id="td-kpis"></div>
+    <div class="rowb">
+      <div class="box vchart">
+        <div class="bx-hd"><div><h2>Views</h2><p class="sub" id="vc-sub"></p></div><div class="seg" role="group" aria-label="Rentang waktu" id="vc-seg"><button type="button" aria-pressed="true" data-r="30">30 hari</button><button type="button" aria-pressed="false" data-r="90">90 hari</button><button type="button" aria-pressed="false" data-r="12">12 bulan</button></div></div>
+        <div id="vc" class="vc" tabindex="0" role="group" aria-label="Grafik views. Tekan panah kiri atau kanan untuk membaca tiap batang."><svg id="vc-svg" aria-hidden="true"></svg><div class="tp" id="vc-tp" role="status" hidden></div></div>
       </div>
-      <div class="vitals" id="td-vitals"></div>
-      <div class="td2">
-        <div class="box">
-          <h2>Minggu ini</h2>
-          <p class="sub">Tiga langkah, dipilih dari angka Anda. Centang kalau sudah.</p>
-          <ul class="moves" id="td-moves"></ul>
-        </div>
-        <div class="box">
-          <h2>Upload terakhir, dinilai</h2>
-          <p class="sub" id="td-last-sub"></p>
-          <div id="td-grade"></div>
-        </div>
+      <div class="colb">
+        <div class="next noimg" id="td-next"></div>
+        <div class="box"><h2>Status produksi</h2><ul class="stg5" id="td-stg"></ul></div>
       </div>
     </div>
-    <div class="box">
-      <div class="bx-hd"><div><h2>Video yang sedang dikerjakan</h2><p class="sub">Tiap video bergerak dari kiri ke kanan. Klik untuk membukanya di Buat video.</p></div><button type="button" class="btn ghost" id="td-new">+ Video baru</button></div>
-      <div class="pipe" id="td-pipe"></div>
+    <div id="td-full" class="rowc">
+      <div class="dx sm">
+        <span class="eyebrow">Masalah terbesar saat ini</span>
+        <h2 class="disp" id="dx-h"></h2>
+        <div class="cmpb" id="dx-cmp"></div>
+        <p id="dx-p"></p>
+        <div class="chips"><button type="button" class="btn" id="dx-go"></button></div>
+      </div>
+      <div class="box">
+        <h2>Minggu ini</h2>
+        <p class="sub">Tiga langkah dari angka Anda. Centang kalau sudah.</p>
+        <ul class="moves" id="td-moves"></ul>
+      </div>
+      <div class="box topv"><h2>Video teratas</h2><p class="sub">Views dan CTR, sepanjang data</p><ul id="topv"><li class="loading">Memuat data…</li></ul></div>
+    </div>
+    <div class="rowd">
+      <div class="box" id="td-gradebox">
+        <h2>Upload terakhir, dinilai</h2>
+        <p class="sub" id="td-last-sub"></p>
+        <div id="td-grade"></div>
+      </div>
+      <div class="box">
+        <div class="bx-hd"><div><h2>Video yang sedang dikerjakan</h2><p class="sub">Tiap video bergerak dari kiri ke kanan. Klik untuk membukanya di Buat video.</p></div><button type="button" class="btn ghost" id="td-new">+ Video baru</button></div>
+        <div class="pipe" id="td-pipe"></div>
+      </div>
     </div>
   </section>
 
@@ -115,11 +128,6 @@
         <div class="cal" id="cal" role="group" aria-label="Kalender bulan"></div>
       </div>
       <p class="pp-note" id="pp-note">Klik kotak + untuk menambah rencana, klik kartu untuk mengubah status atau menambah thumbnail.</p>
-    </div>
-    <div class="bot">
-      <div class="box vchart"><div class="bx-hd"><div><h2>Views harian</h2><p class="sub" id="vc-sub"></p></div><button type="button" class="ic-btn" data-goto="growth" aria-label="Buka Data dan cuan"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M1 13h12M3.5 10V7M7 10V3M10.5 10V5.5"/></svg></button></div><div id="vc" class="vc"><p class="loading">Memuat data…</p></div></div>
-      <div class="box topv"><div class="bx-hd"><div><h2>Video teratas</h2><p class="sub">Views dan CTR, sepanjang data</p></div></div><ul id="topv"><li class="loading">Memuat data…</li></ul></div>
-      <div class="box sum"><h2>Ringkasan</h2><div id="sum"><p class="loading">Memuat data…</p></div></div>
     </div>
   </section>
 
@@ -565,6 +573,14 @@ function show(name,first){if(OLD_TAB[name]){mkStage(OLD_TAB[name]);name="make"}i
   $(".shell").dataset.tab=name;store.set("tab",name);$("#main").scrollTop=0;
   if(name==="dash")renderDash();if(name==="today")renderToday();if(name==="learn")renderLearn();if(name==="ideas")renderPattern();if(name==="make")renderMake();if(name==="growth")requestAnimationFrame(()=>{if(YT)chart()})}
 tabs.forEach(b=>b.addEventListener("click",()=>show(b.dataset.tab)));
+function setNav(open){document.documentElement.dataset.nav=open?"open":"closed";store.set("nav",open?"open":"closed");
+  const b=$("#nav-tog"),t=open?"Tutup menu":"Buka menu";b.setAttribute("aria-label",t);b.title=t+" (Ctrl+B)";
+  $("#nav-tog-arrow").setAttribute("d",open?"m10 5.25-1.75 1.75L10 8.75":"m8.5 5.25 1.75 1.75L8.5 8.75");
+  // the charts are drawn in pixels, so they follow the page once it has its new width
+  setTimeout(()=>{if(YT&&!$("#p-growth").hidden)chart();if(!$("#p-today").hidden)renderViews()},260)}
+const navOpen=()=>document.documentElement.dataset.nav!=="closed";
+$("#nav-tog").addEventListener("click",()=>setNav(!navOpen()));
+document.addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&!e.altKey&&!e.shiftKey&&e.key.toLowerCase()==="b"){e.preventDefault();setNav(!navOpen())}});
 document.addEventListener("click",e=>{const g=e.target.closest("[data-goto]");if(g)show(g.dataset.goto)});
 
 /* prompt context from the profile */
@@ -1093,25 +1109,52 @@ function renderNext(){const today=isoDay(new Date()),p=plans().filter(x=>x.date>
   el.innerHTML=`<div class="top"><span>${d.toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"short"})}</span><span class="badge">${when}</span></div><h3>${esc(p.title)}</h3><div class="row"><button type="button" class="p" data-act="tools" data-id="${esc(p.id)}">Kerjakan</button><button type="button" class="s" data-plan-id="${esc(p.id)}">Ubah</button></div>${p.thumb?`<img class="stk" src="${thumbUrl(p)}" alt="">`:""}`}
 function renderStages(){const today=isoDay(new Date()),list=plans().filter(p=>p.date>=today&&p.status!=="tayang");const C={ide:"var(--accent)",naskah:"var(--bone)",rekam:"var(--stone)",edit:"var(--rust)",siap:"var(--ok)"};
   $("#stages").innerHTML=STAGES.slice(0,5).map(s=>`<li style="--c:${C[s]}"><i></i>${STATUS_LABEL[s]}<b>${list.filter(p=>p.status===s).length}</b></li>`).join("")}
-function renderViews(){const el=$("#vc"),d=YT?.daily||[];
-  if(d.length<14){$("#vc-sub").textContent="";el.innerHTML=`<p class="empty-s" style="grid-column:1/-1">Grafik muncul setelah data Studio diimpor atau YouTube tersambung.</p>`;return}
-  const cur=d.slice(-7),prev=d.slice(-14,-7),sum=cur.reduce((a,x)=>a+x[1],0),psum=prev.reduce((a,x)=>a+x[1],0),top=niceStep(Math.max(...cur.map(x=>x[1]),...prev.map(x=>x[1]),1)/4)*4;
-  $("#vc-sub").innerHTML=`7 hari terakhir: <b>${nf(sum)}</b> views, minggu sebelumnya ${nf(psum)}`;
-  const best=cur.reduce((b,x,i)=>x[1]>cur[b][1]?i:b,0);
-  el.innerHTML=`<div class="ax" aria-hidden="true">${[4,3,2,1,0].map(i=>`<span>${short(top*i/4)}</span>`).join("")}</div><div class="bars">${cur.map((x,i)=>{const dt=new Date(x[0]+"T12:00:00");return `<button type="button" class="b${i===best?" on":""}" data-i="${i}" aria-label="${DOW[dt.getDay()]} ${dt.getDate()} ${BN[dt.getMonth()]}: ${nf(x[1])} views, minggu sebelumnya ${nf(prev[i][1])}"><span class="g" style="height:${prev[i][1]/top*100}%"></span><span class="f" style="height:${x[1]/top*100}%"></span><span class="lbl">${DOW[dt.getDay()]}</span></button>`}).join("")}<div class="tp" id="vc-tp" aria-hidden="true"></div></div>`;
-  const tip=i=>{const x=cur[i],dt=new Date(x[0]+"T12:00:00"),b=el.querySelector(`.b[data-i="${i}"]`),tp=$("#vc-tp");el.querySelectorAll(".b").forEach(z=>z.classList.toggle("on",z===b));
-    tp.innerHTML=`<p><b>${DOW[dt.getDay()]} ${dt.getDate()} ${BN[dt.getMonth()]}</b></p><p><i class="sq a"></i>Minggu ini<span>${nf(x[1])}</span></p><p><i class="sq c"></i>Minggu sebelumnya<span>${nf(prev[i][1])}</span></p>`;
-    const bars=el.querySelector(".bars"),bw=bars.clientWidth,left=b.offsetLeft+b.offsetWidth+8,h=bars.clientHeight-24;tp.style.left=(left+172>bw?b.offsetLeft-180:left)+"px";tp.style.top=Math.max(0,h-h*x[1]/top-10)+"px"};
-  el.querySelectorAll(".b").forEach(b=>{const f=()=>tip(+b.dataset.i);b.addEventListener("mouseenter",f);b.addEventListener("focus",f)});
-  el.querySelector(".bars").addEventListener("mouseleave",()=>tip(best));requestAnimationFrame(()=>tip(best))}
-function renderTop(){const list=longForm().sort((a,b)=>b.v-a.v).slice(0,4);
+const vcRange=()=>{const r=store.get("vr","30");return ["30","90","12"].includes(r)?r:"30"};
+function viewSeries(){const d=YT?.daily||[],r=vcRange();
+  if(r==="12"){const end=dataEnd(),part=YT.partialLast;return monthly().slice(-12).map(([m,v],i,a)=>{const mo=BN[+m.slice(5,7)-1];return {v,short:mo,long:mo+" "+m.slice(0,4)+(part&&i===a.length-1?` (sampai tgl ${+end.slice(8)})`:"")}})}
+  return d.slice(-(+r)).map(([k,v])=>{const lbl=+k.slice(8)+" "+BN[+k.slice(5,7)-1];return {v,short:lbl,long:lbl+" "+k.slice(0,4)}})}
+let VC=null;
+function renderViews(){const box=$("#vc"),svg=$("#vc-svg"),d=YT?.daily||[],r=vcRange();if(!box)return;
+  $("#vc-seg").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.r===r));
+  $("#vc-tp").hidden=true;VC=null;
+  if(d.length<14){$("#vc-sub").textContent="Grafik muncul setelah data Studio diimpor atau YouTube tersambung.";svg.innerHTML="";return}
+  const W=box.clientWidth,H=box.clientHeight;if(!W)return;
+  const s=viewSeries(),n=s.length,pl=44,pr=4,pt=8,pb=24,pw=W-pl-pr,ph=H-pt-pb,top=Math.max(...s.map(x=>x.v),1);
+  const ts=niceStep(top/5);
+  const nt=Math.ceil(top/ts),max=ts*nt,step=pw/n,bw=Math.max(2,step-(n>40?1.5:n>20?3:8)),rx=Math.min(4,bw/2),y=v=>pt+ph-v/max*ph;
+  const every=(n<=12?[1,2,3,6]:[5,10,15,30]).find(k=>k*step>=50)||n;
+  let h="";
+  for(let i=0;i<=nt;i++){const v=ts*i,yy=y(v);h+=`<line x1="${pl}" x2="${W-pr}" y1="${yy}" y2="${yy}"/><text x="${pl-8}" y="${yy+4}" text-anchor="end">${v>=1000?f1(v/1000)+" rb":nf(v)}</text>`}
+  s.forEach((x,i)=>{const bx=pl+i*step+(step-bw)/2,t=Math.min(y(x.v),pt+ph-1);
+    h+=`<path class="b" data-i="${i}" d="M${bx},${pt+ph}V${t+rx}a${rx},${rx} 0 0 1 ${rx},-${rx}h${bw-2*rx}a${rx},${rx} 0 0 1 ${rx},${rx}V${pt+ph}z"/>`;
+    if((n-1-i)%every===0)h+=`<text x="${i===n-1?bx+bw:bx+bw/2}" y="${H-6}" text-anchor="${i===n-1?"end":"middle"}">${x.short}</text>`});
+  svg.setAttribute("viewBox",`0 0 ${W} ${H}`);svg.innerHTML=h;
+  const sum=s.reduce((a,x)=>a+x.v,0),peak=s.reduce((b,x)=>x.v>b.v?x:b,s[0]);
+  $("#vc-sub").innerHTML=r==="12"?`${n} bulan terakhir: <b>${nf(sum)}</b> views. Puncak ${peak.long}, ${nf(peak.v)}.`:`${n} hari terakhir: <b>${nf(sum)}</b> views, rata-rata ${nf(sum/n)} per hari.`;
+  VC={s,pl,step,W,y,i:-1}}
+function vcShow(i){const tp=$("#vc-tp");if(!VC)return;
+  $("#vc-svg").querySelectorAll(".b").forEach(b=>b.classList.toggle("on",+b.dataset.i===i));
+  const x=VC.s[i];VC.i=x?i:-1;if(!x){tp.hidden=true;return}
+  tp.hidden=false;tp.innerHTML=`${x.long}<b>${nf(x.v)} views</b>`;
+  const cx=VC.pl+(i+.5)*VC.step,tw=tp.offsetWidth;
+  tp.style.transform=`translate(${Math.max(0,Math.min(VC.W-tw,cx-tw/2))}px,${Math.max(0,VC.y(x.v)-tp.offsetHeight-8)}px)`}
+(function(){const box=$("#vc");if(!box)return;
+  const at=e=>{if(VC)vcShow(Math.floor((e.clientX-box.getBoundingClientRect().left-VC.pl)/VC.step))};
+  box.addEventListener("pointermove",at);box.addEventListener("pointerdown",at);
+  box.addEventListener("pointerleave",()=>vcShow(-1));box.addEventListener("blur",()=>vcShow(-1));
+  box.addEventListener("keydown",e=>{const d={ArrowLeft:-1,ArrowRight:1}[e.key];if(!d||!VC)return;e.preventDefault();const n=VC.s.length;vcShow(VC.i<0?(d>0?0:n-1):Math.min(n-1,Math.max(0,VC.i+d)))});
+  $("#vc-seg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;store.set("vr",b.dataset.r);renderViews()});
+  let w=0;new ResizeObserver(()=>{const n=box.clientWidth;if(n&&n!==w){w=n;if(!$("#p-today").hidden)renderViews()}}).observe(box)})();
+
+function renderTop(){const list=longForm().sort((a,b)=>b.v-a.v).slice(0,5);
   $("#topv").innerHTML=list.length?list.map(v=>`<li><span class="pl" aria-hidden="true"><svg viewBox="0 0 14 14"><path d="M4 2.5v9l7.5-4.5z"/></svg></span><span class="t" title="${esc(v.t)}">${esc(v.t)}</span><span class="v">${nf(v.v)}</span>${v.ctr?`<span class="c">${(+v.ctr).toLocaleString("id-ID",{maximumFractionDigits:1})}%</span>`:""}</li>`).join(""):`<li class="empty-s">Belum ada data video.</li>`}
-function renderSum(){const t=YT?.totals||{},has=YT?.daily?.length>=60;let pct="";
-  if(has){const a=lastDays(30),b=lastDays(30,30);if(b){const p=Math.round((a/b-1)*100);pct=`<em class="${p<0?"dn":"upc"}">${p>0?"+":""}${p}%</em>`}}
-  const today=isoDay(new Date()),up=plans().filter(p=>p.date>=today&&p.status!=="tayang").length;
-  $("#sum").innerHTML=`<div class="st"><span>Views 30 hari</span><b>${YT?.daily?.length?nf(lastDays(30)):"-"}${pct}</b></div><div class="st"><span>Subscriber bersih</span><b>${t.subs!=null?(t.subs>=0?"+":"")+nf(t.subs):"-"}</b></div><div class="st"><span>Estimasi pendapatan</span><b>${t.revenue!=null?moneyShort(t.revenue):"-"}</b></div><div class="st"><span>Rencana terjadwal</span><b>${nf(up)}</b></div>`}
+function renderKpis(){const el=$("#td-kpis");if(!el)return;const t=YT?.totals||{},d=YT?.daily||[],since=d.length?`sejak ${BN[+d[0][0].slice(5,7)-1]} ${d[0][0].slice(0,4)}`:"";
+  let note="";if(d.length>=60){const a=lastDays(30),b=lastDays(30,30);if(b){const p=Math.round((a/b-1)*100);note=`<em class="${p<0?"dn":"upc"}">${p<0?"turun":"naik"} ${Math.abs(p)}%</em> dari 30 hari sebelumnya`}}
+  const k=[["Views 30 hari",d.length?nf(lastDays(30)):"-",note],["Subscriber bersih",t.subs!=null?(t.subs>=0?"+":"")+nf(t.subs):"-",since],["Jam tayang",t.hours!=null?nf(t.hours):"-",since],["Estimasi pendapatan",t.revenue!=null?moneyShort(t.revenue):"-",since]];
+  el.innerHTML=k.map(([l,v,n])=>`<div class="box kpi"><span>${l}</span><b>${v}</b><small>${n}</small></div>`).join("")}
+
 function renderBoard(){$("#wk").hidden=view!=="week";$("#cal-wrap").hidden=view!=="month";if(view==="week")renderWeek();else renderCal()}
-function renderDash(){if(!$("#wk"))return;renderBoard();renderMini();renderNext();renderStages();renderViews();renderTop();renderSum()}
+function renderDash(){if(!$("#wk"))return;renderBoard();renderMini();renderNext();renderStages()}
 let editing=null,pendingThumb=undefined;
 function openPlan(p){editing=p.id?p:null;pendingThumb=undefined;$("#plan-dlg-title").textContent=editing?"Ubah rencana":"Rencana baru";$("#pl-title").value=p.title||"";$("#pl-date").value=p.date||isoDay(new Date());$("#pl-type").value=p.type||"video";$("#pl-status").value=p.status||"ide";$("#pl-note").value=p.note||"";$("#pl-del").hidden=!editing;$("#pl-tools").hidden=!editing;
   setThumbPreview(p.thumb?thumbUrl(p):"");$("#plan-dlg").showModal();$("#pl-title").focus()}
@@ -1128,8 +1171,9 @@ $("#plan-form").addEventListener("submit",async e=>{if(e.submitter?.value!=="sav
 $("#pl-del").addEventListener("click",async()=>{if(!editing)return;$("#plan-dlg").close();if(editing.thumb)await api("/api/thumb?id="+encodeURIComponent(editing.id),{method:"DELETE"});await savePlans(plans().filter(x=>x.id!==editing.id))});
 $("#pl-tools").addEventListener("click",()=>{$("#plan-dlg").close();if(editing)openMake(editing.id)});
 $("#banner-close").addEventListener("click",()=>{store.set("banner-off",true);$("#banner-key").hidden=true});
+const skinName=()=>{$("#skin-name").textContent=document.documentElement.dataset.skin==="lumut"?"Tema lumut":"Tema batu"};
 $("#plan-new").addEventListener("click",()=>openPlan({}));$("#rail-plus").addEventListener("click",()=>openPlan({}));
-$("#skin-tog").addEventListener("click",()=>{const k=document.documentElement.dataset.skin==="lumut"?"batu":"lumut";document.documentElement.dataset.skin=k;store.set("skin",k);api("/api/skin?skin="+k,{method:"POST"});if(YT&&!$("#p-growth").hidden)chart()});
+$("#skin-tog").addEventListener("click",()=>{const k=document.documentElement.dataset.skin==="lumut"?"batu":"lumut";document.documentElement.dataset.skin=k;store.set("skin",k);skinName();api("/api/skin?skin="+k,{method:"POST"});if(YT&&!$("#p-growth").hidden)chart()});
 document.querySelectorAll(".seg button").forEach(b=>b.addEventListener("click",()=>{view=b.dataset.view;document.querySelectorAll(".seg button").forEach(x=>x.setAttribute("aria-pressed",x===b));renderBoard()}));
 const shift=n=>{if(view==="week")weekStart=addDays(weekStart,7*n);else calMonth=new Date(calMonth.getFullYear(),calMonth.getMonth()+n,1);renderBoard()};
 $("#wk-prev").addEventListener("click",()=>shift(-1));$("#wk-next").addEventListener("click",()=>shift(1));
@@ -1183,44 +1227,47 @@ function spark(vals,lo,hi,color){const v=vals.filter(x=>x!=null);if(v.length<2)r
   const d=v.map((t,i)=>`${i?"L":"M"}${x(i).toFixed(1)} ${y(t).toFixed(1)}`).join("");
   return `<svg class="spk" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><path d="${d}L${x(n-1)} ${h}L${x(0)} ${h}Z" fill="${color}" fill-opacity=".14" stroke="none"/><path d="${d}" fill="none" stroke="${color}" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>`}
 
-function renderToday(){if(!$("#td-full"))return;const has=uploads().length>=6;$("#td-empty").hidden=has;$("#td-full").hidden=!has;renderPipe();if(!has)return;
-  const n=channelNumbers(),{W,R,up}=n,last8=up.slice(-8),low=last8.filter(v=>share(v)!=null&&share(v)<10).length;
-  const go=(label,fn)=>{const b=$("#dx-go");b.textContent=label;b.onclick=fn};
-  const reachTxt=n.reach?` Jangkauan juga turun: dari sekitar ${nf(n.wI)} tayangan thumbnail per video terbaik ke ${nf(n.rI)} per upload terakhir.`:"";
-  if(n.lever==="ret"){$("#dx-h").textContent="Penonton pergi di menit pertama.";
-    $("#dx-p").innerHTML=`<p>Dari ${last8.length} upload terakhir, ${low} ditonton kurang dari 10% durasinya. Video terbaik Anda ditonton ${range(W.map(share),x=>f1(x))}%.${reachTxt} YouTube cenderung memperluas jangkauan video yang membuat penonton bertahan, jadi ini yang diperbaiki dulu.</p><p><b>Perbaiki dulu:</b> 60 detik pertama setiap naskah. Thumbnail yang lebih bagus tidak banyak membantu sebelum penonton bertahan.</p>`;
-    go("Buka hook coach",()=>openMake(null,"hook"))}
-  else if(n.lever==="ctr"){$("#dx-h").textContent="Video ditampilkan, tapi jarang diklik.";
-    $("#dx-p").innerHTML=`<p>CTR 5 upload terakhir ${pctTxt(n.rC)}, video terbaik ${range(W.map(ctrOf),x=>f1(x))}%. Penonton yang mengklik masih bertahan (${pctTxt(n.rS)} ditonton), jadi masalahnya di judul dan thumbnail.</p><p><b>Perbaiki dulu:</b> paket video. Pilih judul dan thumbnail sebelum menulis naskah.</p>`;
-    go("Buka paket video",()=>openMake(null,"pkg"))}
-  else if(n.lever==="reach"){$("#dx-h").textContent="YouTube jarang menampilkan video baru Anda.";
-    $("#dx-p").innerHTML=`<p>Tayangan thumbnail per upload turun dari sekitar ${nf(n.wI)} ke ${nf(n.rI)}, padahal penonton yang datang masih bertahan dan mengklik. Topik yang lebih dekat dengan video terbaik Anda adalah cara tercepat membuka jangkauan lagi.</p>`;
-    go("Cari topik berikutnya",()=>show("ideas"))}
-  else{$("#dx-h").textContent="Upload terakhir sejalan dengan video terbaik.";
-    $("#dx-p").innerHTML=`<p>Bagian yang ditonton (${pctTxt(n.rS)}) dan CTR (${pctTxt(n.rC)}) 5 upload terakhir tidak jauh dari video terbaik Anda. Jaga jadwal dan terus pilih topik yang cocok dengan pola.</p>`;
-    go("Cari topik berikutnya",()=>show("ideas"))}
-  const sc=Math.max(40,(Math.max(n.wS||0,n.rS||0))*1.2),bar=(lbl,val,txt,w,cls)=>`<div><div class="lbl"><span>${lbl}</span><b>${val}</b></div><div class="track"><div class="fill ${cls}" style="width:${Math.max(w,3)}%">${txt}</div></div></div>`;
-  let cmp=bar("Bagian yang ditonton, 6 video terbaik",pctTxt(n.wS),`rata-rata ${f1(med(W.map(avdMin)))} mnt`,n.wS/sc*100,"win")+bar("Bagian yang ditonton, 5 upload terakhir",pctTxt(n.rS),n.rS/sc*100>18?`${f1(med(R.map(avdMin)))} mnt`:"",n.rS/sc*100,"now");
-  if(n.wI&&n.rI)cmp+=bar("Tayangan thumbnail per video terbaik",nf(n.wI),"",100,"win")+bar("Tayangan thumbnail per upload terakhir",nf(n.rI),"",n.rI/n.wI*100,"now");
-  else if(n.wC&&n.rC)cmp+=bar("CTR, 6 video terbaik",pctTxt(n.wC),"",n.wC/8*100,"win")+bar("CTR, 5 upload terakhir",pctTxt(n.rC),"",n.rC/8*100,"now");
-  $("#dx-cmp").innerHTML=cmp+`<small>Nilai tengah (median), tiap pasang batang memakai skala yang sama.</small>`;
-  const l12=up.slice(-12),vit=[
-    ["Bagian yang ditonton",pctTxt(n.rS),`terbaik ${pctTxt(n.wS)}`,spark(l12.map(share),0,40,n.ret?"var(--warn)":"var(--ok)"),n.ret?["bad","Perbaiki dulu"]:["good","Aman"]],
-    ["CTR thumbnail",n.rC==null?"-":f1(n.rC)+"%",n.wC?`terbaik ${f1(n.wC)}%`:"",spark(l12.map(ctrOf),0,8,n.ctr?"var(--warn)":"var(--ok)"),n.ctr?["bad",n.ret?"Perbaiki kedua":"Perbaiki dulu"]:["good","Aman"]],
-    ["Views per upload",nf(med(R.map(v=>v.v))),`terbaik ${nf(med(W.map(v=>v.v)))}`,spark(l12.map(v=>Math.log10(Math.max(v.v,1))),1,5.5,"var(--muted)"),["","Ikut dua di atas"]]];
-  $("#td-vitals").innerHTML=vit.map(([k,v,c,s,[cls,tag]])=>`<div class="box vital"><div class="vhd"><span class="k">${k}, 5 upload terakhir</span><span class="pill ${cls}">${tag}</span></div><div class="v">${v}<em>${c}</em></div>${s}<div class="foot"><span>12 upload lalu</span><span>terbaru</span></div></div>`).join("");
+function renderNextVideo(){const el=$("#td-next");if(!el)return;const today=isoDay(new Date()),list=plans().filter(x=>x.type==="video"&&x.status!=="tayang"),p=list.filter(x=>x.date>=today)[0]||list[list.length-1];
+  if(!p){el.className="next noimg";el.innerHTML=`<div class="top"><span>Video berikutnya</span></div><h3>Belum ada video terjadwal</h3><p>Aplikasi memilih topik, judul dan hook dari pola video terbaik Anda, lalu menulis naskahnya.</p><div class="row"><button type="button" class="p" data-act="one">Buat naskah 1 klik</button></div>`;return}
+  const d=new Date(p.date+"T12:00:00"),days=daysBetween(today,p.date),when=days<0?"lewat jadwal":days===0?"Hari ini":days===1?"Besok":`${days} hari lagi`,early=p.status==="ide"||p.status==="naskah";
+  el.className="next"+(p.thumb?"":" noimg");
+  el.innerHTML=`<div class="top"><span>Video berikutnya · ${d.toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"short"})}</span><span class="badge">${when}</span></div><h3>${esc(p.title)}</h3><p>Tahap sekarang: ${STATUS_LABEL[p.status]||p.status}.</p><div class="row">${early?`<button type="button" class="p" data-act="one" data-id="${esc(p.id)}">Buat naskah 1 klik</button><button type="button" class="s" data-act="open" data-id="${esc(p.id)}">Buka</button>`:`<button type="button" class="p" data-act="open" data-id="${esc(p.id)}">Lanjutkan</button>`}</div>${p.thumb?`<img class="stk" src="${thumbUrl(p)}" alt="">`:""}`}
+$("#td-next").addEventListener("click",e=>{const b=e.target.closest("[data-act]");if(!b)return;
+  if(b.dataset.act==="open")return openMake(b.dataset.id);
+  if(b.dataset.id)openMake(b.dataset.id,"script");else $("#td-new").click();
+  oneClick($("#mk-one"))});
+function renderStg(){const el=$("#td-stg");if(!el)return;const list=plans().filter(p=>p.type!=="post"&&p.status!=="tayang");
+  el.innerHTML=PIPE.map(([s,l])=>{const n=list.filter(p=>p.status===s).length;return `<li class="${n?"":"z"}" title="${l}"><b>${n}</b>${l==="Siap upload"?"Siap":l}</li>`}).join("")}
+
+function renderToday(){if(!$("#td-kpis"))return;const has=uploads().length>=6,dl=YT?.daily||[];
+  $("#today-sub").textContent=new Date().toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long",year:"numeric"})+(dl.length?` · data sampai ${fmtShort(dataEnd())}`:"");
+  $("#td-empty").hidden=has;$("#td-full").hidden=!has;$("#td-gradebox").hidden=!has;
+  renderKpis();renderViews();renderTop();renderNextVideo();renderStg();renderPipe();if(!has)return;
+  const n=channelNumbers(),{W,R}=n;
+  const set=(h,p,label,fn)=>{$("#dx-h").textContent=h;$("#dx-p").textContent=p;const b=$("#dx-go");b.textContent=label;b.onclick=fn};
+  if(n.lever==="ret")set("Penonton pergi di menit pertama.","Perbaiki dulu 60 detik pertama setiap naskah.","Buka hook coach",()=>openMake(null,"hook"));
+  else if(n.lever==="ctr")set("Video ditampilkan, tapi jarang diklik.","Perbaiki dulu judul dan thumbnail, sebelum menulis naskah.","Buka paket video",()=>openMake(null,"pkg"));
+  else if(n.lever==="reach")set("YouTube jarang menampilkan video baru Anda.","Pilih topik yang dekat dengan video terbaik Anda.","Cari topik berikutnya",()=>show("ideas"));
+  else set("Upload terakhir sejalan dengan video terbaik.","Jaga jadwal dan terus pilih topik yang cocok dengan pola.","Cari topik berikutnya",()=>show("ideas"));
+  const bar=(lbl,val,txt,w,cls)=>`<div><div class="lbl"><span>${lbl}</span><b>${val}</b></div><div class="track"><div class="fill ${cls}" style="width:${Math.max(w,3)}%">${txt}</div></div></div>`;
+  let cmp;
+  if(n.lever==="ctr"&&n.wC&&n.rC)cmp=bar("CTR, 6 video terbaik",pctTxt(n.wC),"",n.wC/8*100,"win")+bar("CTR, 5 upload terakhir",pctTxt(n.rC),"",n.rC/8*100,"now");
+  else if(n.lever==="reach"&&n.wI&&n.rI)cmp=bar("Tayangan thumbnail per video terbaik",nf(n.wI),"",100,"win")+bar("Tayangan thumbnail per upload terakhir",nf(n.rI),"",n.rI/n.wI*100,"now");
+  else{const sc=Math.max(40,Math.max(n.wS||0,n.rS||0)*1.2);
+    cmp=bar("Bagian yang ditonton, 6 video terbaik",pctTxt(n.wS),n.wS/sc*100>30?`rata-rata ${f1(med(W.map(avdMin)))} mnt`:"",n.wS/sc*100,"win")+bar("Bagian yang ditonton, 5 upload terakhir",pctTxt(n.rS),n.rS/sc*100>30?`${f1(med(R.map(avdMin)))} mnt`:"",n.rS/sc*100,"now")}
+  $("#dx-cmp").innerHTML=cmp+`<small>Nilai tengah (median), kedua batang memakai skala yang sama.</small>`;
   renderMoves(n);renderGrade(n)}
 
 const weekKey=()=>{const d=new Date();d.setDate(d.getDate()-((d.getDay()+6)%7));return isoDay(d)};
 function renderMoves(n){const us=usShare(),soon=plans().some(p=>p.status!=="tayang"&&p.date>=isoDay(new Date())&&daysBetween(isoDay(new Date()),p.date)<=7);
-  const M={ret:{t:"Tulis ulang 60 detik pertama video berikutnya",d:"Buka langsung dengan hewannya dan bahayanya. Tanpa intro channel, tanpa pemanasan \"jutaan tahun lalu\". Hook coach mengeceknya.",tag:"retensi",bad:1,go:()=>openMake(null,"hook")},
-    ctr:{t:"Siapkan 3 judul dan 2 thumbnail sebelum upload",d:`CTR 5 upload terakhir ${pctTxt(n.rC)}, video terbaik ${pctTxt(n.wC)}. Uji thumbnail dengan Test & Compare di YouTube Studio.`,tag:"klik",bad:1,go:()=>openMake(null,"pkg")},
-    topic:{t:"Pilih topik berikutnya dari Ide",d:`Video terbaik Anda: ${n.W.slice(0,2).map(v=>`"${v.t}"`).join(" dan ")}. Pilih topik dengan skor 4 atau 5.`,tag:"topik",go:()=>show("ideas")},
+  const M={ret:{t:"Tulis ulang 60 detik pertama video berikutnya",d:"Buka langsung dengan hewannya dan bahayanya, tanpa intro channel.",tag:"retensi",bad:1,go:()=>openMake(null,"hook")},
+    ctr:{t:"Siapkan 3 judul dan 2 thumbnail sebelum upload",d:`CTR 5 upload terakhir ${pctTxt(n.rC)}, video terbaik ${pctTxt(n.wC)}.`,tag:"klik",bad:1,go:()=>openMake(null,"pkg")},
+    topic:{t:"Pilih topik berikutnya dari Ide",d:"Pilih topik dengan skor 4 atau 5, yang cocok dengan pola video terbaik Anda.",tag:"topik",go:()=>show("ideas")},
     time:us?{t:"Terbitkan jam 07:00 WIB",d:`Itu malam hari di Amerika. Penonton AS membawa ${us.views}% views${us.rev!=null?` dan ${us.rev}% pendapatan`:""} Anda.`,tag:"waktu"}:null,
-    plan:soon?null:{t:"Jadwalkan upload berikutnya",d:"Belum ada video di kalender untuk 7 hari ke depan. Upload rutin membantu penonton kembali.",tag:"jadwal",go:()=>openPlan({})}};
+    plan:soon?null:{t:"Jadwalkan upload berikutnya",d:"Belum ada video di kalender untuk 7 hari ke depan.",tag:"jadwal",go:()=>openPlan({})}};
   const order=[n.ret&&"ret",n.ctr&&"ctr","topic","time","plan","ctr"].filter((k,i,a)=>k&&M[k]&&a.indexOf(k)===i).slice(0,3);
   const st=LAST.week?.data?.wk===weekKey()?LAST.week.data.done:[];
-  $("#td-moves").innerHTML=order.map((k,i)=>{const m=M[k],on=st.includes(k);return `<li class="${on?"done":""}"><input type="checkbox" id="mv-${k}" data-move="${k}" ${on?"checked":""}><div><label for="mv-${k}" class="mv-t">${esc(m.t)}</label><span>${esc(m.d)}</span>${m.go?`<button type="button" class="linkish" data-move-go="${k}">Kerjakan</button>`:""}</div><span class="pill ${m.bad?"bad":""}">${m.tag}</span></li>`}).join("");
+  $("#td-moves").innerHTML=order.map((k,i)=>{const m=M[k],on=st.includes(k);return `<li class="${on?"done":""}"><input type="checkbox" id="mv-${k}" data-move="${k}" ${on?"checked":""}><div><label for="mv-${k}" class="mv-t">${esc(m.t)}</label><span>${esc(m.d)}</span>${m.go?`<button type="button" class="linkish" data-move-go="${k}">Kerjakan</button>`:""}</div></li>`}).join("");
   $("#td-moves").onclick=e=>{const g=e.target.closest("[data-move-go]");if(g)M[g.dataset.moveGo].go()};
   $("#td-moves").onchange=e=>{const c=e.target.closest("[data-move]");if(!c)return;let done=LAST.week?.data?.wk===weekKey()?[...LAST.week.data.done]:[];done=c.checked?[...new Set([...done,c.dataset.move])]:done.filter(x=>x!==c.dataset.move);c.closest("li").classList.toggle("done",c.checked);remember("week",{wk:weekKey(),done}).catch(()=>{})}}
 function renderGrade(n){const up=n.up,L=up[up.length-1],prev=up.slice(-11,-1),age=daysBetween(L.d,dataEnd());
@@ -1449,6 +1496,6 @@ async function loadLast(){const j=await api("/api/last");if(!j||j.error)return;L
   for(const [k,f] of Object.entries(RENDER)){const r=LAST[k];if(!r)continue;try{if(f(r.data)){const st=$("#s-"+k);if(st){st.className="status";st.textContent="Hasil terakhir, dibuat "+new Date(r.at).toLocaleString("id-ID",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})+". Tidak memakai saldo lagi."}}}catch{}}
   $("#cfg-spent").textContent=spentText();$("#cfg-ispent").textContent=imgSpentText()}
 api("/api/skin?skin="+(document.documentElement.dataset.skin||"batu"),{method:"POST"});
-(async()=>{$("#script-words").value=Math.min(8000,Math.max(500,store.get("sw",2000)));scriptLen();await loadConfig();await loadData();await loadLast();show(store.get("ver2",false)?store.get("tab","today"):"today",true);store.set("ver2",true);
+(async()=>{$("#script-words").value=Math.min(8000,Math.max(500,store.get("sw",2000)));scriptLen();skinName();setNav(navOpen());await loadConfig();await loadData();await loadLast();show(store.get("ver2",false)?store.get("tab","today"):"today",true);store.set("ver2",true);
   if(CFG.yt_connected&&Date.now()/1000-(CFG.yt_synced||0)>6*3600)ytSync(null,null)})();
 </script>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="id" data-skin="batu">
+<html lang="id" data-skin="batu" data-nav="open">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -7,4 +7,4 @@
 <link rel="icon" type="image/png" href="/logo.png">
 <link rel="preload" href="/fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/familjen.woff2" as="font" type="font/woff2" crossorigin>
-<script>try{var k=JSON.parse(localStorage.getItem("ts-skin"));if(k==="lumut")document.documentElement.dataset.skin=k}catch(e){}</script>
+<script>try{var k=JSON.parse(localStorage.getItem("ts-skin"));if(k==="lumut")document.documentElement.dataset.skin=k;if(JSON.parse(localStorage.getItem("ts-nav"))==="closed")document.documentElement.dataset.nav="closed"}catch(e){}</script>
