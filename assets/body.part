@@ -15,7 +15,7 @@
     <div class="rail-sp"></div>
     <button type="button" class="rail-plus" id="rail-plus" aria-label="Rencana konten baru" data-tip="Rencana baru">+</button>
     <button type="button" class="skin" id="skin-tog" aria-label="Ganti tema" data-tip="Tema: batu / lumut"><i></i></button>
-    <p class="ver">v2.0.0</p>
+    <p class="ver">v2.0.1</p>
   </aside>
   <aside class="side" aria-label="Kalender dan jadwal">
     <div class="box calw">
@@ -169,6 +169,11 @@
   <!-- MAKE: one video, from title to upload -->
   <section id="p-make" role="tabpanel" aria-labelledby="t-make" hidden>
     <div class="box mk-head">
+      <div class="mk-auto">
+        <div><b id="mk-auto-h">Belum tahu mau bikin apa?</b><span id="mk-auto-p">AI memilih topik yang cocok dengan video terbaik Anda, lalu mengisi judul, teks thumbnail, dan hook. Anda tinggal mengecek.</span></div>
+        <div class="chips"><button type="button" class="btn" id="mk-auto">Sarankan video berikutnya</button><button type="button" class="btn ghost" id="mk-auto-new" hidden>Topik lain</button></div>
+      </div>
+      <div class="status" id="s-auto" role="status"></div>
       <div class="mk-pick">
         <label for="mk-pick">Video<select id="mk-pick"></select></label>
         <label for="mk-topic">Topik atau nama hewan<input id="mk-topic" placeholder="mis. Pachycrocuta" maxlength="140"></label>
@@ -465,7 +470,7 @@
     <div class="card" style="margin-top:16px">
       <span class="layer">Aplikasi</span>
       <h3>Data dan aplikasi</h3>
-      <p class="note">Semua pengaturan, data Studio, rencana kalender, dan hasil AI disimpan hanya di komputer ini, di folder <code id="cfg-dir"></code>. API key disimpan terenkripsi dengan pengaman Windows. Menutup jendela Terra Studio berarti menutup aplikasinya. Versi 2.0.0.</p>
+      <p class="note">Semua pengaturan, data Studio, rencana kalender, dan hasil AI disimpan hanya di komputer ini, di folder <code id="cfg-dir"></code>. API key disimpan terenkripsi dengan pengaman Windows. Menutup jendela Terra Studio berarti menutup aplikasinya. Versi 2.0.1.</p>
       <h3 style="margin-top:14px">Backup</h3>
       <p class="note">Simpan file backup (profil, data Studio, kalender, hasil AI) ke folder Downloads, lalu salin ke flashdisk atau Google Drive. API key dan gambar thumbnail rencana tidak ikut. Pulihkan di komputer baru atau setelah instal ulang Windows.</p>
       <div class="chips"><button type="button" class="btn ghost" id="backup-save">Simpan backup</button><button type="button" class="btn ghost" id="backup-load">Pulihkan dari backup</button></div>
@@ -1104,7 +1109,7 @@ const PIPE=[["ide","Ide"],["naskah","Naskah"],["rekam","Suara"],["edit","Edit"],
 function renderPipe(){const el=$("#td-pipe");if(!el)return;const today=isoDay(new Date()),list=plans().filter(p=>p.type!=="post"&&p.status!=="tayang"),next=list.filter(p=>p.date>=today)[0];
   el.innerHTML=PIPE.map(([s,l])=>{const items=list.filter(p=>p.status===s);return `<div class="st"><h3>${l} <b>${items.length}</b></h3>${items.map(p=>`<button type="button" class="pcard${p===next?" hot":""}" data-make="${esc(p.id)}"><b>${esc(p.title)}</b><small>${p.type==="short"?"Shorts, ":""}${fmtShort(p.date)}${p.date<today?", lewat jadwal":""}</small></button>`).join("")||`<span class="pempty">Kosong</span>`}</div>`}).join("")}
 document.addEventListener("click",e=>{const b=e.target.closest("[data-make]");if(b)openMake(b.dataset.make)});
-$("#td-new").addEventListener("click",()=>openPlan({}));
+$("#td-new").addEventListener("click",()=>{store.set("mk","");const w=work("");w.topic="";w.titles=[];w.thumb="";w.hook="";w.pick="";saveWork();store.set("mkst","pkg");show("make")});
 
 function renderLearn(){if(!$("#ln-full"))return;const up=uploads(),has=up.length>=6;$("#ln-empty").hidden=has;$("#ln-full").hidden=!has;if(!has)return;
   const n=channelNumbers(),V=up.slice(-48).filter(v=>share(v)!=null),W=900,H=260,pl=34,pr=8,pt=12,pb=28,bw=(W-pl-pr)/V.length,top=Math.max(40,Math.ceil(Math.max(...V.map(share))/10)*10),y=t=>pt+(1-t/top)*(H-pt-pb);
@@ -1148,9 +1153,29 @@ function renderMake(){const list=plans().filter(p=>p.type!=="post"&&(p.status!==
   $("#mk-topic").value=w.topic||"";$("#mk-titles").value=(w.titles||(p?[p.title]:[])).join("\n");$("#mk-thumbtext").value=w.thumb||"";$("#mk-hook").value=w.hook||"";
   const t=w.pick||p?.title||w.topic||"";["#script-topic","#seo-topic","#thumb-topic","#shorts-topic"].forEach(s=>{if(t)$(s).value=t});if(w.pick)$("#thumb-title").value=w.pick;
   $("#mk-done").hidden=!p;$("#s-done").textContent=p?.status==="tayang"?"Video ini sudah ditandai tayang.":"";
-  mkStage(store.get("mkst","pkg"));renderTitles();renderThumbPrev();renderRules();renderPub()}
+  renderAuto();mkStage(store.get("mkst","pkg"));renderTitles();renderThumbPrev();renderRules();renderPub()}
+function renderAuto(){const w=mkW(),has=!!(w.topic||"").trim(),full=has&&w.titles?.length>1&&w.thumb&&w.hook;
+  $("#mk-auto-h").textContent=!has?"Belum tahu mau bikin apa?":full?"Sudah terisi. Cek, lalu lanjut ke naskah.":`Topik: ${w.topic}`;
+  $("#mk-auto-p").textContent=!has?"AI memilih topik yang cocok dengan video terbaik Anda, lalu mengisi judul, teks thumbnail, dan hook. Anda tinggal mengecek.":full?"Mau versi lain? Klik lagi untuk judul, thumbnail, dan hook baru, atau minta topik lain.":"AI mengisi 5 judul, teks thumbnail, dan hook untuk topik ini. Anda tinggal mengecek.";
+  $("#mk-auto").textContent=!has?"Sarankan video berikutnya":full?"Isi ulang":"Isi judul, thumbnail & hook";$("#mk-auto-new").hidden=!has}
+// One AI call fills the whole package, so Sigit can start from a suggestion instead of a blank page.
+async function autoFill(btn,newTopic){const w=mkW(),topic=newTopic?"":(w.topic||"").trim(),st=$("#s-auto");
+  const done=[...longForm().map(v=>v.t),...plans().map(p=>p.title)].slice(-80).join("; ");
+  const d=await ask(st,btn,`${topic?`Plan the package for a documentary about: ${topic}.`:`Pick the single best next documentary topic for this channel and plan its package. Do not repeat or closely overlap: ${done||"none"}.`}
+What works on this channel: ${patternText()||"giant prehistoric mammal predators framed as a threat to humans"}. Viewers of recent videos left in the first minute, so the opening matters most.
+Return: "subject" the animal's usual name; "mammal","predator","threat","size" honest true/false about the animal and the angle; "why" one Indonesian sentence on why this topic fits the channel; "titles" 5 title options, best first, each under 60 characters, naming the animal, with a size or number people can picture and a threat or rivalry angle where the evidence supports it; "thumb" thumbnail text of at most 4 words, uppercase, adding information the best title does not repeat; "hook" the first 60 seconds of narration (120-160 words, English): name the animal in the first sentence, state the danger before 15 seconds, say the thumbnail words before 15 seconds, promise a specific payoff at the end, no channel intro, no "subscribe", accurate facts with uncertain claims phrased carefully.
+JSON shape: {"subject":"","mammal":true,"predator":true,"threat":true,"size":true,"why":"","titles":[""],"thumb":"","hook":""}`,null);
+  if(!d?.titles?.length)return;
+  let id=mkId();
+  if(!id||newTopic){const last=plans().map(p=>p.date).sort().pop(),base=last&&last>isoDay(new Date())?last:isoDay(new Date()),date=isoDay(addDays(new Date(base+"T12:00:00"),7));
+    id=Date.now().toString(36)+Math.random().toString(36).slice(2,6);await savePlans([...plans(),{id,title:d.titles[0],date,type:"video",status:"ide",note:d.why||""}]);store.set("mk",id)}
+  const x=work(id);Object.assign(x,{topic:d.subject||topic,titles:d.titles,pick:d.titles[0],thumb:d.thumb||"",hook:d.hook||""});saveWork();
+  const f=fitOf(d);store.set("mkst","pkg");renderMake();
+  st.className="status";st.textContent=`${d.subject||topic}: skor ${f.score} dari 5. ${d.why||""} Judul pertama sudah dipilih; ganti kalau ada yang lebih Anda suka.`}
+$("#mk-auto").addEventListener("click",e=>autoFill(e.currentTarget,false));
+$("#mk-auto-new").addEventListener("click",e=>autoFill(e.currentTarget,true));
 $("#mk-pick").addEventListener("change",e=>{store.set("mk",e.target.value);renderMake()});
-$("#mk-topic").addEventListener("input",e=>{mkW().topic=e.target.value;saveWork();renderTitles();renderRules()});
+$("#mk-topic").addEventListener("input",e=>{mkW().topic=e.target.value;saveWork();renderTitles();renderRules();renderAuto()});
 $("#mk-titles").addEventListener("input",e=>{mkW().titles=e.target.value.split("\n");saveWork();renderTitles()});
 $("#mk-thumbtext").addEventListener("input",e=>{mkW().thumb=e.target.value;saveWork();renderThumbPrev();renderRules()});
 $("#mk-hook").addEventListener("input",e=>{mkW().hook=e.target.value;saveWork();renderRules()});

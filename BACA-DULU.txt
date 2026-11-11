@@ -1,8 +1,8 @@
-TERRA STUDIO 2.0.0 (Windows 10/11, 64-bit)
+TERRA STUDIO 2.0.1 (Windows 10/11, 64-bit)
 =========================================
 
 CARA PASANG
-Paling mudah: klik dua kali TerraStudio-Setup-2.0.0.exe, lalu Berikutnya
+Paling mudah: klik dua kali TerraStudio-Setup-2.0.1.exe, lalu Berikutnya
 dan Pasang. Tidak perlu izin admin. Shortcut "Terra Studio" muncul di
 Start Menu dan desktop. Uninstall lewat Settings > Apps.
 Versi zip (tanpa install): klik "Extract all" dulu, jangan jalankan
@@ -12,6 +12,13 @@ UPDATE KE VERSI BARU
 Jalankan installer versi baru, atau ekstrak zip baru lalu buka TerraStudio.exe. Kalau versi lama masih
 jalan, versi baru otomatis menutupnya. Data dan pengaturan tidak hilang
 (tersimpan di %APPDATA%\TerraStudio).
+
+BARU DI 2.0.1
+- Tidak perlu tahu judulnya dulu. Di Buat video (atau "+ Video baru" di
+  Hari ini), klik "Sarankan video berikutnya". AI memilih topik yang
+  cocok dengan video terbaik Anda, lalu mengisi 5 judul, teks thumbnail,
+  dan hook 60 detik sekaligus. Video itu langsung masuk kalender.
+  "Topik lain" untuk topik berbeda, "Isi ulang" untuk versi baru.
 
 BARU DI 2.0
 Alat-alat yang dulu terpisah sekarang jadi satu putaran: lihat masalahnya,
