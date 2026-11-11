@@ -1,8 +1,8 @@
-TERRA STUDIO 2.0.2 (Windows 10/11, 64-bit)
+TERRA STUDIO 2.1.0 (Windows 10/11, 64-bit)
 =========================================
 
 CARA PASANG
-Paling mudah: klik dua kali TerraStudio-Setup-2.0.2.exe, lalu Berikutnya
+Paling mudah: klik dua kali TerraStudio-Setup-2.1.0.exe, lalu Berikutnya
 dan Pasang. Tidak perlu izin admin. Shortcut "Terra Studio" muncul di
 Start Menu dan desktop. Uninstall lewat Settings > Apps.
 Versi zip (tanpa install): klik "Extract all" dulu, jangan jalankan
@@ -12,6 +12,28 @@ UPDATE KE VERSI BARU
 Jalankan installer versi baru, atau ekstrak zip baru lalu buka TerraStudio.exe. Kalau versi lama masih
 jalan, versi baru otomatis menutupnya. Data dan pengaturan tidak hilang
 (tersimpan di %APPDATA%\TerraStudio).
+
+BARU DI 2.1
+- Thumbnail jadi, langsung di aplikasi. Di Buat video, tahap 1 (Paket),
+  klik "Buat 3 thumbnail". AI menulis 3 konsep, Gemini membuat
+  gambarnya, dan aplikasi menempel teksnya (hurufnya selalu benar dan
+  bisa diubah tanpa membuat gambar baru). "Pilih ini" menjadikannya
+  gambar rencana di Kalender dan menyimpan JPG 1280x720 ke folder
+  Downloads. "Simpan JPG" untuk versi lain (Test & Compare), "Buat
+  ulang" untuk satu gambar baru.
+- Sekali saja, di Pengaturan > Gambar thumbnail (Gemini):
+  1. Buka aistudio.google.com/apikey, buat API key di project baru,
+     klik "Set up billing" di baris project itu, isi saldo awal $5.
+  2. Buka developers.google.com/program/my-benefits, klaim kredit
+     Google Cloud ke akun penagihan tadi, centang "Always use this
+     billing account".
+  3. Tempel kunci baru di aplikasi, Simpan, lalu "Tes gambar".
+  Kunci Gemini lama tetap dipakai untuk naskah dan ide, gratis.
+- Biaya: sekitar $0,067 per gambar (model hemat sekitar $0,034), jadi
+  satu klik 3 gambar sekitar $0,20. Kredit Google Cloud dari langganan
+  dipakai lebih dulu. Aplikasi menampilkan perkiraan pemakaian bulan
+  ini; angka pastinya ada di Google AI Studio, menu Billing.
+- Prompt untuk Google Flow tetap ada di bawahnya sebagai cadangan.
 
 BARU DI 2.0.2
 - Naskah satu klik: di Buat video, tahap 3, tekan "Buat naskah lengkap".

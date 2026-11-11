@@ -15,7 +15,7 @@
     <div class="rail-sp"></div>
     <button type="button" class="rail-plus" id="rail-plus" aria-label="Rencana konten baru" data-tip="Rencana baru">+</button>
     <button type="button" class="skin" id="skin-tog" aria-label="Ganti tema" data-tip="Tema: batu / lumut"><i></i></button>
-    <p class="ver">v2.0.2</p>
+    <p class="ver">v2.1.0</p>
   </aside>
   <aside class="side" aria-label="Kalender dan jadwal">
     <div class="box calw">
@@ -205,10 +205,42 @@
           <p class="note" id="mk-thumbnote"></p>
         </div>
       </div>
+      <div class="box" id="mk-gen">
+        <h2>Thumbnail jadi</h2>
+        <p class="sub">Satu klik: AI menulis 3 konsep, Gemini membuat gambarnya, aplikasi menempel teks di atasnya. Pilih satu, simpan.</p>
+        <div class="mk-auto" style="margin-top:12px">
+          <div><b id="gen-h">Buat 3 thumbnail dengan Gemini</b><span id="gen-p"></span></div>
+          <button type="button" class="btn" id="gen-go">Buat 3 thumbnail</button>
+        </div>
+        <div class="status" id="s-gen" role="status"></div>
+        <div class="gthumbs" id="gen-list" hidden></div>
+        <div class="gpos" id="gen-posrow" hidden>
+          <label for="gen-pos">Posisi teks
+            <select id="gen-pos"><option value="tl">Kiri atas</option><option value="bl">Kiri bawah</option><option value="tr">Kanan atas</option><option value="none">Tanpa teks</option></select>
+          </label>
+          <p class="note">Teks ditempel oleh aplikasi, bukan oleh AI, jadi hurufnya selalu benar dan bisa diubah tanpa membuat gambar baru.</p>
+        </div>
+        <div class="gphone" id="gen-phone" hidden>
+          <div>
+            <h3>Cek di ukuran HP</h3>
+            <div class="gfeed" aria-label="Contoh tampilan di beranda YouTube">
+              <img id="gen-feed-img" alt="Thumbnail terpilih seperti di beranda YouTube">
+              <div class="meta"><span class="av"></span><div><b id="gen-feed-title"></b><small id="gen-feed-ch"></small></div></div>
+            </div>
+          </div>
+          <div>
+            <h3>Ukuran saran video</h3>
+            <div class="gside"><img id="gen-side-img" alt="Thumbnail terpilih di ukuran kecil"><span id="gen-side-title"></span></div>
+            <p class="note">Kalau teksnya masih terbaca di ukuran kecil ini, thumbnail aman. Simpan 2 sampai 3 versi untuk Test &amp; Compare di YouTube Studio.</p>
+            <p class="note" id="gen-saved"></p>
+            <div class="chips"><button type="button" class="btn ghost" id="gen-folder">Buka folder Downloads</button></div>
+          </div>
+        </div>
+      </div>
       <div class="panel" id="mk-thumbtool">
     <form class="tool" id="f-thumb">
-      <h2>Konsep thumbnail</h2>
-      <p class="hint">Tiga konsep berbeda: teks maksimal 4 kata, prompt gambar siap pakai untuk Google Flow, komposisi, dan alasan orang akan mengklik.</p>
+      <h2>Konsep thumbnail untuk Google Flow</h2>
+      <p class="hint">Cadangan tanpa biaya: tiga konsep dengan prompt gambar yang bisa disalin ke Google Flow, lengkap dengan komposisi dan alasan orang akan mengklik.</p>
       <label for="thumb-topic">Topik video<input id="thumb-topic" required></label>
       <label for="thumb-title">Judul yang dipakai (opsional)<input id="thumb-title"></label>
       <label for="thumb-style">Gaya visual
@@ -406,6 +438,29 @@
         </div>
         <div class="chips"><button class="btn" type="submit">Simpan</button><button class="btn ghost" type="button" id="cfg-test">Uji koneksi</button></div>
         <div class="status" id="s-key" role="status"></div>
+      </form>
+
+      <form class="tool" id="f-image">
+        <h2>Gambar thumbnail (Gemini)</h2>
+        <p class="hint">Membuat gambar thumbnail langsung di tahap Paket. Gambar hanya tersedia di kunci Gemini dengan penagihan aktif, jadi pakai kunci terpisah supaya naskah dan ide tetap gratis di kunci lama.</p>
+        <ol class="steps">
+          <li>Buka <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a>. Klik <strong>Create API key</strong> dan pilih project baru. Di baris project itu klik <strong>Set up billing</strong>, lalu isi saldo awal $5.</li>
+          <li>Buka <a href="https://developers.google.com/program/my-benefits" target="_blank" rel="noopener">Google Developer Program, menu Manfaat</a>. Klaim kredit Google Cloud ke akun penagihan tadi dan centang <strong>Always use this billing account</strong>.</li>
+          <li>Tempel kunci barunya di bawah, klik Simpan, lalu Tes gambar.</li>
+        </ol>
+        <label for="cfg-ikey">Kunci Gemini untuk gambar<input id="cfg-ikey" type="password" autocomplete="off" placeholder="AIza..."></label>
+        <p class="note" id="cfg-ikey-hint"></p>
+        <label for="cfg-imodel">Model gambar
+          <select id="cfg-imodel">
+            <option value="gemini-3.1-flash-image">Flash Image: lebih bagus, sekitar $0,067</option>
+            <option value="gemini-3.1-flash-lite-image">Flash Lite Image: hemat, sekitar $0,034</option>
+          </select>
+        </label>
+        <div class="chips"><button class="btn" type="submit">Simpan</button><button class="btn ghost" type="button" id="cfg-itest">Tes gambar</button><button class="btn ghost" type="button" id="cfg-iclear">Hapus kunci gambar</button></div>
+        <p class="note" id="cfg-ispent"></p>
+        <p class="note">Tes gambar membuat satu gambar sungguhan, jadi ikut memakai kredit. Harga adalah perkiraan dari daftar harga Google per November 2026. Kredit Google Cloud dipakai lebih dulu; saldo $5 baru terpotong kalau kredit bulan itu habis.</p>
+        <div class="status" id="s-image" role="status"></div>
+        <div id="cfg-itest-out"></div>
       </form>
 
       <form class="tool" id="f-yt">
@@ -829,7 +884,7 @@ async function loadConfig(){CFG=await api("/api/config");if(CFG.error){CFG={prof
   $("#banner-key").hidden=!!CFG.provider||store.get("banner-off",false);
   $("#cfg-provider").value=CFG.provider_choice&&CFG.provider_choice!==""?CFG.provider_choice:(CFG.provider||"manual");showProv();
   $("#cfg-gkey-hint").textContent=CFG.has_gemini?"Tersimpan: kunci berakhiran "+CFG.gemini_hint+". Kosongkan kolom untuk tetap memakai kunci ini.":"Belum ada kunci Gemini tersimpan.";
-  if(CFG.gemini_model&&![...$("#cfg-gmodel").options].some(o=>o.value===CFG.gemini_model))$("#cfg-gmodel").insertAdjacentHTML("beforeend",`<option value="${esc(CFG.gemini_model)}">${esc(CFG.gemini_model)}</option>`);$("#cfg-gmodel").value=CFG.gemini_model||"";$("#cfg-dir").textContent=CFG.dir||"";voiceFields();ytFields();if(lastNarr&&$("#o-scriptfull"))renderScriptFull(lastNarr);
+  if(CFG.gemini_model&&![...$("#cfg-gmodel").options].some(o=>o.value===CFG.gemini_model))$("#cfg-gmodel").insertAdjacentHTML("beforeend",`<option value="${esc(CFG.gemini_model)}">${esc(CFG.gemini_model)}</option>`);$("#cfg-gmodel").value=CFG.gemini_model||"";$("#cfg-dir").textContent=CFG.dir||"";voiceFields();imgFields();ytFields();if(lastNarr&&$("#o-scriptfull"))renderScriptFull(lastNarr);
   const p=CFG.profile||{};PROFILE_FIELDS.forEach(([k,id])=>{if(p[k]!=null)$(id).value=p[k]});
   $("#hdr-channel").textContent=p.name||""}
 function readProfile(){const p={};PROFILE_FIELDS.forEach(([k,id])=>p[k]=$(id).value.trim());return p}
@@ -882,6 +937,33 @@ $("#f-voice").addEventListener("submit",async e=>{e.preventDefault();const st=$(
   const x={eleven_model:$("#cfg-emodel").value};if(k)x.eleven_key=k;if(sel.value){x.eleven_voice=sel.value;x.eleven_voice_name=EVOICES.find(v=>v.id===sel.value)?.name||sel.selectedOptions[0]?.textContent||""}
   if(await saveConfig(x,st)){$("#cfg-ekey").value="";st.textContent=CFG.eleven_voice?"Tersimpan. Tombol voice over muncul di bawah naskah narasi penuh.":"Kunci tersimpan. Klik Muat suara lalu pilih narator."}});
 $("#cfg-eclear").addEventListener("click",async()=>{if(await saveConfig({clear_eleven:true},$("#s-voice")))$("#s-voice").textContent="Kunci ElevenLabs dihapus."});
+/* Image key: a second Gemini key on a billed project, so text generation can stay on the free key. */
+const IMG_PRICE={"gemini-3.1-flash-image":.067,"gemini-3.1-flash-lite-image":.0336,"gemini-nano-banana-2.1":.0336};
+const usd=x=>"$"+x.toFixed(2).replace(".",",");
+const imgMonth=()=>{const s=LAST._img?.data,m=new Date().toISOString().slice(0,7);return s&&s.month===m?s:{month:m,n:0,usd:0}};
+const imgSpentText=()=>{const s=imgMonth();return s.n?`Bulan ini: ${s.n} gambar, sekitar ${usd(s.usd)}.`:"Belum ada gambar dibuat bulan ini."};
+async function addImg(n,model){const s={...imgMonth()};s.n+=n;s.usd+=n*(IMG_PRICE[model]||0);await remember("_img",s);$("#cfg-ispent").textContent=imgSpentText();genBar()}
+function imgFields(){$("#cfg-ikey-hint").textContent=CFG.has_image?"Tersimpan: kunci berakhiran "+CFG.image_hint+". Kosongkan kolom untuk tetap memakai kunci ini.":"Belum ada kunci gambar tersimpan.";
+  const s=$("#cfg-imodel");if(CFG.image_model&&![...s.options].some(o=>o.value===CFG.image_model))s.insertAdjacentHTML("beforeend",`<option value="${esc(CFG.image_model)}">${esc(CFG.image_model)}</option>`);s.value=CFG.image_model||"gemini-3.1-flash-image";
+  $("#cfg-ispent").textContent=imgSpentText();if(!$("#p-make").hidden)genBar()}
+async function saveImageCfg(st){const k=$("#cfg-ikey").value.trim(),x={image_model:$("#cfg-imodel").value};if(k)x.image_key=k;const ok=await saveConfig(x,st);if(ok)$("#cfg-ikey").value="";return ok}
+$("#f-image").addEventListener("submit",async e=>{e.preventDefault();const st=$("#s-image");
+  if(await saveImageCfg(st))st.textContent=CFG.has_image?"Tersimpan. Klik Tes gambar untuk memastikan penagihannya aktif.":"Model tersimpan. Tempel kuncinya dulu, lalu Simpan."});
+$("#cfg-itest").addEventListener("click",async e=>{const st=$("#s-image"),b=e.currentTarget,out=$("#cfg-itest-out");
+  if(!await saveImageCfg(st))return;
+  if(!CFG.has_image){st.className="status err";st.textContent="Tempel kunci Gemini untuk gambar dulu.";return}
+  b.disabled=true;out.innerHTML="";st.className="status";st.textContent="Gemini sedang menggambar… biasanya 10 sampai 40 detik.";
+  const j=await api("/api/image",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:"test",slot:0,prompt:"A giant prehistoric cave hyena standing at the mouth of a dark cave at dusk, warm orange light from inside the cave, photorealistic, cinematic, wide 16:9 frame. No text, letters, logos or watermarks."})});
+  b.disabled=false;
+  if(j.error){st.className="status err";st.textContent=j.error;
+    if(/tidak tersedia/.test(j.error)){const m=await api("/api/image-models",{method:"POST"});const s=$("#cfg-imodel");
+      (m.models||[]).forEach(n=>{if(![...s.options].some(o=>o.value===n))s.insertAdjacentHTML("beforeend",`<option value="${esc(n)}">${esc(n)}</option>`)});
+      if(m.models?.length)st.textContent+=" Model yang tersedia untuk kunci ini sudah ditambahkan ke daftar di atas.";}
+    return}
+  addImg(1,j.model).catch(()=>{});
+  st.textContent="Berhasil. Kunci dan penagihan aktif, tombol Buat 3 thumbnail di tahap Paket siap dipakai.";
+  out.innerHTML=`<img class="gtest" src="/api/gen/${encodeURIComponent(j.file)}?v=${j.v}" alt="Gambar tes dari Gemini: hyena raksasa di mulut gua">`});
+$("#cfg-iclear").addEventListener("click",async()=>{if(await saveConfig({clear_image:true},$("#s-image")))$("#s-image").textContent="Kunci gambar dihapus."});
 /* YouTube Studio */
 function ytFields(){const on=!!CFG.yt_connected;$("#yt-on").hidden=!on;$("#yt-setup").open=!CFG.yt_client_id;
   $("#yt-name").textContent=on?(CFG.yt_channel?"Terhubung: "+CFG.yt_channel:"Terhubung"):"";
@@ -1163,7 +1245,7 @@ function renderMake(){const list=plans().filter(p=>p.type!=="post"&&(p.status!==
   $("#mk-topic").value=w.topic||"";$("#mk-titles").value=(w.titles||(p?[p.title]:[])).join("\n");$("#mk-thumbtext").value=w.thumb||"";$("#mk-hook").value=w.hook||"";
   const t=w.pick||p?.title||w.topic||"";["#script-topic","#seo-topic","#thumb-topic","#shorts-topic"].forEach(s=>{if(t)$(s).value=t});if(w.pick)$("#thumb-title").value=w.pick;
   $("#mk-done").hidden=!p;$("#s-done").textContent=p?.status==="tayang"?"Video ini sudah ditandai tayang.":"";
-  renderAuto();mkStage(store.get("mkst","pkg"));renderTitles();renderThumbPrev();renderRules();renderPub()}
+  renderAuto();mkStage(store.get("mkst","pkg"));renderTitles();renderThumbPrev();renderGen();renderRules();renderPub()}
 function renderAuto(){const w=mkW(),has=!!(w.topic||"").trim(),full=has&&w.titles?.length>1&&w.thumb&&w.hook;
   $("#mk-auto-h").textContent=!has?"Belum tahu mau bikin apa?":full?"Sudah terisi. Cek, lalu lanjut ke naskah.":`Topik: ${w.topic}`;
   $("#mk-auto-p").textContent=!has?"AI memilih topik yang cocok dengan video terbaik Anda, lalu mengisi judul, teks thumbnail, dan hook. Anda tinggal mengecek.":full?"Mau versi lain? Klik lagi untuk judul, thumbnail, dan hook baru, atau minta topik lain.":"AI mengisi 5 judul, teks thumbnail, dan hook untuk topik ini. Anda tinggal mengecek.";
@@ -1197,6 +1279,100 @@ function renderThumbPrev(){const w=mkW(),t=(w.thumb||"").trim(),words=t.split(/\
   $("#mk-thumbprev span").textContent=t||"Teks thumbnail";$("#mk-thumbprev").classList.toggle("ph",!t);
   const rep=words.filter(x=>x.length>3&&pick.includes(x.toLowerCase()));
   $("#mk-thumbnote").textContent=!t?"Ketik teks untuk melihat contohnya.":words.length>4?`${words.length} kata, terlalu banyak untuk layar HP. Potong jadi 4 kata atau kurang.`:rep.length?`Kata "${rep.join(", ")}" sudah ada di judul. Thumbnail lebih kuat kalau menambah informasi baru.`:`${words.length} kata, pas.`}
+/* Thumbnail images: Gemini draws the background, the app adds the text so the letters are always right. */
+const genW=()=>{const w=mkW();return w.gen=w.gen||{concepts:[],imgs:[],pick:null,pos:"tl"}};
+const GENBUSY=new Set(),GIMG={};
+const loadImg=u=>GIMG[u]=GIMG[u]||new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>{delete GIMG[u];rej()};i.src=u});
+const genUrl=x=>`/api/gen/${encodeURIComponent(x.file)}?v=${x.v}`;
+function genBar(){const g=genW(),has=g.imgs?.some(x=>x?.file),price=IMG_PRICE[CFG.image_model],b=$("#gen-go");if(b.dataset.arm)return;
+  if(!CFG.has_image){$("#gen-h").textContent="Pasang kunci gambar dulu";$("#gen-p").textContent="Gambar dibuat Gemini memakai kredit Google Cloud dari langganan Anda. Kuncinya dipasang sekali di Pengaturan.";b.textContent="Buka Pengaturan";return}
+  $("#gen-h").textContent=has?"Mau 3 gambar baru?":"Buat 3 thumbnail dengan Gemini";
+  $("#gen-p").textContent=`3 gambar${price?", sekitar "+usd(price*3)+",":""} dipotong dari kredit Google Cloud Anda. ${imgSpentText()}`;
+  b.textContent=has?"Buat 3 baru":"Buat 3 thumbnail"}
+// At most 3 lines; short lines keep the letters large on a phone.
+function thumbLines(t){const words=(t||"").trim().toUpperCase().split(/\s+/).filter(Boolean);if(!words.length)return [];
+  for(let lim=10;lim<40;lim+=2){const lines=[];let cur="";for(const w of words){if(cur&&(cur+" "+w).length>lim){lines.push(cur);cur=w}else cur=cur?cur+" "+w:w}lines.push(cur);if(lines.length<=3)return lines}
+  return [words.join(" ")]}
+function drawThumb(cv,img,text,pos){const c=cv.getContext("2d"),W=cv.width,H=cv.height;c.shadowColor="transparent";c.fillStyle="#14110D";c.fillRect(0,0,W,H);
+  if(img){const s=Math.max(W/img.naturalWidth,H/img.naturalHeight),w=img.naturalWidth*s,h=img.naturalHeight*s;c.drawImage(img,(W-w)/2,(H-h)/2,w,h)}
+  const lines=pos==="none"?[]:thumbLines(text);if(!lines.length)return;
+  const right=pos==="tr",bottom=pos==="bl",u=W/1280;
+  const g=c.createLinearGradient(right?W:0,0,right?W*.3:W*.7,0);g.addColorStop(0,"rgba(8,6,4,.78)");g.addColorStop(1,"rgba(8,6,4,0)");c.fillStyle=g;c.fillRect(0,0,W,H);
+  if("fontStretch" in c)c.fontStretch="expanded";
+  const font=s=>`800 ${s}px Archivo, "Arial Black", Arial, sans-serif`;let size=168*u;
+  for(;size>56*u;size-=4*u){c.font=font(size);if(Math.max(...lines.map(l=>c.measureText(l).width))<=W*.6&&lines.length*size*.96<=H*.66)break}
+  c.font=font(size);c.textBaseline="top";c.textAlign=right?"right":"left";c.lineJoin="round";
+  const lh=size*.96,x=right?W-64*u:64*u,y0=bottom?H-56*u-lines.length*lh:56*u;
+  lines.forEach((l,i)=>{const y=y0+i*lh;c.shadowColor="rgba(0,0,0,.55)";c.shadowBlur=size*.12;c.shadowOffsetY=size*.04;c.lineWidth=size*.07;c.strokeStyle="rgba(8,6,4,.6)";c.strokeText(l,x,y);
+    c.shadowColor="transparent";c.fillStyle=i===lines.length-1&&lines.length>1?"#F2A230":"#fff";c.fillText(l,x,y)})}
+function renderGen(){const g=genW(),id=mkId(),cs=(g.concepts||[]).slice(0,3);genBar();$("#gen-pos").value=g.pos||"tl";
+  $("#gen-list").hidden=$("#gen-posrow").hidden=!cs.length;
+  $("#gen-list").innerHTML=cs.map((c,i)=>{const x=g.imgs?.[i]||{},busy=GENBUSY.has(id+":"+i);
+    return `<article class="gth${g.pick===i?" pick":""}" data-slot="${i}"><div class="gimg">${x.file?`<canvas width="1280" height="720" role="img" aria-label="Thumbnail ${i+1}: ${esc(c.name)}"></canvas>`:""}${busy||!x.file?`<div class="gph${busy?" busy":""}">${busy?"Gemini sedang menggambar… biasanya 10 sampai 40 detik":esc(x.err||"Belum ada gambar")}</div>`:""}</div>
+    <h3>${i+1}. ${esc(c.name)}</h3><p>${esc(c.composition)}</p>
+    <label>Teks di gambar<input maxlength="40" data-g="text" value="${esc(c.text)}"></label>
+    <div class="chips"><button type="button" class="btn${g.pick===i?"":" ghost"}" data-g="pick"${x.file?"":" disabled"}>${g.pick===i?"Dipilih":"Pilih ini"}</button><button type="button" class="btn ghost" data-g="save"${x.file?"":" disabled"}>Simpan JPG</button><button type="button" class="btn ghost" data-g="redo"${busy?" disabled":""}>${x.file?"Buat ulang":"Coba lagi"}</button></div>
+    <p class="note" data-g="msg" role="status">${x.file&&x.err?esc(x.err):""}</p></article>`}).join("");
+  paintGen().then(renderPhone)}
+async function paintGen(only){const g=genW();try{await document.fonts.load("800 100px Archivo")}catch{}
+  for(const art of document.querySelectorAll("#gen-list .gth")){const i=+art.dataset.slot,cv=art.querySelector("canvas"),x=g.imgs?.[i];if(!cv||!x?.file||(only!=null&&only!==i))continue;
+    try{drawThumb(cv,await loadImg(genUrl(x)),g.concepts[i]?.text,g.pos||"tl")}catch{drawThumb(cv,null,g.concepts[i]?.text,g.pos||"tl")}}}
+function renderPhone(){const g=genW(),w=mkW(),cv=g.pick!=null&&$(`#gen-list [data-slot="${g.pick}"] canvas`);$("#gen-phone").hidden=!cv;if(!cv)return;
+  const src=cv.toDataURL("image/jpeg",.8),t=w.pick||mkPlan()?.title||w.topic||"";$("#gen-feed-img").src=$("#gen-side-img").src=src;
+  $("#gen-feed-title").textContent=$("#gen-side-title").textContent=t;$("#gen-feed-ch").textContent=(CFG.profile?.name||"Channel Anda")+" · baru"}
+const imgPrompt=(c,pos)=>{const side=pos==="tr"?"right":"left",other=pos==="tr"?"left":"right";
+  return `${c.prompt}\n\nFormat: wide 16:9 YouTube thumbnail background, cinematic, high contrast, one large clear subject on the ${other} side of the frame. Keep the ${side} third of the frame darker and uncluttered because a headline is added there later. Scientifically plausible anatomy. Do not render any text, letters, numbers, captions, logos, watermarks or borders anywhere in the image.`};
+async function genImage(i){const g=genW(),id=mkId(),c=g.concepts[i],k=id+":"+i;if(!c||GENBUSY.has(k))return false;
+  GENBUSY.add(k);renderGen();
+  const j=await api("/api/image",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({...(id?{id}:{}),slot:i,prompt:imgPrompt(c,g.pos)})});
+  GENBUSY.delete(k);g.imgs=g.imgs||[];
+  if(j.error)g.imgs[i]={...(g.imgs[i]||{}),err:j.error};else{g.imgs[i]={file:j.file,v:j.v};addImg(1,j.model).catch(()=>{})}
+  saveWork();
+  // Still on the same video: redraw, and refresh the saved thumbnail if this slot is the chosen one.
+  if(mkId()===id){renderGen();if(!j.error&&g.pick===i){await paintGen(i);await applyPick(i)}}
+  return !j.error}
+async function genAll(btn){const w=mkW(),g=genW(),st=$("#s-gen");
+  if(!CFG.has_image){show("settings");$("#f-image").scrollIntoView({block:"start"});$("#cfg-ikey").focus();return}
+  const topic=(w.pick||w.topic||"").trim();
+  if(!topic){st.className="status err";st.textContent='Belum ada topik. Klik "Sarankan video berikutnya" di atas dulu.';return}
+  if(g.imgs?.some(x=>x?.file)&&!btn.dataset.arm){btn.dataset.arm="1";btn.textContent="Klik lagi untuk mengganti";setTimeout(()=>{if(btn.dataset.arm){delete btn.dataset.arm;genBar()}},5000);return}
+  delete btn.dataset.arm;genBar();
+  const main=(w.thumb||"").trim();
+  const d=await ask(st,btn,`Create 3 distinct YouTube thumbnail concepts. Topic: ${w.topic||topic}. Video title: ${w.pick||"not decided"}. Visual style: ${$("#thumb-style").value}.
+${main?`The overlay text "${main}" is already chosen: concept 1 uses exactly that text; concepts 2 and 3 each use a different text so they can be A/B tested.`:"Each concept has its own overlay text."}
+Each concept: "name" short Indonesian label, "text" overlay of max 4 words, uppercase, that complements (not repeats) the title, "composition" one sentence in Indonesian, "why" one sentence in Indonesian on why it gets clicks, "prompt" a detailed text-to-image prompt in English (16:9, one large subject on the right two thirds, the left third dark and empty for the overlay text, do not render any text in the image, accurate anatomy and details).
+JSON shape: {"concepts":[{"name":"","text":"","composition":"","why":"","prompt":""}]}`,"thumb");
+  if(!d?.concepts?.length)return;
+  renderThumb(d.concepts);
+  g.concepts=d.concepts.slice(0,3).map(c=>({name:String(c.name||"Konsep"),text:String(c.text||main).slice(0,40),composition:String(c.composition||""),prompt:String(c.prompt||c.composition||topic)}));
+  g.imgs=[];g.pick=null;saveWork();renderGen();
+  st.className="status";st.textContent="Konsep siap. Gemini sedang menggambar 3 thumbnail…";btn.disabled=true;
+  const ok=(await Promise.all(g.concepts.map((_,i)=>genImage(i)))).filter(Boolean).length;btn.disabled=false;
+  st.className=ok?"status":"status err";
+  st.textContent=ok===g.concepts.length?`${ok} thumbnail jadi. Pilih satu; teksnya bisa diubah di bawah tiap gambar.`:ok?`${ok} dari ${g.concepts.length} gambar jadi. Klik Coba lagi di gambar yang gagal.`:(g.imgs.find(x=>x?.err)?.err||"Gambar gagal dibuat. Coba lagi.")}
+const thumbBlob=cv=>new Promise(r=>cv.toBlob(r,"image/jpeg",.92));
+async function saveJpg(i,blob){const w=mkW(),name=`${w.pick||mkPlan()?.title||w.topic||"terra"} thumbnail ${i+1}`;
+  return api("/api/save-jpg?name="+encodeURIComponent(name),{method:"POST",headers:{"Content-Type":"image/jpeg"},body:blob})}
+function markPick(){const g=genW();document.querySelectorAll("#gen-list .gth").forEach(a=>{const on=+a.dataset.slot===g.pick,b=a.querySelector('[data-g="pick"]');a.classList.toggle("pick",on);b.classList.toggle("ghost",!on);b.textContent=on?"Dipilih":"Pilih ini"})}
+// Choosing a thumbnail makes it the plan image on the calendar and writes the JPG to Downloads.
+async function applyPick(i){const g=genW(),id=mkId(),art=$(`#gen-list [data-slot="${i}"]`),cv=art?.querySelector("canvas"),msg=art?.querySelector('[data-g="msg"]');if(!cv)return;
+  g.pick=i;saveWork();markPick();renderPhone();
+  const blob=await thumbBlob(cv),done=[],bad=[];
+  if(id){const r=await api("/api/thumb?id="+encodeURIComponent(id),{method:"POST",headers:{"Content-Type":"image/jpeg"},body:blob});
+    if(r.ok){await remember("plans",plans().map(x=>x.id===id?{...x,thumb:String(Date.now())}:x));renderDash();renderPipe();done.push("jadi gambar rencana di Kalender")}else bad.push(r.error||"Gambar rencana gagal disimpan.")}
+  const s=await saveJpg(i,blob);if(s.path){done.push("tersimpan di "+s.path);$("#gen-saved").textContent="File terakhir: "+s.path}else bad.push(s.error||"JPG gagal disimpan.");
+  if(msg){msg.className=bad.length?"note err":"note";msg.textContent=(done.length?"Dipilih: "+done.join(", ")+". ":"")+bad.join(" ")}}
+let genTextTimer=0;
+$("#gen-go").addEventListener("click",e=>genAll(e.currentTarget));
+$("#gen-folder").addEventListener("click",()=>api("/api/open-folder",{method:"POST"}));
+$("#gen-pos").addEventListener("change",async e=>{const g=genW();g.pos=e.target.value;saveWork();await paintGen();if(g.pick!=null)applyPick(g.pick)});
+$("#gen-list").addEventListener("input",e=>{if(e.target.dataset.g!=="text")return;const g=genW(),i=+e.target.closest(".gth").dataset.slot;g.concepts[i].text=e.target.value;saveWork();
+  paintGen(i).then(()=>{if(g.pick===i){renderPhone();clearTimeout(genTextTimer);genTextTimer=setTimeout(()=>applyPick(i),900)}})});
+$("#gen-list").addEventListener("click",async e=>{const b=e.target.closest("button[data-g]");if(!b)return;const art=b.closest(".gth"),i=+art.dataset.slot,msg=art.querySelector('[data-g="msg"]');
+  if(b.dataset.g==="pick")return applyPick(i);
+  if(b.dataset.g==="redo"){const ok=await genImage(i);const m=$(`#gen-list [data-slot="${i}"] [data-g="msg"]`);if(m&&!ok){m.className="note err";m.textContent=genW().imgs[i]?.err||"Gambar gagal dibuat."}return}
+  if(b.dataset.g==="save"){const cv=art.querySelector("canvas");if(!cv)return;b.disabled=true;const s=await saveJpg(i,await thumbBlob(cv));b.disabled=false;
+    msg.className=s.path?"note":"note err";msg.textContent=s.path?"Tersimpan di "+s.path:(s.error||"JPG gagal disimpan.");if(s.path)$("#gen-saved").textContent="File terakhir: "+s.path}});
 function renderRules(){const w=mkW(),txt=(w.hook||"").trim(),words=txt.split(/\s+/).filter(Boolean),f25=words.slice(0,25).join(" ").toLowerCase(),f35=words.slice(0,35).join(" "),k=topicKey();
   const thumbW=(w.thumb||"").toLowerCase().split(/\s+/).filter(x=>x.length>=3&&!["the","and","our","for","with","that","this","yang","dan"].includes(x));
   const R=!txt?[[null,"Tulis pembukaan di kotak sebelah. Cek muncul saat Anda mengetik."]]:[
@@ -1231,7 +1407,7 @@ $("#mk-done").addEventListener("click",async()=>{const p=mkPlan();if(!p)return;a
 const RENDER={ideas:d=>d?.ideas?.length&&"subject" in d.ideas[0]&&(renderIdeas(d.ideas),true),script:d=>d?.acts?.length&&(renderScript(d),true),scriptfull:d=>d?.narration?.length&&$("#o-scriptfull")&&(renderScriptFull(d),true),seo:d=>d?.titles&&(renderSEO(d),true),thumb:d=>d?.concepts?.length&&(renderThumb(d.concepts),true),shorts:d=>d?.shorts?.length&&(renderShorts(d.shorts),true),ai:d=>d&&(renderAI(d),true)};
 async function loadLast(){const j=await api("/api/last");if(!j||j.error)return;LAST=j;
   for(const [k,f] of Object.entries(RENDER)){const r=LAST[k];if(!r)continue;try{if(f(r.data)){const st=$("#s-"+k);if(st){st.className="status";st.textContent="Hasil terakhir, dibuat "+new Date(r.at).toLocaleString("id-ID",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})+". Tidak memakai saldo lagi."}}}catch{}}
-  $("#cfg-spent").textContent=spentText()}
+  $("#cfg-spent").textContent=spentText();$("#cfg-ispent").textContent=imgSpentText()}
 (async()=>{await loadConfig();await loadData();await loadLast();show(store.get("ver2",false)?store.get("tab","today"):"today",true);store.set("ver2",true);
   if(CFG.yt_connected&&Date.now()/1000-(CFG.yt_synced||0)>6*3600)ytSync(null,null)})();
 </script>

@@ -48,6 +48,13 @@ struct Config {
     gemini_key_dpapi: String,
     /// Gemini model id such as "gemini-x-flash"; empty picks the newest Flash.
     gemini_model: String,
+    /// Separate Gemini key for images: image models need a billed project,
+    /// while the text key above can stay on the free tier.
+    #[serde(skip_serializing_if = "String::is_empty")]
+    image_key: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
+    image_key_dpapi: String,
+    image_model: String,
     #[serde(skip_serializing_if = "String::is_empty")]
     eleven_key: String,
     #[serde(skip_serializing_if = "String::is_empty")]
@@ -81,6 +88,9 @@ impl Default for Config {
             gemini_key: String::new(),
             gemini_key_dpapi: String::new(),
             gemini_model: String::new(),
+            image_key: String::new(),
+            image_key_dpapi: String::new(),
+            image_model: String::new(),
             eleven_key: String::new(),
             eleven_key_dpapi: String::new(),
             eleven_voice: String::new(),
@@ -126,7 +136,7 @@ fn load_config(dir: &Path) -> Config {
         .and_then(|s| serde_json::from_str(&s).ok())
         .unwrap_or_default();
     // A key still in plaintext comes from an older version or a failed encryption.
-    let had_plain = !c.api_key.is_empty() || !c.gemini_key.is_empty() || !c.eleven_key.is_empty()
+    let had_plain = !c.api_key.is_empty() || !c.gemini_key.is_empty() || !c.image_key.is_empty() || !c.eleven_key.is_empty()
         || !c.yt_secret.is_empty() || !c.yt_refresh.is_empty();
     let open = |enc: &str| from_hex(enc).and_then(|b| secret::unprotect(&b)).unwrap_or_default();
     if !c.api_key_dpapi.is_empty() {
@@ -134,6 +144,9 @@ fn load_config(dir: &Path) -> Config {
     }
     if !c.gemini_key_dpapi.is_empty() {
         c.gemini_key = open(&c.gemini_key_dpapi);
+    }
+    if !c.image_key_dpapi.is_empty() {
+        c.image_key = open(&c.image_key_dpapi);
     }
     if !c.eleven_key_dpapi.is_empty() {
         c.eleven_key = open(&c.eleven_key_dpapi);
@@ -155,6 +168,7 @@ fn save_config(dir: &Path, c: &Config) -> Result<(), String> {
     let mut disk = c.clone();
     disk.api_key_dpapi.clear();
     disk.gemini_key_dpapi.clear();
+    disk.image_key_dpapi.clear();
     disk.eleven_key_dpapi.clear();
     disk.yt_secret_dpapi.clear();
     disk.yt_refresh_dpapi.clear();
@@ -187,6 +201,12 @@ fn save_config(dir: &Path, c: &Config) -> Result<(), String> {
         if let Some(enc) = secret::protect(c.gemini_key.as_bytes()) {
             disk.gemini_key_dpapi = to_hex(&enc);
             disk.gemini_key.clear();
+        }
+    }
+    if !c.image_key.is_empty() {
+        if let Some(enc) = secret::protect(c.image_key.as_bytes()) {
+            disk.image_key_dpapi = to_hex(&enc);
+            disk.image_key.clear();
         }
     }
     let bytes = serde_json::to_vec_pretty(&disk).map_err(|e| e.to_string())?;
@@ -627,6 +647,10 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
                     "has_gemini": !c.gemini_key.is_empty(),
                     "gemini_hint": c.gemini_key.chars().rev().take(4).collect::<Vec<_>>().into_iter().rev().collect::<String>(),
                     "gemini_model": c.gemini_model,
+                    "has_image": !c.image_key.is_empty(),
+                    "image_hint": c.image_key.chars().rev().take(4).collect::<Vec<_>>().into_iter().rev().collect::<String>(),
+                    "image_model": gemini::image_model(&c),
+                    "thumb_dir": eleven::out_dir(dir).display().to_string(),
                     "provider": active_provider(&c),
                     "provider_choice": c.provider,
                     "has_eleven": !c.eleven_key.is_empty(),
@@ -690,6 +714,15 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
             if let Some(m) = v["gemini_model"].as_str().filter(|m| m.is_empty() || (m.len() < 80 && m.chars().all(|ch| ch.is_ascii_alphanumeric() || "-._".contains(ch)))) {
                 c.gemini_model = m.to_string();
             }
+            if v["clear_image"].as_bool() == Some(true) {
+                c.image_key.clear();
+            }
+            if let Some(k) = v["image_key"].as_str().map(str::trim).filter(|k| !k.is_empty() && k.len() < 200) {
+                c.image_key = k.to_string();
+            }
+            if let Some(m) = v["image_model"].as_str().filter(|m| m.is_empty() || gemini::safe_model(m)) {
+                c.image_model = m.to_string();
+            }
             if let Some(p) = v["provider"].as_str().filter(|p| ["", "manual", "claude", "gemini"].contains(p)) {
                 c.provider = p.to_string();
             }
@@ -745,6 +778,88 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
                     respond_json(req, 200, json!({"models": list, "default": def}))
                 }
                 Err((code, body)) => respond_json(req, 502, json!({"error": gemini::friendly(code, &body)})),
+            }
+        }
+        (Method::Post, "/api/image-models") => {
+            let key = cfg.lock().unwrap().image_key.clone();
+            if key.is_empty() {
+                return respond_json(req, 400, json!({"error": "Kunci Gemini untuk gambar belum diisi."}));
+            }
+            match gemini::image_models(&key) {
+                Ok(list) => respond_json(req, 200, json!({"models": list})),
+                Err((code, body)) => respond_json(req, 502, json!({"error": gemini::friendly_image(code, &body)})),
+            }
+        }
+        // One image per call, saved under gen/ so a restart does not cost a new generation.
+        (Method::Post, "/api/image") => {
+            let v = match read_json(&mut req, 64 * 1024) {
+                Ok(v) => v,
+                Err(e) => return respond_json(req, 400, json!({"error": e})),
+            };
+            let c = cfg.lock().unwrap().clone();
+            if c.image_key.is_empty() {
+                return respond_json(req, 400, json!({"error": "Kunci Gemini untuk gambar belum dipasang. Buka Pengaturan, bagian Gambar thumbnail."}));
+            }
+            let prompt = v["prompt"].as_str().unwrap_or("").trim().to_string();
+            if prompt.is_empty() || prompt.len() > 6000 {
+                return respond_json(req, 400, json!({"error": "Prompt gambar kosong atau terlalu panjang."}));
+            }
+            let slot = v["slot"].as_u64().unwrap_or(0).min(9);
+            let stem = match v["id"].as_str() {
+                Some("test") => "test".to_string(),
+                Some(id) => match thumb_stem(id) {
+                    Some(s) => s,
+                    None => return respond_json(req, 400, json!({"error": "id tidak valid"})),
+                },
+                None => "free".to_string(),
+            };
+            let model = gemini::image_model(&c);
+            match gemini::image(&c.image_key, &model, &prompt) {
+                Ok((bytes, ext)) => {
+                    let gdir = dir.join("gen");
+                    let _ = fs::create_dir_all(&gdir);
+                    for old in ["png", "jpg", "webp"] {
+                        let _ = fs::remove_file(gdir.join(format!("{stem}-{slot}.{old}")));
+                    }
+                    let name = format!("{stem}-{slot}.{ext}");
+                    match fs::write(gdir.join(&name), &bytes) {
+                        Ok(()) => respond_json(req, 200, json!({"file": name, "v": now(), "model": model})),
+                        Err(e) => respond_json(req, 500, json!({"error": format!("Gagal menyimpan gambar: {e}")})),
+                    }
+                }
+                Err(e) => respond_json(req, 502, json!({"error": e, "model": model})),
+            }
+        }
+        (Method::Get, p) if p.starts_with("/api/gen/") => {
+            let name = percent_decode(&p["/api/gen/".len()..]);
+            let ct = match name.rsplit_once('.') {
+                Some((stem, ext)) if !stem.is_empty() && stem.len() <= 48 && stem.chars().all(|c| c.is_ascii_alphanumeric() || c == '-') => match ext {
+                    "png" => Some("image/png"),
+                    "jpg" => Some("image/jpeg"),
+                    "webp" => Some("image/webp"),
+                    _ => None,
+                },
+                _ => None,
+            };
+            match ct.and_then(|ct| fs::read(dir.join("gen").join(&name)).ok().map(|b| (b, ct))) {
+                Some((bytes, ct)) => respond(req, 200, ct, bytes),
+                None => respond_json(req, 404, json!({"error": "not found"})),
+            }
+        }
+        // The finished 1280x720 thumbnail, composed in the window, goes to Downloads for upload in YouTube Studio.
+        (Method::Post, "/api/save-jpg") => {
+            let name = query_param(req.url(), "name").unwrap_or_default();
+            let body = match read_body(&mut req, 8 * 1024 * 1024) {
+                Ok(b) => b,
+                Err(e) => return respond_json(req, 400, json!({"error": e})),
+            };
+            if !body.starts_with(&[0xFF, 0xD8, 0xFF]) {
+                return respond_json(req, 400, json!({"error": "Bukan gambar JPG."}));
+            }
+            let path = eleven::out_dir(dir).join(format!("{}.jpg", file_slug(&name, "thumbnail")));
+            match fs::write(&path, &body) {
+                Ok(()) => respond_json(req, 200, json!({"path": path.display().to_string()})),
+                Err(e) => respond_json(req, 500, json!({"error": format!("Gagal menyimpan JPG: {e}")})),
             }
         }
         (Method::Post, "/api/eleven/info") => {
@@ -975,6 +1090,45 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
 /// Plan ids become file names, so only short alphanumeric ids are accepted.
 fn thumb_stem(id: &str) -> Option<String> {
     (!id.is_empty() && id.len() <= 40 && id.chars().all(|c| c.is_ascii_alphanumeric())).then(|| id.to_string())
+}
+
+/// Lowercase words joined by dashes, safe as a Windows file name.
+fn file_slug(s: &str, fallback: &str) -> String {
+    let slug = s
+        .chars()
+        .map(|c| if c.is_ascii_alphanumeric() { c.to_ascii_lowercase() } else { '-' })
+        .collect::<String>()
+        .split('-')
+        .filter(|w| !w.is_empty())
+        .take(10)
+        .collect::<Vec<_>>()
+        .join("-");
+    if slug.is_empty() { fallback.to_string() } else { slug }
+}
+
+/// Standard and URL-safe base64; whitespace and padding are skipped.
+fn base64_decode(s: &str) -> Option<Vec<u8>> {
+    let mut out = Vec::with_capacity(s.len() / 4 * 3);
+    let (mut acc, mut bits) = (0u32, 0u8);
+    for b in s.bytes() {
+        let v = match b {
+            b'A'..=b'Z' => b - b'A',
+            b'a'..=b'z' => b - b'a' + 26,
+            b'0'..=b'9' => b - b'0' + 52,
+            b'+' | b'-' => 62,
+            b'/' | b'_' => 63,
+            b'=' | b'\n' | b'\r' | b' ' => continue,
+            _ => return None,
+        };
+        acc = (acc << 6) | v as u32;
+        bits += 6;
+        if bits >= 8 {
+            bits -= 8;
+            out.push((acc >> bits) as u8);
+            acc &= (1 << bits) - 1;
+        }
+    }
+    Some(out)
 }
 
 fn query_param(url: &str, key: &str) -> Option<String> {
@@ -1225,6 +1379,124 @@ mod gemini {
             .cloned()
     }
 
+    pub const IMAGE_DEFAULT: &str = "gemini-3.1-flash-image";
+
+    /// Development builds can point image calls at a local stand-in server.
+    fn api_root() -> String {
+        #[cfg(debug_assertions)]
+        if let Ok(b) = std::env::var("TERRA_GEMINI_BASE") {
+            return b;
+        }
+        "https://generativelanguage.googleapis.com".to_string()
+    }
+
+    pub fn safe_model(m: &str) -> bool {
+        !m.is_empty() && m.len() < 80 && m.chars().all(|ch| ch.is_ascii_alphanumeric() || "-._".contains(ch))
+    }
+
+    pub fn image_model(c: &Config) -> String {
+        if c.image_model.is_empty() { IMAGE_DEFAULT.to_string() } else { c.image_model.clone() }
+    }
+
+    /// Image errors are mostly about billing, which the text errors above do not explain.
+    pub fn friendly_image(code: u16, body: &str) -> String {
+        let msg = serde_json::from_str::<Value>(body)
+            .ok()
+            .and_then(|v| v["error"]["message"].as_str().map(String::from))
+            .unwrap_or_else(|| body.chars().take(300).collect());
+        let lower = msg.to_lowercase();
+        match code {
+            402 => "Saldo prabayar Gemini habis. Isi ulang di Google AI Studio, menu Billing, lalu coba lagi.".into(),
+            429 if lower.contains("free_tier") || lower.contains("free tier") || lower.contains("limit: 0") => {
+                "Kunci ini masih di tingkat gratis, dan gambar hanya tersedia di tingkat berbayar. Di Google AI Studio klik Set up billing untuk proyek kunci ini.".into()
+            }
+            429 => format!("Batas pemakaian Gemini tercapai. Tunggu sebentar, lalu coba lagi. Pesan asli: {msg}"),
+            403 if lower.contains("billing") => {
+                "Penagihan belum aktif untuk kunci ini. Di Google AI Studio klik Set up billing, lalu coba lagi.".into()
+            }
+            404 => "Model gambar itu tidak tersedia untuk kunci ini. Pilih model lain di Pengaturan.".into(),
+            _ => friendly(code, body),
+        }
+    }
+
+    /// Image models the key can use.
+    pub fn image_models(key: &str) -> Result<Vec<String>, (u16, String)> {
+        let resp = agent().get(&format!("{BASE}/models?pageSize=200")).set("x-goog-api-key", key).call();
+        let v: Value = match resp {
+            Ok(r) => r.into_json().map_err(|e| (0, e.to_string()))?,
+            Err(ureq::Error::Status(code, r)) => return Err((code, r.into_string().unwrap_or_default())),
+            Err(e) => return Err((0, e.to_string())),
+        };
+        let mut out: Vec<String> = v["models"]
+            .as_array()
+            .into_iter()
+            .flatten()
+            .filter(|m| m["supportedGenerationMethods"].as_array().map_or(false, |a| a.iter().any(|x| x == "generateContent")))
+            .filter_map(|m| m["name"].as_str().map(|n| n.trim_start_matches("models/").to_string()))
+            .filter(|n| n.starts_with("gemini") && (n.contains("image") || n.contains("banana")))
+            .collect();
+        out.sort();
+        Ok(out)
+    }
+
+    /// The final image of a generateContent reply, with its file extension.
+    /// Draft images the model marks as "thought" are skipped.
+    pub fn image_part(v: &Value) -> Option<(Vec<u8>, &'static str)> {
+        v["candidates"][0]["content"]["parts"].as_array()?.iter().rev().filter(|p| p["thought"].as_bool() != Some(true)).find_map(|p| {
+            let d = if p["inlineData"].is_object() { &p["inlineData"] } else { &p["inline_data"] };
+            let mime = d["mimeType"].as_str().or_else(|| d["mime_type"].as_str()).unwrap_or("image/png");
+            let ext = match mime {
+                "image/jpeg" => "jpg",
+                "image/webp" => "webp",
+                _ => "png",
+            };
+            let bytes = base64_decode(d["data"].as_str()?)?;
+            (!bytes.is_empty()).then_some((bytes, ext))
+        })
+    }
+
+    /// One 16:9 image. Google renamed the size options between API versions,
+    /// so a request the server rejects as malformed is retried in the older shape.
+    pub fn image(key: &str, model: &str, prompt: &str) -> Result<(Vec<u8>, &'static str), String> {
+        let contents = json!([{"role": "user", "parts": [{"text": prompt}]}]);
+        let root = api_root();
+        let shapes = [
+            (format!("{root}/v1"), json!({"responseModalities": ["TEXT", "IMAGE"], "responseFormat": {"image": {"aspectRatio": "16:9", "imageSize": "1K"}}})),
+            (format!("{root}/v1beta"), json!({"responseModalities": ["TEXT", "IMAGE"], "imageConfig": {"aspectRatio": "16:9", "imageSize": "1K"}})),
+        ];
+        let mut first_err = None;
+        for (base, config) in shapes {
+            let resp = agent()
+                .post(&format!("{base}/models/{model}:generateContent"))
+                .set("x-goog-api-key", key)
+                .set("content-type", "application/json")
+                .send_json(json!({"contents": contents, "generationConfig": config}));
+            let v: Value = match resp {
+                Ok(r) => r.into_json().map_err(|e| friendly(0, &e.to_string()))?,
+                Err(ureq::Error::Status(code, r)) => {
+                    let body = r.into_string().unwrap_or_default();
+                    let lower = body.to_lowercase();
+                    let key_problem = lower.contains("api key") || lower.contains("api_key");
+                    if (code == 400 || code == 404) && !key_problem {
+                        first_err.get_or_insert(friendly_image(code, &body));
+                        continue;
+                    }
+                    return Err(friendly_image(code, &body));
+                }
+                Err(e) => return Err(friendly(0, &e.to_string())),
+            };
+            return image_part(&v).ok_or_else(|| {
+                let finish = v["candidates"][0]["finishReason"].as_str().unwrap_or("");
+                if finish.contains("SAFETY") || finish.contains("PROHIBITED") || v["promptFeedback"]["blockReason"].is_string() {
+                    "Gemini menolak membuat gambar ini. Klik Buat ulang, atau ubah konsepnya.".to_string()
+                } else {
+                    "Gemini tidak mengirim gambar. Klik Buat ulang.".to_string()
+                }
+            });
+        }
+        Err(first_err.unwrap_or_else(|| "Gemini tidak mengirim gambar. Coba lagi.".to_string()))
+    }
+
     pub fn generate(c: &Config, prompt: &str, test: bool) -> (u16, Value) {
         if prompt.trim().is_empty() {
             return (400, json!({"error": "Permintaan kosong."}));
@@ -1295,6 +1567,22 @@ mod gemini {
     #[cfg(test)]
     mod tests {
         use super::*;
+        #[test]
+        fn reads_image_part_in_both_spellings() {
+            let a = json!({"candidates": [{"content": {"parts": [{"text": "ok"}, {"inlineData": {"mimeType": "image/jpeg", "data": "/9j/4A=="}}]}}]});
+            assert_eq!(image_part(&a), Some((vec![0xFF, 0xD8, 0xFF, 0xE0], "jpg")));
+            let b = json!({"candidates": [{"content": {"parts": [{"inline_data": {"mime_type": "image/png", "data": "iVBORw=="}}]}}]});
+            assert_eq!(image_part(&b), Some((vec![0x89, b'P', b'N', b'G'], "png")));
+            assert_eq!(image_part(&json!({"candidates": [{"content": {"parts": [{"text": "no"}]}}]})), None);
+            let c = json!({"candidates": [{"content": {"parts": [{"thought": true, "inlineData": {"mimeType": "image/png", "data": "AAAA"}}, {"inlineData": {"mimeType": "image/webp", "data": "UklG"}}]}}]});
+            assert_eq!(image_part(&c), Some((b"RIF".to_vec(), "webp")));
+        }
+        #[test]
+        fn billing_errors_are_explained() {
+            let free = r#"{"error":{"message":"Quota exceeded for metric generate_content_free_tier_requests, limit: 0"}}"#;
+            assert!(friendly_image(429, free).contains("Set up billing"));
+            assert!(friendly_image(402, "{}").contains("Saldo"));
+        }
         #[test]
         fn picks_newest_stable_flash() {
             let mut l: Vec<String> = ["gemini-2.5-flash", "gemini-3.0-flash-preview", "gemini-3.0-pro", "gemini-2.5-flash-lite", "gemini-3.0-flash"]
