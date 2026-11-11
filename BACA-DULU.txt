@@ -1,8 +1,8 @@
-TERRA STUDIO 2.1.0 (Windows 10/11, 64-bit)
+TERRA STUDIO 2.1.1 (Windows 10/11, 64-bit)
 =========================================
 
 CARA PASANG
-Paling mudah: klik dua kali TerraStudio-Setup-2.1.0.exe, lalu Berikutnya
+Paling mudah: klik dua kali TerraStudio-Setup-2.1.1.exe, lalu Berikutnya
 dan Pasang. Tidak perlu izin admin. Shortcut "Terra Studio" muncul di
 Start Menu dan desktop. Uninstall lewat Settings > Apps.
 Versi zip (tanpa install): klik "Extract all" dulu, jangan jalankan
@@ -12,6 +12,20 @@ UPDATE KE VERSI BARU
 Jalankan installer versi baru, atau ekstrak zip baru lalu buka TerraStudio.exe. Kalau versi lama masih
 jalan, versi baru otomatis menutupnya. Data dan pengaturan tidak hilang
 (tersimpan di %APPDATA%\TerraStudio).
+
+BARU DI 2.1.1
+- Naskah 1 klik: tombol "Buat naskah 1 klik" di bagian atas Buat video.
+  Kalau belum ada topik, AI memilih topik, mengisi judul, teks
+  thumbnail dan hook, lalu menulis kerangka, narasi penuh, dan voice
+  over. Kalau paketnya sudah ada, langsung menulis naskah.
+- Panjang naskah sesuai target. Narasi sekarang ditulis babak demi
+  babak, jadi tidak lagi berhenti di sekitar 9.000 karakter. Target
+  bawaan 2.000 kata (sekitar 14 menit, sepanjang naskah Andrewsarchus);
+  ada tombol cepat 3.000 dan 4.500 kata di tahap 3. Kalau satu babak
+  gagal (misalnya kuota Gemini habis), babak yang sudah jadi tetap
+  aman; klik "Tulis naskah narasi penuh" untuk melanjutkan.
+- Bagian atas jendela (title bar) sekarang berwarna sama dengan
+  aplikasi di Windows 11.
 
 BARU DI 2.1
 - Thumbnail jadi, langsung di aplikasi. Di Buat video, tahap 1 (Paket),

@@ -419,6 +419,8 @@ dialog::backdrop{background:rgba(8,7,6,.6)}
 label.cbx{display:flex;gap:10px;align-items:flex-start;font-weight:500;cursor:pointer}
 label.cbx input{margin-top:2px;flex:none}
 
+#script-len .btn{height:34px;font-size:13.5px;padding:0 12px}
+#script-len .btn[aria-pressed="true"]{background:var(--ink);color:var(--bg);box-shadow:none}
 /* Generated thumbnails (Make, Paket stage) */
 .gthumbs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
 .gth{display:grid;gap:8px;align-content:start;min-width:0}

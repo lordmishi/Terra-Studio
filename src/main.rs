@@ -416,6 +416,31 @@ mod native {
     use wry::{WebContext, WebViewBuilder};
 
     static PROXY: OnceLock<Mutex<EventLoopProxy<()>>> = OnceLock::new();
+    static HWND: std::sync::atomic::AtomicIsize = std::sync::atomic::AtomicIsize::new(0);
+
+    #[link(name = "dwmapi")]
+    extern "system" {
+        fn DwmSetWindowAttribute(hwnd: isize, attr: u32, value: *const std::ffi::c_void, size: u32) -> i32;
+    }
+
+    /// Paints the Windows title bar in the app's own background colour so the
+    /// window reads as one surface. Windows 11 honours the colours; Windows 10
+    /// only switches the bar to dark. Failures are harmless and ignored.
+    pub fn tint_title(skin: &str) {
+        let hwnd = HWND.load(Ordering::Relaxed);
+        if hwnd == 0 {
+            return;
+        }
+        let (bg, ink) = if skin == "lumut" { ((0x11, 0x22, 0x17), (0xE8, 0xF2, 0xE6)) } else { ((0x0F, 0x0E, 0x0C), (0xF4, 0xEC, 0xDD)) };
+        let colorref = |(r, g, b): (u32, u32, u32)| r | (g << 8) | (b << 16);
+        let set = |attr: u32, v: u32| unsafe {
+            DwmSetWindowAttribute(hwnd, attr, &v as *const u32 as *const std::ffi::c_void, 4);
+        };
+        set(20, 1); // DWMWA_USE_IMMERSIVE_DARK_MODE
+        set(35, colorref(bg)); // DWMWA_CAPTION_COLOR
+        set(34, colorref(bg)); // DWMWA_BORDER_COLOR
+        set(36, colorref(ink)); // DWMWA_TEXT_COLOR
+    }
 
     /// Asks the window to come to the front. False when there is no native window.
     pub fn show() -> bool {
@@ -437,6 +462,11 @@ mod native {
         else {
             return;
         };
+        {
+            use tao::platform::windows::WindowExtWindows;
+            HWND.store(window.hwnd() as isize, Ordering::Relaxed);
+            tint_title("batu");
+        }
         let _ = std::fs::create_dir_all(&data_dir);
         let mut ctx = WebContext::new(Some(data_dir));
         let url = format!("http://127.0.0.1:{port}/");
@@ -1062,6 +1092,15 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
                 Some((bytes, ct)) => respond(req, 200, ct, bytes),
                 None => respond_json(req, 404, json!({"error": "not found"})),
             }
+        }
+        // The window tells us its theme so the title bar can match it.
+        (Method::Post, "/api/skin") => {
+            let skin = query_param(req.url(), "skin").unwrap_or_default();
+            #[cfg(windows)]
+            native::tint_title(&skin);
+            #[cfg(not(windows))]
+            let _ = skin;
+            respond_json(req, 200, json!({"ok": true}))
         }
         (Method::Post, "/api/show") => {
             #[cfg(windows)]

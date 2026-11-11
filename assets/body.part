@@ -15,7 +15,7 @@
     <div class="rail-sp"></div>
     <button type="button" class="rail-plus" id="rail-plus" aria-label="Rencana konten baru" data-tip="Rencana baru">+</button>
     <button type="button" class="skin" id="skin-tog" aria-label="Ganti tema" data-tip="Tema: batu / lumut"><i></i></button>
-    <p class="ver">v2.1.0</p>
+    <p class="ver">v2.1.1</p>
   </aside>
   <aside class="side" aria-label="Kalender dan jadwal">
     <div class="box calw">
@@ -170,8 +170,8 @@
   <section id="p-make" role="tabpanel" aria-labelledby="t-make" hidden>
     <div class="box mk-head">
       <div class="mk-auto">
-        <div><b id="mk-auto-h">Belum tahu mau bikin apa?</b><span id="mk-auto-p">AI memilih topik yang cocok dengan video terbaik Anda, lalu mengisi judul, teks thumbnail, dan hook. Anda tinggal mengecek.</span></div>
-        <div class="chips"><button type="button" class="btn" id="mk-auto">Sarankan video berikutnya</button><button type="button" class="btn ghost" id="mk-auto-new" hidden>Topik lain</button></div>
+        <div><b id="mk-auto-h">Belum tahu mau bikin apa?</b><span id="mk-auto-p">Satu klik: AI memilih topik yang cocok dengan video terbaik Anda, mengisi judul, teks thumbnail dan hook, lalu menulis naskah lengkap dan voice over.</span></div>
+        <div class="chips"><button type="button" class="btn" id="mk-one">Buat naskah 1 klik</button><button type="button" class="btn ghost" id="mk-auto">Sarankan topik saja</button><button type="button" class="btn ghost" id="mk-auto-new" hidden>Topik lain</button></div>
       </div>
       <div class="status" id="s-auto" role="status"></div>
       <div class="mk-pick">
@@ -276,13 +276,15 @@
     <div class="panel">
     <form class="tool" id="f-script">
       <h2>Naskah lengkap</h2>
-      <p class="hint">Satu klik: kerangka per babak, narasi penuh dengan hook Anda sebagai pembuka, lalu voice over ElevenLabs. Semua kolom sudah terisi; langsung tekan tombolnya.</p>
+      <p class="hint">Satu klik: kerangka per babak, narasi penuh dengan hook Anda sebagai pembuka, lalu voice over ElevenLabs. Narasi ditulis babak demi babak supaya panjangnya sesuai target. Semua kolom sudah terisi; langsung tekan tombolnya.</p>
       <label for="script-topic">Topik video<input id="script-topic" required></label>
       <label for="script-angle">Sudut cerita (opsional)<textarea id="script-angle" placeholder="Kosongkan, AI memilih yang paling kuat"></textarea></label>
       <div class="row2">
-        <label for="script-words">Target kata<input id="script-words" type="number" min="500" max="8000" step="100" value="1800"></label>
+        <label for="script-words">Target kata<input id="script-words" type="number" min="500" max="8000" step="100" value="2000"></label>
         <label for="script-acts">Jumlah babak<input id="script-acts" type="number" min="3" max="7" value="5"></label>
       </div>
+      <div class="chips" id="script-len" role="group" aria-label="Pilihan panjang naskah"><button type="button" class="btn ghost" data-w="2000">2.000 kata · 14 mnt</button><button type="button" class="btn ghost" data-w="3000">3.000 kata · 21 mnt</button><button type="button" class="btn ghost" data-w="4500">4.500 kata · 32 mnt</button></div>
+      <p class="note" id="script-len-note"></p>
       <label for="script-tone">Nada
         <select id="script-tone"><option>Cinematic, awe and mystery</option><option>Investigative, evidence-led</option><option>Survival drama</option><option>Calm, sleep-friendly narration</option></select>
       </label>
@@ -609,12 +611,12 @@ function manualAsk(statusEl,prompt){
       if(!d){st.className="status err";st.textContent="Jawaban tidak terbaca. Pastikan seluruh jawaban Claude tersalin, dari tanda { pertama sampai } terakhir.";return}
       box.remove();res(d)};
   })}
-async function ask(statusEl,btn,prompt,key){
+async function ask(statusEl,btn,prompt,key,label){
   if(!CFG.provider){const full=channelContext()+"\n\n"+prompt+"\n\nReply directly in this chat (not as an artifact or file) with ONLY valid JSON, no markdown fences, no text before or after.";
     const data=await manualAsk(statusEl,full);
     if(data){statusEl.className="status";statusEl.textContent="Selesai, "+new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})+", lewat claude.ai, hasil tersimpan";if(key)remember(key,data).catch(()=>{})}
     return data}
-  statusEl.className="status";statusEl.textContent="AI sedang menulis… (biasanya 20 sampai 90 detik)";btn.disabled=true;
+  statusEl.className="status";statusEl.textContent=label||"AI sedang menulis… (biasanya 20 sampai 90 detik)";btn.disabled=true;
   try{
     const j=await api("/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:channelContext()+"\n\n"+prompt+"\n\nReturn ONLY valid JSON, no markdown fences, no text before or after."})});
     const rp=costRp(j.model,j.usage,j.provider);if(rp)addSpent(rp).catch(()=>{});
@@ -698,25 +700,54 @@ async function makeVoice(b){const st=$("#s-vo"),voice=$("#vo-voice").value;
   if(j.error){st.className="status err";st.textContent=j.error;return null}
   st.textContent=`Selesai: ${nf(j.chars)} karakter, ${j.chunks} bagian, ${(j.bytes/1048576).toLocaleString("id-ID",{maximumFractionDigits:1})} MB.`;j.title=lastNarr.title||"voice over";renderVo(j);remember("vo",j).catch(()=>{});return j}
 document.addEventListener("click",e=>{const b=e.target.closest("#script-full-btn");if(b&&lastOutline)writeFull(b)});
+const wordsOf=t=>(t||"").split(/\s+/).filter(Boolean).length;
+// Asked for a whole script in one reply, models stop well short of the target. One call per act keeps each act at its planned length.
+let narrPart=null;
 async function writeFull(b){
-  const w=+$("#script-words").value||1800;
-  const data=await ask($("#s-scriptfull"),b,`Write the complete voice-over narration for this documentary, following the outline below act by act. About ${w} words in total; keep each act close to its planned word count. Spoken style: short clear sentences, vivid but accurate, no stage directions, no headings inside the text, no bracketed notes. Open with the cold open. Keep open loops and the soft CTAs where the outline puts them. Mark anything uncertain by phrasing it carefully ("scientists think", "the fossils suggest") rather than inventing facts.
-Outline JSON: ${JSON.stringify({title:lastOutline.title,cold_open:lastOutline.cold_open,acts:(lastOutline.acts||[]).map(a=>({name:a.name,words:a.words,beats:a.beats,open_loop:a.open_loop,cta:a.cta}))})}
+  const w=+$("#script-words").value||2000,st=$("#s-scriptfull"),acts=lastOutline.acts||[];
+  if(!CFG.provider||acts.length<2){
+    const data=await ask(st,b,`Write the complete voice-over narration for this documentary, following the outline below act by act. The total must be about ${w} words (not shorter than ${Math.round(w*.9)}); keep each act close to its planned word count, in paragraphs of 70 to 95 words. Spoken style: clear sentences, vivid but accurate, no stage directions, no headings inside the text, no bracketed notes. Open with the cold open. Keep open loops and the soft CTAs where the outline puts them. Mark anything uncertain by phrasing it carefully ("scientists think", "the fossils suggest") rather than inventing facts.
+Outline JSON: ${JSON.stringify({title:lastOutline.title,cold_open:lastOutline.cold_open,acts:acts.map(a=>({name:a.name,words:a.words,beats:a.beats,open_loop:a.open_loop,cta:a.cta}))})}
 JSON shape: {"title":"","narration":[{"act":"act name","text":"narration paragraphs for this act"}]}`,"scriptfull");
-  if(data?.narration?.length){renderScriptFull(data);return data}return null}
-$("#f-script").addEventListener("submit",async e=>{e.preventDefault();const w=+$("#script-words").value||1800,n=Math.min(7,Math.max(3,+$("#script-acts").value||5));
-  const data=await ask($("#s-script"),e.submitter||$("#f-script .btn"),`Build a detailed ${n}-act outline for a documentary script. Topic: ${val("#script-topic")}. Central question: ${val("#script-angle")||"choose the strongest one"}. Tone: ${$("#script-tone").value}. Target length: about ${w} words total (act word counts must add up to about ${w}).
+    if(data?.narration?.length){renderScriptFull(data);return data}return null}
+  const sum=acts.reduce((a,x)=>a+(+x.words||0),0),n=acts.length,title=lastOutline.title||"";
+  const plan=JSON.stringify({title,cold_open:lastOutline.cold_open,acts:acts.map(a=>({name:a.name,beats:a.beats}))});
+  // A failed act (quota, connection) leaves the finished acts in place; the next click continues from there.
+  const narration=narrPart&&narrPart.title===title&&narrPart.w===w&&narrPart.narration.length<n?narrPart.narration:[];
+  narrPart={title,w,narration};
+  for(let i=narration.length;i<n;i++){const a=acts[i],t=Math.max(150,Math.round(sum?w*(+a.words||0)/sum:w/n)),paras=Math.max(2,Math.round(t/82)),last=i===n-1;
+    const prev=narration.length?narration[narration.length-1].text.split(/\s+/).slice(-70).join(" "):"";
+    const base=`Write the voice-over narration for act ${i+1} of ${n} ("${a.name}") of this documentary. Length: ${paras} paragraphs of 70 to 95 words each, about ${t} words in total, and not fewer than ${Math.round(t*.9)}. Spoken style: clear sentences, vivid but accurate, concrete numbers and comparisons a viewer can picture, no stage directions, no headings, no bracketed notes. Mark anything uncertain by phrasing it carefully ("scientists think", "the fossils suggest") rather than inventing facts. Cover only this act's beats; other acts are written separately, so do not summarise or repeat them.
+${i===0?hookForScript()+"Open with the cold open.":`The previous act ended with: """${prev}""" Continue straight on from there without repeating it and without re-introducing the animal.`}
+${last?"This is the final act: pay off the opening question and end with a short closing line."+(a.cta?" Soft CTA to include: "+a.cta:""):`End on this open loop so the viewer keeps watching: ${a.open_loop||"a question the next act answers"}. Do not conclude the film.`}${!last&&a.cta?" Soft CTA to include: "+a.cta:""}
+Whole film outline (for context only): ${plan}
+This act's beats: ${JSON.stringify(a.beats||[])}`;
+    let d=await ask(st,b,base+`\nJSON shape: {"text":"the narration, paragraphs separated by a blank line"}`,null,`Menulis babak ${i+1} dari ${n}: ${a.name}…`);
+    if(!d?.text){const why=st.textContent;st.className="status err";st.textContent=`Babak ${i+1} belum jadi (${why}) ${narration.length?`Babak 1 sampai ${narration.length} aman. Klik tombolnya lagi untuk melanjutkan.`:"Klik tombolnya lagi."}`;return null}
+    if(wordsOf(d.text)<t*.8){const more=await ask(st,b,base+`\nThis draft is too short at ${wordsOf(d.text)} words. Rewrite it at about ${t} words by adding accurate, concrete detail from the beats, not filler or repetition. Draft: """${d.text}"""\nJSON shape: {"text":""}`,null,`Babak ${i+1} terlalu pendek, sedang dilengkapi…`);if(more?.text&&wordsOf(more.text)>wordsOf(d.text))d=more}
+    narration.push({act:a.name,text:String(d.text).trim()});renderScriptFull({title,narration:[...narration]})}
+  const data={title,narration};narrPart=null;await remember("scriptfull",data).catch(()=>{});renderScriptFull(data);
+  const total=wordsOf(narration.map(x=>x.text).join(" "));st.className="status";st.textContent=`Narasi selesai: ${nf(total)} kata (target ${nf(w)}), sekitar ${Math.round(total/140)} menit dibacakan. Hasil tersimpan.`;
+  return data}
+$("#f-script").addEventListener("submit",e=>{e.preventDefault();runScript(e.submitter||$("#f-script .btn"))});
+async function runScript(btn){const w=+$("#script-words").value||2000,n=Math.min(7,Math.max(3,+$("#script-acts").value||5));
+  const data=await ask($("#s-script"),btn,`Build a detailed ${n}-act outline for a documentary script. Topic: ${val("#script-topic")}. Central question: ${val("#script-angle")||"choose the strongest one"}. Tone: ${$("#script-tone").value}. Target length: about ${w} words total (act word counts must add up to about ${w}).
 ${hookForScript()}Include a vivid 2-3 sentence cold open that pays off within the first 30 seconds, 3-5 beats per act, open loops across act breaks for retention, at most two soft CTAs (membership or merch from the profile) placed where they don't break the story, a visual/B-roll list, and facts to double-check.
 Also write a "flow_style" line (one sentence, English) fixing one consistent visual style, lighting and camera look for the whole video, and for every act 2-4 "flow_prompts": English text-to-video prompts for Google Flow (Veo), each describing one 8-second shot (subject, action, setting, camera movement, lighting), self-contained (repeat key subject details, no references like "same as before"), scientifically accurate anatomy, no on-screen text, 16:9.
 JSON shape: {"title":"","cold_open":"","flow_style":"","acts":[{"name":"","words":0,"beats":[""],"open_loop":"","cta":"","flow_prompts":[""]}],"visuals":[""],"fact_check":[""]}. Exactly ${n} acts. Use "" for open_loop or cta when not needed.`,"script");
-  if(!data?.acts?.length)return;renderScript(data);
+  if(!data?.acts?.length)return false;renderScript(data);
   // One click runs the whole chain: outline, full narration, then the ElevenLabs voice when a voice is set up.
-  if(!$("#script-auto").checked)return;const st=$("#s-script");
+  if(!$("#script-auto").checked)return true;const st=$("#s-script");
   st.textContent="Langkah 2 dari 3: menulis narasi penuh…";$("#s-scriptfull").scrollIntoView({block:"center"});
-  const full=await writeFull($("#script-full-btn"));if(!full){st.textContent="Kerangka jadi. Narasi penuh gagal, tekan tombolnya di bawah untuk mencoba lagi.";return}
-  if(!(CFG.has_eleven&&CFG.eleven_voice&&$("#vo-btn"))){st.textContent="Kerangka dan narasi penuh jadi. Voice over dilewati: isi ElevenLabs di Pengaturan dulu.";return}
+  const full=await writeFull($("#script-full-btn"));if(!full){st.textContent="Kerangka jadi. Narasi penuh belum selesai, tekan tombol Tulis naskah narasi penuh di bawah untuk melanjutkan.";return false}
+  if(!(CFG.has_eleven&&CFG.eleven_voice&&$("#vo-btn"))){st.textContent="Kerangka dan narasi penuh jadi. Voice over dilewati: isi ElevenLabs di Pengaturan dulu.";return true}
   st.textContent="Langkah 3 dari 3: membuat voice over…";$("#s-vo").scrollIntoView({block:"center"});
-  const vo=await makeVoice($("#vo-btn"));st.textContent=vo?"Selesai: kerangka, narasi penuh, dan voice over MP3 sudah jadi. Prompt klip Flow ada di bawah kerangka.":"Kerangka dan narasi penuh jadi. Voice over gagal, lihat pesan di bawah."});
+  const vo=await makeVoice($("#vo-btn"));st.textContent=vo?"Selesai: kerangka, narasi penuh, dan voice over MP3 sudah jadi. Prompt klip Flow ada di bawah kerangka.":"Kerangka dan narasi penuh jadi. Voice over gagal, lihat pesan di bawah.";return true}
+// Length presets; the last choice is remembered.
+function scriptLen(){const w=+$("#script-words").value||2000;document.querySelectorAll("#script-len [data-w]").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.w===w));
+  $("#script-len-note").textContent=`${nf(w)} kata kira-kira ${Math.round(w/140)} menit video dan ${nf(Math.round(w*6.1/1000)*1000)} karakter voice over ElevenLabs.`}
+$("#script-len").addEventListener("click",e=>{const b=e.target.closest("[data-w]");if(!b)return;$("#script-words").value=b.dataset.w;store.set("sw",+b.dataset.w);scriptLen()});
+$("#script-words").addEventListener("input",e=>{store.set("sw",+e.target.value||2000);scriptLen()});
 
 /* SEO pack */
 function renderSEO(s){const tags=(s.tags||[]).join(", ");
@@ -1098,7 +1129,7 @@ $("#pl-del").addEventListener("click",async()=>{if(!editing)return;$("#plan-dlg"
 $("#pl-tools").addEventListener("click",()=>{$("#plan-dlg").close();if(editing)openMake(editing.id)});
 $("#banner-close").addEventListener("click",()=>{store.set("banner-off",true);$("#banner-key").hidden=true});
 $("#plan-new").addEventListener("click",()=>openPlan({}));$("#rail-plus").addEventListener("click",()=>openPlan({}));
-$("#skin-tog").addEventListener("click",()=>{const k=document.documentElement.dataset.skin==="lumut"?"batu":"lumut";document.documentElement.dataset.skin=k;store.set("skin",k);if(YT&&!$("#p-growth").hidden)chart()});
+$("#skin-tog").addEventListener("click",()=>{const k=document.documentElement.dataset.skin==="lumut"?"batu":"lumut";document.documentElement.dataset.skin=k;store.set("skin",k);api("/api/skin?skin="+k,{method:"POST"});if(YT&&!$("#p-growth").hidden)chart()});
 document.querySelectorAll(".seg button").forEach(b=>b.addEventListener("click",()=>{view=b.dataset.view;document.querySelectorAll(".seg button").forEach(x=>x.setAttribute("aria-pressed",x===b));renderBoard()}));
 const shift=n=>{if(view==="week")weekStart=addDays(weekStart,7*n);else calMonth=new Date(calMonth.getFullYear(),calMonth.getMonth()+n,1);renderBoard()};
 $("#wk-prev").addEventListener("click",()=>shift(-1));$("#wk-next").addEventListener("click",()=>shift(1));
@@ -1248,8 +1279,8 @@ function renderMake(){const list=plans().filter(p=>p.type!=="post"&&(p.status!==
   renderAuto();mkStage(store.get("mkst","pkg"));renderTitles();renderThumbPrev();renderGen();renderRules();renderPub()}
 function renderAuto(){const w=mkW(),has=!!(w.topic||"").trim(),full=has&&w.titles?.length>1&&w.thumb&&w.hook;
   $("#mk-auto-h").textContent=!has?"Belum tahu mau bikin apa?":full?"Sudah terisi. Cek, lalu lanjut ke naskah.":`Topik: ${w.topic}`;
-  $("#mk-auto-p").textContent=!has?"AI memilih topik yang cocok dengan video terbaik Anda, lalu mengisi judul, teks thumbnail, dan hook. Anda tinggal mengecek.":full?"Mau versi lain? Klik lagi untuk judul, thumbnail, dan hook baru, atau minta topik lain.":"AI mengisi 5 judul, teks thumbnail, dan hook untuk topik ini. Anda tinggal mengecek.";
-  $("#mk-auto").textContent=!has?"Sarankan video berikutnya":full?"Isi ulang":"Isi judul, thumbnail & hook";$("#mk-auto-new").hidden=!has}
+  $("#mk-auto-p").textContent=!has?"Satu klik: AI memilih topik yang cocok dengan video terbaik Anda, mengisi judul, teks thumbnail dan hook, lalu menulis naskah lengkap dan voice over.":full?"Judul, thumbnail dan hook sudah ada. Satu klik lagi untuk naskah lengkap dan voice over.":"Satu klik: AI mengisi judul, teks thumbnail dan hook untuk topik ini, lalu menulis naskah lengkap dan voice over.";
+  $("#mk-auto").textContent=!has?"Sarankan topik saja":full?"Isi ulang paket":"Isi judul, thumbnail & hook";$("#mk-auto-new").hidden=!has}
 // One AI call fills the whole package, so Sigit can start from a suggestion instead of a blank page.
 async function autoFill(btn,newTopic){const w=mkW(),topic=newTopic?"":(w.topic||"").trim(),st=$("#s-auto");
   const done=[...longForm().map(v=>v.t),...plans().map(p=>p.title)].slice(-80).join("; ");
@@ -1257,13 +1288,22 @@ async function autoFill(btn,newTopic){const w=mkW(),topic=newTopic?"":(w.topic||
 What works on this channel: ${patternText()||"giant prehistoric mammal predators framed as a threat to humans"}. Viewers of recent videos left in the first minute, so the opening matters most.
 Return: "subject" the animal's usual name; "mammal","predator","threat","size" honest true/false about the animal and the angle; "why" one Indonesian sentence on why this topic fits the channel; "titles" 5 title options, best first, each under 60 characters, naming the animal, with a size or number people can picture and a threat or rivalry angle where the evidence supports it; "thumb" thumbnail text of at most 4 words, uppercase, adding information the best title does not repeat; "hook" the first 60 seconds of narration (120-160 words, English): name the animal in the first sentence, state the danger before 15 seconds, say the thumbnail words before 15 seconds, promise a specific payoff at the end, no channel intro, no "subscribe", accurate facts with uncertain claims phrased carefully.
 JSON shape: {"subject":"","mammal":true,"predator":true,"threat":true,"size":true,"why":"","titles":[""],"thumb":"","hook":""}`,null);
-  if(!d?.titles?.length)return;
+  if(!d?.titles?.length)return false;
   let id=mkId();
   if(!id||newTopic){const last=plans().map(p=>p.date).sort().pop(),base=last&&last>isoDay(new Date())?last:isoDay(new Date()),date=isoDay(addDays(new Date(base+"T12:00:00"),7));
     id=Date.now().toString(36)+Math.random().toString(36).slice(2,6);await savePlans([...plans(),{id,title:d.titles[0],date,type:"video",status:"ide",note:d.why||""}]);store.set("mk",id)}
   const x=work(id);Object.assign(x,{topic:d.subject||topic,titles:d.titles,pick:d.titles[0],thumb:d.thumb||"",hook:d.hook||""});saveWork();
   const f=fitOf(d);store.set("mkst","pkg");renderMake();
-  st.className="status";st.textContent=`${d.subject||topic}: skor ${f.score} dari 5. ${d.why||""} Judul pertama sudah dipilih; ganti kalau ada yang lebih Anda suka.`}
+  st.className="status";st.textContent=`${d.subject||topic}: skor ${f.score} dari 5. ${d.why||""} Judul pertama sudah dipilih; ganti kalau ada yang lebih Anda suka.`;return true}
+// The whole video in one click: package first when it is missing, then outline, narration and voice.
+async function oneClick(btn){const w=mkW(),st=$("#s-auto"),full=(w.topic||"").trim()&&w.titles?.length>1&&w.hook;
+  btn.disabled=true;
+  try{if(!full&&!await autoFill($("#mk-auto"),false))return;
+    const note=st.textContent;mkStage("script");st.className="status";st.textContent=(full?"":note+" ")+"Sekarang menulis naskah; kemajuannya ada di tahap 3.";
+    const ok=await runScript($("#f-script .btn[type=submit]"));
+    st.className=ok?"status":"status err";st.textContent=ok?"Naskah selesai. Cek hasilnya di tahap 3, lalu lanjut ke thumbnail di tahap 1.":"Naskah belum selesai. Lihat pesan di tahap 3."}
+  finally{btn.disabled=false}}
+$("#mk-one").addEventListener("click",e=>oneClick(e.currentTarget));
 $("#mk-auto").addEventListener("click",e=>autoFill(e.currentTarget,false));
 $("#mk-auto-new").addEventListener("click",e=>autoFill(e.currentTarget,true));
 $("#mk-pick").addEventListener("change",e=>{store.set("mk",e.target.value);renderMake()});
@@ -1408,6 +1448,7 @@ const RENDER={ideas:d=>d?.ideas?.length&&"subject" in d.ideas[0]&&(renderIdeas(d
 async function loadLast(){const j=await api("/api/last");if(!j||j.error)return;LAST=j;
   for(const [k,f] of Object.entries(RENDER)){const r=LAST[k];if(!r)continue;try{if(f(r.data)){const st=$("#s-"+k);if(st){st.className="status";st.textContent="Hasil terakhir, dibuat "+new Date(r.at).toLocaleString("id-ID",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})+". Tidak memakai saldo lagi."}}}catch{}}
   $("#cfg-spent").textContent=spentText();$("#cfg-ispent").textContent=imgSpentText()}
-(async()=>{await loadConfig();await loadData();await loadLast();show(store.get("ver2",false)?store.get("tab","today"):"today",true);store.set("ver2",true);
+api("/api/skin?skin="+(document.documentElement.dataset.skin||"batu"),{method:"POST"});
+(async()=>{$("#script-words").value=Math.min(8000,Math.max(500,store.get("sw",2000)));scriptLen();await loadConfig();await loadData();await loadLast();show(store.get("ver2",false)?store.get("tab","today"):"today",true);store.set("ver2",true);
   if(CFG.yt_connected&&Date.now()/1000-(CFG.yt_synced||0)>6*3600)ytSync(null,null)})();
 </script>
