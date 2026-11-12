@@ -1,0 +1,137 @@
+TERRA STUDIO 2.3.0 (Windows 10/11, 64-bit)
+==========================================
+
+INSTALL
+Easiest: double-click TerraStudio-Setup-2.3.0.exe, then Next and Install.
+No admin rights needed. A "Terra Studio" shortcut appears in the Start
+Menu and on the desktop. Uninstall through Settings > Apps.
+Zip version (no install): click "Extract all" first; do not run
+TerraStudio.exe from inside the zip.
+
+UPDATING
+Run the new installer, or extract the new zip and open TerraStudio.exe.
+If the old version is still running, the new one closes it. Your data and
+settings are kept (they live in %APPDATA%\TerraStudio).
+
+NEW IN 2.3
+- The whole app is in English: menus, buttons, messages and errors. The
+  AI also answers in English now (lessons, diagnosis, notes).
+- Status moves forward by itself. When the package is filled in, the
+  video becomes Script. When the full script is written it becomes
+  Voice. When the voice over is made it becomes Edit. A status never
+  moves backwards on its own; you can still change it by hand in the
+  Calendar.
+- Dashboard, "Up next": every video in progress in one list, the one
+  closest to upload first. Each row shows the status, the next step and
+  one button for it: Make it in 1 click, Open voice over, Mark as edited
+  or Mark as published.
+
+NEW IN 2.2
+- Dashboard as the first page: main numbers, views chart (30 days, 90
+  days, 12 months), next video, production status, the channel's biggest
+  problem and three steps for this week.
+- The side menu opens and closes (button beside the logo, or Ctrl+B).
+- The Calendar holds only the schedule board.
+
+NEW IN 2.1.1
+- Script in 1 click: "Make script in 1 click" at the top of Make video.
+  With no topic yet, AI picks one, fills in titles, thumbnail text and
+  hook, then writes the outline, the full narration and the voice over.
+- Script length follows the target. The default is 2,000 words (about 14
+  minutes); quick buttons for 3,000 and 4,500 words are in step 3. If
+  one act fails, the finished acts are kept; click the full script
+  button again to continue.
+
+NEW IN 2.1
+- Finished thumbnails inside the app. In Make video, step 1 (Package),
+  AI writes 3 concepts, Gemini draws them and the app puts the text on
+  top. Picking one saves a 1280x720 JPG to Downloads.
+- One-time setup in Settings > Thumbnail images (Gemini):
+  1. Open aistudio.google.com/apikey, create an API key in a new
+     project, click "Set up billing" on that project's row and add a
+     first credit of $5.
+  2. Open developers.google.com/program/my-benefits, claim the Google
+     Cloud credit to that billing account and tick "Always use this
+     billing account".
+  3. Paste the new key in the app, Save, then Test image.
+- Cost: about $0.067 per image (cheaper model about $0.034), so one
+  click for 3 images is about $0.20. Exact numbers are in Google AI
+  Studio, under Billing.
+
+IMPORTANT: WebView2Loader.dll
+Keep WebView2Loader.dll in the same folder as TerraStudio.exe. Without it
+the app will not start. If WebView2 has a problem, the app opens in an
+Edge window instead.
+
+GETTING STARTED
+1. Install, or extract the zip to any folder.
+2. Open Terra Studio. If "Windows protected your PC" (SmartScreen)
+   appears, click "More info", then "Run anyway". It appears because the
+   .exe is not code-signed, not because of a virus.
+3. Open Settings to choose how to use AI.
+
+THREE WAYS TO USE AI (Settings > AI connection)
+A. Copy-paste to claude.ai (uses your subscription, no extra cost).
+   Each AI button prepares a prompt. Copy it, paste it into a new chat at
+   claude.ai, copy Claude's whole answer back into the app.
+B. Gemini (free, results appear in the app). Create an API key at
+   https://aistudio.google.com/apikey, paste it in Settings, Save, then
+   Test connection. The free tier has per-minute and per-day limits, and
+   Google may use the requests to improve its models.
+C. Claude API (automatic, pay per use, separate from the subscription).
+   Create a key at https://platform.claude.com and paste it in Settings.
+
+STATUS AND CALENDAR
+Statuses: Idea, Script, Voice, Edit, Ready to upload, Published. The
+Calendar shows the next 7 days ("Month" for a whole month). Click a card
+to change its status or add a thumbnail. The app does not upload videos;
+uploading stays in YouTube Studio.
+
+VOICE OVER (ELEVENLABS)
+Uses the character quota of your ElevenLabs subscription.
+1. Open https://elevenlabs.io/app/settings/api-keys and create an API
+   key. Allow Text to Speech, Voices, Models and User (read).
+2. In the app: Settings > Voice (ElevenLabs), paste the key and load the
+   voices. Choose the narrator voice, then Save.
+3. In Make video, step 3, make the voice over once the full script is
+   written. A 2,000-word script is about 12,000 characters and takes a
+   few minutes. The MP3 is saved to Downloads.
+
+CONNECT YOUTUBE (optional)
+Pulls channel numbers each time the app opens. One-time steps in Google
+Cloud (free, about 15 minutes) are listed in Settings > YouTube Studio.
+Impressions and CTR are not available this way, so they still come from
+the last Studio export.
+
+IMPORT YOUTUBE STUDIO DATA (manual)
+1. YouTube Studio > Analytics > Advanced mode.
+2. Choose a date range (for example Lifetime), tab Content.
+3. Export > Comma-separated values (.csv). YouTube gives a .zip file.
+4. In the app: Data & money > Import, choose that .zip.
+
+WHERE DATA IS STORED
+%APPDATA%\TerraStudio\
+  config.json  = model, profile, API keys and the YouTube permission
+                 (encrypted with Windows protection; only your Windows
+                 account can open it)
+  data.json    = imported Studio data
+  last.json    = last AI results, calendar plans and cost notes
+  thumbs\      = plan thumbnail images
+  webview\     = app window data (safe to delete if the display breaks)
+
+BACKUP
+Settings > Backup saves a .json file to Downloads (profile, Studio data,
+calendar, AI results; API keys and thumbnail images are not included).
+Data is only sent to the services you use: Anthropic or Google when you
+generate, ElevenLabs for voice over, Google when pulling YouTube data.
+
+COMMON PROBLEMS
+- "Could not reach api.anthropic.com" or a certificate error: an
+  antivirus that scans HTTPS can block it. Allow TerraStudio.exe.
+- "WebView2Loader.dll was not found": the file is missing. Reinstall or
+  extract the zip again.
+- No window appears: open a browser at http://127.0.0.1:47815 (or
+  47816, 47817, 47818 if that port is taken).
+
+The "source" folder holds the Rust source code (for developers).
+Build: cargo build --release --target x86_64-pc-windows-gnu

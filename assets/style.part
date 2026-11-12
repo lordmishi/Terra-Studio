@@ -474,6 +474,19 @@ label.cbx input{margin-top:2px;flex:none}
 .dx.sm p{margin:0;font-size:14.5px;color:var(--paper-ink)}
 .dx.sm .cmpb .track{height:24px}
 
+.nxt{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:6px}
+.nxt li{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(150px,.6fr) auto;gap:8px 14px;align-items:center;background:var(--pan2);border-radius:12px;padding:8px 10px 8px 14px}
+.nx-t{all:unset;cursor:pointer;display:grid;gap:1px;min-width:0;border-radius:6px}
+.nx-t:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.nx-t b{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nx-t small{color:var(--muted);font-size:12.5px}
+@media (hover:hover){.nx-t:hover b{color:var(--accent)}}
+.nx-s{font-size:13.5px;color:var(--muted)}
+.btn.sm{height:34px;padding:0 12px;font-size:13.5px}
+.pill.st-edit,.pill.st-siap{color:var(--ok);background:color-mix(in srgb,var(--ok) 14%,var(--pan))}
+.nx-empty{color:var(--muted);font-size:14px;padding:6px 0}
+@media (max-width:980px){.nxt li{grid-template-columns:minmax(0,1fr) auto}.nx-s{grid-column:1}}
+
 /* with the menu open on a smaller window the chart takes the full row */
 @media (max-width:1180px){
   :root[data-nav="open"] .rowb{grid-template-columns:minmax(0,1fr)}

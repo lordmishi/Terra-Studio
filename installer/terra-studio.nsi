@@ -3,7 +3,7 @@ Unicode true
 !include "MUI2.nsh"
 
 !define APP "Terra Studio"
-!define VERSION "2.2.0"
+!define VERSION "2.3.0"
 !define UNKEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\TerraStudio"
 !ifndef SRC
   !define SRC "..\..\pkg\TerraStudio"
@@ -28,7 +28,7 @@ VIAddVersionKey "LegalCopyright" "Sigit"
 !define MUI_UNICON "..\assets\icon.ico"
 !define MUI_ABORTWARNING
 !define MUI_FINISHPAGE_RUN "$INSTDIR\TerraStudio.exe"
-!define MUI_FINISHPAGE_RUN_TEXT "Buka Terra Studio sekarang"
+!define MUI_FINISHPAGE_RUN_TEXT "Open Terra Studio now"
 
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_DIRECTORY
@@ -36,7 +36,7 @@ VIAddVersionKey "LegalCopyright" "Sigit"
 !insertmacro MUI_PAGE_FINISH
 !insertmacro MUI_UNPAGE_CONFIRM
 !insertmacro MUI_UNPAGE_INSTFILES
-!insertmacro MUI_LANGUAGE "Indonesian"
+!insertmacro MUI_LANGUAGE "English"
 
 Section "Terra Studio"
   ; A running copy locks the exe; data in %APPDATA%\TerraStudio is not touched.
@@ -45,7 +45,8 @@ Section "Terra Studio"
   SetOutPath "$INSTDIR"
   File "${SRC}\TerraStudio.exe"
   File "${SRC}\WebView2Loader.dll"
-  File "${SRC}\BACA-DULU.txt"
+  File "${SRC}\READ-ME-FIRST.txt"
+  Delete "$INSTDIR\BACA-DULU.txt"
   ; First start imports these two files from the exe folder. -DNOCHANNEL leaves them out (GitHub build).
   !ifndef NOCHANNEL
     File "${SRC}\profil-terra.json"
@@ -74,6 +75,7 @@ Section "Uninstall"
   Delete "$INSTDIR\TerraStudio.exe"
   Delete "$INSTDIR\WebView2Loader.dll"
   Delete "$INSTDIR\BACA-DULU.txt"
+  Delete "$INSTDIR\READ-ME-FIRST.txt"
   Delete "$INSTDIR\profil-terra.json"
   Delete "$INSTDIR\Content_*.zip"
   Delete "$INSTDIR\Uninstall.exe"

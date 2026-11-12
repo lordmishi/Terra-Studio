@@ -347,7 +347,7 @@ fn main() {
         .iter()
         .find_map(|&p| Server::http(("127.0.0.1", p)).ok().map(|s| (s, p)))
     else {
-        show_error("Terra Studio tidak bisa dimulai: port 47815 sampai 47818 sedang dipakai program lain.");
+        show_error("Terra Studio could not start: ports 47815 to 47818 are in use by another program.");
         return;
     };
 
@@ -620,7 +620,7 @@ fn read_body(req: &mut Request, limit: u64) -> Result<Vec<u8>, String> {
         .read_to_end(&mut buf)
         .map_err(|e| e.to_string())?;
     if buf.len() as u64 > limit {
-        return Err("File terlalu besar.".into());
+        return Err("The file is too large.".into());
     }
     Ok(buf)
 }
@@ -779,7 +779,7 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
             drop(c);
             match saved {
                 Ok(()) => respond_json(req, 200, json!({"ok": true})),
-                Err(e) => respond_json(req, 500, json!({"error": format!("Gagal menyimpan pengaturan: {e}")})),
+                Err(e) => respond_json(req, 500, json!({"error": format!("Could not save settings: {e}")})),
             }
         }
         (Method::Post, "/api/generate") => {
@@ -800,7 +800,7 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
             let key = v["key"].as_str().map(str::trim).filter(|k| !k.is_empty()).map(String::from)
                 .unwrap_or_else(|| cfg.lock().unwrap().gemini_key.clone());
             if key.is_empty() {
-                return respond_json(req, 400, json!({"error": "API key Gemini belum diisi."}));
+                return respond_json(req, 400, json!({"error": "The Gemini API key is empty."}));
             }
             match gemini::models(&key) {
                 Ok(list) => {
@@ -813,7 +813,7 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
         (Method::Post, "/api/image-models") => {
             let key = cfg.lock().unwrap().image_key.clone();
             if key.is_empty() {
-                return respond_json(req, 400, json!({"error": "Kunci Gemini untuk gambar belum diisi."}));
+                return respond_json(req, 400, json!({"error": "The Gemini key for images is empty."}));
             }
             match gemini::image_models(&key) {
                 Ok(list) => respond_json(req, 200, json!({"models": list})),
@@ -828,18 +828,18 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
             };
             let c = cfg.lock().unwrap().clone();
             if c.image_key.is_empty() {
-                return respond_json(req, 400, json!({"error": "Kunci Gemini untuk gambar belum dipasang. Buka Pengaturan, bagian Gambar thumbnail."}));
+                return respond_json(req, 400, json!({"error": "The Gemini key for images is not set. Open Settings, section Thumbnail images."}));
             }
             let prompt = v["prompt"].as_str().unwrap_or("").trim().to_string();
             if prompt.is_empty() || prompt.len() > 6000 {
-                return respond_json(req, 400, json!({"error": "Prompt gambar kosong atau terlalu panjang."}));
+                return respond_json(req, 400, json!({"error": "The image prompt is empty or too long."}));
             }
             let slot = v["slot"].as_u64().unwrap_or(0).min(9);
             let stem = match v["id"].as_str() {
                 Some("test") => "test".to_string(),
                 Some(id) => match thumb_stem(id) {
                     Some(s) => s,
-                    None => return respond_json(req, 400, json!({"error": "id tidak valid"})),
+                    None => return respond_json(req, 400, json!({"error": "invalid id"})),
                 },
                 None => "free".to_string(),
             };
@@ -854,7 +854,7 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
                     let name = format!("{stem}-{slot}.{ext}");
                     match fs::write(gdir.join(&name), &bytes) {
                         Ok(()) => respond_json(req, 200, json!({"file": name, "v": now(), "model": model})),
-                        Err(e) => respond_json(req, 500, json!({"error": format!("Gagal menyimpan gambar: {e}")})),
+                        Err(e) => respond_json(req, 500, json!({"error": format!("Could not save the image: {e}")})),
                     }
                 }
                 Err(e) => respond_json(req, 502, json!({"error": e, "model": model})),
@@ -884,12 +884,12 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
                 Err(e) => return respond_json(req, 400, json!({"error": e})),
             };
             if !body.starts_with(&[0xFF, 0xD8, 0xFF]) {
-                return respond_json(req, 400, json!({"error": "Bukan gambar JPG."}));
+                return respond_json(req, 400, json!({"error": "Not a JPG image."}));
             }
             let path = eleven::out_dir(dir).join(format!("{}.jpg", file_slug(&name, "thumbnail")));
             match fs::write(&path, &body) {
                 Ok(()) => respond_json(req, 200, json!({"path": path.display().to_string()})),
-                Err(e) => respond_json(req, 500, json!({"error": format!("Gagal menyimpan JPG: {e}")})),
+                Err(e) => respond_json(req, 500, json!({"error": format!("Could not save the JPG: {e}")})),
             }
         }
         (Method::Post, "/api/eleven/info") => {
@@ -900,7 +900,7 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
             let key = v["key"].as_str().map(str::trim).filter(|k| !k.is_empty()).map(String::from)
                 .unwrap_or_else(|| cfg.lock().unwrap().eleven_key.clone());
             if key.is_empty() {
-                return respond_json(req, 400, json!({"error": "API key ElevenLabs belum diisi."}));
+                return respond_json(req, 400, json!({"error": "The ElevenLabs API key is empty."}));
             }
             match eleven::info(&key) {
                 Ok(info) => respond_json(req, 200, info),
@@ -934,7 +934,7 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
             let q = req.url().split_once('?').map(|(_, q)| q.to_string()).unwrap_or_default();
             let get = |k: &str| q.split('&').find_map(|kv| kv.split_once('=').filter(|(a, _)| *a == k).map(|(_, b)| percent_decode(b)));
             let result = match (get("code"), get("state"), get("error")) {
-                (_, _, Some(err)) => Err(format!("Google menolak izin ({err}).")),
+                (_, _, Some(err)) => Err(format!("Google refused permission ({err}).")),
                 (Some(code), Some(state), None) => {
                     let c = cfg.lock().unwrap().clone();
                     youtube::finish(&c, port, &code, &state).and_then(|refresh| {
@@ -943,11 +943,11 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
                         save_config(dir, &c)
                     })
                 }
-                _ => Err("Balasan Google tidak lengkap. Coba hubungkan lagi.".into()),
+                _ => Err("Google's reply was incomplete. Try connecting again.".into()),
             };
             let (title, msg) = match &result {
-                Ok(()) => ("Terhubung", "YouTube sudah terhubung ke Terra Studio. Tutup tab ini dan kembali ke aplikasi, lalu klik Tarik data sekarang.".to_string()),
-                Err(e) => ("Gagal", e.clone()),
+                Ok(()) => ("Connected", "YouTube is now connected to Terra Studio. Close this tab, go back to the app and click Pull data now.".to_string()),
+                Err(e) => ("Failed", e.clone()),
             };
             let html = format!("<!doctype html><meta charset=utf-8><title>Terra Studio</title><body style=\"font:18px system-ui;margin:15vh auto;max-width:520px;padding:0 16px;color:#1C1F1A\"><h1 style=\"font-size:24px\">{title}</h1><p>{}</p></body>", msg.replace('<', "&lt;"));
             respond(req, 200, "text/html; charset=utf-8", html.into_bytes())
@@ -989,7 +989,7 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
                 Err(e) => return respond_json(req, 400, json!({"error": e})),
             };
             if v["app"] != "terra-studio" {
-                return respond_json(req, 400, json!({"error": "File ini bukan backup Terra Studio."}));
+                return respond_json(req, 400, json!({"error": "This file is not a Terra Studio backup."}));
             }
             let result = (|| -> Result<(), String> {
                 if v["data"].is_object() {
@@ -1015,7 +1015,7 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
             })();
             match result {
                 Ok(()) => respond_json(req, 200, json!({"ok": true})),
-                Err(e) => respond_json(req, 500, json!({"error": format!("Gagal memulihkan backup: {e}")})),
+                Err(e) => respond_json(req, 500, json!({"error": format!("Could not restore the backup: {e}")})),
             }
         }
         // Last AI result per tool, so reopening the app does not cost a new call.
@@ -1056,7 +1056,7 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
         (Method::Post, "/api/thumb") | (Method::Delete, "/api/thumb") => {
             let id = query_param(req.url(), "id").unwrap_or_default();
             let Some(stem) = thumb_stem(&id) else {
-                return respond_json(req, 400, json!({"error": "id tidak valid"}));
+                return respond_json(req, 400, json!({"error": "invalid id"}));
             };
             let tdir = dir.join("thumbs");
             for ext in ["jpg", "png", "webp"] {
@@ -1073,12 +1073,12 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
                 Some(h) if h.starts_with(&[0xFF, 0xD8, 0xFF]) => "jpg",
                 Some(h) if h.starts_with(b"\x89PNG") => "png",
                 Some(h) if h.starts_with(b"RIFF") && &h[8..12] == b"WEBP" => "webp",
-                _ => return respond_json(req, 400, json!({"error": "Pilih gambar JPG, PNG, atau WebP."})),
+                _ => return respond_json(req, 400, json!({"error": "Choose a JPG, PNG or WebP image."})),
             };
             let _ = fs::create_dir_all(&tdir);
             match fs::write(tdir.join(format!("{stem}.{ext}")), &body) {
                 Ok(()) => respond_json(req, 200, json!({"ok": true})),
-                Err(e) => respond_json(req, 500, json!({"error": format!("Gagal menyimpan gambar: {e}")})),
+                Err(e) => respond_json(req, 500, json!({"error": format!("Could not save the image: {e}")})),
             }
         }
         (Method::Get, p) if p.starts_with("/api/thumb/") => {
@@ -1216,10 +1216,10 @@ fn generate(c: &Config, prompt: &str, test: bool) -> (u16, Value) {
         return gemini::generate(c, prompt, test);
     }
     if c.api_key.is_empty() {
-        return (400, json!({"error": "API key belum diisi. Buka tab Pengaturan dan tempel API key Anthropic Anda."}));
+        return (400, json!({"error": "The API key is empty. Open Settings and paste your Anthropic API key."}));
     }
     if prompt.trim().is_empty() {
-        return (400, json!({"error": "Permintaan kosong."}));
+        return (400, json!({"error": "The request is empty."}));
     }
     let model = if MODELS.contains(&c.model.as_str()) { c.model.as_str() } else { MODELS[1] };
     let effort = if test { "low" } else if ["low", "medium", "high"].contains(&c.effort.as_str()) { c.effort.as_str() } else { "medium" };
@@ -1250,7 +1250,7 @@ fn generate(c: &Config, prompt: &str, test: bool) -> (u16, Value) {
         Ok(resp) => {
             let stop = resp["stop_reason"].as_str().unwrap_or("");
             if stop == "refusal" {
-                return (422, json!({"error": "Claude menolak permintaan ini. Ubah topik atau kata-katanya, lalu coba lagi.", "model": resp["model"], "usage": usage(&resp)}));
+                return (422, json!({"error": "Claude declined this request. Change the topic or the wording, then try again.", "model": resp["model"], "usage": usage(&resp)}));
             }
             let text: String = resp["content"]
                 .as_array()
@@ -1265,9 +1265,9 @@ fn generate(c: &Config, prompt: &str, test: bool) -> (u16, Value) {
                 .unwrap_or_default();
             if text.trim().is_empty() {
                 let why = if stop == "max_tokens" {
-                    "Jawaban terpotong sebelum selesai. Coba lagi, atau turunkan Kedalaman berpikir di Pengaturan."
+                    "The answer was cut off before it finished. Try again, or lower Thinking depth in Settings."
                 } else {
-                    "Claude tidak mengirim jawaban. Coba lagi."
+                    "Claude sent no answer. Try again."
                 };
                 return (502, json!({"error": why, "model": resp["model"], "usage": usage(&resp)}));
             }
@@ -1288,15 +1288,15 @@ fn generate(c: &Config, prompt: &str, test: bool) -> (u16, Value) {
                 .unwrap_or(msg.clone());
             let lower = api_msg.to_lowercase();
             let friendly = match code {
-                0 => format!("Tidak bisa terhubung ke api.anthropic.com. Periksa koneksi internet. ({api_msg})"),
-                401 => "API key ditolak. Periksa kunci di tab Pengaturan.".to_string(),
-                403 => format!("Akses ditolak oleh Anthropic. Pesan asli: {api_msg}"),
+                0 => format!("Could not reach api.anthropic.com. Check your internet connection. ({api_msg})"),
+                401 => "The API key was rejected. Check the key in Settings.".to_string(),
+                403 => format!("Anthropic denied access. Original message: {api_msg}"),
                 _ if lower.contains("credit") || lower.contains("billing") => {
-                    "Saldo API habis. Isi saldo di console.anthropic.com, bagian Billing.".to_string()
+                    "The API credit has run out. Add credit at console.anthropic.com, under Billing.".to_string()
                 }
-                429 => "Batas pemakaian tercapai. Tunggu sebentar lalu coba lagi.".to_string(),
-                500..=599 => "Server Claude sedang sibuk. Coba lagi beberapa saat lagi.".to_string(),
-                _ => format!("Permintaan gagal (kode {code}). Pesan asli: {api_msg}"),
+                429 => "Usage limit reached. Wait a moment, then try again.".to_string(),
+                500..=599 => "Claude's servers are busy. Try again in a little while.".to_string(),
+                _ => format!("The request failed (code {code}). Original message: {api_msg}"),
             };
             (502, json!({"error": friendly}))
         }
@@ -1359,15 +1359,15 @@ mod gemini {
             .unwrap_or_else(|| body.chars().take(300).collect());
         let lower = msg.to_lowercase();
         match code {
-            0 => format!("Tidak bisa terhubung ke Google Gemini. Periksa koneksi internet. ({msg})"),
+            0 => format!("Could not reach Google Gemini. Check your internet connection. ({msg})"),
             400 if lower.contains("api key") || lower.contains("api_key") => {
-                "API key Gemini ditolak. Periksa kunci di tab Pengaturan.".into()
+                "The Gemini API key was rejected. Check the key in Settings.".into()
             }
-            401 | 403 => format!("Akses ke Gemini ditolak. Pesan asli: {msg}"),
-            404 => "Model Gemini itu tidak tersedia. Pilih model lain di Pengaturan.".into(),
-            429 => "Kuota gratis Gemini sedang habis. Tunggu sebentar (atau sampai besok), lalu coba lagi.".into(),
-            500..=599 => "Server Gemini sedang sibuk. Coba lagi beberapa saat lagi.".into(),
-            _ => format!("Permintaan ke Gemini gagal (kode {code}). Pesan asli: {msg}"),
+            401 | 403 => format!("Gemini denied access. Original message: {msg}"),
+            404 => "That Gemini model is not available. Choose another model in Settings.".into(),
+            429 => "The free Gemini quota is used up. Wait a while (or until tomorrow), then try again.".into(),
+            500..=599 => "Gemini's servers are busy. Try again in a little while.".into(),
+            _ => format!("The Gemini request failed (code {code}). Original message: {msg}"),
         }
     }
 
@@ -1445,15 +1445,15 @@ mod gemini {
             .unwrap_or_else(|| body.chars().take(300).collect());
         let lower = msg.to_lowercase();
         match code {
-            402 => "Saldo prabayar Gemini habis. Isi ulang di Google AI Studio, menu Billing, lalu coba lagi.".into(),
+            402 => "The Gemini prepaid credit has run out. Top up in Google AI Studio, under Billing, then try again.".into(),
             429 if lower.contains("free_tier") || lower.contains("free tier") || lower.contains("limit: 0") => {
-                "Kunci ini masih di tingkat gratis, dan gambar hanya tersedia di tingkat berbayar. Di Google AI Studio klik Set up billing untuk proyek kunci ini.".into()
+                "This key is on the free tier, and images are only available on the paid tier. In Google AI Studio click Set up billing for this key's project.".into()
             }
-            429 => format!("Batas pemakaian Gemini tercapai. Tunggu sebentar, lalu coba lagi. Pesan asli: {msg}"),
+            429 => format!("Gemini usage limit reached. Wait a moment, then try again. Original message: {msg}"),
             403 if lower.contains("billing") => {
-                "Penagihan belum aktif untuk kunci ini. Di Google AI Studio klik Set up billing, lalu coba lagi.".into()
+                "Billing is not active for this key. In Google AI Studio click Set up billing, then try again.".into()
             }
-            404 => "Model gambar itu tidak tersedia untuk kunci ini. Pilih model lain di Pengaturan.".into(),
+            404 => "That image model is not available for this key. Choose another model in Settings.".into(),
             _ => friendly(code, body),
         }
     }
@@ -1527,24 +1527,24 @@ mod gemini {
             return image_part(&v).ok_or_else(|| {
                 let finish = v["candidates"][0]["finishReason"].as_str().unwrap_or("");
                 if finish.contains("SAFETY") || finish.contains("PROHIBITED") || v["promptFeedback"]["blockReason"].is_string() {
-                    "Gemini menolak membuat gambar ini. Klik Buat ulang, atau ubah konsepnya.".to_string()
+                    "Gemini declined to make this image. Click Redo, or change the concept.".to_string()
                 } else {
-                    "Gemini tidak mengirim gambar. Klik Buat ulang.".to_string()
+                    "Gemini sent no image. Click Redo.".to_string()
                 }
             });
         }
-        Err(first_err.unwrap_or_else(|| "Gemini tidak mengirim gambar. Coba lagi.".to_string()))
+        Err(first_err.unwrap_or_else(|| "Gemini sent no image. Try again.".to_string()))
     }
 
     pub fn generate(c: &Config, prompt: &str, test: bool) -> (u16, Value) {
         if prompt.trim().is_empty() {
-            return (400, json!({"error": "Permintaan kosong."}));
+            return (400, json!({"error": "The request is empty."}));
         }
         let model = if c.gemini_model.is_empty() {
             match models(&c.gemini_key) {
                 Ok(list) => match pick_default(&list) {
                     Some(m) => m,
-                    None => return (502, json!({"error": "Tidak ada model Gemini yang bisa dipakai dengan kunci ini."})),
+                    None => return (502, json!({"error": "No Gemini model can be used with this key."})),
                 },
                 Err((code, body)) => return (502, json!({"error": friendly(code, &body)})),
             }
@@ -1589,14 +1589,14 @@ mod gemini {
         });
         if text.trim().is_empty() {
             let why = match finish {
-                "MAX_TOKENS" => "Jawaban Gemini terpotong sebelum selesai. Coba lagi.".to_string(),
+                "MAX_TOKENS" => "Gemini's answer was cut off before it finished. Try again.".to_string(),
                 "SAFETY" | "PROHIBITED_CONTENT" | "BLOCKLIST" | "RECITATION" => {
-                    "Gemini menolak permintaan ini. Ubah topik atau kata-katanya, lalu coba lagi.".to_string()
+                    "Gemini declined this request. Change the topic or the wording, then try again.".to_string()
                 }
                 _ if v["promptFeedback"]["blockReason"].is_string() => {
-                    "Gemini menolak permintaan ini. Ubah topik atau kata-katanya, lalu coba lagi.".to_string()
+                    "Gemini declined this request. Change the topic or the wording, then try again.".to_string()
                 }
-                _ => "Gemini tidak mengirim jawaban. Coba lagi.".to_string(),
+                _ => "Gemini sent no answer. Try again.".to_string(),
             };
             return (502, json!({"error": why, "provider": "gemini", "model": model, "usage": usage}));
         }
@@ -1620,7 +1620,7 @@ mod gemini {
         fn billing_errors_are_explained() {
             let free = r#"{"error":{"message":"Quota exceeded for metric generate_content_free_tier_requests, limit: 0"}}"#;
             assert!(friendly_image(429, free).contains("Set up billing"));
-            assert!(friendly_image(402, "{}").contains("Saldo"));
+            assert!(friendly_image(402, "{}").contains("prepaid credit"));
         }
         #[test]
         fn picks_newest_stable_flash() {
@@ -1657,14 +1657,14 @@ mod eleven {
             .unwrap_or_else(|| body.chars().take(200).collect());
         let lower = detail.to_lowercase();
         match code {
-            0 => format!("Tidak bisa terhubung ke ElevenLabs. Periksa koneksi internet. ({detail})"),
-            401 => "API key ElevenLabs ditolak atau tidak punya izin ini. Periksa kunci di Pengaturan.".into(),
+            0 => format!("Could not reach ElevenLabs. Check your internet connection. ({detail})"),
+            401 => "The ElevenLabs API key was rejected or lacks this permission. Check the key in Settings.".into(),
             _ if code == 402 || lower.contains("quota") || lower.contains("credits") => {
-                "Kuota karakter ElevenLabs habis untuk periode ini.".into()
+                "The ElevenLabs character quota is used up for this period.".into()
             }
-            404 => "Suara ElevenLabs tidak ditemukan. Pilih suara lain di Pengaturan.".into(),
-            429 => "ElevenLabs sedang sibuk atau batas permintaan tercapai. Coba lagi sebentar.".into(),
-            _ => format!("ElevenLabs gagal (kode {code}): {detail}"),
+            404 => "That ElevenLabs voice was not found. Choose another voice in Settings.".into(),
+            429 => "ElevenLabs is busy or the request limit was reached. Try again shortly.".into(),
+            _ => format!("ElevenLabs failed (code {code}): {detail}"),
         }
     }
 
@@ -1765,14 +1765,14 @@ mod eleven {
 
     pub fn speak(c: &Config, dir: &Path, title: &str, parts: &[String], voice: &str) -> Result<Value, String> {
         if c.eleven_key.is_empty() {
-            return Err("API key ElevenLabs belum diisi. Buka Pengaturan, bagian Suara.".into());
+            return Err("The ElevenLabs API key is empty. Open Settings, section Voice.".into());
         }
         if voice.is_empty() {
-            return Err("Pilih suara ElevenLabs dulu di Pengaturan.".into());
+            return Err("Choose an ElevenLabs voice in Settings first.".into());
         }
         let pieces = chunks(parts);
         if pieces.is_empty() {
-            return Err("Naskahnya kosong.".into());
+            return Err("The script is empty.".into());
         }
         let model = if c.eleven_model.is_empty() { DEFAULT_MODEL } else { c.eleven_model.as_str() };
         let mut audio: Vec<u8> = Vec::new();
@@ -1797,14 +1797,14 @@ mod eleven {
                 }
                 Err(ureq::Error::Status(code, r)) => {
                     let msg = friendly(code, &r.into_string().unwrap_or_default());
-                    return Err(if i == 0 { msg } else { format!("{msg} (berhenti di bagian {} dari {})", i + 1, pieces.len()) });
+                    return Err(if i == 0 { msg } else { format!("{msg} (stopped at part {} of {})", i + 1, pieces.len()) });
                 }
                 Err(e) => return Err(friendly(0, &e.to_string())),
             }
         }
         let name = file_name(title);
         let path = out_dir(dir).join(&name);
-        fs::write(&path, &audio).map_err(|e| format!("Gagal menyimpan MP3: {e}"))?;
+        fs::write(&path, &audio).map_err(|e| format!("Could not save the MP3: {e}"))?;
         let chars: usize = pieces.iter().map(|p| p.chars().count()).sum();
         Ok(json!({"file": name, "path": path.display().to_string(), "chars": chars, "chunks": pieces.len(), "bytes": audio.len()}))
     }
@@ -1869,7 +1869,7 @@ fn import(bytes: &[u8], filename: &str, dir: &Path) -> Result<Vec<String>, Strin
     let mut found = Vec::new();
     if bytes.starts_with(b"PK") {
         let mut zip = zip::ZipArchive::new(Cursor::new(bytes))
-            .map_err(|_| "File .zip tidak bisa dibuka.".to_string())?;
+            .map_err(|_| "The .zip file could not be opened.".to_string())?;
         for i in 0..zip.len() {
             let mut f = zip.by_index(i).map_err(|e| e.to_string())?;
             if !f.name().to_lowercase().ends_with(".csv") {
@@ -1878,7 +1878,7 @@ fn import(bytes: &[u8], filename: &str, dir: &Path) -> Result<Vec<String>, Strin
             let mut raw = Vec::new();
             (&mut f).take(MAX_CSV + 1).read_to_end(&mut raw).map_err(|e| e.to_string())?;
             if raw.len() as u64 > MAX_CSV {
-                return Err("Isi file .zip terlalu besar.".into());
+                return Err("The contents of the .zip file are too large.".into());
             }
             if let Some(label) = parse_csv(&String::from_utf8_lossy(&raw), &mut data) {
                 found.push(label);
@@ -1895,7 +1895,7 @@ fn import(bytes: &[u8], filename: &str, dir: &Path) -> Result<Vec<String>, Strin
     }
     data["imported_at"] = json!(now() * 1000);
     let bytes = serde_json::to_vec(&data).map_err(|e| e.to_string())?;
-    write_atomic(&dir.join("data.json"), &bytes).map_err(|e| format!("Gagal menyimpan data: {e}"))?;
+    write_atomic(&dir.join("data.json"), &bytes).map_err(|e| format!("Could not save the data: {e}"))?;
     Ok(found)
 }
 
@@ -2017,7 +2017,7 @@ fn parse_csv(text: &str, data: &mut Value) -> Option<String> {
             daily.sort_by(|a, b| a.0.cmp(&b.0));
             let n = daily.len();
             data["daily"] = json!(daily.into_iter().map(|(d, v)| json!([d, v])).collect::<Vec<_>>());
-            Some(format!("views harian ({n} hari)"))
+            Some(format!("daily views ({n} days)"))
         }
         "traffic source" | "geography" => {
             let mut list: Vec<Value> = rows
@@ -2037,15 +2037,15 @@ fn parse_csv(text: &str, data: &mut Value) -> Option<String> {
             list.sort_by(|a, b| b["views"].as_f64().unwrap_or(0.0).total_cmp(&a["views"].as_f64().unwrap_or(0.0)));
             if first == "geography" {
                 data["geo"] = json!(list);
-                Some("geografi".into())
+                Some("geography".into())
             } else {
                 data["traffic"] = json!(list);
-                Some("sumber traffic".into())
+                Some("traffic sources".into())
             }
         }
         f if f.starts_with("viewer age") || f.starts_with("viewer gender") => {
             data["age"] = json!({"headers": headers, "rows": rows});
-            Some("umur dan gender".into())
+            Some("age and gender".into())
         }
         _ => None,
     }
@@ -2154,16 +2154,16 @@ mod youtube {
         let msg = v["error"]["message"].as_str().or(v["error_description"].as_str()).or(v["error"].as_str()).unwrap_or("").to_string();
         let low = msg.to_lowercase();
         match code {
-            0 => format!("Tidak bisa terhubung ke Google. Periksa koneksi internet. ({body})"),
+            0 => format!("Could not reach Google. Check your internet connection. ({body})"),
             400 if low.contains("invalid_grant") || low.contains("expired") || low.contains("revoked") => {
-                "Izin YouTube sudah kedaluwarsa atau dicabut. Klik Hubungkan YouTube lagi.".into()
+                "The YouTube permission expired or was revoked. Click Connect YouTube again.".into()
             }
-            401 => "Client ID atau Client secret ditolak Google. Periksa lagi di Pengaturan.".into(),
+            401 => "Google rejected the Client ID or Client secret. Check them in Settings.".into(),
             403 if low.contains("has not been used") || low.contains("disabled") => {
-                "API YouTube belum diaktifkan di Google Cloud. Aktifkan YouTube Data API v3 dan YouTube Analytics API (langkah 2).".into()
+                "The YouTube APIs are not enabled in Google Cloud. Enable YouTube Data API v3 and YouTube Analytics API (step 2).".into()
             }
-            403 => format!("Google menolak akses: {msg}"),
-            _ => format!("Google gagal (kode {code}): {msg}"),
+            403 => format!("Google denied access: {msg}"),
+            _ => format!("Google failed (code {code}): {msg}"),
         }
     }
 
@@ -2185,7 +2185,7 @@ mod youtube {
 
     pub fn auth_url(c: &Config, port: u16) -> Result<String, String> {
         if c.yt_client_id.is_empty() || c.yt_secret.is_empty() {
-            return Err("Isi dan simpan dulu Client ID dan Client secret dari Google Cloud.".into());
+            return Err("Fill in and save the Client ID and Client secret from Google Cloud first.".into());
         }
         let state = random_hex();
         *STATE.lock().unwrap() = state.clone();
@@ -2202,7 +2202,7 @@ mod youtube {
         {
             let mut s = STATE.lock().unwrap();
             if s.is_empty() || *s != state {
-                return Err("Sesi login tidak cocok. Klik Hubungkan YouTube lagi dari aplikasi.".into());
+                return Err("The login session does not match. Click Connect YouTube again from the app.".into());
             }
             s.clear();
         }
@@ -2211,18 +2211,18 @@ mod youtube {
             "https://oauth2.googleapis.com/token",
             &[("code", code), ("client_id", &c.yt_client_id), ("client_secret", &c.yt_secret), ("redirect_uri", &r), ("grant_type", "authorization_code")],
         )?;
-        v["refresh_token"].as_str().map(String::from).ok_or_else(|| "Google tidak memberi izin jangka panjang. Klik Hubungkan YouTube lagi.".into())
+        v["refresh_token"].as_str().map(String::from).ok_or_else(|| "Google gave no long-term permission. Click Connect YouTube again.".into())
     }
 
     fn access_token(c: &Config) -> Result<String, String> {
         if c.yt_refresh.is_empty() {
-            return Err("YouTube belum terhubung. Klik Hubungkan YouTube dulu.".into());
+            return Err("YouTube is not connected. Click Connect YouTube first.".into());
         }
         let v = post_form(
             "https://oauth2.googleapis.com/token",
             &[("refresh_token", &c.yt_refresh), ("client_id", &c.yt_client_id), ("client_secret", &c.yt_secret), ("grant_type", "refresh_token")],
         )?;
-        v["access_token"].as_str().map(String::from).ok_or_else(|| "Google tidak memberi token akses.".into())
+        v["access_token"].as_str().map(String::from).ok_or_else(|| "Google gave no access token.".into())
     }
 
     /// Days since 1970-01-01 -> "YYYY-MM-DD" (proleptic Gregorian).
@@ -2274,7 +2274,7 @@ mod youtube {
     pub fn sync(c: &Config, dir: &Path) -> Result<(String, Value), String> {
         let token = access_token(c)?;
         let ch = get(&token, "https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&mine=true").map_err(|e| e.1)?;
-        let ch = ch["items"].get(0).cloned().ok_or("Akun Google ini tidak punya channel YouTube. Login dengan akun pemilik channel.")?;
+        let ch = ch["items"].get(0).cloned().ok_or("This Google account has no YouTube channel. Sign in with the account that owns the channel.")?;
         let channel = ch["snippet"]["title"].as_str().unwrap_or("").to_string();
         let start = ch["snippet"]["publishedAt"].as_str().and_then(|s| s.get(..10)).unwrap_or("2015-01-01").to_string();
         let end = ymd((now() / 86_400) as i64 - 1);
@@ -2372,7 +2372,7 @@ mod youtube {
         data["imported_at"] = json!(now() * 1000);
         data["source"] = json!("youtube-api");
         let bytes = serde_json::to_vec(&data).map_err(|e| e.to_string())?;
-        write_atomic(&dir.join("data.json"), &bytes).map_err(|e| format!("Gagal menyimpan data: {e}"))?;
+        write_atomic(&dir.join("data.json"), &bytes).map_err(|e| format!("Could not save the data: {e}"))?;
         let summary = json!({"channel": channel, "videos": videos.len(), "days": daily.len(), "revenue": has_rev, "range": data["range"]});
         Ok((channel, summary))
     }

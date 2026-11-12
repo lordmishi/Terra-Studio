@@ -24,4 +24,4 @@ Hasilnya `target/.../release/TerraStudio.exe`.
 
 ## Panduan pengguna
 
-Lihat [BACA-DULU.txt](BACA-DULU.txt).
+Lihat [READ-ME-FIRST.txt](READ-ME-FIRST.txt).
