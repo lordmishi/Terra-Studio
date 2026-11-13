@@ -62,6 +62,15 @@ struct Config {
     eleven_voice: String,
     eleven_voice_name: String,
     eleven_model: String,
+    /// KIE.ai: one prepaid key for Claude text, images and video clips.
+    #[serde(skip_serializing_if = "String::is_empty")]
+    kie_key: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
+    kie_key_dpapi: String,
+    kie_model: String,
+    /// "gemini" (default) or "kie": who makes thumbnail images.
+    image_provider: String,
+    kie_image_model: String,
     /// YouTube (Google OAuth "Desktop app" client the user creates in Google Cloud).
     yt_client_id: String,
     #[serde(skip_serializing_if = "String::is_empty")]
@@ -96,6 +105,11 @@ impl Default for Config {
             eleven_voice: String::new(),
             eleven_voice_name: String::new(),
             eleven_model: String::new(),
+            kie_key: String::new(),
+            kie_key_dpapi: String::new(),
+            kie_model: String::new(),
+            image_provider: String::new(),
+            kie_image_model: String::new(),
             yt_client_id: String::new(),
             yt_secret: String::new(),
             yt_secret_dpapi: String::new(),
@@ -137,7 +151,7 @@ fn load_config(dir: &Path) -> Config {
         .unwrap_or_default();
     // A key still in plaintext comes from an older version or a failed encryption.
     let had_plain = !c.api_key.is_empty() || !c.gemini_key.is_empty() || !c.image_key.is_empty() || !c.eleven_key.is_empty()
-        || !c.yt_secret.is_empty() || !c.yt_refresh.is_empty();
+        || !c.kie_key.is_empty() || !c.yt_secret.is_empty() || !c.yt_refresh.is_empty();
     let open = |enc: &str| from_hex(enc).and_then(|b| secret::unprotect(&b)).unwrap_or_default();
     if !c.api_key_dpapi.is_empty() {
         c.api_key = open(&c.api_key_dpapi);
@@ -150,6 +164,9 @@ fn load_config(dir: &Path) -> Config {
     }
     if !c.eleven_key_dpapi.is_empty() {
         c.eleven_key = open(&c.eleven_key_dpapi);
+    }
+    if !c.kie_key_dpapi.is_empty() {
+        c.kie_key = open(&c.kie_key_dpapi);
     }
     if !c.yt_secret_dpapi.is_empty() {
         c.yt_secret = open(&c.yt_secret_dpapi);
@@ -170,6 +187,7 @@ fn save_config(dir: &Path, c: &Config) -> Result<(), String> {
     disk.gemini_key_dpapi.clear();
     disk.image_key_dpapi.clear();
     disk.eleven_key_dpapi.clear();
+    disk.kie_key_dpapi.clear();
     disk.yt_secret_dpapi.clear();
     disk.yt_refresh_dpapi.clear();
     for (plain, enc) in [(&c.yt_secret, &mut disk.yt_secret_dpapi), (&c.yt_refresh, &mut disk.yt_refresh_dpapi)] {
@@ -189,6 +207,12 @@ fn save_config(dir: &Path, c: &Config) -> Result<(), String> {
         if let Some(enc) = secret::protect(c.eleven_key.as_bytes()) {
             disk.eleven_key_dpapi = to_hex(&enc);
             disk.eleven_key.clear();
+        }
+    }
+    if !c.kie_key.is_empty() {
+        if let Some(enc) = secret::protect(c.kie_key.as_bytes()) {
+            disk.kie_key_dpapi = to_hex(&enc);
+            disk.kie_key.clear();
         }
     }
     if !c.api_key.is_empty() {
@@ -431,12 +455,13 @@ mod native {
         if hwnd == 0 {
             return;
         }
-        let (bg, ink) = if skin == "lumut" { ((0x11, 0x22, 0x17), (0xE8, 0xF2, 0xE6)) } else { ((0x0F, 0x0E, 0x0C), (0xF4, 0xEC, 0xDD)) };
+        let dark = skin == "batu";
+        let (bg, ink) = if dark { ((0x08, 0x07, 0x06), (0xF4, 0xEC, 0xDD)) } else { ((0xED, 0xED, 0xEB), (0x14, 0x14, 0x14)) };
         let colorref = |(r, g, b): (u32, u32, u32)| r | (g << 8) | (b << 16);
         let set = |attr: u32, v: u32| unsafe {
             DwmSetWindowAttribute(hwnd, attr, &v as *const u32 as *const std::ffi::c_void, 4);
         };
-        set(20, 1); // DWMWA_USE_IMMERSIVE_DARK_MODE
+        set(20, dark as u32); // DWMWA_USE_IMMERSIVE_DARK_MODE
         set(35, colorref(bg)); // DWMWA_CAPTION_COLOR
         set(34, colorref(bg)); // DWMWA_BORDER_COLOR
         set(36, colorref(ink)); // DWMWA_TEXT_COLOR
@@ -465,14 +490,14 @@ mod native {
         {
             use tao::platform::windows::WindowExtWindows;
             HWND.store(window.hwnd() as isize, Ordering::Relaxed);
-            tint_title("batu");
+            tint_title("terang");
         }
         let _ = std::fs::create_dir_all(&data_dir);
         let mut ctx = WebContext::new(Some(data_dir));
         let url = format!("http://127.0.0.1:{port}/");
         let webview = WebViewBuilder::with_web_context(&mut ctx)
             .with_url(&url)
-            .with_background_color((15, 14, 12, 255))
+            .with_background_color((237, 237, 235, 255))
             .with_navigation_handler(move |u| {
                 if local(&u, port) {
                     return true;
@@ -689,6 +714,12 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
                     "eleven_voice_name": c.eleven_voice_name,
                     "eleven_model": c.eleven_model,
                     "audio_dir": eleven::out_dir(dir).display().to_string(),
+                    "has_kie": !c.kie_key.is_empty(),
+                    "kie_hint": c.kie_key.chars().rev().take(4).collect::<Vec<_>>().into_iter().rev().collect::<String>(),
+                    "kie_model": kie::text_model(&c),
+                    "image_provider": kie::image_provider(&c),
+                    "kie_image_model": kie::image_model(&c),
+                    "pack_dir": pack::root(dir).display().to_string(),
                     "yt_client_id": c.yt_client_id,
                     "has_yt_secret": !c.yt_secret.is_empty(),
                     "yt_connected": !c.yt_refresh.is_empty(),
@@ -735,6 +766,21 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
             if let Some(x) = v["eleven_model"].as_str().filter(|x| safe_id(x)) {
                 c.eleven_model = x.to_string();
             }
+            if v["clear_kie"].as_bool() == Some(true) {
+                c.kie_key.clear();
+            }
+            if let Some(k) = v["kie_key"].as_str().map(str::trim).filter(|k| !k.is_empty() && k.len() < 200) {
+                c.kie_key = k.to_string();
+            }
+            if let Some(m) = v["kie_model"].as_str().filter(|m| m.is_empty() || gemini::safe_model(m)) {
+                c.kie_model = m.to_string();
+            }
+            if let Some(m) = v["kie_image_model"].as_str().filter(|m| m.is_empty() || gemini::safe_model(m)) {
+                c.kie_image_model = m.to_string();
+            }
+            if let Some(p) = v["image_provider"].as_str().filter(|p| ["gemini", "kie"].contains(p)) {
+                c.image_provider = p.to_string();
+            }
             if v["clear_gemini"].as_bool() == Some(true) {
                 c.gemini_key.clear();
             }
@@ -753,7 +799,7 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
             if let Some(m) = v["image_model"].as_str().filter(|m| m.is_empty() || gemini::safe_model(m)) {
                 c.image_model = m.to_string();
             }
-            if let Some(p) = v["provider"].as_str().filter(|p| ["", "manual", "claude", "gemini"].contains(p)) {
+            if let Some(p) = v["provider"].as_str().filter(|p| ["", "manual", "claude", "gemini", "kie"].contains(p)) {
                 c.provider = p.to_string();
             }
             if let Some(k) = v["api_key"].as_str() {
@@ -827,7 +873,11 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
                 Err(e) => return respond_json(req, 400, json!({"error": e})),
             };
             let c = cfg.lock().unwrap().clone();
-            if c.image_key.is_empty() {
+            let via_kie = kie::image_provider(&c) == "kie";
+            if via_kie && c.kie_key.is_empty() {
+                return respond_json(req, 400, json!({"error": "The KIE.ai key is not set. Open Settings, section KIE.ai."}));
+            }
+            if !via_kie && c.image_key.is_empty() {
                 return respond_json(req, 400, json!({"error": "The Gemini key for images is not set. Open Settings, section Thumbnail images."}));
             }
             let prompt = v["prompt"].as_str().unwrap_or("").trim().to_string();
@@ -843,8 +893,9 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
                 },
                 None => "free".to_string(),
             };
-            let model = gemini::image_model(&c);
-            match gemini::image(&c.image_key, &model, &prompt) {
+            let model = if via_kie { kie::image_model(&c) } else { gemini::image_model(&c) };
+            let made = if via_kie { kie::image(&c.kie_key, &model, &prompt) } else { gemini::image(&c.image_key, &model, &prompt) };
+            match made {
                 Ok((bytes, ext)) => {
                     let gdir = dir.join("gen");
                     let _ = fs::create_dir_all(&gdir);
@@ -853,7 +904,7 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
                     }
                     let name = format!("{stem}-{slot}.{ext}");
                     match fs::write(gdir.join(&name), &bytes) {
-                        Ok(()) => respond_json(req, 200, json!({"file": name, "v": now(), "model": model})),
+                        Ok(()) => respond_json(req, 200, json!({"file": name, "v": now(), "model": model, "provider": if via_kie { "kie" } else { "gemini" }})),
                         Err(e) => respond_json(req, 500, json!({"error": format!("Could not save the image: {e}")})),
                     }
                 }
@@ -886,7 +937,21 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
             if !body.starts_with(&[0xFF, 0xD8, 0xFF]) {
                 return respond_json(req, 400, json!({"error": "Not a JPG image."}));
             }
-            let path = eleven::out_dir(dir).join(format!("{}.jpg", file_slug(&name, "thumbnail")));
+            // With pack=<slug> the finished thumbnail goes into that video's edit pack folder.
+            let path = match query_param(req.url(), "pack") {
+                Some(p) => {
+                    let Some(slug) = pack::slug(&p) else {
+                        return respond_json(req, 400, json!({"error": "The folder name is not valid."}));
+                    };
+                    let d = pack::root(dir).join(slug);
+                    let _ = fs::create_dir_all(&d);
+                    for old in ["png", "webp"] {
+                        let _ = fs::remove_file(d.join(format!("thumbnail.{old}")));
+                    }
+                    d.join("thumbnail.jpg")
+                }
+                None => eleven::out_dir(dir).join(format!("{}.jpg", file_slug(&name, "thumbnail"))),
+            };
             match fs::write(&path, &body) {
                 Ok(()) => respond_json(req, 200, json!({"path": path.display().to_string()})),
                 Err(e) => respond_json(req, 500, json!({"error": format!("Could not save the JPG: {e}")})),
@@ -966,12 +1031,81 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
             }
         }
         (Method::Post, "/api/open-folder") => {
-            let d = eleven::out_dir(dir);
-            #[cfg(windows)]
-            let _ = Command::new("explorer.exe").arg(&d).spawn();
-            #[cfg(not(windows))]
-            let _ = Command::new("xdg-open").arg(&d).spawn();
+            open_folder(&eleven::out_dir(dir));
             respond_json(req, 200, json!({"ok": true}))
+        }
+        (Method::Post, "/api/kie/test") => {
+            let v = match read_json(&mut req, 64 * 1024) {
+                Ok(v) => v,
+                Err(e) => return respond_json(req, 400, json!({"error": e})),
+            };
+            let key = v["key"].as_str().map(str::trim).filter(|k| !k.is_empty() && k.len() < 200).map(String::from)
+                .unwrap_or_else(|| cfg.lock().unwrap().kie_key.clone());
+            if key.is_empty() {
+                return respond_json(req, 400, json!({"error": "The KIE.ai key is empty."}));
+            }
+            // Reading the balance is free and proves the key works.
+            match kie::credits(&key) {
+                Ok(n) => respond_json(req, 200, json!({"ok": true, "credits": n, "usd": kie::usd(n)})),
+                Err(e) => respond_json(req, 502, json!({"ok": false, "error": e})),
+            }
+        }
+        (Method::Get, "/api/kie/credits") => {
+            let key = cfg.lock().unwrap().kie_key.clone();
+            if key.is_empty() {
+                return respond_json(req, 400, json!({"error": "The KIE.ai key is empty."}));
+            }
+            match kie::credits(&key) {
+                Ok(n) => respond_json(req, 200, json!({"credits": n, "usd": kie::usd(n)})),
+                Err(e) => respond_json(req, 502, json!({"error": e})),
+            }
+        }
+        (Method::Post, "/api/kie/clip") => {
+            let v = match read_json(&mut req, 64 * 1024) {
+                Ok(v) => v,
+                Err(e) => return respond_json(req, 400, json!({"error": e})),
+            };
+            let c = cfg.lock().unwrap().clone();
+            match pack::clip(&c, dir, &v) {
+                Ok(out) => respond_json(req, 200, out),
+                Err((code, e)) => respond_json(req, code, json!({"error": e})),
+            }
+        }
+        (Method::Post, "/api/pack/voice") => {
+            let v = match read_json(&mut req, 512 * 1024) {
+                Ok(v) => v,
+                Err(e) => return respond_json(req, 400, json!({"error": e})),
+            };
+            let c = cfg.lock().unwrap().clone();
+            match pack::voice(&c, dir, &v) {
+                Ok(out) => respond_json(req, 200, out),
+                Err((code, e)) => respond_json(req, code, json!({"error": e})),
+            }
+        }
+        (Method::Post, "/api/pack/finish") => {
+            let v = match read_json(&mut req, 4 * 1024 * 1024) {
+                Ok(v) => v,
+                Err(e) => return respond_json(req, 400, json!({"error": e})),
+            };
+            match pack::finish(dir, &v) {
+                Ok(out) => respond_json(req, 200, out),
+                Err((code, e)) => respond_json(req, code, json!({"error": e})),
+            }
+        }
+        (Method::Post, "/api/pack/open") => {
+            let v = match read_json(&mut req, 64 * 1024) {
+                Ok(v) => v,
+                Err(e) => return respond_json(req, 400, json!({"error": e})),
+            };
+            let Some(slug) = pack::slug(v["slug"].as_str().unwrap_or("")) else {
+                return respond_json(req, 400, json!({"error": "The folder name is not valid."}));
+            };
+            let d = pack::root(dir).join(&slug);
+            if !d.is_dir() {
+                return respond_json(req, 404, json!({"error": "This edit pack folder does not exist yet."}));
+            }
+            open_folder(&d);
+            respond_json(req, 200, json!({"ok": true, "dir": d.display().to_string()}))
         }
         // Backup: profile, settings (never the API key), Studio data, plans and AI results.
         (Method::Get, "/api/backup") => {
@@ -1126,6 +1260,13 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
     }
 }
 
+fn open_folder(d: &Path) {
+    #[cfg(windows)]
+    let _ = Command::new("explorer.exe").arg(d).spawn();
+    #[cfg(not(windows))]
+    let _ = Command::new("xdg-open").arg(d).spawn();
+}
+
 /// Plan ids become file names, so only short alphanumeric ids are accepted.
 fn thumb_stem(id: &str) -> Option<String> {
     (!id.is_empty() && id.len() <= 40 && id.chars().all(|c| c.is_ascii_alphanumeric())).then(|| id.to_string())
@@ -1205,8 +1346,10 @@ fn active_provider(c: &Config) -> &'static str {
         "manual" => "",
         "claude" if !c.api_key.is_empty() => "claude",
         "gemini" if !c.gemini_key.is_empty() => "gemini",
+        "kie" if !c.kie_key.is_empty() => "kie",
         _ if !c.api_key.is_empty() => "claude",
         _ if !c.gemini_key.is_empty() => "gemini",
+        _ if !c.kie_key.is_empty() => "kie",
         _ => "",
     }
 }
@@ -1214,6 +1357,9 @@ fn active_provider(c: &Config) -> &'static str {
 fn generate(c: &Config, prompt: &str, test: bool) -> (u16, Value) {
     if active_provider(c) == "gemini" {
         return gemini::generate(c, prompt, test);
+    }
+    if active_provider(c) == "kie" {
+        return kie::generate(c, prompt, test);
     }
     if c.api_key.is_empty() {
         return (400, json!({"error": "The API key is empty. Open Settings and paste your Anthropic API key."}));
@@ -1378,7 +1524,7 @@ mod gemini {
             .set("x-goog-api-key", key)
             .call();
         let v: Value = match resp {
-            Ok(r) => r.into_json().map_err(|e| (0, e.to_string()))?,
+            Ok(r) => r.into_json().map_err(|_| (502, "KIE.ai sent a reply this app could not read. Try again.".to_string()))?,
             Err(ureq::Error::Status(code, r)) => return Err((code, r.into_string().unwrap_or_default())),
             Err(e) => return Err((0, e.to_string())),
         };
@@ -1636,7 +1782,14 @@ mod gemini {
 
 mod eleven {
     use super::*;
-    const BASE: &str = "https://api.elevenlabs.io";
+    /// Development builds can point voice calls at a local stand-in server.
+    fn base() -> String {
+        #[cfg(debug_assertions)]
+        if let Ok(b) = std::env::var("TERRA_ELEVEN_BASE") {
+            return b;
+        }
+        "https://api.elevenlabs.io".to_string()
+    }
     /// Characters per request; well under every model's limit, and short
     /// enough that one failed chunk is cheap to retry.
     const CHUNK: usize = 2400;
@@ -1658,10 +1811,11 @@ mod eleven {
         let lower = detail.to_lowercase();
         match code {
             0 => format!("Could not reach ElevenLabs. Check your internet connection. ({detail})"),
-            401 => "The ElevenLabs API key was rejected or lacks this permission. Check the key in Settings.".into(),
+            // ElevenLabs reports a used-up quota with code 401, the same code as a bad key.
             _ if code == 402 || lower.contains("quota") || lower.contains("credits") => {
                 "The ElevenLabs character quota is used up for this period.".into()
             }
+            401 => "The ElevenLabs API key was rejected or lacks this permission. Check the key in Settings.".into(),
             404 => "That ElevenLabs voice was not found. Choose another voice in Settings.".into(),
             429 => "ElevenLabs is busy or the request limit was reached. Try again shortly.".into(),
             _ => format!("ElevenLabs failed (code {code}): {detail}"),
@@ -1669,7 +1823,7 @@ mod eleven {
     }
 
     fn get(key: &str, path: &str) -> Result<Value, String> {
-        match agent().get(&format!("{BASE}{path}")).set("xi-api-key", key).call() {
+        match agent().get(&format!("{}{path}", base())).set("xi-api-key", key).call() {
             Ok(r) => r.into_json().map_err(|e| friendly(0, &e.to_string())),
             Err(ureq::Error::Status(code, r)) => Err(friendly(code, &r.into_string().unwrap_or_default())),
             Err(e) => Err(friendly(0, &e.to_string())),
@@ -1785,7 +1939,7 @@ mod eleven {
                 body["next_text"] = json!(next.chars().take(500).collect::<String>());
             }
             let resp = agent()
-                .post(&format!("{BASE}/v1/text-to-speech/{voice}?output_format=mp3_44100_128"))
+                .post(&format!("{}/v1/text-to-speech/{voice}?output_format=mp3_44100_128", base()))
                 .set("xi-api-key", &c.eleven_key)
                 .set("content-type", "application/json")
                 .send_json(body);
@@ -1809,9 +1963,120 @@ mod eleven {
         Ok(json!({"file": name, "path": path.display().to_string(), "chars": chars, "chunks": pieces.len(), "bytes": audio.len()}))
     }
 
+    /// Audio with the time of every character, for subtitles that match the voice.
+    pub struct Timed {
+        pub audio: Vec<u8>,
+        pub chars: Vec<String>,
+        pub starts: Vec<f64>,
+        pub ends: Vec<f64>,
+        pub seconds: f64,
+        pub count: usize,
+        pub chunks: usize,
+    }
+
+    /// Length of a constant bitrate MP3, read from its first frame header.
+    pub fn mp3_seconds(b: &[u8]) -> Option<f64> {
+        const V1: [u32; 15] = [0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320];
+        const V2: [u32; 15] = [0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160];
+        let mut i = 0;
+        if b.len() > 10 && &b[..3] == b"ID3" {
+            i = 10 + b[6..10].iter().fold(0usize, |n, x| (n << 7) | (*x & 0x7F) as usize);
+        }
+        let stop = b.len().min(i + 65536);
+        while i + 4 <= stop {
+            if b[i] == 0xFF && b[i + 1] & 0xE0 == 0xE0 {
+                let (version, layer, rate) = ((b[i + 1] >> 3) & 3, (b[i + 1] >> 1) & 3, (b[i + 2] >> 4) as usize);
+                if layer == 1 && version != 1 && (1..15).contains(&rate) {
+                    let kbps = if version == 3 { V1[rate] } else { V2[rate] };
+                    return Some((b.len() - i) as f64 * 8.0 / (kbps as f64 * 1000.0));
+                }
+            }
+            i += 1;
+        }
+        None
+    }
+
+    /// Same voice, model and chunking as speak(), through the endpoint that also returns timing.
+    /// Each chunk's times start at zero, so they are shifted by the audio that came before.
+    pub fn speak_timed(c: &Config, text: &str) -> Result<Timed, String> {
+        if c.eleven_key.is_empty() {
+            return Err("The ElevenLabs API key is empty. Open Settings, section Voice.".into());
+        }
+        if c.eleven_voice.is_empty() {
+            return Err("Choose an ElevenLabs voice in Settings first.".into());
+        }
+        let pieces = chunks(&[text.to_string()]);
+        if pieces.is_empty() {
+            return Err("The script is empty.".into());
+        }
+        let model = if c.eleven_model.is_empty() { DEFAULT_MODEL } else { c.eleven_model.as_str() };
+        let mut out = Timed { audio: Vec::new(), chars: Vec::new(), starts: Vec::new(), ends: Vec::new(), seconds: 0.0, count: 0, chunks: pieces.len() };
+        for (i, text) in pieces.iter().enumerate() {
+            let mut body = json!({"text": text, "model_id": model});
+            if i > 0 {
+                body["previous_text"] = json!(pieces[i - 1].chars().rev().take(500).collect::<String>().chars().rev().collect::<String>());
+            }
+            if let Some(next) = pieces.get(i + 1) {
+                body["next_text"] = json!(next.chars().take(500).collect::<String>());
+            }
+            let resp = agent()
+                .post(&format!("{}/v1/text-to-speech/{}/with-timestamps?output_format=mp3_44100_128", base(), c.eleven_voice))
+                .set("xi-api-key", &c.eleven_key)
+                .set("content-type", "application/json")
+                .send_json(body);
+            let v: Value = match resp {
+                Ok(r) => r.into_json().map_err(|e| friendly(0, &e.to_string()))?,
+                Err(ureq::Error::Status(code, r)) => {
+                    let msg = friendly(code, &r.into_string().unwrap_or_default());
+                    return Err(if i == 0 { msg } else { format!("{msg} (stopped at part {} of {})", i + 1, pieces.len()) });
+                }
+                Err(e) => return Err(friendly(0, &e.to_string())),
+            };
+            let audio = v["audio_base64"].as_str().and_then(base64_decode).filter(|a| !a.is_empty())
+                .ok_or_else(|| "ElevenLabs sent no audio. Try again.".to_string())?;
+            let al = if v["alignment"].is_object() { &v["alignment"] } else { &v["normalized_alignment"] };
+            let times = |key: &str| -> Vec<f64> { al[key].as_array().into_iter().flatten().map(|x| x.as_f64().unwrap_or(0.0)).collect() };
+            let (starts, ends) = (times("character_start_times_seconds"), times("character_end_times_seconds"));
+            let chars: Vec<String> = al["characters"].as_array().into_iter().flatten().map(|x| x.as_str().unwrap_or("").to_string()).collect();
+            let n = chars.len().min(starts.len()).min(ends.len());
+            let offset = out.seconds;
+            if i > 0 {
+                // A chunk always starts a new paragraph, so the subtitle breaks there too.
+                out.chars.push("\n".to_string());
+                out.starts.push(offset);
+                out.ends.push(offset);
+            }
+            out.chars.extend(chars.into_iter().take(n));
+            out.starts.extend(starts.iter().take(n).map(|t| t + offset));
+            out.ends.extend(ends.iter().take(n).map(|t| t + offset));
+            let spoken = ends.iter().take(n).cloned().fold(0.0, f64::max);
+            out.seconds += mp3_seconds(&audio).unwrap_or(spoken).max(spoken);
+            out.count += text.chars().count();
+            out.audio.extend_from_slice(&audio);
+        }
+        Ok(out)
+    }
+
     #[cfg(test)]
     mod tests {
         use super::*;
+        #[test]
+        fn quota_is_not_reported_as_a_bad_key() {
+            assert!(friendly(401, r#"{"detail":{"status":"quota_exceeded","message":"This request exceeds your quota."}}"#).contains("quota is used up"));
+            assert!(friendly(401, r#"{"detail":{"status":"invalid_api_key","message":"Invalid API key"}}"#).contains("rejected"));
+        }
+        #[test]
+        fn mp3_length_from_first_frame() {
+            // MPEG-1 Layer III, 128 kbps, 44.1 kHz: 16,000 bytes per second.
+            let mut b = vec![0xFF, 0xFB, 0x90, 0x00];
+            b.resize(32_000, 0);
+            assert_eq!(mp3_seconds(&b), Some(2.0));
+            let mut tagged = b"ID3\x04\x00\x00\x00\x00\x00\x0A".to_vec();
+            tagged.extend_from_slice(&[0u8; 10]);
+            tagged.extend_from_slice(&b);
+            assert_eq!(mp3_seconds(&tagged), Some(2.0));
+            assert_eq!(mp3_seconds(b"not audio"), None);
+        }
         #[test]
         fn chunks_respect_limit_and_keep_text() {
             let long = "This is a sentence. ".repeat(400);
@@ -1827,6 +2092,715 @@ mod eleven {
         fn file_names_are_safe() {
             let n = file_name("Megistotherium: the Butcher / ../x");
             assert!(n.starts_with("megistotherium-the-butcher-x-") && n.ends_with(".mp3"));
+        }
+    }
+}
+
+// KIE.ai: Claude text, images and video clips through one prepaid key
+
+mod kie {
+    use super::*;
+    pub const TEXT_DEFAULT: &str = "claude-sonnet-5-5";
+    pub const IMAGE_DEFAULT: &str = "nano-banana-2";
+
+    /// Development builds can point KIE calls at a local stand-in server.
+    fn base() -> String {
+        #[cfg(debug_assertions)]
+        if let Ok(b) = std::env::var("TERRA_KIE_BASE") {
+            return b;
+        }
+        "https://api.kie.ai".to_string()
+    }
+
+    fn agent() -> ureq::Agent {
+        ureq::AgentBuilder::new()
+            .try_proxy_from_env(true)
+            .timeout_connect(Duration::from_secs(20))
+            .timeout_read(Duration::from_secs(600))
+            .build()
+    }
+
+    /// Short read timeout so a stalled poll cannot outlast the task time limit.
+    fn poll_agent() -> ureq::Agent {
+        ureq::AgentBuilder::new()
+            .try_proxy_from_env(true)
+            .timeout_connect(Duration::from_secs(20))
+            .timeout_read(Duration::from_secs(30))
+            .redirects(0)
+            .build()
+    }
+
+    pub fn text_model(c: &Config) -> String {
+        if c.kie_model.is_empty() { TEXT_DEFAULT.to_string() } else { c.kie_model.clone() }
+    }
+
+    pub fn image_model(c: &Config) -> String {
+        if c.kie_image_model.is_empty() { IMAGE_DEFAULT.to_string() } else { c.kie_image_model.clone() }
+    }
+
+    pub fn image_provider(c: &Config) -> &'static str {
+        if c.image_provider == "kie" { "kie" } else { "gemini" }
+    }
+
+    /// KIE's published rate: one credit is about half a US cent.
+    pub fn usd(credits: f64) -> f64 {
+        (credits * 0.5).round() / 100.0
+    }
+
+    pub fn friendly(code: u16, msg: &str) -> String {
+        let msg: String = msg.chars().take(300).collect();
+        match code {
+            0 => format!("Could not reach KIE.ai. Check your internet connection. ({msg})"),
+            401 => "The KIE.ai key was rejected. Check the key in Settings.".into(),
+            402 => "The KIE.ai credit has run out. Top up at kie.ai, then try again.".into(),
+            404 => "KIE.ai does not know this model. Check the model name in Settings.".into(),
+            408 => "KIE.ai took too long to answer. Try again.".into(),
+            422 => format!("KIE.ai did not accept the request. Original message: {msg}"),
+            429 => "Too many requests to KIE.ai. Wait a moment, then try again.".into(),
+            455 => "KIE.ai is under maintenance. Try again later.".into(),
+            501 => format!("KIE.ai could not make this. Try again, or change the wording. Original message: {msg}"),
+            502 if msg.starts_with("KIE.ai sent a reply") => msg,
+            500..=599 => "KIE.ai's servers are busy. Try again in a little while.".into(),
+            _ => format!("The KIE.ai request failed (code {code}). Original message: {msg}"),
+        }
+    }
+
+    /// The error inside a reply body, if any. KIE answers HTTP 200 with its own
+    /// "code" on many failures, and the Claude route can answer in Anthropic's error shape.
+    fn body_error(v: &Value, http: u16) -> Option<(u16, String)> {
+        let code = v["code"].as_u64().or_else(|| v["code"].as_str().and_then(|s| s.parse().ok()));
+        if let Some(code) = code.filter(|c| *c != 200) {
+            let msg = v["msg"].as_str().or(v["message"].as_str()).unwrap_or("");
+            return Some((code.min(999) as u16, msg.to_string()));
+        }
+        if !v["error"].is_null() {
+            let msg = v["error"]["message"].as_str().or(v["error"].as_str()).unwrap_or("");
+            return Some((if http == 200 { 500 } else { http }, msg.to_string()));
+        }
+        None
+    }
+
+    fn send(req: ureq::Request, key: &str, body: Option<Value>) -> Result<Value, (u16, String)> {
+        let req = req.set("Authorization", &format!("Bearer {key}"));
+        let resp = match body {
+            Some(b) => req.set("content-type", "application/json").send_json(b),
+            None => req.call(),
+        };
+        match resp {
+            Ok(r) => {
+                let v: Value = r.into_json().map_err(|e| (0, e.to_string()))?;
+                match body_error(&v, 200) {
+                    Some(e) => Err(e),
+                    None => Ok(v),
+                }
+            }
+            Err(ureq::Error::Status(code, r)) => {
+                let text = r.into_string().unwrap_or_default();
+                let parsed = serde_json::from_str::<Value>(&text).ok().and_then(|v| body_error(&v, code));
+                Err(parsed.unwrap_or((code, text)))
+            }
+            Err(e) => Err((0, e.to_string())),
+        }
+    }
+
+    /// Remaining credits on the account. Free, so it doubles as the key test.
+    pub fn credits(key: &str) -> Result<f64, String> {
+        let v = send(agent().get(&format!("{}/api/v1/chat/credit", base())), key, None).map_err(|(c, m)| friendly(c, &m))?;
+        v["data"].as_f64().ok_or_else(|| "KIE.ai sent no credit balance. Try again.".to_string())
+    }
+
+    pub fn generate(c: &Config, prompt: &str, test: bool) -> (u16, Value) {
+        if c.kie_key.is_empty() {
+            return (400, json!({"error": "The KIE.ai key is empty. Open Settings and paste your KIE.ai key."}));
+        }
+        if prompt.trim().is_empty() {
+            return (400, json!({"error": "The request is empty."}));
+        }
+        let model = text_model(c);
+        // KIE streams by default and stops at 4,096 tokens unless told otherwise.
+        let body = json!({
+            "model": model,
+            "max_tokens": if test { 256 } else { 16000 },
+            "stream": false,
+            "messages": [{"role": "user", "content": [{"type": "text", "text": prompt}]}],
+        });
+        let resp = match send(agent().post(&format!("{}/claude/v1/messages", base())), &c.kie_key, Some(body)) {
+            Ok(v) => v,
+            Err((code, msg)) => return (502, json!({"error": friendly(code, &msg), "provider": "kie"})),
+        };
+        let stop = resp["stop_reason"].as_str().unwrap_or("");
+        let text: String = resp["content"]
+            .as_array()
+            .into_iter()
+            .flatten()
+            .filter(|b| b["type"] == "text")
+            .filter_map(|b| b["text"].as_str())
+            .collect();
+        let model = resp["model"].as_str().map(String::from).unwrap_or(model);
+        let credits = resp["credits_consumed"].clone();
+        if stop == "refusal" {
+            return (422, json!({"error": "Claude declined this request. Change the topic or the wording, then try again.",
+                "provider": "kie", "model": model, "usage": usage(&resp), "credits": credits}));
+        }
+        if text.trim().is_empty() {
+            let why = if stop == "max_tokens" {
+                "The answer was cut off before it finished. Try again."
+            } else {
+                "KIE.ai sent no answer. Try again."
+            };
+            return (502, json!({"error": why, "provider": "kie", "model": model, "usage": usage(&resp), "credits": credits}));
+        }
+        (200, json!({"text": text, "provider": "kie", "model": model, "stop_reason": stop, "usage": usage(&resp), "credits": credits}))
+    }
+
+    /// The first result URL of a finished task record.
+    pub fn result_url(data: &Value) -> Option<String> {
+        // resultJson is JSON inside a string; an object is accepted too in case KIE changes it.
+        let parsed = match &data["resultJson"] {
+            Value::String(s) => serde_json::from_str::<Value>(s).ok()?,
+            other => other.clone(),
+        };
+        parsed["resultUrls"][0].as_str().filter(|u| !u.is_empty()).map(String::from)
+    }
+
+    /// Creates a task, waits for it and returns the first result URL with the credits it used.
+    fn run_task(key: &str, model: &str, input: Value, max_secs: u64, what: &str) -> Result<(String, Value), String> {
+        let made = send(poll_agent().post(&format!("{}/api/v1/jobs/createTask", base())), key, Some(json!({"model": model, "input": input})))
+            .map_err(|(c, m)| friendly(c, &m))?;
+        let id = made["data"]["taskId"].as_str().filter(|s| !s.is_empty() && s.len() < 200 && s.chars().all(|ch| ch.is_ascii_alphanumeric() || "-_".contains(ch)))
+            .ok_or_else(|| "KIE.ai did not start the task. Try again.".to_string())?
+            .to_string();
+        let started = std::time::Instant::now();
+        let mut wait = 2000u64;
+        let mut misses = 0;
+        loop {
+            std::thread::sleep(Duration::from_millis(wait));
+            wait = (wait + 500).min(5000);
+            match send(poll_agent().get(&format!("{}/api/v1/jobs/recordInfo?taskId={id}", base())), key, None) {
+                Ok(v) => {
+                    misses = 0;
+                    let d = &v["data"];
+                    match d["state"].as_str().unwrap_or("") {
+                        "success" => {
+                            return result_url(d)
+                                .map(|u| (u, d["creditsConsumed"].clone()))
+                                .ok_or_else(|| format!("KIE.ai finished but sent no {what}. Try again."));
+                        }
+                        "fail" => {
+                            let why: String = d["failMsg"].as_str().unwrap_or("").chars().take(300).collect();
+                            return Err(if why.is_empty() {
+                                format!("KIE.ai could not make this {what}. Try again, or change the wording.")
+                            } else {
+                                format!("KIE.ai could not make this {what}. Original message: {why}")
+                            });
+                        }
+                        _ => {}
+                    }
+                }
+                // A new task can be unknown for a moment, and one dropped poll should not lose a paid task.
+                Err((code, msg)) => {
+                    misses += 1;
+                    if !matches!(code, 0 | 404 | 422 | 429 | 500..=599) || misses > 5 {
+                        return Err(friendly(code, &msg));
+                    }
+                }
+            }
+            if started.elapsed().as_secs() >= max_secs {
+                return Err(format!("KIE.ai did not finish the {what} within {} minutes. Try again in a little while.", max_secs / 60));
+            }
+        }
+    }
+
+    /// Result files live on another host, so the key is not sent with the download.
+    fn download(url: &str, limit: u64) -> Result<Vec<u8>, String> {
+        let trusted = |u: &str| {
+            u.starts_with("https://")
+                || (cfg!(debug_assertions) && u.strip_prefix("http://127.0.0.1:").map_or(false, |r| r.starts_with(|c: char| c.is_ascii_digit())))
+        };
+        // Redirects are followed by hand so every hop is checked, not only the first URL.
+        let dl = ureq::AgentBuilder::new().try_proxy_from_env(true).timeout_connect(Duration::from_secs(20))
+            .timeout_read(Duration::from_secs(120)).redirects(0).build();
+        let mut cur = url.to_string();
+        let mut hops = 0;
+        let resp = loop {
+            if !trusted(&cur) {
+                return Err("KIE.ai sent a download address this app does not trust.".into());
+            }
+            match dl.get(&cur).call() {
+                Ok(r) if (300..400).contains(&r.status()) && hops < 5 => {
+                    cur = r.header("location").unwrap_or("").to_string();
+                    hops += 1;
+                }
+                Ok(r) if (300..400).contains(&r.status()) => return Err("KIE.ai sent a download address this app does not trust.".into()),
+                Ok(r) => break r,
+                Err(ureq::Error::Status(code, _)) => return Err(format!("Could not download the result from KIE.ai (code {code}). Try again.")),
+                Err(e) => return Err(friendly(0, &e.to_string())),
+            }
+        };
+        let mut buf = Vec::new();
+        resp.into_reader().take(limit + 1).read_to_end(&mut buf).map_err(|e| friendly(0, &e.to_string()))?;
+        if buf.len() as u64 > limit {
+            return Err("The file from KIE.ai is too large.".into());
+        }
+        Ok(buf)
+    }
+
+    /// One 16:9 image at 1K, about 8 credits with nano-banana-2.
+    pub fn image(key: &str, model: &str, prompt: &str) -> Result<(Vec<u8>, &'static str), String> {
+        let input = json!({"prompt": prompt, "aspect_ratio": "16:9", "resolution": "1K", "output_format": "jpg"});
+        let (url, _) = run_task(key, model, input, 240, "image")?;
+        let bytes = download(&url, 25 * 1024 * 1024)?;
+        let ext = match bytes.get(..12) {
+            Some(h) if h.starts_with(&[0xFF, 0xD8, 0xFF]) => "jpg",
+            Some(h) if h.starts_with(b"\x89PNG") => "png",
+            Some(h) if h.starts_with(b"RIFF") && &h[8..12] == b"WEBP" => "webp",
+            _ => return Err("KIE.ai sent a file that is not an image. Click Redo.".into()),
+        };
+        Ok((bytes, ext))
+    }
+
+    /// One 8 second 1080p clip with Veo 3.1 Lite, about 35 credits.
+    pub fn clip(key: &str, prompt: &str) -> Result<(Vec<u8>, Value), String> {
+        let input = json!({"prompt": prompt, "model": "veo3_lite", "duration": 8, "aspect_ratio": "16:9",
+            "resolution": "1080p", "generation_type": "TEXT_2_VIDEO"});
+        let (url, credits) = run_task(key, "veo-3-1", input, 600, "clip")?;
+        let bytes = download(&url, 300 * 1024 * 1024)?;
+        if bytes.get(4..8) != Some(b"ftyp") {
+            return Err("KIE.ai sent a file that is not an MP4 video. Try again.".into());
+        }
+        Ok((bytes, credits))
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+        #[test]
+        fn body_codes_become_plain_messages() {
+            assert_eq!(body_error(&json!({"code": 200, "msg": "success", "data": 5}), 200), None);
+            assert_eq!(body_error(&json!({"code": 402, "msg": "Insufficient credits"}), 200), Some((402, "Insufficient credits".into())));
+            assert_eq!(body_error(&json!({"code": "401", "msg": "bad"}), 200), Some((401, "bad".into())));
+            assert_eq!(body_error(&json!({"type": "error", "error": {"type": "x", "message": "boom"}}), 400), Some((400, "boom".into())));
+            assert_eq!(body_error(&json!({"content": [], "usage": {}}), 200), None);
+            assert!(friendly(401, "").contains("rejected"));
+            assert!(friendly(402, "").contains("Top up"));
+            assert!(friendly(429, "").contains("Wait"));
+            assert!(friendly(455, "").contains("maintenance"));
+            assert!(friendly(501, "nsfw").contains("nsfw"));
+        }
+        #[test]
+        fn result_json_is_a_string() {
+            let d = json!({"state": "success", "resultJson": "{\"resultUrls\":[\"https://x.example/a.jpg\"],\"resultObject\":null}"});
+            assert_eq!(result_url(&d).as_deref(), Some("https://x.example/a.jpg"));
+            assert_eq!(result_url(&json!({"resultJson": {"resultUrls": ["https://y/b.png"]}})).as_deref(), Some("https://y/b.png"));
+            assert_eq!(result_url(&json!({"resultJson": "{\"resultUrls\":[]}"})), None);
+            assert_eq!(result_url(&json!({"resultJson": "not json"})), None);
+        }
+        #[test]
+        fn defaults_and_dollars() {
+            let mut c = Config::default();
+            assert_eq!(text_model(&c), "claude-sonnet-5-5");
+            assert_eq!(image_model(&c), "nano-banana-2");
+            assert_eq!(image_provider(&c), "gemini");
+            assert_eq!(active_provider(&c), "");
+            c.kie_key = "k".into();
+            assert_eq!(active_provider(&c), "kie");
+            c.api_key = "a".into();
+            assert_eq!(active_provider(&c), "claude");
+            c.provider = "kie".into();
+            assert_eq!(active_provider(&c), "kie");
+            assert_eq!(usd(1840.0), 9.2);
+            assert_eq!(usd(8.0), 0.04);
+        }
+    }
+}
+
+// Edit pack: one folder per video with voice over per act, subtitles, text files and the thumbnail
+
+mod pack {
+    use super::*;
+    const CUE_CHARS: usize = 84;
+    const CUE_SECS: f64 = 7.0;
+    const LINE_CHARS: usize = 42;
+    const TEXT_EXT: [&str; 5] = ["txt", "md", "json", "csv", "srt"];
+
+    #[derive(Debug, Clone, PartialEq)]
+    pub struct Cue {
+        pub start: f64,
+        pub end: f64,
+        pub text: String,
+    }
+
+    type Fail = (u16, String);
+
+    pub fn root(app: &Path) -> PathBuf {
+        eleven::out_dir(app).join("Terra Studio")
+    }
+
+    /// Names Windows reserves for devices; a file or folder may not use them.
+    fn reserved(stem: &str) -> bool {
+        let s = stem.to_ascii_lowercase();
+        ["con", "prn", "aux", "nul"].contains(&s.as_str())
+            || (s.len() == 4 && (s.starts_with("com") || s.starts_with("lpt")) && s.as_bytes()[3].is_ascii_digit())
+    }
+
+    /// Folder name for one video: lowercase letters, digits and single hyphens.
+    pub fn slug(s: &str) -> Option<String> {
+        let mut out = String::new();
+        for c in s.trim().chars() {
+            if c.is_ascii_alphanumeric() {
+                out.push(c.to_ascii_lowercase());
+            } else if !out.is_empty() && !out.ends_with('-') {
+                out.push('-');
+            }
+            if out.len() >= 60 {
+                break;
+            }
+        }
+        let out = out.trim_end_matches('-').to_string();
+        (!out.is_empty() && !reserved(&out)).then_some(out)
+    }
+
+    /// Accepts a file name only if it is already safe; nothing is rewritten.
+    pub fn safe_file(name: &str) -> Option<String> {
+        let ok = !name.is_empty()
+            && name.len() <= 80
+            && name.chars().all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '.')
+            && !name.contains("..")
+            && !name.starts_with('.')
+            && !name.ends_with('.')
+            && !reserved(name.split('.').next().unwrap_or(""));
+        ok.then(|| name.to_string())
+    }
+
+    fn round3(x: f64) -> f64 {
+        (x * 1000.0).round() / 1000.0
+    }
+
+    /// Subtitle lines from per-character timing: a new cue at each sentence end,
+    /// and earlier when a cue would pass CUE_CHARS characters or CUE_SECS seconds.
+    pub fn build_cues(chars: &[String], starts: &[f64], ends: &[f64]) -> Vec<Cue> {
+        struct Word {
+            text: String,
+            start: f64,
+            end: f64,
+            stop: bool,
+        }
+        let n = chars.len().min(starts.len()).min(ends.len());
+        let mut words: Vec<Word> = Vec::new();
+        let mut cur: Option<Word> = None;
+        for i in 0..n {
+            let ch = &chars[i];
+            if ch.chars().all(char::is_whitespace) {
+                if let Some(w) = cur.take() {
+                    words.push(w);
+                }
+                if ch.contains('\n') {
+                    if let Some(last) = words.last_mut() {
+                        last.stop = true;
+                    }
+                }
+                continue;
+            }
+            match cur.as_mut() {
+                Some(w) => {
+                    w.text.push_str(ch);
+                    w.end = w.end.max(ends[i]);
+                }
+                None => cur = Some(Word { text: ch.clone(), start: starts[i], end: ends[i].max(starts[i]), stop: false }),
+            }
+        }
+        words.extend(cur);
+        let mut cues: Vec<Cue> = Vec::new();
+        let mut text = String::new();
+        let (mut s, mut e) = (0.0f64, 0.0f64);
+        let flush = |text: &mut String, s: f64, e: f64, cues: &mut Vec<Cue>| {
+            if text.is_empty() {
+                return;
+            }
+            let start = round3(s.max(cues.last().map_or(0.0, |c| c.end)));
+            cues.push(Cue { start, end: round3(e.max(start + 0.05)), text: std::mem::take(text) });
+        };
+        for w in words {
+            let closes = w.stop || w.text.trim_end_matches(['"', '\'', ')', ']', '\u{201d}', '\u{2019}']).ends_with(['.', '!', '?', '\u{2026}']);
+            if !text.is_empty() && (text.chars().count() + 1 + w.text.chars().count() > CUE_CHARS || w.end - s > CUE_SECS) {
+                flush(&mut text, s, e, &mut cues);
+            }
+            if text.is_empty() {
+                s = w.start;
+            } else {
+                text.push(' ');
+            }
+            text.push_str(&w.text);
+            e = w.end;
+            if closes {
+                flush(&mut text, s, e, &mut cues);
+            }
+        }
+        flush(&mut text, s, e, &mut cues);
+        cues
+    }
+
+    fn stamp(t: f64) -> String {
+        let ms = (t.max(0.0) * 1000.0).round() as u64;
+        format!("{:02}:{:02}:{:02},{:03}", ms / 3_600_000, ms / 60_000 % 60, ms / 1000 % 60, ms % 1000)
+    }
+
+    /// At most two lines, split at the word gap that makes them most equal.
+    fn two_lines(text: &str) -> String {
+        let words: Vec<&str> = text.split_whitespace().collect();
+        let joined = words.join(" ");
+        let total = joined.chars().count();
+        if total <= LINE_CHARS || words.len() < 2 {
+            return joined;
+        }
+        let mut best = (usize::MAX, 1);
+        let mut left = 0;
+        for (i, w) in words.iter().enumerate().take(words.len() - 1) {
+            left += w.chars().count() + usize::from(i > 0);
+            let right = total - left - 1;
+            let longest = left.max(right);
+            if longest < best.0 {
+                best = (longest, i + 1);
+            }
+        }
+        format!("{}\r\n{}", words[..best.1].join(" "), words[best.1..].join(" "))
+    }
+
+    /// SubRip text. Empty cues are dropped and the rest are numbered from 1.
+    pub fn srt(cues: &[Cue]) -> String {
+        let mut out = String::new();
+        let mut n = 0;
+        for c in cues {
+            let body = two_lines(&c.text);
+            if body.is_empty() {
+                continue;
+            }
+            n += 1;
+            out.push_str(&format!("{n}\r\n{} --> {}\r\n{body}\r\n\r\n", stamp(c.start), stamp(c.end.max(c.start))));
+        }
+        out
+    }
+
+    fn folder(app: &Path, v: &Value) -> Result<(String, PathBuf), Fail> {
+        let name = slug(v["slug"].as_str().unwrap_or(""))
+            .or_else(|| slug(v["title"].as_str().unwrap_or("")))
+            .ok_or((400, "The folder name is not valid.".to_string()))?;
+        let d = root(app).join(&name);
+        fs::create_dir_all(&d).map_err(|e| (500, format!("Could not create the edit pack folder: {e}")))?;
+        Ok((name, d))
+    }
+
+    /// Every file now in the folder, sorted by name.
+    fn listing(d: &Path) -> Vec<String> {
+        let mut names: Vec<String> = fs::read_dir(d)
+            .into_iter()
+            .flatten()
+            .flatten()
+            .filter(|e| e.path().is_file())
+            .filter_map(|e| e.file_name().into_string().ok())
+            .filter(|n| !n.ends_with(".tmp"))
+            .collect();
+        names.sort();
+        names
+    }
+
+    /// Voice over for one act, with the subtitle lines that match it.
+    pub fn voice(c: &Config, app: &Path, v: &Value) -> Result<Value, Fail> {
+        let text = v["text"].as_str().unwrap_or("").trim();
+        if text.is_empty() {
+            return Err((400, "This act has no text.".into()));
+        }
+        if text.chars().count() > 60_000 {
+            return Err((400, "This act is too long for one voice over.".into()));
+        }
+        let Some(index) = v["index"].as_u64().filter(|i| *i < 99) else {
+            return Err((400, "The act number is not valid.".into()));
+        };
+        let (name, d) = folder(app, v)?;
+        let n = index + 1;
+        let prefix = format!("{n:02}-act-{n}");
+        // The act name often starts with "Act 1" already, which the prefix repeats.
+        let label = file_slug(v["name"].as_str().unwrap_or(""), "");
+        let label = label.strip_prefix(&format!("act-{n}")).unwrap_or(&label).trim_matches('-');
+        let label: String = label.chars().take(40).collect();
+        let label = label.trim_matches('-');
+        let file = if label.is_empty() { format!("{prefix}.mp3") } else { format!("{prefix}-{label}.mp3") };
+        let timed = eleven::speak_timed(c, text).map_err(|e| (502, e))?;
+        // A renamed act would otherwise leave two files for the same act.
+        for old in listing(&d) {
+            if old.ends_with(".mp3") && (old == format!("{prefix}.mp3") || old.starts_with(&format!("{prefix}-"))) {
+                let _ = fs::remove_file(d.join(old));
+            }
+        }
+        let path = d.join(&file);
+        write_atomic(&path, &timed.audio).map_err(|e| (500, format!("Could not save the MP3: {e}")))?;
+        let cues: Vec<Value> = build_cues(&timed.chars, &timed.starts, &timed.ends)
+            .into_iter()
+            .map(|c| json!({"start": c.start, "end": c.end, "text": c.text}))
+            .collect();
+        Ok(json!({"file": file, "slug": name, "dir": d.display().to_string(), "path": path.display().to_string(),
+            "seconds": round3(timed.seconds), "chars": timed.count, "chunks": timed.chunks, "cues": cues}))
+    }
+
+    /// The plan thumbnail (by plan id) or a generated image (by its file name under gen/).
+    fn thumb_source(app: &Path, id: &str) -> Option<(PathBuf, &'static str)> {
+        if let Some(stem) = thumb_stem(id) {
+            return ["jpg", "png", "webp"].into_iter().map(|ext| (app.join("thumbs").join(format!("{stem}.{ext}")), ext)).find(|(p, _)| p.is_file());
+        }
+        let (stem, ext) = id.rsplit_once('.')?;
+        let ext = ["jpg", "png", "webp"].into_iter().find(|e| *e == ext)?;
+        let ok = !stem.is_empty() && stem.len() <= 48 && stem.chars().all(|c| c.is_ascii_alphanumeric() || c == '-');
+        let p = app.join("gen").join(id);
+        (ok && p.is_file()).then_some((p, ext))
+    }
+
+    /// Writes the text files, the subtitle file and the thumbnail into the pack folder.
+    pub fn finish(app: &Path, v: &Value) -> Result<Value, Fail> {
+        let empty = Vec::new();
+        let files = v["files"].as_array().unwrap_or(&empty);
+        if files.len() > 40 {
+            return Err((400, "Too many files for one edit pack.".into()));
+        }
+        let mut texts: Vec<(String, &str)> = Vec::new();
+        for f in files {
+            let raw = f["name"].as_str().unwrap_or("");
+            let name = safe_file(raw)
+                .filter(|n| n.rsplit_once('.').is_some_and(|(_, ext)| TEXT_EXT.contains(&ext.to_ascii_lowercase().as_str())))
+                .ok_or_else(|| (400, format!("The file name is not allowed: {}", raw.chars().take(80).collect::<String>())))?;
+            texts.push((name, f["text"].as_str().unwrap_or("")));
+        }
+        let cues: Vec<Cue> = v["cues"]
+            .as_array()
+            .unwrap_or(&empty)
+            .iter()
+            .take(20_000)
+            .filter_map(|c| Some(Cue { start: c["start"].as_f64()?, end: c["end"].as_f64()?, text: c["text"].as_str()?.to_string() }))
+            .collect();
+        let (name, d) = folder(app, v)?;
+        let save = |file: &str, data: &[u8]| write_atomic(&d.join(file), data).map_err(|e| (500, format!("Could not save {file}: {e}")));
+        for (file, text) in &texts {
+            save(file, text.as_bytes())?;
+        }
+        if !cues.is_empty() {
+            save("subtitle.srt", srt(&cues).as_bytes())?;
+        }
+        let mut thumbnail = Value::Null;
+        if let Some(id) = v["thumb"].as_str().filter(|s| !s.is_empty()) {
+            if let Some((src, ext)) = thumb_source(app, id) {
+                // The picture keeps its real type; a PNG named .jpg confuses some editors.
+                let file = format!("thumbnail.{ext}");
+                let bytes = fs::read(&src).map_err(|e| (500, format!("Could not read the thumbnail: {e}")))?;
+                for old in ["jpg", "png", "webp"] {
+                    let _ = fs::remove_file(d.join(format!("thumbnail.{old}")));
+                }
+                save(&file, &bytes)?;
+                thumbnail = json!(file);
+            }
+        }
+        Ok(json!({"slug": name, "dir": d.display().to_string(), "files": listing(&d), "thumbnail": thumbnail}))
+    }
+
+    /// One Veo clip saved into the pack folder. Spends KIE credits.
+    pub fn clip(c: &Config, app: &Path, v: &Value) -> Result<Value, Fail> {
+        if c.kie_key.is_empty() {
+            return Err((400, "The KIE.ai key is not set. Open Settings, section KIE.ai.".into()));
+        }
+        let prompt = v["prompt"].as_str().unwrap_or("").trim();
+        if prompt.is_empty() || prompt.chars().count() > 4000 {
+            return Err((400, "The clip prompt is empty or too long.".into()));
+        }
+        let (name, d) = folder(app, v)?;
+        let label: String = file_slug(v["name"].as_str().unwrap_or(""), "clip").chars().take(40).collect();
+        let file = format!("clip-{}.mp4", label.trim_matches('-'));
+        let (bytes, credits) = kie::clip(&c.kie_key, prompt).map_err(|e| (502, e))?;
+        let path = d.join(&file);
+        write_atomic(&path, &bytes).map_err(|e| (500, format!("Could not save the clip: {e}")))?;
+        Ok(json!({"file": file, "slug": name, "dir": d.display().to_string(), "path": path.display().to_string(),
+            "bytes": bytes.len(), "credits": credits}))
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        #[test]
+        fn slugs_and_file_names_cannot_leave_the_folder() {
+            assert_eq!(slug("Smilodon populator: the cat!").as_deref(), Some("smilodon-populator-the-cat"));
+            assert_eq!(slug("../../Windows/System32").as_deref(), Some("windows-system32"));
+            assert_eq!(slug("..\\..\\x").as_deref(), Some("x"));
+            assert_eq!(slug("  --  "), None);
+            assert_eq!(slug(".."), None);
+            assert_eq!(slug("CON"), None);
+            assert_eq!(slug("com1"), None);
+            assert!(slug(&"a".repeat(300)).unwrap().len() <= 60);
+            assert!(slug("é/ü").is_none());
+            for good in ["script.txt", "flow-prompts.txt", "01-act-1.mp3", "SEO.md"] {
+                assert_eq!(safe_file(good).as_deref(), Some(good));
+            }
+            for bad in ["", ".", "..", "../x.txt", "a/b.txt", "a\\b.txt", "a..txt", ".hidden", "x.txt.", "a b.txt", "c:x.txt",
+                "nul.txt", "COM1.txt", "é.txt", "x.txt\0", "x\n.txt"] {
+                assert_eq!(safe_file(bad), None, "{bad:?}");
+            }
+            assert_eq!(safe_file(&format!("{}.txt", "a".repeat(90))), None);
+        }
+
+        fn timing(text: &str, per_char: f64) -> (Vec<String>, Vec<f64>, Vec<f64>) {
+            let chars: Vec<String> = text.chars().map(String::from).collect();
+            let starts: Vec<f64> = (0..chars.len()).map(|i| i as f64 * per_char).collect();
+            let ends: Vec<f64> = starts.iter().map(|s| s + per_char).collect();
+            (chars, starts, ends)
+        }
+
+        #[test]
+        fn cues_break_at_sentences_and_stay_short() {
+            let text = "The cat waited. It was patient! Was it hungry? Yes.";
+            let (c, s, e) = timing(text, 0.05);
+            let cues = build_cues(&c, &s, &e);
+            let lines: Vec<&str> = cues.iter().map(|c| c.text.as_str()).collect();
+            assert_eq!(lines, ["The cat waited.", "It was patient!", "Was it hungry?", "Yes."]);
+            assert_eq!(cues[0].start, 0.0);
+            assert_eq!(cues[0].end, 0.75);
+            assert_eq!(cues[1].start, 0.8);
+
+            let long = "word ".repeat(100) + "end.";
+            let (c, s, e) = timing(&long, 0.01);
+            let cues = build_cues(&c, &s, &e);
+            assert!(cues.len() > 5);
+            assert!(cues.iter().all(|c| c.text.chars().count() <= CUE_CHARS));
+            assert_eq!(cues.iter().map(|c| c.text.split(' ').count()).sum::<usize>(), 101);
+            assert!(cues.windows(2).all(|w| w[0].end <= w[1].start && w[0].start < w[0].end));
+
+            // Slow speech: the seven second limit cuts before the character limit does.
+            let (c, s, e) = timing("one two three four five six seven eight nine ten", 0.5);
+            let cues = build_cues(&c, &s, &e);
+            assert!(cues.len() >= 3);
+            assert!(cues.iter().all(|c| c.end - c.start <= CUE_SECS + 0.001));
+
+            // A line break ends a cue even without punctuation; quotes after a full stop still end it.
+            let (c, s, e) = timing("Title line\nHe said \"run.\" They ran", 0.05);
+            let lines: Vec<String> = build_cues(&c, &s, &e).into_iter().map(|c| c.text).collect();
+            assert_eq!(lines, ["Title line", "He said \"run.\"", "They ran"]);
+            assert!(build_cues(&[], &[], &[]).is_empty());
+        }
+
+        #[test]
+        fn srt_is_numbered_timed_and_wrapped() {
+            assert_eq!(stamp(0.0), "00:00:00,000");
+            assert_eq!(stamp(3723.4567), "01:02:03,457");
+            assert_eq!(stamp(59.9996), "00:01:00,000");
+            let cues = vec![
+                Cue { start: 0.0, end: 1.5, text: "Short line.".into() },
+                Cue { start: 1.5, end: 1.6, text: "   ".into() },
+                Cue { start: 2.0, end: 8.25, text: "This cue is long enough that it has to be split into two balanced lines here.".into() },
+            ];
+            let out = srt(&cues);
+            assert!(out.starts_with("1\r\n00:00:00,000 --> 00:00:01,500\r\nShort line.\r\n\r\n2\r\n00:00:02,000 --> 00:00:08,250\r\n"));
+            let block: Vec<&str> = out.split("\r\n\r\n").nth(1).unwrap().split("\r\n").collect();
+            assert_eq!(block.len(), 4);
+            assert!(block[2].chars().count() <= LINE_CHARS && block[3].chars().count() <= LINE_CHARS);
+            assert_eq!(format!("{} {}", block[2], block[3]), cues[2].text);
+            assert_eq!(two_lines("a  b\nc"), "a b c");
+            assert_eq!(srt(&[]), "");
         }
     }
 }
@@ -2080,6 +3054,31 @@ mod tests {
         c.api_key = "sk-ant-x".into();
         save_config(&dir, &c).unwrap();
         assert_eq!(load_config(&dir).api_key, "sk-ant-x");
+        let _ = fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn base64_decodes_audio_payloads() {
+        assert_eq!(base64_decode("SUQzBAAA").as_deref(), Some(&b"ID3\x04\x00\x00"[..]));
+        assert_eq!(base64_decode("//uQ").as_deref(), Some(&[0xFF, 0xFB, 0x90][..]));
+        assert_eq!(base64_decode("TQ==").as_deref(), Some(&b"M"[..]));
+        assert_eq!(base64_decode("TWE=").as_deref(), Some(&b"Ma"[..]));
+        assert_eq!(base64_decode("TW\r\nFu").as_deref(), Some(&b"Man"[..]));
+        assert_eq!(base64_decode("_-8").as_deref(), Some(&[0xFF, 0xEF][..]));
+        assert_eq!(base64_decode("").as_deref(), Some(&b""[..]));
+        assert_eq!(base64_decode("a*b"), None);
+    }
+
+    #[test]
+    fn kie_key_survives_save_and_load() {
+        let dir = std::env::temp_dir().join(format!("ts-kie-{}-{}", now(), std::process::id()));
+        fs::create_dir_all(&dir).unwrap();
+        let mut c = Config::default();
+        c.kie_key = "kie-secret".into();
+        c.image_provider = "kie".into();
+        save_config(&dir, &c).unwrap();
+        let back = load_config(&dir);
+        assert_eq!((back.kie_key.as_str(), back.image_provider.as_str()), ("kie-secret", "kie"));
         let _ = fs::remove_dir_all(&dir);
     }
 

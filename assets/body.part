@@ -1,4 +1,5 @@
 <a class="skip" href="#main">Skip to content</a>
+<svg class="sr" width="0" height="0" aria-hidden="true" focusable="false"><defs><pattern id="hx" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="var(--hx-b)" stroke="none"/><rect width="4" height="8" fill="var(--hx-a)" stroke="none"/></pattern></defs></svg>
 <div class="shell">
   <aside class="rail">
     <h1 class="sr">Terra Studio</h1>
@@ -18,8 +19,8 @@
     </nav>
     <div class="rail-sp"></div>
     <button type="button" class="rail-plus" id="rail-plus" aria-label="New content plan" data-tip="New plan"><i aria-hidden="true">+</i><span>New plan</span></button>
-    <button type="button" class="skin" id="skin-tog" aria-label="Change theme" data-tip="Theme: stone / moss"><u><i></i></u><span id="skin-name">Stone theme</span></button>
-    <p class="ver">v2.3.0</p>
+    <button type="button" class="skin" id="skin-tog" role="switch" aria-checked="false" aria-label="Dark look" data-tip="Switch light / dark"><u aria-hidden="true"><i class="sun"><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="2.5"/><path d="M7 .75v1.5M7 11.75v1.5M.75 7h1.5M11.75 7h1.5M2.6 2.6l1.05 1.05M10.35 10.35l1.05 1.05M2.6 11.4l1.05-1.05M10.35 3.65l1.05-1.05"/></svg></i><i class="moon"><svg viewBox="0 0 14 14"><path d="M12.25 8.4A5.6 5.6 0 0 1 5.6 1.75a5.6 5.6 0 1 0 6.65 6.65"/></svg></i></u><span id="skin-name">Light look</span></button>
+    <p class="ver">v2.4.0</p>
   </aside>
   <aside class="side" aria-label="Calendar and schedule">
     <div class="box calw">
@@ -38,7 +39,7 @@
     </header>
 <div class="wrap">
   <div class="banner" id="banner-key" hidden>
-    <span><strong>Copy-paste mode to claude.ai.</strong> To get AI results straight in the app at no cost, choose Gemini in Settings and paste a free API key from Google.</span> <button type="button" class="btn ghost" data-goto="settings">Open Settings</button><button type="button" class="btn ghost" id="banner-close">Close</button>
+    <span><strong>Copy-paste mode to claude.ai.</strong> To get AI results straight in the app at no cost, choose Gemini in Settings and paste a free API key from Google. Or use one paid KIE.ai key for scripts and thumbnails.</span> <button type="button" class="btn ghost" data-goto="settings">Open Settings</button><button type="button" class="btn ghost" id="banner-close">Close</button>
   </div>
 
   <!-- DASHBOARD: the numbers, the next video and the one thing to fix -->
@@ -100,7 +101,7 @@
         <h2>How much of each video is watched</h2>
         <p class="sub" id="ln-sub"></p>
         <div class="rchart" id="ln-chart"></div>
-        <div class="lgd"><span><i style="background:var(--accent)"></i>20% or more: close to your best videos</span><span><i style="background:var(--warn)"></i>Under 10%: viewers leave quickly</span><span><i style="background:var(--stone-dot)"></i>In between</span></div>
+        <div class="lgd"><span><i class="l-top"></i>Solid: 20% or more, close to your best videos</span><span><i class="l-low"></i>Striped: under 10%, viewers leave quickly</span><span><i></i>Grey: in between</span></div>
       </div>
       <div class="box">
         <h2>Report card for each upload</h2>
@@ -215,7 +216,7 @@
       </div>
       <div class="box" id="mk-gen">
         <h2>Finished thumbnails</h2>
-        <p class="sub">One click: AI writes 3 concepts, Gemini draws them, the app puts the text on top. Pick one and save it.</p>
+        <p class="sub">One click: AI writes 3 concepts, Gemini or KIE.ai draws them, the app puts the text on top. Pick one and save it.</p>
         <div class="mk-auto" style="margin-top:12px">
           <div><b id="gen-h">Make 3 thumbnails with Gemini</b><span id="gen-p"></span></div>
           <button type="button" class="btn" id="gen-go">Make 3 thumbnails</button>
@@ -297,6 +298,8 @@
         <select id="script-tone"><option>Cinematic, awe and mystery</option><option>Investigative, evidence-led</option><option>Survival drama</option><option>Calm, sleep-friendly narration</option></select>
       </label>
       <label class="cbx" for="script-auto"><input type="checkbox" id="script-auto" checked> Write the full narration and make the voice over straight away</label>
+      <label class="cbx" for="script-fix"><input type="checkbox" id="script-fix" aria-describedby="script-fix-note" checked> Fix weak parts before voice over</label>
+      <p class="note" id="script-fix-note">The script check runs on your PC for free. Parts marked "likely drop" are then rewritten by AI, at most 3 short rewrites. With a Claude or KIE.ai key each one costs about Rp100 to 250. With Gemini it is free. In copy-paste mode nothing is rewritten for you.</p>
       <button class="btn" type="submit">Make full script</button>
       <div class="status" id="s-script" role="status"></div>
     </form>
@@ -349,7 +352,7 @@
         <div class="kpis" id="g-kpis"></div>
         <p style="margin:14px 0 0;font-weight:700">Views per month: when did the channel rise, when did it fall?</p>
         <div class="chart-wrap" id="g-chart-wrap"><svg id="g-chart" role="img" aria-label="Bar chart of views per month" style="width:100%;min-width:560px;height:240px;display:block"></svg><div class="tip" id="g-tip" hidden></div></div>
-        <p class="note" id="g-chart-note">Hover or focus a bar for the monthly number.</p>
+        <p class="note" id="g-chart-note">Hover or focus a bar for the monthly number. A striped bar is a month that is not complete yet.</p>
         <details class="mtable"><summary>See the monthly numbers as a table</summary><div style="overflow-x:auto"><table id="g-mtable"></table></div></details>
         <div class="status" id="s-import" role="status"></div>
       </div>
@@ -418,6 +421,7 @@
             <option value="manual">Copy-paste to claude.ai (uses your subscription, no cost)</option>
             <option value="gemini">Gemini, automatic (free quota from Google)</option>
             <option value="claude">Claude, automatic (paid API, best results)</option>
+            <option value="kie">KIE.ai (one key, pay as you go)</option>
           </select>
         </label>
         <p class="hint" id="prov-hint"></p>
@@ -446,29 +450,63 @@
           <p class="note" id="cfg-spent"></p>
           <div class="chips"><button class="btn ghost" type="button" id="cfg-clear">Remove Claude key</button></div>
         </div>
+        <div id="grp-kie" class="grp">
+          <ol class="steps"><li>Open <a href="https://kie.ai" target="_blank" rel="noopener">kie.ai</a>, sign in and top up credit. A few dollars is enough to start.</li><li>Open <a href="https://kie.ai/api-key" target="_blank" rel="noopener">kie.ai/api-key</a>, create a key, then copy it.</li><li>Paste it below, click Save, then Test connection.</li></ol>
+          <label for="cfg-kkey">KIE.ai API key<input id="cfg-kkey" type="password" autocomplete="off" placeholder="Paste the key from kie.ai/api-key"></label>
+          <p class="note" id="cfg-kkey-hint"></p>
+          <label for="cfg-kmodel">Model
+            <select id="cfg-kmodel">
+              <option value="claude-sonnet-5-5">Claude Sonnet 5.5: suggested</option>
+              <option value="claude-haiku-5-5">Claude Haiku 5.5: cheaper</option>
+              <option value="claude-opus-5-5">Claude Opus 5.5: best results, costs more</option>
+            </select>
+          </label>
+          <p class="note" id="cfg-kbal" role="status"></p>
+          <p class="note" id="cfg-kspent"></p>
+          <div class="chips"><button class="btn ghost" type="button" id="cfg-kcheck">Check balance (free)</button><button class="btn ghost" type="button" id="cfg-kclear">Remove KIE.ai key</button></div>
+          <p class="note">Test connection reads your balance, then sends one short message. That costs less than 1 credit. One credit is about $0.005.</p>
+          <p class="note">Voice over stays on your own ElevenLabs key. KIE.ai only lists stock voices, not the voice your channel uses.</p>
+          <p class="note">KIE.ai is a reseller. Its prices and models can change. These details come from its documentation, so run Test connection once after you paste the key.</p>
+        </div>
         <div class="chips"><button class="btn" type="submit">Save</button><button class="btn ghost" type="button" id="cfg-test">Test connection</button></div>
         <div class="status" id="s-key" role="status"></div>
       </form>
 
       <form class="tool" id="f-image">
-        <h2>Thumbnail images (Gemini)</h2>
-        <p class="hint">Makes thumbnail images right in the Package step. Images only work on a Gemini key with billing turned on, so use a separate key and your scripts and ideas stay free on the old key.</p>
-        <ol class="steps">
-          <li>Open <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a>. Click <strong>Create API key</strong> and choose a new project. On that project's row click <strong>Set up billing</strong>, then add a first credit of $5.</li>
-          <li>Open <a href="https://developers.google.com/program/my-benefits" target="_blank" rel="noopener">Google Developer Program, My benefits</a>. Claim the Google Cloud credit to that billing account and tick <strong>Always use this billing account</strong>.</li>
-          <li>Paste the new key below, click Save, then Test image.</li>
-        </ol>
-        <label for="cfg-ikey">Gemini key for images<input id="cfg-ikey" type="password" autocomplete="off" placeholder="AIza..."></label>
-        <p class="note" id="cfg-ikey-hint"></p>
-        <label for="cfg-imodel">Image model
-          <select id="cfg-imodel">
-            <option value="gemini-3.1-flash-image">Flash Image: better, about $0.067</option>
-            <option value="gemini-3.1-flash-lite-image">Flash Lite Image: cheaper, about $0.034</option>
+        <h2>Thumbnail images</h2>
+        <p class="hint">Makes thumbnail images right in the Package step. Choose who draws them.</p>
+        <label for="cfg-iprov">Make images with
+          <select id="cfg-iprov">
+            <option value="gemini">Gemini (uses your Google Cloud credit)</option>
+            <option value="kie">KIE.ai, Nano Banana 2 (about $0.04 per image)</option>
           </select>
         </label>
-        <div class="chips"><button class="btn" type="submit">Save</button><button class="btn ghost" type="button" id="cfg-itest">Test image</button><button class="btn ghost" type="button" id="cfg-iclear">Remove image key</button></div>
+        <div id="grp-igem" class="grp">
+          <p class="note">Images only work on a Gemini key with billing turned on, so use a separate key and your scripts and ideas stay free on the old key.</p>
+          <ol class="steps">
+            <li>Open <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a>. Click <strong>Create API key</strong> and choose a new project. On that project's row click <strong>Set up billing</strong>, then add a first credit of $5.</li>
+            <li>Open <a href="https://developers.google.com/program/my-benefits" target="_blank" rel="noopener">Google Developer Program, My benefits</a>. Claim the Google Cloud credit to that billing account and tick <strong>Always use this billing account</strong>.</li>
+            <li>Paste the new key below, click Save, then Test image.</li>
+          </ol>
+          <label for="cfg-ikey">Gemini key for images<input id="cfg-ikey" type="password" autocomplete="off" placeholder="AIza..."></label>
+          <p class="note" id="cfg-ikey-hint"></p>
+          <label for="cfg-imodel">Image model
+            <select id="cfg-imodel">
+              <option value="gemini-3.1-flash-image">Flash Image: better, about $0.067</option>
+              <option value="gemini-3.1-flash-lite-image">Flash Lite Image: cheaper, about $0.034</option>
+            </select>
+          </label>
+          <div class="chips"><button class="btn ghost" type="button" id="cfg-iclear">Remove image key</button></div>
+          <p class="note">Prices are estimates from Google's price list as of November 2026. Google Cloud credit is used first; the $5 balance is only charged once that month's credit runs out.</p>
+        </div>
+        <div id="grp-ikie" class="grp">
+          <p class="note">No Google billing setup is needed. Each image is about 8 KIE.ai credits ($0.04) at 1K size, from KIE.ai's price list. The app downloads each image at once, because KIE.ai deletes its copy after 14 days.</p>
+          <label for="cfg-ikkey">KIE.ai API key<input id="cfg-ikkey" type="password" autocomplete="off" placeholder="Paste the key from kie.ai/api-key"></label>
+          <p class="note" id="cfg-ikkey-hint"></p>
+        </div>
+        <div class="chips"><button class="btn" type="submit">Save</button><button class="btn ghost" type="button" id="cfg-itest">Test image</button></div>
         <p class="note" id="cfg-ispent"></p>
-        <p class="note">Test image makes one real image, so it uses credit. Prices are estimates from Google's price list as of November 2026. Google Cloud credit is used first; the $5 balance is only charged once that month's credit runs out.</p>
+        <p class="note">Test image makes one real image, so it uses credit.</p>
         <div class="status" id="s-image" role="status"></div>
         <div id="cfg-itest-out"></div>
       </form>
@@ -549,7 +587,7 @@
   </section>
 
   <input type="file" id="file-import" accept=".zip,.csv" multiple hidden>
-  <footer>The generators use Claude from Anthropic, through your claude.ai subscription or API key.</footer>
+  <footer>AI buttons use the provider you choose in Settings: claude.ai copy-paste, Gemini, Claude API or KIE.ai.</footer>
 </div>
   </main>
 </div>
@@ -609,6 +647,23 @@ let LAST={};
 async function remember(key,data){LAST[key]={at:Date.now(),data};await api("/api/last",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({key,value:LAST[key]})})}
 function spentText(){const s=LAST._spent?.data;const m=new Date().toISOString().slice(0,7);return s&&s.month===m?`Estimated AI cost this month: Rp${nf(Math.round(s.rp))} of ${s.n} runs.`:"No AI cost this month yet."}
 async function addSpent(rp){const m=new Date().toISOString().slice(0,7);let s=LAST._spent?.data;if(!s||s.month!==m)s={month:m,rp:0,n:0};s.rp+=rp;s.n+=1;await remember("_spent",s);const el=$("#cfg-spent");if(el)el.textContent=spentText()}
+/* KIE.ai bills in credits. The backend's count is used when it sends one, else an estimate from Claude list prices. */
+const KIE_USD=.005,KIE_IMG=8,KIE_CLIP=35;
+const usdS=x=>x<.005?"under $0.01":"$"+x.toFixed(2);
+const kieTxt=c=>`${c<10?(Math.round(c*10)/10).toLocaleString("en-US"):nf(c)} credit${c===1?"":"s"} (${usdS(c*KIE_USD)})`;
+const kieCost=j=>typeof j.credits==="number"?j.credits:costRp(j.model,j.usage,"kie")/KURS/KIE_USD;
+const kieMonth=()=>{const s=LAST._kie?.data,m=new Date().toISOString().slice(0,7);return s&&s.month===m?s:{month:m,credits:0,text:0,image:0,clip:0}};
+function kieSpentText(){const s=kieMonth(),part=(n,w)=>n?`${n} ${w}${n>1?"s":""}`:"",list=[part(s.text,"text run"),part(s.image,"image"),part(s.clip,"clip")].filter(Boolean);
+  return list.length?`KIE.ai this month: about ${kieTxt(s.credits)} for ${list.join(", ")}.`:"No KIE.ai cost this month yet."}
+let kieBalT=0;
+async function addKie(credits,kind){const s={...kieMonth()};s.credits+=credits;s[kind]=(s[kind]||0)+1;await remember("_kie",s);const el=$("#cfg-kspent");if(el)el.textContent=kieSpentText();clearTimeout(kieBalT);kieBalT=setTimeout(kieBalance,1500)}
+async function kieBalance(){const el=$("#cfg-kbal");if(!el||!CFG.has_kie){if(el)el.textContent="";return null}
+  const j=await api("/api/kie/credits");el.textContent=j.error?"The balance could not be read. "+j.error:"Balance: "+kieBalText(j)+", checked "+new Date().toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"})+".";return j}
+const kieBalText=j=>`${(Math.round(j.credits*10)/10).toLocaleString("en-US")} credits, about $${(+j.usd).toFixed(2)}`;
+// One label for every button that calls the text AI.
+function costTag(u){if(!CFG.provider)return "";if(CFG.provider==="gemini")return " (free with Gemini)";
+  if(CFG.provider==="kie"){const x=costRp(CFG.kie_model,u,"kie")/KURS;return ` (${x<.005?"":"about "}${usdS(x)})`}
+  return ` (about Rp${nf(Math.max(1,Math.round(costRp(CFG.model,u,CFG.provider)/10)*10))})`}
 /* Without an API key, the prompt is copied to claude.ai (the user's own
    subscription) and the reply is pasted back. */
 function manualAsk(statusEl,prompt){
@@ -630,11 +685,11 @@ async function ask(statusEl,btn,prompt,key,label){
   statusEl.className="status";statusEl.textContent=label||"AI is writing… (usually 20 to 90 seconds)";btn.disabled=true;
   try{
     const j=await api("/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:channelContext()+"\n\n"+prompt+"\n\nReturn ONLY valid JSON, no markdown fences, no text before or after."})});
-    const rp=costRp(j.model,j.usage,j.provider);if(rp)addSpent(rp).catch(()=>{});
+    const kie=j.provider==="kie",rp=kie?0:costRp(j.model,j.usage,j.provider),kc=kie?kieCost(j):0;if(rp)addSpent(rp).catch(()=>{});if(kc)addKie(kc,"text").catch(()=>{});
     if(j.error)throw j;
     const data=parseJSON(j.text);
     if(!data)throw{error:"Claude's answer could not be read. Press the button once more."};
-    statusEl.textContent="Done, "+new Date().toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"})+(j.provider==="gemini"?", via Gemini":rp?`, cost about Rp${nf(Math.max(1,Math.round(rp)))}`:"")+", result saved";
+    statusEl.textContent="Done, "+new Date().toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"})+(j.provider==="gemini"?", via Gemini":kie?`, via KIE.ai${kc?", cost about "+kieTxt(kc):""}`:rp?`, cost about Rp${nf(Math.max(1,Math.round(rp)))}`:"")+", result saved";
     if(key)remember(key,data).catch(()=>{});
     return data;
   }catch(e){statusEl.className="status err";statusEl.textContent=e.error||("Failed: "+(e.message||"try again."));return null}
@@ -679,17 +734,19 @@ JSON shape: {"ideas":[{"title":"","subject":"","mammal":true,"predator":true,"th
   if(data?.ideas?.length)renderIdeas(data.ideas)});
 
 /* Script outline */
-const ACT_COLORS=["var(--accent)","var(--moss)","var(--muted)","var(--warn)","var(--ink)","var(--field)","var(--accent)"];
+const ACT_COLORS=["var(--series)","var(--accent)","var(--mid)","var(--ok)","var(--muted)","var(--post)","var(--accent)"];
 const ROMAN=["I","II","III","IV","V","VI","VII"];
 let lastOutline=null;
 function renderScript(s){lastOutline=s;const acts=s.acts||[],total=acts.reduce((a,x)=>a+(+x.words||0),0)||1;
-  $("#o-script").innerHTML=head("Kerangka: "+(s.title||""))+`<div class="card"><span class="layer">Cold open</span><p style="font-size:19px">${esc(s.cold_open)}</p>\n  <div class="strata" aria-label="Word share per act">${acts.map((a,i)=>`<span style="width:${((+a.words||0)/total*100).toFixed(1)}%;background:${ACT_COLORS[i%7]}" title="Act ${i+1}: ${esc(a.words)} words"></span>`).join("")}</div>
+  $("#o-script").innerHTML=head("Outline: "+(s.title||""))+`<div class="card"><span class="layer">Cold open</span><p style="font-size:19px">${esc(s.cold_open)}</p>\n  <div class="strata" aria-label="Word share per act">${acts.map((a,i)=>`<span style="width:${((+a.words||0)/total*100).toFixed(1)}%;background:${ACT_COLORS[i%7]}" title="Act ${i+1}: ${esc(a.words)} words"></span>`).join("")}</div>
   ${acts.map((a,i)=>`<div class="act"><div class="num">${ROMAN[i]||i+1}<small>${esc(a.words)} words</small></div><div style="min-width:0"><h3>${esc(a.name)}</h3><ul>${(a.beats||[]).map(b=>`<li>${esc(b)}</li>`).join("")}</ul>${a.open_loop?`<p class="note"><strong>Open loop:</strong> ${esc(a.open_loop)}</p>`:""}${a.cta?`<p class="note"><strong>CTA:</strong> ${esc(a.cta)}</p>`:""}</div></div>`).join("")}</div>
   ${(s.visuals?.length)?`<div class="card"><span class="layer">Visuals / B-roll list</span><div class="chips" style="margin-top:8px">${s.visuals.map(v=>`<span class="chip">${esc(v)}</span>`).join("")}</div></div>`:""}
   ${acts.some(a=>a.flow_prompts?.length)?copyBox("Video prompts for Google Flow (one per 8-second clip)",acts.map((a,i)=>(a.flow_prompts||[]).map((f,j)=>`[Act ${i+1}.${j+1}] ${f}${s.flow_style?" Style: "+s.flow_style:""}`).join("\n\n")).filter(Boolean).join("\n\n"))+`<p class="note">Paste one prompt per clip in Flow. The visual style is already in each prompt so the clips stay consistent.</p>`:""}
   ${(s.fact_check?.length)?`<div class="card"><span class="layer">Double-check before recording</span><ul>${s.fact_check.map(v=>`<li>${esc(v)}</li>`).join("")}</ul></div>`:""}\n  <div class="card"><span class="layer">Next step</span><h3>Full narration script</h3><p class="note">Turn this outline into a script ready to read aloud (voice over), at the target word count. You can paste it into Bang Story or read it yourself.</p><button type="button" class="btn" id="script-full-btn">Write full narration script</button><div class="status" id="s-scriptfull" role="status"></div></div>\n  <div id="o-scriptfull" class="out"></div>`}
-function renderScriptFull(f){const parts=f.narration||[],all=parts.map(p=>p.text).join("\n\n"),words=all.split(/\s+/).filter(Boolean).length,mins=(words/140).toLocaleString("en-US",{maximumFractionDigits:1});
-  $("#o-scriptfull").innerHTML=copyBox(`Full narration script, ${nf(words)} words, about ${mins} minutes read aloud`,parts.map((p,i)=>`[${p.act||"Act "+(i+1)}]\n${p.text}`).join("\n\n"))+(f.title?`<p class="note">For outline: ${esc(f.title)}</p>`:"")+voCard(f);const v=LAST.vo?.data;if(v&&v.title===(f.title||"voice over"))renderVo(v)}
+// A finished script belongs to the video it was written for; paid tools must not attach it to another one.
+const ownScript=f=>!f.planId||f.planId===mkId();
+function renderScriptFull(f,partial){const parts=f.narration||[],all=parts.map(p=>p.text).join("\n\n"),words=all.split(/\s+/).filter(Boolean).length,mins=(words/140).toLocaleString("en-US",{maximumFractionDigits:1});
+  $("#o-scriptfull").innerHTML=copyBox(`Full narration script, ${nf(words)} words, about ${mins} minutes read aloud`,parts.map((p,i)=>`[${p.act||"Act "+(i+1)}]\n${p.text}`).join("\n\n"))+(f.title?`<p class="note">For outline: ${esc(f.title)}</p>`:"")+(partial?"":!ownScript(f)?`<p class="note" id="sc-other">This script was written for another video.</p>`:`<section class="card sc" id="sc-box" aria-labelledby="sc-h"></section><section class="card" id="pk-box" aria-labelledby="pk-h"></section><section class="card" id="ig-box" aria-labelledby="ig-h"></section>`)+voCard(f);if(!partial){scRender(f);pkRender(f);igRender(f)}const v=LAST.vo?.data;if(v&&v.title===(f.title||"voice over"))renderVo(v)}
 let lastNarr=null;
 function voCard(f){lastNarr=f;const chars=(f.narration||[]).reduce((n,p)=>n+(p.text||"").length,0);
   if(!CFG.has_eleven)return `<div class="card"><span class="layer">Voice over</span><h3>Turn it into voice with ElevenLabs</h3><p class="note">Add your ElevenLabs API key in Settings, under Voice, so this script can become an MP3 right in the app.</p><button type="button" class="btn ghost" data-goto="settings">Open Settings</button></div>`;
@@ -703,7 +760,7 @@ async function makeVoice(b){const st=$("#s-vo"),voice=$("#vo-voice").value;
   b.disabled=true;st.className="status";st.textContent="Making the voice over… this takes 1 to 3 minutes for a 2,000-word script. The finished audio is about as long as the video. Do not close the app.";
   const j=await api("/api/eleven/tts",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({title:lastNarr.title||"voice over",parts:lastNarr.narration.map(p=>p.text),voice})});b.disabled=false;
   if(j.error){st.className="status err";st.textContent=j.error;return null}
-  st.textContent=`Done: ${nf(j.chars)} characters, ${j.chunks} parts, ${(j.bytes/1048576).toLocaleString("en-US",{maximumFractionDigits:1})} MB.`;j.title=lastNarr.title||"voice over";renderVo(j);remember("vo",j).catch(()=>{});advance(mkId(),"edit");return j}
+  st.textContent=`Done: ${nf(j.chars)} characters, ${j.chunks} parts, ${(j.bytes/1048576).toLocaleString("en-US",{maximumFractionDigits:1})} MB.`;j.title=lastNarr.title||"voice over";eqSpend(j.chars);renderVo(j);remember("vo",j).catch(()=>{});advance(mkId(),"edit");return j}
 document.addEventListener("click",e=>{const b=e.target.closest("#script-full-btn");if(b&&lastOutline)writeFull(b)});
 const wordsOf=t=>(t||"").split(/\s+/).filter(Boolean).length;
 // Asked for a whole script in one reply, models stop well short of the target. One call per act keeps each act at its planned length.
@@ -714,7 +771,7 @@ async function writeFull(b){
     const data=await ask(st,b,`Write the complete voice-over narration for this documentary, following the outline below act by act. The total must be about ${w} words (not shorter than ${Math.round(w*.9)}); keep each act close to its planned word count, in paragraphs of 70 to 95 words. Spoken style: clear sentences, vivid but accurate, no stage directions, no headings inside the text, no bracketed notes. Open with the cold open. Keep open loops and the soft CTAs where the outline puts them. Mark anything uncertain by phrasing it carefully ("scientists think", "the fossils suggest") rather than inventing facts.
 Outline JSON: ${JSON.stringify({title:lastOutline.title,cold_open:lastOutline.cold_open,acts:acts.map(a=>({name:a.name,words:a.words,beats:a.beats,open_loop:a.open_loop,cta:a.cta}))})}
 JSON shape: {"title":"","narration":[{"act":"act name","text":"narration paragraphs for this act"}]}`,"scriptfull");
-    if(data?.narration?.length){renderScriptFull(data);return data}return null}
+    if(data?.narration?.length){data.planId=mkId();await remember("scriptfull",data).catch(()=>{});renderScriptFull(data);return data}return null}
   const sum=acts.reduce((a,x)=>a+(+x.words||0),0),n=acts.length,title=lastOutline.title||"";
   const plan=JSON.stringify({title,cold_open:lastOutline.cold_open,acts:acts.map(a=>({name:a.name,beats:a.beats}))});
   // A failed act (quota, connection) leaves the finished acts in place; the next click continues from there.
@@ -730,8 +787,8 @@ This act's beats: ${JSON.stringify(a.beats||[])}`;
     let d=await ask(st,b,base+`\nJSON shape: {"text":"the narration, paragraphs separated by a blank line"}`,null,`Writing act ${i+1} of ${n}: ${a.name}…`);
     if(!d?.text){const why=st.textContent;st.className="status err";st.textContent=`Act ${i+1} not finished (${why}) ${narration.length?`Acts 1 to ${narration.length} is safe. Click the button again to continue.`:"Click the button again."}`;return null}
     if(wordsOf(d.text)<t*.8){const more=await ask(st,b,base+`\nThis draft is too short at ${wordsOf(d.text)} words. Rewrite it at about ${t} words by adding accurate, concrete detail from the beats, not filler or repetition. Draft: """${d.text}"""\nJSON shape: {"text":""}`,null,`Act ${i+1} is too short, adding to it…`);if(more?.text&&wordsOf(more.text)>wordsOf(d.text))d=more}
-    narration.push({act:a.name,text:String(d.text).trim()});renderScriptFull({title,narration:[...narration]})}
-  const data={title,narration};narrPart=null;await remember("scriptfull",data).catch(()=>{});renderScriptFull(data);advance(mkId(),"rekam");
+    narration.push({act:a.name,text:String(d.text).trim()});renderScriptFull({title,narration:[...narration]},true)}
+  const data={title,narration,planId:mkId()};narrPart=null;await remember("scriptfull",data).catch(()=>{});renderScriptFull(data);advance(mkId(),"rekam");
   const total=wordsOf(narration.map(x=>x.text).join(" "));st.className="status";st.textContent=`Narration done: ${nf(total)} words (target ${nf(w)}), about ${Math.round(total/140)} minutes read aloud. Result saved.`;
   return data}
 $("#f-script").addEventListener("submit",e=>{e.preventDefault();runScript(e.submitter||$("#f-script .btn"))});
@@ -745,14 +802,293 @@ JSON shape: {"title":"","cold_open":"","flow_style":"","acts":[{"name":"","words
   if(!$("#script-auto").checked)return true;const st=$("#s-script");
   st.textContent="Step 2 of 3: writing the full narration…";$("#s-scriptfull").scrollIntoView({block:"center"});
   const full=await writeFull($("#script-full-btn"));if(!full){st.textContent="Outline done. The full narration is not finished; press Write full narration script below to continue.";return false}
-  if(!(CFG.has_eleven&&CFG.eleven_voice&&$("#vo-btn"))){st.textContent="Outline and full narration done. Voice over skipped: set up ElevenLabs in Settings first.";return true}
+  // The automatic fix needs a provider: in copy-paste mode each rewrite would stop and wait for a paste.
+  let sc="";if(lastNarr){if($("#script-fix").checked&&CFG.provider){$("#sc-box")?.scrollIntoView({block:"center"});const n=await scAutoFix(st,btn);sc=n?`, ${n} weak part${n>1?"s":""} fixed`:""}
+    st.className="status";sc=` Script check: ${checkNarr(lastNarr).score} out of 10${sc}.`}
+  if(!(CFG.has_eleven&&CFG.eleven_voice&&$("#vo-btn"))){st.textContent="Outline and full narration done. Voice over skipped: set up ElevenLabs in Settings first."+sc;return true}
   st.textContent="Step 3 of 3: making the voice over…";$("#s-vo").scrollIntoView({block:"center"});
-  const vo=await makeVoice($("#vo-btn"));st.textContent=vo?"Done: the outline, full narration and MP3 voice over are ready. The Flow clip prompts are under the outline.":"Outline and full narration done. The voice over failed, see the message below.";return true}
+  const vo=await makeVoice($("#vo-btn"));st.textContent=(vo?"Done: the outline, full narration and MP3 voice over are ready. The Flow clip prompts are under the outline.":"Outline and full narration done. The voice over failed, see the message below.")+sc;return true}
 // Length presets; the last choice is remembered.
 function scriptLen(){const w=+$("#script-words").value||2000;document.querySelectorAll("#script-len [data-w]").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.w===w));
   $("#script-len-note").textContent=`${nf(w)} words is roughly ${Math.round(w/140)} minutes of video and ${nf(Math.round(w*6.1/1000)*1000)} characters of ElevenLabs voice over.`}
 $("#script-len").addEventListener("click",e=>{const b=e.target.closest("[data-w]");if(!b)return;$("#script-words").value=b.dataset.w;store.set("sw",+b.dataset.w);scriptLen()});
 $("#script-words").addEventListener("input",e=>{store.set("sw",+e.target.value||2000);scriptLen()});
+
+/* Script check: rules counted in the browser, no AI. They are known weak patterns, not a prediction of retention. */
+const SC_WPM=145,SC_WEAK=110,SC_RISK=180;
+const SC_NUM=/^(?:two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundreds?|thousands?|millions?|billions?|dozens?|half|twice|double|triple)$/;
+const SC_THREAT=/^(?:(?:hunt|kill|attack|danger|blood|crush|fear|death|predator)[a-z]*|prey(?:ed|ing|s)?|dead(?:ly|lier|liest)?|bit(?:e|es|ing|ten))$/;
+const SC_INTRO=/welcome back|in this video|today,? we|hey,? guys|subscribe/gi;
+const SC_FWD=/\b(?:next|soon|later|about to|yet|until|but first|find out|the answer|would change|was coming|were coming|to come|not over|only the beginning|worse|before long|in a moment|we will see|we'll see|wait)\b/i;
+const SC_STOP=/^(?:giant|that|this|with|from|when|what|were|they|their|prehistoric|ancient|extinct|animal|largest|biggest|story|truth|real)$/;
+function scSentences(t){const out=[],re=/[.!?]+["'”’)\]]*(?=\s|$)|\n\s*\n/g;let s=0,m;
+  const push=(a,b)=>{const raw=t.slice(a,b),body=raw.trim();if(/[a-z0-9]/i.test(body)){const from=a+raw.length-raw.trimStart().length;out.push({from,to:from+body.length,words:wordsOf(body)})}};
+  while((m=re.exec(t))){push(s,m[0].includes("\n")?m.index:m.index+m[0].length);s=m.index+m[0].length}
+  push(s,t.length);return out}
+const scList=a=>a.length<2?String(a[0]??""):a.slice(0,-1).join(", ")+" and "+a[a.length-1];
+const scMin=a=>!a.length?"":a.length===1?"Minute "+a[0]:a.every((m,i)=>!i||m===a[i-1]+1)?`Minutes ${a[0]} to ${a[a.length-1]}`:"Minutes "+scList(a);
+function scriptCheck(text,opts){const t=String(text||""),o=opts||{},words=[],findings=[];let m;
+  for(const re=/\S+/g;(m=re.exec(t));){const w=m[0].toLowerCase();words.push({from:m.index,to:m.index+w.length,mark:/[\d?]/.test(w)||w.split(/[^a-z]+/).some(p=>SC_NUM.test(p)||SC_THREAT.test(p))})}
+  const n=words.length,total=Math.max(1,Math.ceil(n/SC_WPM));
+  if(!n)return {score:0,words:0,minutes:[],findings:[]};
+  const S=scSentences(t),wordAt=c=>{const i=words.findIndex(w=>w.to>c);return i<0?n-1:i},minOf=c=>Math.floor(wordAt(c)/SC_WPM)+1;
+  const sentAt=c=>S.find(s=>s.to>c)||S[S.length-1];
+  const bad=(id,rule,level,from,to,title,detail)=>{const a=minOf(from),b=minOf(Math.max(from,to-1)),minutes=[];for(let i=a;i<=b;i++)minutes.push(i);findings.push({id,rule,level,minutes,title,detail,from,to,ok:false})};
+  const good=(id,rule,title,detail)=>findings.push({id,rule,level:"ok",minutes:[],title,detail,from:0,to:0,ok:true});
+  // 1. The animal is named in the first two sentences.
+  const topic=String(o.topic||"").trim(),names=[...new Set([topic.toLowerCase(),...topic.toLowerCase().split(/[^a-z0-9-]+/).filter(w=>w.length>=4&&!SC_STOP.test(w))])].filter(Boolean);
+  if(names.length&&S.length){const has=s=>{const x=t.slice(s.from,s.to).toLowerCase();return names.some(k=>x.includes(k))},at=S.findIndex(has),two=S[Math.min(1,S.length-1)];
+    if(at>=0&&at<2)good("name","name","The animal is named in the first two sentences",`"${topic}" comes up in sentence ${at+1}.`);
+    else if(at<0)findings.push({id:"name",rule:"name",level:"info",minutes:[],title:`"${topic}" is not named in the script`,detail:"The check looked for the topic from step 1. If this script is about another animal, ignore this line. It does not change the score.",from:0,to:0,ok:true});
+    else bad("name","name","weak",S[0].from,two.to,`The animal is not named until sentence ${at+1}`,"A viewer who clicked for this animal should hear its name and the danger in the first two sentences.")}
+  // 2. Flat stretches: runs of words with no number, no threat word and no question.
+  const runs=[];let a=0;for(let i=0;i<=n;i++){if(i===n||words[i].mark){if(i-a>SC_WEAK)runs.push({a,b:i-1,len:i-a});a=i+1}}
+  let longest=0,cur=0;for(const w of words){cur=w.mark?0:cur+1;if(cur>longest)longest=cur}
+  const acts=Array.isArray(o.acts)?o.acts:[];
+  // A flat stretch that runs over an act break is cut to the act that holds most of it, so a fix never joins two acts.
+  const inAct=(from,to)=>{let best=null,most=0;for(const k of acts){const v=Math.min(to,k.to)-Math.max(from,k.from);if(v>most){most=v;best=k}}return best?[Math.max(from,best.from),Math.min(to,best.to)]:[from,to]};
+  runs.sort((x,y)=>y.len-x.len).slice(0,5).forEach((r,i)=>bad("flat-"+i,"flat",r.len>SC_RISK?"risk":"weak",...inAct(sentAt(words[r.a].from).from,sentAt(words[r.b].to-1).to),`${r.len} words with no number, no danger and no question`,(i?"Another flat stretch. ":"The longest flat stretch. ")+"That is over "+Math.round(r.len/SC_WPM*60/5)*5+" seconds with nothing new to hold on to."));
+  if(!runs.length)good("flat","flat","No long flat stretch",`The longest run without a number, a danger word or a question is ${longest} words.`);
+  // 3. Every act but the last ends on a question or a pointer forward.
+  if(acts.length>1){let open=0;acts.slice(0,-1).forEach((act,i)=>{const end=S.filter(s=>s.from>=act.from&&s.to<=act.to).slice(-2);if(!end.length)return;const x=t.slice(end[0].from,end[end.length-1].to);
+      if(x.includes("?")||SC_FWD.test(x))return;open++;bad("loop-"+i,"loop","weak",end[0].from,end[end.length-1].to,`Act ${i+1} ends without a question for act ${i+2}`,"Nothing tells the viewer what they would miss by leaving.")});
+    if(!open)good("loop","loop","Every act ends on a question or a pointer forward","Each act break gives a reason to keep watching.")}
+  // 4. Channel intro phrases in the first 60 words.
+  const head=t.slice(0,words[Math.min(59,n-1)].to),hits=[...head.matchAll(SC_INTRO)];
+  if(hits.length){const last=hits[hits.length-1];bad("intro","intro","risk",sentAt(hits[0].index).from,sentAt(last.index+last[0].length-1).to,`Channel intro in the opening: "${[...new Set(hits.map(h=>h[0].toLowerCase()))].join('", "')}"`,"The first seconds should be the scene, not the channel.")}
+  else good("intro","intro",'No channel intro, no "welcome back"',"The script opens straight on the scene.");
+  // 5. Sentence length for reading aloud.
+  if(S.length){const avg=Math.round(S.reduce((x,s)=>x+s.words,0)/S.length),by=[...S].sort((x,y)=>y.words-x.words),max=by[0].words,long=by.filter(s=>s.words>40).slice(0,3),tell=`Average ${avg} words, longest ${max}.`;
+    if(long.length)long.forEach((s,i)=>bad("len-"+i,"len","weak",s.from,s.to,`One sentence runs ${s.words} words`,tell+" A sentence this long is hard to follow by ear."));
+    else if(avg>22)bad("len-0","len","weak",by[0].from,by[0].to,`Sentences average ${avg} words`,tell+" Aim for an average under 22 so it is easy to read aloud.");
+    else good("len","len","Sentences are short enough to read aloud",tell)}
+  const fails=findings.filter(f=>!f.ok).sort((x,y)=>x.from-y.from),state=Array(total).fill("ok");
+  for(const f of fails)for(const k of f.minutes)if(state[k-1]!=="risk")state[k-1]=f.level;
+  const score=Math.max(0,10-fails.reduce((x,f)=>x+(f.level==="risk"?2:1),0));
+  return {score,words:n,minutes:state.map((s,i)=>({n:i+1,state:s})),findings:[...fails,...findings.filter(f=>f.ok)]}}
+const narrText=f=>(f?.narration||[]).map(p=>p.text||"").join("\n\n");
+function narrActs(f){let at=0;return (f?.narration||[]).map((p,i)=>{const a={name:p.act||"Act "+(i+1),from:at,to:at+(p.text||"").length};at=a.to+2;return a})}
+const scTopic=()=>(mkW().topic||"").trim()||(mkPlan()?.title||"").split(/[:,]/)[0].trim();
+const checkNarr=f=>scriptCheck(narrText(f),{topic:scTopic(),acts:narrActs(f)});
+// Puts new text over a character range of the joined narration. A range that crosses an act break lands in the first act it touches.
+function narrReplace(f,from,to,text){const acts=narrActs(f);let done=false;
+  return {...f,narration:f.narration.map((p,i)=>{const a=acts[i],t=p.text||"";if(to<=a.from||from>=a.to)return p;
+    const head=done?"":t.slice(0,Math.max(0,from-a.from))+text;done=true;return {...p,text:(head+t.slice(Math.min(t.length,Math.max(0,to-a.from)))).trim()}}).filter(p=>p.text)}}
+function scFixPrompt(f,x){const t=narrText(f),before=t.slice(x.from,x.to),n=wordsOf(before),topic=scTopic();
+  const how={name:`Name the animal${topic?` ("${topic}")`:""} and the danger it posed in the first sentence.`,
+    flat:"Give the listener something to hold on to about every 40 seconds: a concrete number or size comparison, a moment of danger, or a question that the following lines answer. Use only facts already in the script or facts you are sure of, and phrase uncertain ones carefully.",
+    loop:"End on an open question or a clear pointer to what comes next, so the viewer has a reason to stay. Do not answer it here.",
+    intro:"Remove the channel greeting, any line about what the video will do and any request to subscribe. Open straight on the scene.",
+    len:"Split long sentences into short ones that are easy to read aloud. Keep every fact."}[x.rule]||"";
+  return `Rewrite one passage of a documentary voice-over script. Problem found: ${x.title}. ${how}
+Keep the meaning, the facts, the tone and the spoken style. Keep the length at about ${n} words (between ${Math.round(n*.85)} and ${Math.round(n*1.15)}). No headings, no stage directions, no bracketed notes. The passage must still join smoothly with the text before and after it.
+Text before (context only, do not rewrite): """${t.slice(0,x.from).split(/\s+/).slice(-60).join(" ")}"""
+Passage to rewrite: """${before}"""
+Text after (context only, do not rewrite): """${t.slice(x.to).split(/\s+/).slice(0,60).join(" ")}"""
+JSON shape: {"text":"the rewritten passage"}`}
+// A rewrite far off the original length is a model slip, not a fix.
+function scClean(d,before){const s=String(d?.text||"").trim(),r=wordsOf(s)/Math.max(1,wordsOf(before));return s&&r>=.5&&r<=1.7?s:""}
+function scCost(before){return costTag({input_tokens:(channelContext().length+1800+before.length)/4,output_tokens:before.length/3+30})}
+let SC={text:"",fixes:{},msg:{},note:""};
+function scRender(f){const box=$("#sc-box");if(!box||!f)return;const t=narrText(f);if(SC.text!==t)SC={text:t,fixes:{},msg:{},note:SC.note};
+  const c=checkNarr(f),fails=c.findings.filter(x=>!x.ok),weak=c.minutes.filter(m=>m.state==="weak").map(m=>m.n),risk=c.minutes.filter(m=>m.state==="risk").map(m=>m.n);
+  const sum=[weak.length&&`minute${weak.length>1?"s":""} ${scList(weak)} weak`,risk.length&&`minute${risk.length>1?"s":""} ${scList(risk)} likely drop`].filter(Boolean);
+  box.innerHTML=`<span class="layer">Script check</span><h3 id="sc-h" tabindex="-1">${esc(f.title||scTopic()||"This script")} · ${nf(c.words)} words · about ${c.minutes.length} minute${c.minutes.length>1?"s":""}</h3>
+  <div class="sc-score"><b>${c.score} / 10</b><span>${fails.length?`${fails.length} place${fails.length>1?"s":""} to fix.`:"Nothing to fix."} Checked on your PC, no AI and no cost.</span></div>
+  <div class="sc-mins" role="img" aria-label="Minute by minute: ${sum.length?sum.join(", ")+", the rest fine":"every minute fine"}">${c.minutes.map(m=>`<div${m.state==="ok"?"":` class="${m.state==="risk"?"r":"w"}"`}>${m.n}${m.state==="risk"?"!":m.state==="weak"?"~":""}</div>`).join("")}</div>
+  <div class="sc-key"><span><i></i>Holds attention</span><span><i class="w"></i>Weak (~)</span><span><i class="r"></i>Likely drop (!)</span></div>
+  <ul class="sc-finds">${c.findings.map(x=>{if(x.ok)return `<li${x.level==="info"?"":' class="ok"'}><div><b>${esc(x.title)}</b><span>${esc(x.detail)}</span></div>${x.level==="info"?`<span class="pill">note</span>`:`<span class="pill good">passed</span>`}</li>`;
+    const p=SC.fixes[x.id],before=t.slice(x.from,x.to);
+    return `<li data-sc="${x.id}"><div><b><span class="pill bad">${scMin(x.minutes)}${x.level==="risk"?", likely drop":""}</span>${esc(x.title)}</b><span>${esc(x.detail)}</span></div><button type="button" class="btn ghost" data-scfix="${x.id}">${p?"Try again":"Fix with AI"}${esc(scCost(before))}</button><div class="status" role="status">${esc(SC.msg[x.id]||"")}</div>${p?`<div class="sc-ba"><div><small>Before · ${wordsOf(before)} words</small>${esc(before)}</div><div><small>After · ${wordsOf(p)} words</small>${esc(p)}</div><div class="confirm"><button type="button" class="btn" data-scuse="${x.id}">Use this</button><button type="button" class="btn ghost" data-sckeep="${x.id}">Keep mine</button></div></div>`:""}</li>`}).join("")}</ul>
+  <p class="note">These are patterns counted from the text. They do not predict how long people will watch.</p><div class="status" id="s-sc" role="status">${esc(SC.note)}</div>`;SC.note=""}
+document.addEventListener("click",async e=>{const b=e.target.closest("[data-scfix],[data-scuse],[data-sckeep]");if(!b||!lastNarr)return;
+  const f=lastNarr,id=b.dataset.scfix||b.dataset.scuse||b.dataset.sckeep,x=checkNarr(f).findings.find(y=>y.id===id&&!y.ok);if(!x)return;const t=narrText(f),before=t.slice(x.from,x.to);
+  if(b.dataset.sckeep){delete SC.fixes[id];SC.msg[id]="Kept your version.";scRender(f);$(`[data-scfix="${id}"]`)?.focus();return}
+  if(b.dataset.scuse){const after=SC.fixes[id];if(!after)return;const data=narrReplace(f,x.from,x.to,after);
+    SC.note="Passage replaced and saved."+(LAST.vo?.data?.title===(f.title||"voice over")?" The voice over was made from the older text. Make it again so it matches.":"");
+    await remember("scriptfull",data).catch(()=>{SC.note="The passage was replaced, but saving failed. Check that the app is still open."});renderScriptFull(data);$("#sc-h")?.focus();return}
+  const st=b.parentElement.querySelector(".status"),d=await ask(st,b,scFixPrompt(f,x),null,"AI is rewriting this passage… (usually 10 to 40 seconds)");if(!d||narrText(lastNarr)!==t)return;
+  const after=scClean(d,before);if(after)SC.fixes[id]=after;SC.msg[id]=after?st.textContent.replace(", result saved","")+". Compare the two, then choose.":"The rewrite came back empty or at a very different length. Press the button once more.";
+  scRender(f);$(after?`[data-scuse="${id}"]`:`[data-scfix="${id}"]`)?.focus()});
+// One-click script: rewrites the "likely drop" passages before the voice is paid for. At most 3 AI calls.
+async function scAutoFix(st,btn){let fixed=0;const tried=new Set();
+  for(let i=0;i<3&&CFG.provider&&lastNarr;i++){const f=lastNarr,t=narrText(f),x=checkNarr(f).findings.find(y=>!y.ok&&y.level==="risk"&&!tried.has(t.slice(y.from,y.to)));if(!x)break;
+    const before=t.slice(x.from,x.to);tried.add(before);
+    const d=await ask(st,btn,scFixPrompt(f,x),null,`Script check: rewriting weak part ${i+1} (${scMin(x.minutes).toLowerCase()})…`);if(!d)break;
+    const after=scClean(d,before);if(!after)continue;tried.add(after);
+    const data=narrReplace(f,x.from,x.to,after);await remember("scriptfull",data).catch(()=>{});renderScriptFull(data);fixed++}
+  return fixed}
+$("#script-fix").checked=store.get("scfix",true);
+$("#script-fix").addEventListener("change",e=>store.set("scfix",e.target.checked));
+
+/* Edit pack: one voice file per act, subtitles and text files in one folder for Premiere. Finished acts stay in work(id).pack. */
+const pkHash=s=>{let h=5381;for(let i=0;i<s.length;i++)h=(h*33^s.charCodeAt(i))>>>0;return h.toString(36)};
+const pkSlug=s=>String(s||"").trim().toLowerCase().replace(/[^a-z0-9]+/g,"-").slice(0,60).replace(/^-+|-+$/g,"");
+const pkPost=(path,body)=>api(path,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+const pkClock=t=>`${Math.floor(t/60)}:${String(Math.floor(t%60)).padStart(2,"0")}`;
+const pkLong=t=>t<60?`${Math.round(t)} s`:`${Math.floor(t/60)} min ${Math.round(t%60)} s`;
+function pkActs(f){const n=(f?.narration||[]).filter(p=>(p.text||"").trim());
+  return (n.length?n:[{act:"",text:String(f?.text||"")}]).map((p,i)=>({name:String(p.act||"").trim()||"Act "+(i+1),text:String(p.text||"").trim()}))}
+// The quota is only known after "Load voices" in Settings; later spending is subtracted here.
+const eqSpend=n=>{const q=store.get("eq",null);if(q&&n)store.set("eq",{...q,left:Math.max(0,q.left-n)})};
+const srtT=t=>{const m=Math.round(t*1000),h=Math.floor(m/36e5),mi=Math.floor(m%36e5/6e4),se=Math.floor(m%6e4/1e3),ms=m%1e3,z=(n,l=2)=>String(n).padStart(l,"0");return `${z(h)}:${z(mi)}:${z(se)},${z(ms,3)}`};
+let PEEK="";
+let PK={run:false,at:-1,msg:"",err:false,id:""};
+function pkState(f){const w=mkW(),acts=pkActs(f),want=pkSlug(scTopic()||f.title)||"video";
+  const sig=a=>pkHash([CFG.eleven_voice,CFG.eleven_model,a.text].join("|"));
+  // A new folder is started only when no kept act matches this script, so renaming the topic never drops paid voice files.
+  if(!w.pack||(w.pack.want!==want&&!acts.some((a,i)=>w.pack.acts[i]?.sig===sig(a))))w.pack={want,slug:"",acts:[]};
+  const p=w.pack,need=acts.map((a,i)=>p.acts[i]?.sig!==sig(a));
+  return {w,p,acts,sig,need,todo:need.some(Boolean),chars:acts.reduce((n,a,i)=>n+(need[i]?a.text.length:0),0),total:acts.reduce((n,a)=>n+a.text.length,0)}}
+// Each act's cue times start at zero, so they are shifted by the length of the acts before it.
+function pkCues(p,n){let off=0;const out=[];for(const a of p.acts.slice(0,n)){for(const c of a?.cues||[])out.push({start:+(c.start+off).toFixed(3),end:+(c.end+off).toFixed(3),text:c.text});off+=a?.seconds||0}return out}
+function pkFiles(f,w,acts,cues){const files=[{name:"00-script.txt",text:(f.title?f.title+"\n\n":"")+acts.map((a,i)=>(/^act\s*\d+/i.test(a.name)?a.name:`Act ${i+1} · ${a.name}`).toUpperCase()+"\n\n"+a.text).join("\n\n\n")+"\n"}];
+  const o=lastOutline&&(!f.title||!lastOutline.title||f.title===lastOutline.title)?lastOutline:null,fl=(o?.acts||[]).flatMap((a,i)=>(a.flow_prompts||[]).filter(Boolean).map((t,j)=>`[${i+1}.${j+1}] ${t}`));
+  if(fl.length)files.push({name:"flow-prompts.txt",text:(o.flow_style?`STYLE (use on every clip): ${o.flow_style}\n\n`:"")+fl.join("\n\n")+"\n"});
+  // SEO text made before this script was written belongs to another video.
+  const seo=w.seo||(LAST.seo&&LAST.scriptfull&&LAST.seo.at>LAST.scriptfull.at?LAST.seo.data:null),title=w.pick||mkPlan()?.title||f.title||"";
+  if(title||seo)files.push({name:"title-and-description.txt",text:`TITLE\n${title}\n`+(seo?.description?`\nDESCRIPTION\n${seo.description}\n`:"")+(seo?.tags?.length?`\nTAGS\n${seo.tags.join(", ")}\n`:"")});
+  if(w.briefs?.list?.length)files.push({name:"infographics.txt",text:igFile(f,w.briefs.list,cues)});
+  return files}
+function pkRender(f){const box=$("#pk-box");if(!box||!f)return;
+  if(!CFG.has_eleven||!CFG.eleven_voice){box.innerHTML=`<span class="layer">Edit pack for Premiere</span><h3 id="pk-h">Make edit pack</h3><p class="note">The edit pack needs an ElevenLabs key and a voice. ${CFG.has_eleven?"Choose a voice in Settings, under Voice.":"Add your ElevenLabs API key in Settings, under Voice."}</p><button type="button" class="btn ghost" data-goto="settings">Open Settings</button>${pkClips(f,pkState(f).p)}`;return}
+  // Progress belongs to the video the pack was started for.
+  const busy=PK.run&&PK.id!==mkId(),K=PK.id===mkId()?PK:{run:false,at:-1,msg:"",err:false};
+  const s=pkState(f),{p,acts,need}=s,n=acts.length,kept=need.filter(x=>!x).length,ready=!!p.done&&!s.todo,cues=ready?pkCues(p,n):[];
+  const stale=ready&&p.text!==pkHash(JSON.stringify(pkFiles(f,s.w,acts,cues))),q=store.get("eq",null),secs=p.acts.slice(0,n).reduce((t,a)=>t+(a?.seconds||0),0);
+  const sep=(CFG.pack_dir||"").includes("\\")?"\\":"/",dir=p.dir||(CFG.pack_dir?CFG.pack_dir+sep+p.want:"Downloads"+sep+"Terra Studio"+sep+p.want),hasFlow=pkFiles(f,s.w,acts,[]).some(x=>x.name==="flow-prompts.txt");
+  const label=busy?"Another edit pack is being made…":K.run?"Making edit pack…":!s.todo?(p.done?"Update text files (no voice characters used)":"Finish edit pack (no voice characters used)"):p.done?`Update edit pack (about ${nf(s.chars)} characters)`:kept?`Continue edit pack (about ${nf(s.chars)} characters left)`:`Make edit pack (about ${nf(s.chars)} characters)`;
+  const run1=K.run&&K.at>=0&&K.at<n,run2=K.run&&K.at===n,a=run1?acts[K.at]:null;
+  const li=(state,text,small)=>`<li${state?` class="${state}"`:""}><i aria-hidden="true">${state==="done"?"✓":""}</i><span><b class="sr">${state==="done"?"Done: ":state==="run"?"In progress: ":state==="part"?"Partly done: ":"Not started: "}</b>${text}</span><small>${small}</small></li>`;
+  const focus=document.activeElement?.id;
+  // Text files are rebuilt here from the same data that was saved, so no read route is needed.
+  const peeks={};if(ready)for(const x of pkFiles(f,s.w,acts,cues))peeks[x.name]=x.text;
+  if(ready&&cues.length)peeks["subtitle.srt"]=cues.slice(0,6).map((c,i)=>`${i+1}\n${srtT(c.start)} --> ${srtT(c.end)}\n${c.text}`).join("\n\n");
+  box.innerHTML=`<span class="layer">Edit pack for Premiere</span>
+  <div class="pk"><div><h3 id="pk-h">Make edit pack</h3><span>Voice over per act, subtitles, Google Flow prompts, script and thumbnail, all in one folder.</span></div>
+  <div class="chips"><button type="button" class="btn" id="pk-go"${K.run||busy?' aria-disabled="true"':""}>${label}</button><button type="button" class="btn ghost" id="pk-open"${p.slug?"":" disabled"}>Open folder</button></div></div>
+  <p class="note">This script is ${nf(s.total)} characters in ${n} act${n>1?"s":""}. ${s.todo?`Making the pack uses about ${nf(s.chars)} characters of your ElevenLabs quota${kept?`, because ${kept} finished act${kept>1?"s are":" is"} kept`:""}.`:"Every act already has its voice, so nothing more is used from your ElevenLabs quota."}${q?` Your quota had about ${nf(q.left)} characters left when it was last checked.`:" Load voices in Settings to see how much quota is left."}</p>
+  ${q&&s.chars>q.left?`<p class="note err">That may not be enough for the whole pack. Acts that finish are kept, so you can continue after the quota refills.</p>`:""}
+  <ul class="pk-steps">
+  ${li(run1?"run":s.todo?(kept?"part":""):"done","ElevenLabs voice over, one file per act",run1?`act ${K.at+1} of ${n}: ${esc(a.name)}, ${nf(a.text.length)} characters`:s.todo?(kept?`${kept} of ${n} acts done, `:"")+`about ${nf(s.chars)} characters`:`${n} file${n>1?"s":""}, ${pkLong(secs)}`)}
+  ${li(run2?"run":ready?"done":"","Subtitle .srt from the voice over's own timing",ready?`${nf(cues.length)} lines`:"no AI call")}
+  ${li(run2?"run":ready&&hasFlow?"done":"","Google Flow prompts per scene, in act order",hasFlow?"already in the script":"this outline has no Flow prompts")}
+  ${li(run2?"run":ready?"done":"",`Save to ${esc(dir).replace(/([\\/])/g,"$1<wbr>")}`,ready&&p.files?`${p.files.length} files`:"")}
+  </ul>
+  <div class="status${K.err?" err":""}" id="s-pack" role="status">${esc(K.run||K.err||!stale?K.msg:"The title, description or infographic briefs changed after the pack was made. Click Update text files to save them in the folder.")}</div>
+  ${ready&&p.files?`<ul class="pk-files" aria-label="Files in the edit pack">${p.files.map(x=>peeks[x]?`<li><button type="button" data-peek="${esc(x)}" aria-expanded="${PEEK===x}">${esc(x)}</button></li>`:`<li>${esc(x)}</li>`).join("")}</ul>${peeks[PEEK]?`<pre class="ig-peek" tabindex="0" aria-label="Start of ${esc(PEEK)}">${esc(peeks[PEEK].slice(0,600))}${peeks[PEEK].length>600?"\n…":""}</pre>`:""}<p class="note">In Premiere: drag the folder into the Project panel. Put the act MP3s in order on the audio track, then import subtitle.srt. The same .srt can be uploaded in YouTube Studio.</p>`:""}
+  ${pkClips(f,p)}
+  <p class="note">The voice over is already in the pack, cut per act. The single MP3 below is only for when you want one long file. It uses the quota again.</p>`;
+  if(focus==="pk-go"||focus==="pk-open")$("#"+focus)?.focus()}
+/* KIE.ai clips: one 8-second Veo clip per Flow prompt. Money is only spent after a second click inside the page. */
+let KC={open:false,ask:"",run:"",id:"",at:"",msg:"",err:false};
+function pkFlow(f){const o=lastOutline&&(!f.title||!lastOutline.title||f.title===lastOutline.title)?lastOutline:null;
+  return (o?.acts||[]).flatMap((a,i)=>(a.flow_prompts||[]).filter(Boolean).map((t,j)=>({n:`${i+1}.${j+1}`,text:t,prompt:t+(o.flow_style?" Style: "+o.flow_style:"")})))}
+function pkClips(f,p){const fl=pkFlow(f);if(!fl.length)return "";const mine=KC.id===mkId(),price=usd(KIE_CLIP*KIE_USD),on=!!CFG.has_kie;
+  return `<details class="pk-clips" id="pk-clips"${KC.open?" open":""}><summary>Video clips from the Flow prompts (optional, ${fl.length} prompt${fl.length>1?"s":""})</summary>
+  <p class="note">KIE.ai can make each 8-second clip with Veo 3.1 Lite and save it in this pack folder. One clip costs about ${KIE_CLIP} credits (${price}) and can take up to 10 minutes. Pasting the prompts into Google Flow yourself still works and costs nothing here.${on?"":" The buttons are off until a KIE.ai key is saved in Settings."}</p>
+  ${on?"":`<button type="button" class="btn ghost" data-goto="settings">Open Settings</button>`}
+  <ol class="pk-cl">${fl.map(c=>{const saved=p.clips?.[c.n],fresh=saved&&saved.sig===pkHash(c.prompt),run=KC.run===c.n&&mine,asking=mine&&KC.ask===c.n&&!KC.run;
+    return `<li><b>${c.n}</b><span>${esc(c.text)}</span>
+    <div class="chips"><button type="button" class="btn ghost" data-clip="${c.n}"${!on||(KC.run&&!run)?" disabled":""}${run?' aria-disabled="true"':""}${asking?' aria-expanded="true"':""}>${run?"Making clip… keep the app open":`${saved?"Make again":"Make clip"} (about ${price})`}</button>${saved?`<small>${fresh?"Saved as":"Saved from an older prompt as"} ${esc(saved.file)}</small>`:""}</div>
+    ${asking?`<div class="confirm"><span>Spend about ${KIE_CLIP} KIE.ai credits (${price}) on this one clip?${saved?" The saved clip is replaced.":""}</span><button type="button" class="btn" data-clipyes="${c.n}">Yes, make this clip</button><button type="button" class="btn ghost" data-clipno="${c.n}">Cancel</button></div>`:""}
+    ${mine&&KC.at===c.n&&KC.msg?`<div class="status${KC.err?" err":""}" role="status">${esc(KC.msg)}</div>`:""}</li>`}).join("")}</ol></details>`}
+async function makeClip(n){const f=lastNarr;if(!f||KC.run||!CFG.has_kie||!ownScript(f))return;const id=mkId(),{p}=pkState(f),c=pkFlow(f).find(x=>x.n===n);if(!c)return;
+  KC={...KC,ask:"",run:n,id,at:n,err:false,msg:`KIE.ai is making clip ${n}. This can take up to 10 minutes. Do not close the app.`};pkRender(lastNarr);
+  const j=await pkPost("/api/kie/clip",{slug:p.slug||p.want,title:p.want,name:n,prompt:c.prompt});
+  if(j.error||!j.file)KC={...KC,run:"",err:true,msg:`Clip ${n} was not made. ${j.error||"Try again."}`};
+  else{p.slug=j.slug;p.dir=j.dir;p.clips={...(p.clips||{}),[n]:{file:j.file,sig:pkHash(c.prompt)}};if(p.files&&!p.files.includes(j.file))p.files=[...p.files,j.file].sort();await flushWork();
+    const cr=typeof j.credits==="number"&&j.credits>0?j.credits:KIE_CLIP;addKie(cr,"clip").catch(()=>{});
+    KC={...KC,run:"",err:false,msg:`Clip ${n} is saved as ${j.file}. It cost about ${kieTxt(cr)}.`}}
+  if(lastNarr)pkRender(lastNarr);if(mkId()===id)$(`[data-clip="${n}"]`)?.focus()}
+document.addEventListener("toggle",e=>{if(e.target.id==="pk-clips")KC.open=e.target.open},true);
+document.addEventListener("click",e=>{const a=e.target.closest("[data-clip]"),y=e.target.closest("[data-clipyes]"),no=e.target.closest("[data-clipno]");
+  if(a){if(KC.run||!CFG.has_kie)return;const n=a.dataset.clip,same=KC.ask===n&&KC.id===mkId();KC={...KC,ask:same?"":n,id:mkId(),at:n,msg:"",err:false};pkRender(lastNarr);$(same?`[data-clip="${n}"]`:`[data-clipyes="${n}"]`)?.focus();return}
+  if(y){makeClip(y.dataset.clipyes);return}
+  if(no){KC={...KC,ask:""};pkRender(lastNarr);$(`[data-clip="${no.dataset.clipno}"]`)?.focus()}});
+async function makePack(){const f=lastNarr;if(!f||PK.run||!ownScript(f))return null;const id=mkId(),s=pkState(f),{w,p,acts}=s,n=acts.length,thumb=mkPlan()?.thumb?id:"";
+  const fail=msg=>{PK={run:false,at:-1,msg,err:true,id};pkRender(lastNarr);return null};
+  if(acts.some(a=>!a.text))return fail("The script is empty.");
+  PK={run:true,at:-1,msg:"",err:false,id};
+  for(let i=0;i<n;i++){if(!s.need[i])continue;const a=acts[i];
+    PK.at=i;PK.msg=`Making the voice for act ${i+1} of ${n}: ${a.name}. ${nf(a.text.length)} characters. Do not close the app.`;pkRender(lastNarr);
+    const j=await pkPost("/api/pack/voice",{slug:p.slug||p.want,index:i,name:a.name,text:a.text,title:p.want});
+    if(j.error||!j.file){const kept=acts.filter((x,k)=>p.acts[k]?.sig===s.sig(x)).length;
+      return fail(`Act ${i+1} was not made. ${j.error||"Try again."}${kept?` ${kept} finished act${kept>1?"s are":" is"} kept. Click the button again to continue.`:""}`)}
+    p.slug=j.slug;p.dir=j.dir;p.done=0;p.acts[i]={sig:s.sig(a),file:j.file,seconds:j.seconds,chars:j.chars,cues:j.cues||[]};eqSpend(j.chars);await flushWork()}
+  PK.at=n;PK.msg="Writing the subtitles and text files…";pkRender(lastNarr);
+  p.acts.length=n;const cues=pkCues(p,n),files=pkFiles(f,w,acts,cues);
+  const r=await pkPost("/api/pack/finish",{slug:p.slug||p.want,files,cues,thumb});
+  if(r.error)return fail(`The voice files are saved, but the text files are not. ${r.error} Click the button again.`);
+  p.slug=r.slug;p.dir=r.dir;p.files=r.files||[];p.text=pkHash(JSON.stringify(files));p.done=Date.now();saveWork();
+  PK={run:false,at:-1,err:false,id,msg:`Done. ${p.files.length} files are in ${r.dir}.${thumb&&!r.thumbnail?" The thumbnail was not found, so it is not in the folder.":""}`};
+  pkRender(lastNarr);igRender(lastNarr);advance(id,"edit");return r}
+document.addEventListener("click",async e=>{
+  const pe=e.target.closest("[data-peek]");if(pe){PEEK=PEEK===pe.dataset.peek?"":pe.dataset.peek;pkRender(lastNarr);$(`[data-peek="${CSS.escape(pe.dataset.peek)}"]`)?.focus();return}
+  if(e.target.closest("#pk-go")){makePack();return}
+  if(e.target.closest("#pk-open")){const slug=mkW().pack?.slug;if(!slug)return;const r=await pkPost("/api/pack/open",{slug});if(r.error&&!PK.run){PK={run:false,at:-1,msg:r.error,err:true,id:mkId()};pkRender(lastNarr)}}});
+// The script cards exist only for the video the script was written for.
+const syncScript=()=>{if(lastNarr&&!!$("#pk-box")!==ownScript(lastNarr)&&$("#o-scriptfull"))renderScriptFull(lastNarr)};
+$("#mk-pick").addEventListener("change",()=>setTimeout(()=>{syncScript();if(lastNarr){if(!PK.run){PK.msg="";PK.err=false}if(!KC.run)KC={...KC,ask:"",msg:""};IG={msg:"",err:false,show:0};pkRender(lastNarr);igRender(lastNarr)}}));
+
+/* Infographic briefs: the app finds the moments, Claude with the Remotion skill builds the clips. */
+const IG_KIND={size:["Size comparison","size-comparison"],number:["Big number","big-number"],map:["Map","map"],timeline:["Timeline","timeline"],chart:["Chart","chart"]};
+const igNorm=s=>String(s||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+let IG={msg:"",err:false,show:0};
+// Where the quoted sentence is spoken: real cue times when a finished pack matches this script, else 145 words per minute.
+function igTime(f,quote,cues){const all=igNorm(narrText(f)),q=igNorm(quote);if(!q)return null;
+  let at=all.indexOf(q);if(at<0){const head=q.split(" ").slice(0,6);at=head.length>=4?all.indexOf(head.join(" ")):-1}if(at<0)return null;
+  const wi=at?all.slice(0,at).trim().split(" ").length:0,nw=all.split(" ").length;
+  if(cues?.length){const cw=cues.map(c=>igNorm(c.text).split(" ").filter(Boolean).length),tot=cw.reduce((a,b)=>a+b,0);
+    if(Math.abs(tot-nw)<=nw*.03){let k=0;for(let i=0;i<cues.length;i++){if(wi<k+cw[i])return {t:cues[i].start+(cues[i].end-cues[i].start)*(wi-k)/cw[i],real:true};k+=cw[i]}}}
+  return {t:wi/SC_WPM*60,real:false}}
+function igCues(f){const s=pkState(f);return s.p.done&&!s.todo?pkCues(s.p,s.acts.length):null}
+const igName=(m,i)=>`${String(i+1).padStart(2,"0")}-${IG_KIND[m.kind][1]}.mov`;
+function igBrief(f,m,i,cues){const at=igTime(f,m.quote,cues),name=(CFG.profile?.name||"").trim();
+  return `Use the Remotion skill. Make one ${m.seconds}-second clip: 1920x1080, 30 fps, ${m.seconds*30} frames. Transparent background, rendered as ProRes 4444 (.mov with alpha), so it overlays footage in Premiere.
+
+Style: ${name?name+". ":""}Dark stone background if not transparent, warm amber accent #F2A230, off-white text, bold condensed sans. No stock icons.
+
+Content: ${IG_KIND[m.kind][0]}. ${m.title}. ${m.detail}
+Use only the numbers written here. They come from the script.
+
+Voice over at this moment${at?` (about ${pkClock(at.t)})`:""}: "${m.quote}"
+Output file: ${igName(m,i)}`}
+function igFile(f,list,cues){return `INFOGRAPHIC BRIEFS
+
+Paste one brief at a time into Claude with the Remotion skill. Put each finished .mov on a video track above the footage, at the time shown.
+The numbers in these briefs come from the script. Check them the same way you check the script.
+`+list.map((m,i)=>`\n===== ${i+1}. ${IG_KIND[m.kind][0]}: ${m.title} =====\n\n${igBrief(f,m,i,cues)}\n`).join("")}
+function igCost(f){return costTag({input_tokens:(channelContext().length+1200+narrText(f).length)/4,output_tokens:600})}
+function igRender(f){const box=$("#ig-box");if(!box||!f)return;const b=mkW().briefs,list=b?.list||[],cues=list.length?igCues(f):null,focus=document.activeElement?.id;
+  const times=list.map(m=>igTime(f,m.quote,cues)),real=times.some(t=>t?.real),show=Math.min(IG.show,list.length-1);
+  box.innerHTML=`<span class="layer">Infographics with Claude</span><h3 id="ig-h" tabindex="-1">${list.length?`${list.length} infographic moment${list.length>1?"s":""} found`:"Infographic briefs for Claude"}</h3>
+  <p class="note">The app finds the moments in your script that deserve a graphic: a size comparison, a timeline, a map, one big number. It writes a ready brief for each. Paste a brief into Claude with the Remotion skill, and Claude builds the animated clip. Making the clips uses your Claude subscription.</p>
+  <button type="button" class="btn${list.length?" ghost":""}" id="ig-find">${list.length?"Find them again":"Find infographic moments"}${igCost(f)}</button><div class="status${IG.err?" err":""}" id="s-ig" role="status">${esc(IG.msg)}</div>
+  ${list.length?`<ul class="ig-list">${list.map((m,i)=>`<li><div><b><span class="pill${times[i]?" good":""}">${times[i]?pkClock(times[i].t):"time not found"} · ${m.seconds} s</span>${esc(IG_KIND[m.kind][0])}: ${esc(m.title)}</b><span>${esc(m.detail)}</span></div><button type="button" class="btn ghost" data-brief="${i}" aria-label="Copy brief ${i+1}: ${esc(m.title)}">Copy brief</button></li>`).join("")}</ul>
+  <p class="note">${real?"The times come from the voice over in the edit pack.":"The times are estimates at 145 words per minute. They become exact once the edit pack is made."}${b.sig!==pkHash(narrText(f))?" The script changed after these were found. Find them again if a sentence is gone.":""}</p>
+  <p class="note"><strong>Check the numbers.</strong> The numbers in each brief come from the script. They need the same checking as the script.</p>
+  <div class="ig-peek-h"><b id="ig-peek-n">Brief ${show+1}: ${esc(igName(list[show],show))}</b><span>all briefs are saved as infographics.txt in the edit pack</span></div>
+  <pre class="ig-peek" id="ig-peek" tabindex="0" aria-labelledby="ig-peek-n">${esc(igBrief(f,list[show],show,cues))}</pre>`:""}`;
+  if(focus==="ig-find")$("#ig-find")?.focus()}
+async function findMoments(btn){const f=lastNarr,w=mkW(),st=$("#s-ig");if(!f||!ownScript(f))return null;
+  const d=await ask(st,btn,`Find the 3 to 5 moments in this documentary narration that most deserve an animated infographic: a size comparison, one big number, a map, a timeline or a simple chart. Pick moments where a graphic explains something faster than footage can. Spread them over the film. Use only numbers and facts that are in the narration, and do not add new ones.
+For each moment give: "kind" (one of size, number, map, timeline, chart), "title" (short, for example "Smilodon beside a grizzly bear and a man"), "detail" (one or two sentences: what is drawn, with the exact numbers from the narration, and how it animates), "seconds" (4 to 8, how long the graphic stays on screen), "quote" (the one sentence of the narration it belongs to, copied word for word).
+Narration: """${narrText(f)}"""
+JSON shape: {"moments":[{"kind":"size","title":"","detail":"","seconds":6,"quote":""}]}`,null,"AI is reading the script for infographic moments… (usually 20 to 60 seconds)");
+  if(!d)return null;
+  const clean=s=>String(s??"").replace(/\s+/g," ").trim(),list=(Array.isArray(d.moments)?d.moments:Array.isArray(d)?d:[]).map(m=>({kind:IG_KIND[String(m?.kind||"").toLowerCase()]?String(m.kind).toLowerCase():"chart",title:clean(m?.title).replace(/[.]+$/,""),detail:clean(m?.detail),seconds:Math.min(8,Math.max(4,Math.round(+m?.seconds)||6)),quote:clean(m?.quote).replace(/^["“”']+|["“”']+$/g,"")})).filter(m=>m.title&&m.detail).slice(0,5);
+  if(!list.length){IG={msg:"No usable moments came back. Press the button once more.",err:true,show:0};igRender(lastNarr);return null}
+  w.briefs={sig:pkHash(narrText(f)),at:Date.now(),list};saveWork();
+  IG={msg:st.textContent.replace(", result saved","")+". Briefs saved.",err:false,show:0};igRender(lastNarr);pkRender(lastNarr);$("#ig-h")?.focus();return list}
+document.addEventListener("click",e=>{
+  const fb=e.target.closest("#ig-find");if(fb&&lastNarr){findMoments(fb);return}
+  const b=e.target.closest("[data-brief]");if(!b||!lastNarr)return;const i=+b.dataset.brief,m=mkW().briefs?.list?.[i],pre=$("#ig-peek");if(!m||!pre)return;
+  const txt=igBrief(lastNarr,m,i,igCues(lastNarr));IG.show=i;pre.textContent=txt;$("#ig-peek-n").textContent=`Brief ${i+1}: ${igName(m,i)}`;
+  const done=()=>{b.textContent="Copied";setTimeout(()=>b.textContent="Copy brief",1500)};
+  // Without clipboard access the brief is selected, so Ctrl+C still copies it.
+  const sel=()=>{const r=document.createRange();r.selectNodeContents(pre);const s=getSelection();s.removeAllRanges();s.addRange(r);let ok=false;try{ok=document.execCommand("copy")}catch{}if(ok)done();else{b.textContent="Press Ctrl+C";pre.focus();setTimeout(()=>b.textContent="Copy brief",3000)}};
+  if(navigator.clipboard)navigator.clipboard.writeText(txt).then(done).catch(sel);else sel()});
 
 /* SEO pack */
 function renderSEO(s){const tags=(s.tags||[]).join(", ");
@@ -763,7 +1099,7 @@ $("#f-seo").addEventListener("submit",async e=>{e.preventDefault();
   const data=await ask($("#s-seo"),e.submitter||$("#f-seo .btn"),`Create a YouTube SEO pack. Topic: ${val("#seo-topic")}. Key facts or outline: ${val("#seo-facts")||"none given"}. Video length: ${$("#seo-mins").value} minutes.
 First pick ONE primary search keyword (what a viewer would actually type) and 2-3 secondary keywords. Give 5 title options (each under 60 characters, honest, varied angles, at least 3 containing the primary keyword or the subject's common name; "angle" is a 1-2 word English label). A description: strong first 2 lines (shown in search) with the primary keyword in the first sentence, 1 short paragraph, a CHAPTERS list with plausible timestamps spread over the length starting at 00:00, placeholders [membership link] and [merch link], then 3 hashtags at the end. 3 hashtags. 10-15 tags, total under 450 characters, mixing broad and long-tail phrases. A pinned comment that asks a question to spark replies. A YouTube Community post for release day (under 600 characters, one surprising fact, then a 3-4 option poll written as a list).
 JSON shape: {"keywords":{"primary":"","secondary":[""]},"titles":[{"text":"","angle":""}],"description":"","hashtags":[""],"tags":[""],"pinned_comment":"","community_post":""}`,"seo");
-  if(data?.titles)renderSEO(data)});
+  if(data?.titles){renderSEO(data);mkW().seo={description:data.description,tags:data.tags};saveWork();if(lastNarr)pkRender(lastNarr)}});
 
 /* Thumbnail */
 function renderThumb(list){$("#o-thumb").innerHTML=head("Thumbnail concepts")+`<div class="thumbs">${list.map((c,i)=>{const id="tp"+i+Math.random().toString(36).slice(2,6);return `<article class="card"><div class="thumb-text">${esc(c.text)}</div><h3 style="margin-top:12px">${esc(c.name)}</h3><p><strong>Composition:</strong> ${esc(c.composition)}</p><p class="note"><strong>Why people click:</strong> ${esc(c.why)}</p><div class="copybox" style="margin-top:52px"><button type="button" class="btn ghost" data-copy="${id}" data-label="Copy for Flow">Copy for Flow</button><pre id="${id}">${esc(c.prompt)}</pre></div></article>`}).join("")}</div><p class="note">Quick rules: at most 4 words, one big subject, high contrast, still readable at small phone size. The thumbnail text adds to the title, it does not repeat it.</p>`}
@@ -818,7 +1154,7 @@ function chart(){
   const peakI=data.reduce((b,d,i)=>d[1]>data[b][1]?i:b,0),lastFull=YT.partialLast?data.length-2:data.length-1;
   data.forEach(([m,v],i)=>{const w=Math.max(2,bw-2),x=pl+i*bw+1,top=y(v),r=Math.min(4,w/2,base-top);
     const d=base-top<1?"":`M${x},${base}V${top+r}Q${x},${top} ${x+r},${top}H${x+w-r}Q${x+w},${top} ${x+w},${top+r}V${base}Z`;
-    g+=`<path d="${d}" fill="var(--accent)"/><rect class="hit" data-i="${i}" x="${pl+i*bw}" y="${pt}" width="${bw}" height="${base-pt}" fill="transparent" tabindex="0" aria-label="${mLabel(m,i)}: ${nf(v)} views"/>`;
+    g+=`<path d="${d}" fill="${i===data.length-1&&YT.partialLast?"url(#hx)":"var(--series)"}"/><rect class="hit" data-i="${i}" x="${pl+i*bw}" y="${pt}" width="${bw}" height="${base-pt}" fill="transparent" tabindex="0" aria-label="${mLabel(m,i)}: ${nf(v)} views"/>`;
     const mo=+m.slice(5,7);if(mo===1||i===0)g+=`<text x="${x}" y="${H-8}" font-size="11" fill="var(--muted)" ${mono}>${BN[mo-1]} ${m.slice(2,4)}</text>`;else if(data.length<=36&&mo%3===1&&i>2)g+=`<text x="${x}" y="${H-8}" font-size="11" fill="var(--muted)" ${mono}>${BN[mo-1]}</text>`;
     if(i===peakI)g+=`<text x="${Math.min(Math.max(x+w/2,pl+30),W-40)}" y="${top-8}" text-anchor="middle" font-size="12" font-weight="500" fill="var(--ink)" ${mono}>${nf(v)}</text>`;
     if(i===lastFull&&i!==peakI)g+=`<text x="${x+w}" y="${top-8}" text-anchor="end" font-size="12" font-weight="500" fill="var(--ink)" ${mono}>${BN[mo-1]}: ${nf(v)}</text>`});
@@ -918,29 +1254,45 @@ async function loadConfig(){CFG=await api("/api/config");if(CFG.error){CFG={prof
   $("#banner-key").hidden=!!CFG.provider||store.get("banner-off",false);
   $("#cfg-provider").value=CFG.provider_choice&&CFG.provider_choice!==""?CFG.provider_choice:(CFG.provider||"manual");showProv();
   $("#cfg-gkey-hint").textContent=CFG.has_gemini?"Saved: key ending in "+CFG.gemini_hint+". Leave the field empty to keep using this key.":"No Gemini key saved yet.";
-  if(CFG.gemini_model&&![...$("#cfg-gmodel").options].some(o=>o.value===CFG.gemini_model))$("#cfg-gmodel").insertAdjacentHTML("beforeend",`<option value="${esc(CFG.gemini_model)}">${esc(CFG.gemini_model)}</option>`);$("#cfg-gmodel").value=CFG.gemini_model||"";$("#cfg-dir").textContent=CFG.dir||"";voiceFields();imgFields();ytFields();if(lastNarr&&$("#o-scriptfull"))renderScriptFull(lastNarr);
+  if(CFG.gemini_model&&![...$("#cfg-gmodel").options].some(o=>o.value===CFG.gemini_model))$("#cfg-gmodel").insertAdjacentHTML("beforeend",`<option value="${esc(CFG.gemini_model)}">${esc(CFG.gemini_model)}</option>`);$("#cfg-gmodel").value=CFG.gemini_model||"";$("#cfg-dir").textContent=CFG.dir||"";voiceFields();kieFields();imgFields();ytFields();if(lastNarr&&$("#o-scriptfull"))renderScriptFull(lastNarr);
   const p=CFG.profile||{};PROFILE_FIELDS.forEach(([k,id])=>{if(p[k]!=null)$(id).value=p[k]});
   $("#hdr-channel").textContent=p.name||""}
 function readProfile(){const p={};PROFILE_FIELDS.forEach(([k,id])=>p[k]=$(id).value.trim());return p}
 async function saveConfig(extra,st){const body={model:$("#cfg-model").value,effort:$("#cfg-effort").value,profile:readProfile(),...extra};const j=await api("/api/config",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
   if(j.error){st.className="status err";st.textContent=j.error;return false}st.className="status";st.textContent="Saved.";await loadConfig();return true}
-const PROV_HINT={manual:"Each AI button prepares a prompt to copy into claude.ai. Free because it uses your subscription, but it needs copy and paste.",gemini:"Results appear straight in the app. Uses a free API key from Google AI Studio.",claude:"Results appear straight in the app at the best quality. Billed by Anthropic per use, separate from your claude.ai subscription."};
-function showProv(){const v=$("#cfg-provider").value;$("#prov-hint").textContent=PROV_HINT[v]||"";$("#grp-gemini").hidden=v!=="gemini";$("#grp-claude").hidden=v!=="claude"}
+const PROV_HINT={manual:"Each AI button prepares a prompt to copy into claude.ai. Free because it uses your subscription, but it needs copy and paste.",gemini:"Results appear straight in the app. Uses a free API key from Google AI Studio.",claude:"Results appear straight in the app at the best quality. Billed by Anthropic per use, separate from your claude.ai subscription.",kie:"Results appear straight in the app, written by Claude through KIE.ai. One key pays for scripts and thumbnails as you use them."};
+function showProv(){const v=$("#cfg-provider").value;$("#prov-hint").textContent=PROV_HINT[v]||"";$("#grp-gemini").hidden=v!=="gemini";$("#grp-claude").hidden=v!=="claude";$("#grp-kie").hidden=v!=="kie"}
 $("#cfg-provider").addEventListener("change",showProv);
-function keyFields(st){const k=$("#cfg-key").value.trim(),g=$("#cfg-gkey").value.trim(),x={provider:$("#cfg-provider").value,gemini_model:$("#cfg-gmodel").value};
+const kieKeyOk=k=>/^\S{8,199}$/.test(k);
+function kieFields(){const saved=CFG.has_kie?"Saved: key ending in "+CFG.kie_hint+". Leave the field empty to keep using this key.":"No KIE.ai key saved yet.";
+  $("#cfg-kkey-hint").textContent=saved;$("#cfg-ikkey-hint").textContent=CFG.has_kie?saved+" It is the same key as under AI connection.":saved;
+  const s=$("#cfg-kmodel");if(CFG.kie_model&&![...s.options].some(o=>o.value===CFG.kie_model))s.insertAdjacentHTML("beforeend",`<option value="${esc(CFG.kie_model)}">${esc(CFG.kie_model)}</option>`);s.value=CFG.kie_model||"claude-sonnet-5-5";
+  $("#cfg-kspent").textContent=kieSpentText();$("#cfg-kcheck").disabled=$("#cfg-kclear").disabled=!CFG.has_kie;if(!CFG.has_kie)$("#cfg-kbal").textContent=""}
+function keyFields(st){const k=$("#cfg-key").value.trim(),g=$("#cfg-gkey").value.trim(),q=$("#cfg-kkey").value.trim(),x={provider:$("#cfg-provider").value,gemini_model:$("#cfg-gmodel").value,kie_model:$("#cfg-kmodel").value};
+  if(q){if(!kieKeyOk(q)){st.className="status err";st.textContent="The KIE.ai key does not look right. Copy it again from kie.ai/api-key.";return null}x.kie_key=q}
   if(k){if(!k.startsWith("sk-ant-")){st.className="status err";st.textContent="A Claude API key starts with sk-ant-. Check the key you pasted.";return null}x.api_key=k}
   if(g){if(!/^[A-Za-z0-9_\-]{20,}$/.test(g)){st.className="status err";st.textContent="The Gemini API key does not look right. Copy it again from AI Studio.";return null}x.gemini_key=g}
   return x}
 $("#f-key").addEventListener("submit",async e=>{e.preventDefault();const st=$("#s-key"),x=keyFields(st);if(!x)return;
   if(x.provider==="gemini"&&!x.gemini_key&&!CFG.has_gemini){st.className="status err";st.textContent="Paste the Gemini API key first.";return}
   if(x.provider==="claude"&&!x.api_key&&!CFG.has_key){st.className="status err";st.textContent="Paste the Claude API key first.";return}
-  if(await saveConfig(x,st)){$("#cfg-key").value="";$("#cfg-gkey").value=""}});
-$("#cfg-test").addEventListener("click",async e=>{const st=$("#s-key"),btn=e.currentTarget,x=keyFields(st);if(!x)return;if(!await saveConfig(x,st))return;$("#cfg-key").value="";$("#cfg-gkey").value="";
+  if(x.provider==="kie"&&!x.kie_key&&!CFG.has_kie){st.className="status err";st.textContent="Paste the KIE.ai API key first.";return}
+  if(await saveConfig(x,st)){$("#cfg-key").value="";$("#cfg-gkey").value="";$("#cfg-kkey").value="";if(x.kie_key)kieBalance()}});
+$("#cfg-test").addEventListener("click",async e=>{const st=$("#s-key"),btn=e.currentTarget,x=keyFields(st);if(!x)return;if(!await saveConfig(x,st))return;$("#cfg-key").value="";$("#cfg-gkey").value="";$("#cfg-kkey").value="";
+  if(x.provider==="kie"&&!CFG.has_kie){st.className="status err";st.textContent="Paste the KIE.ai API key first.";return}
   if(!CFG.provider){st.className="status";st.textContent="Copy-paste mode is on. There is no connection to test.";return}
   st.className="status";st.textContent="Testing…";btn.disabled=true;
+  let bal="";
+  // The balance call is free, so a bad key or an empty balance is caught before anything is spent.
+  if(CFG.provider==="kie"){const t=await api("/api/kie/test",{method:"POST",headers:{"Content-Type":"application/json"},body:"{}"});
+    if(t.error){btn.disabled=false;st.className="status err";st.textContent=t.error;return}
+    bal=" Balance: "+kieBalText(t)+".";$("#cfg-kbal").textContent="Balance: "+kieBalText(t)+".";
+    if(!(t.credits>0)){btn.disabled=false;st.className="status err";st.textContent="The key works, but the balance is 0 credits. Top up at kie.ai, then test again.";return}}
   const j=await api("/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:"Reply with exactly: OK",test:true})});btn.disabled=false;
-  const rp=costRp(j.model,j.usage,j.provider);if(rp)addSpent(rp).catch(()=>{});
-  if(j.error){st.className="status err";st.textContent=j.error}else{st.className="status";st.textContent="Connected to "+(j.model||"AI")+"."}});
+  const kie=j.provider==="kie",rp=kie?0:costRp(j.model,j.usage,j.provider),kc=kie?kieCost(j):0;if(rp)addSpent(rp).catch(()=>{});if(kc)addKie(kc,"text").catch(()=>{});
+  if(j.error){st.className="status err";st.textContent=(bal?"The key works, but the test message failed. ":"")+j.error}else{st.className="status";st.textContent="Connected to "+(j.model||"AI")+(kie?" through KIE.ai.":".")+bal}});
+$("#cfg-kcheck").addEventListener("click",async e=>{const b=e.currentTarget;b.disabled=true;$("#cfg-kbal").textContent="Reading the balance…";await kieBalance();b.disabled=!CFG.has_kie});
+$("#cfg-kclear").addEventListener("click",async()=>{if(await saveConfig({clear_kie:true,provider:$("#cfg-provider").value==="kie"?"manual":$("#cfg-provider").value,...(CFG.image_provider==="kie"?{image_provider:"gemini"}:{})},$("#s-key")))$("#s-key").textContent="KIE.ai key removed."});
 $("#cfg-gmodels").addEventListener("click",async e=>{const st=$("#s-key"),g=$("#cfg-gkey").value.trim();st.className="status";st.textContent="Loading model list…";
   const j=await api("/api/gemini-models",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({key:g})});
   if(j.error){st.className="status err";st.textContent=j.error;return}fillGModels(j.models||[],j.default);st.textContent=`${(j.models||[]).length} models available. Automatic choice: ${j.default||"-"}.`});
@@ -965,6 +1317,7 @@ $("#cfg-eload").addEventListener("click",async e=>{const st=$("#s-voice"),k=$("#
   const mc=$("#cfg-emodel").value||CFG.eleven_model;$("#cfg-emodel").innerHTML=`<option value="">Automatic: Multilingual v2 (most natural)</option>`+(j.models||[]).map(m=>`<option value="${esc(m.id)}">${esc(m.name)}</option>`).join("");$("#cfg-emodel").value=(j.models||[]).some(m=>m.id===mc)?mc:"";
   const reset=j.reset?new Date(j.reset*1000).toLocaleDateString("en-US",{day:"numeric",month:"long"}):"";
   $("#eleven-quota").innerHTML=`<div class="qbar" role="img" aria-label="Quota used ${nf(j.used)} of ${nf(j.limit)} characters"><span style="width:${j.limit?Math.min(100,j.used/j.limit*100).toFixed(1):0}%"></span></div>Plan ${esc(j.tier||"-")}: <strong>${nf(j.left)}</strong> of ${nf(j.limit)} characters${reset?", refills "+reset:""}. One 2,000-word video is about 12,000 characters.`;
+  store.set("eq",{left:j.left,limit:j.limit,at:Date.now()});
   st.textContent=`${EVOICES.length} voices loaded. Pick one, listen to the sample, then Save.`;showPreview()});
 $("#f-voice").addEventListener("submit",async e=>{e.preventDefault();const st=$("#s-voice"),k=$("#cfg-ekey").value.trim(),sel=$("#cfg-evoice");
   if(!k&&!CFG.has_eleven){st.className="status err";st.textContent="Paste the ElevenLabs API key first.";return}
@@ -972,21 +1325,32 @@ $("#f-voice").addEventListener("submit",async e=>{e.preventDefault();const st=$(
   if(await saveConfig(x,st)){$("#cfg-ekey").value="";st.textContent=CFG.eleven_voice?"Saved. The voice over button appears under the full narration script.":"Key saved. Click Load voices, then pick a narrator."}});
 $("#cfg-eclear").addEventListener("click",async()=>{if(await saveConfig({clear_eleven:true},$("#s-voice")))$("#s-voice").textContent="ElevenLabs key removed."});
 /* Image key: a second Gemini key on a billed project, so text generation can stay on the free key. */
-const IMG_PRICE={"gemini-3.1-flash-image":.067,"gemini-3.1-flash-lite-image":.0336,"gemini-nano-banana-2.1":.0336};
+const IMG_PRICE={"gemini-3.1-flash-image":.067,"gemini-3.1-flash-lite-image":.0336,"gemini-nano-banana-2.1":.0336,"nano-banana-2":KIE_IMG*KIE_USD};
+// Images come from Gemini or from KIE.ai; every gate asks these instead of the Gemini key alone.
+const imgKie=()=>CFG.image_provider==="kie",imgReady=()=>imgKie()?!!CFG.has_kie:!!CFG.has_image,imgModel=()=>imgKie()?CFG.kie_image_model:CFG.image_model,imgWho=()=>imgKie()?"KIE.ai":"Gemini";
+const imgWait=()=>imgKie()?"KIE.ai is drawing… usually under a minute":"Gemini is drawing… usually 10 to 40 seconds";
+function showImgProv(){const k=$("#cfg-iprov").value==="kie",pr=IMG_PRICE[k?(CFG.kie_image_model||"nano-banana-2"):$("#cfg-imodel").value];$("#grp-igem").hidden=k;$("#grp-ikie").hidden=!k;$("#cfg-itest").textContent="Test image"+(pr?` (about ${usd(pr)})`:"")}
+function openImgKey(){show("settings");$("#f-image").scrollIntoView({block:"start"});$(imgKie()?"#cfg-ikkey":"#cfg-ikey").focus()}
 const usd=x=>"$"+x.toFixed(2);
 const imgMonth=()=>{const s=LAST._img?.data,m=new Date().toISOString().slice(0,7);return s&&s.month===m?s:{month:m,n:0,usd:0}};
 const imgSpentText=()=>{const s=imgMonth();return s.n?`This month: ${s.n} images, about ${usd(s.usd)}.`:"No images made this month yet."};
-async function addImg(n,model){const s={...imgMonth()};s.n+=n;s.usd+=n*(IMG_PRICE[model]||0);await remember("_img",s);$("#cfg-ispent").textContent=imgSpentText();genBar()}
+async function addImg(n,model,provider){const s={...imgMonth()};s.n+=n;s.usd+=n*(IMG_PRICE[model]||0);await remember("_img",s);$("#cfg-ispent").textContent=imgSpentText();genBar();if(provider==="kie")for(let i=0;i<n;i++)await addKie(KIE_IMG,"image")}
 function imgFields(){$("#cfg-ikey-hint").textContent=CFG.has_image?"Saved: key ending in "+CFG.image_hint+". Leave the field empty to keep using this key.":"No image key saved yet.";
   const s=$("#cfg-imodel");if(CFG.image_model&&![...s.options].some(o=>o.value===CFG.image_model))s.insertAdjacentHTML("beforeend",`<option value="${esc(CFG.image_model)}">${esc(CFG.image_model)}</option>`);s.value=CFG.image_model||"gemini-3.1-flash-image";
+  $("#cfg-iprov").value=imgKie()?"kie":"gemini";showImgProv();
   $("#cfg-ispent").textContent=imgSpentText();if(!$("#p-make").hidden)genBar()}
-async function saveImageCfg(st){const k=$("#cfg-ikey").value.trim(),x={image_model:$("#cfg-imodel").value};if(k)x.image_key=k;const ok=await saveConfig(x,st);if(ok)$("#cfg-ikey").value="";return ok}
+async function saveImageCfg(st){const k=$("#cfg-ikey").value.trim(),q=$("#cfg-ikkey").value.trim(),x={image_model:$("#cfg-imodel").value,image_provider:$("#cfg-iprov").value};if(k)x.image_key=k;
+  if(x.image_provider==="kie"&&q){if(!kieKeyOk(q)){st.className="status err";st.textContent="The KIE.ai key does not look right. Copy it again from kie.ai/api-key.";return false}x.kie_key=q;
+    // A first key saved here must not switch the text AI to a paid provider without the user choosing it.
+    if(!CFG.provider)x.provider="manual"}
+  const ok=await saveConfig(x,st);if(ok){$("#cfg-ikey").value="";$("#cfg-ikkey").value="";if(x.kie_key)kieBalance()}return ok}
+$("#cfg-iprov").addEventListener("change",showImgProv);$("#cfg-imodel").addEventListener("change",showImgProv);
 $("#f-image").addEventListener("submit",async e=>{e.preventDefault();const st=$("#s-image");
-  if(await saveImageCfg(st))st.textContent=CFG.has_image?"Saved. Click Test image to make sure billing is active.":"Model saved. Paste the key first, then Save."});
+  if(await saveImageCfg(st))st.textContent=imgKie()?(CFG.has_kie?"Saved. Images are now made by KIE.ai. Click Test image to make sure the key has credit."+(CFG.provider==="kie"?"":" Scripts and ideas stay as they are under AI connection."):"Choice saved. Paste the KIE.ai key first, then Save."):CFG.has_image?"Saved. Click Test image to make sure billing is active.":"Model saved. Paste the key first, then Save."});
 $("#cfg-itest").addEventListener("click",async e=>{const st=$("#s-image"),b=e.currentTarget,out=$("#cfg-itest-out");
   if(!await saveImageCfg(st))return;
-  if(!CFG.has_image){st.className="status err";st.textContent="Paste the Gemini key for images first.";return}
-  b.disabled=true;out.innerHTML="";st.className="status";st.textContent="Gemini is drawing… usually 10 to 40 seconds.";
+  if(!imgReady()){st.className="status err";st.textContent=imgKie()?"Paste the KIE.ai key first.":"Paste the Gemini key for images first.";return}
+  b.disabled=true;out.innerHTML="";st.className="status";st.textContent=imgWait()+".";
   const j=await api("/api/image",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:"test",slot:0,prompt:"A giant prehistoric cave hyena standing at the mouth of a dark cave at dusk, warm orange light from inside the cave, photorealistic, cinematic, wide 16:9 frame. No text, letters, logos or watermarks."})});
   b.disabled=false;
   if(j.error){st.className="status err";st.textContent=j.error;
@@ -994,9 +1358,9 @@ $("#cfg-itest").addEventListener("click",async e=>{const st=$("#s-image"),b=e.cu
       (m.models||[]).forEach(n=>{if(![...s.options].some(o=>o.value===n))s.insertAdjacentHTML("beforeend",`<option value="${esc(n)}">${esc(n)}</option>`)});
       if(m.models?.length)st.textContent+=" The models available for this key have been added to the list above.";}
     return}
-  addImg(1,j.model).catch(()=>{});
-  st.textContent="It works. The key and billing are active, and the Make 3 thumbnails button in the Package step is ready.";
-  out.innerHTML=`<img class="gtest" src="/api/gen/${encodeURIComponent(j.file)}?v=${j.v}" alt="Test image from Gemini: a giant hyena at a cave mouth">`});
+  addImg(1,j.model,j.provider).catch(()=>{});
+  st.textContent=j.provider==="kie"?"It works. The KIE.ai key has credit, and the Make 3 thumbnails button in the Package step is ready.":"It works. The key and billing are active, and the Make 3 thumbnails button in the Package step is ready.";
+  out.innerHTML=`<img class="gtest" src="/api/gen/${encodeURIComponent(j.file)}?v=${j.v}" alt="Test image from ${j.provider==="kie"?"KIE.ai":"Gemini"}: a giant hyena at a cave mouth">`});
 $("#cfg-iclear").addEventListener("click",async()=>{if(await saveConfig({clear_image:true},$("#s-image")))$("#s-image").textContent="Image key removed."});
 /* YouTube Studio */
 function ytFields(){const on=!!CFG.yt_connected;$("#yt-on").hidden=!on;$("#yt-setup").open=!CFG.yt_client_id;
@@ -1084,7 +1448,7 @@ function renderMini(){const y=mcMonth.getFullYear(),m=mcMonth.getMonth(),days=ne
   const kind={},pub={};plans().filter(match).forEach(p=>{if(p.date.startsWith(pre)&&!kind[p.date])kind[p.date]=p.type});pubs().forEach(v=>{if(v.d.startsWith(pre))pub[v.d]=1});
   // One tab stop for the whole month; arrow keys move between days.
   const stop=mcFocus&&mcFocus.startsWith(pre)?mcFocus:today.startsWith(pre)?today:pre+"-01";
-  let h=["S","S","R","K","J","S","M"].map(d=>`<span class="dow" aria-hidden="true">${d}</span>`).join("");for(let i=0;i<lead;i++)h+=`<span class="d e" aria-hidden="true"></span>`;
+  let h=["M","T","W","T","F","S","S"].map(d=>`<span class="dow" aria-hidden="true">${d}</span>`).join("");for(let i=0;i<lead;i++)h+=`<span class="d e" aria-hidden="true"></span>`;
   for(let d=1;d<=days;d++){const iso=`${pre}-${String(d).padStart(2,"0")}`,k=kind[iso];
     h+=`<button type="button" tabindex="${iso===stop?0:-1}" class="d${k?" "+k:""}${pub[iso]?" pub":""}${iso===today?" today":""}" data-day="${iso}" aria-label="${d} ${$("#mc-title").textContent}${k?", has a plan: "+(TYPE_LABEL[k]||""):""}${pub[iso]?", has a published video":""}">${d}</button>`}
   $("#mc").innerHTML=h;
@@ -1094,7 +1458,7 @@ function renderNext(){const today=isoDay(new Date()),p=plans().filter(x=>x.date>
   const d=new Date(p.date+"T12:00:00"),days=Math.round((d-new Date(today+"T12:00:00"))/864e5),when=days===0?"Today":days===1?"Tomorrow":`${days} days left`;
   el.className="next"+(p.thumb?"":" noimg");
   el.innerHTML=`<div class="top"><span>${d.toLocaleDateString("en-US",{weekday:"long",day:"numeric",month:"short"})}</span><span class="badge">${when}</span></div><h3>${esc(p.title)}</h3><div class="row"><button type="button" class="p" data-act="tools" data-id="${esc(p.id)}">Work on it</button><button type="button" class="s" data-plan-id="${esc(p.id)}">Edit</button></div>${p.thumb?`<img class="stk" src="${thumbUrl(p)}" alt="">`:""}`}
-function renderStages(){const today=isoDay(new Date()),list=plans().filter(p=>p.date>=today&&p.status!=="tayang");const C={ide:"var(--accent)",naskah:"var(--bone)",rekam:"var(--stone)",edit:"var(--rust)",siap:"var(--ok)"};
+function renderStages(){const today=isoDay(new Date()),list=plans().filter(p=>p.date>=today&&p.status!=="tayang");const C={ide:"var(--s-ide)",naskah:"var(--s-naskah)",rekam:"var(--s-rekam)",edit:"var(--s-edit)",siap:"var(--s-siap)"};
   $("#stages").innerHTML=STAGES.slice(0,5).map(s=>`<li style="--c:${C[s]}"><i></i>${STATUS_LABEL[s]}<b>${list.filter(p=>p.status===s).length}</b></li>`).join("")}
 const vcRange=()=>{const r=store.get("vr","30");return ["30","90","12"].includes(r)?r:"30"};
 function viewSeries(){const d=YT?.daily||[],r=vcRange();
@@ -1158,9 +1522,10 @@ $("#plan-form").addEventListener("submit",async e=>{if(e.submitter?.value!=="sav
 $("#pl-del").addEventListener("click",async()=>{if(!editing)return;$("#plan-dlg").close();if(editing.thumb)await api("/api/thumb?id="+encodeURIComponent(editing.id),{method:"DELETE"});await savePlans(plans().filter(x=>x.id!==editing.id))});
 $("#pl-tools").addEventListener("click",()=>{$("#plan-dlg").close();if(editing)openMake(editing.id)});
 $("#banner-close").addEventListener("click",()=>{store.set("banner-off",true);$("#banner-key").hidden=true});
-const skinName=()=>{$("#skin-name").textContent=document.documentElement.dataset.skin==="lumut"?"Moss theme":"Stone theme"};
+const isDark=()=>document.documentElement.dataset.skin==="batu";
+const skinName=()=>{$("#skin-name").textContent=isDark()?"Dark look":"Light look";$("#skin-tog").setAttribute("aria-checked",isDark())};
 $("#plan-new").addEventListener("click",()=>openPlan({}));$("#rail-plus").addEventListener("click",()=>openPlan({}));
-$("#skin-tog").addEventListener("click",()=>{const k=document.documentElement.dataset.skin==="lumut"?"batu":"lumut";document.documentElement.dataset.skin=k;store.set("skin",k);skinName();api("/api/skin?skin="+k,{method:"POST"});if(YT&&!$("#p-growth").hidden)chart()});
+$("#skin-tog").addEventListener("click",()=>{const k=isDark()?"terang":"batu";document.documentElement.dataset.skin=k;store.set("look",k);skinName();api("/api/skin?skin="+k,{method:"POST"});if(YT&&!$("#p-growth").hidden)chart()});
 document.querySelectorAll(".seg button").forEach(b=>b.addEventListener("click",()=>{view=b.dataset.view;document.querySelectorAll(".seg button").forEach(x=>x.setAttribute("aria-pressed",x===b));renderBoard()}));
 const shift=n=>{if(view==="week")weekStart=addDays(weekStart,7*n);else calMonth=new Date(calMonth.getFullYear(),calMonth.getMonth()+n,1);renderBoard()};
 $("#wk-prev").addEventListener("click",()=>shift(-1));$("#wk-next").addEventListener("click",()=>shift(1));
@@ -1285,7 +1650,7 @@ function renderLearn(){if(!$("#ln-full"))return;const up=uploads(),has=up.length
   $("#ln-sub").textContent=`Average share of each video watched, per upload since ${fmtShort(V[0].d)} ${V[0].d.slice(0,4)}. The dashed line is your 6 best videos (${pctTxt(n.wS)}). Hover or focus a bar for its title.`;
   let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Share of each video watched, ${V.length} upload">`;
   for(let t=0;t<=top;t+=10)s+=`<line x1="${pl}" x2="${W-pr}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)"/><text x="${pl-6}" y="${y(t)+4}" text-anchor="end" font-size="11" fill="var(--muted)" stroke="none">${t}%</text>`;
-  let lastLbl=-9;V.forEach((v,i)=>{const p=share(v),c=p>=20?"var(--accent)":p<10?"var(--warn)":"var(--stone-dot)";
+  let lastLbl=-9;V.forEach((v,i)=>{const p=share(v),c=p>=20?"var(--series)":p<10?"url(#hx)":"var(--mid)";
     s+=`<rect x="${pl+i*bw+1}" y="${y(p)}" width="${Math.max(bw-2,2)}" height="${y(0)-y(p)}" rx="3" fill="${c}" stroke="none"/><rect class="hit" data-i="${i}" x="${pl+i*bw}" y="${pt}" width="${bw}" height="${H-pt-pb}" fill="transparent" stroke="none" tabindex="0" aria-label="${esc(v.t)}: ${f1(p)}% watched"/>`;
     if(i-lastLbl>=7&&(i===0||v.d.slice(0,7)!==V[i-1].d.slice(0,7))){lastLbl=i;s+=`<text x="${pl+i*bw}" y="${H-8}" font-size="11" fill="var(--muted)" stroke="none">${BN[+v.d.slice(5,7)-1]} ${v.d.slice(2,4)}</text>`}});
   if(n.wS)s+=`<line x1="${pl}" x2="${W-pr}" y1="${y(n.wS)}" y2="${y(n.wS)}" stroke="var(--ink)" stroke-dasharray="4 4" stroke-width="1.2"/><text x="${W-pr}" y="${y(n.wS)-6}" text-anchor="end" font-size="11.5" fill="var(--ink)" stroke="none">best ${f1(n.wS)}%</text>`;
@@ -1306,6 +1671,7 @@ function patternText(){const W=winners();if(W.length<6)return "";const thr=W.fil
 /* Make: one video from package to upload. Per-video work is saved under LAST.work, keyed by plan id. */
 let WORK=null,workTimer=0;
 const work=id=>{WORK=WORK||LAST.work?.data||{};const k=id||"free";return WORK[k]=WORK[k]||{}};
+const flushWork=()=>{clearTimeout(workTimer);return remember("work",WORK).catch(()=>{})};
 const saveWork=()=>{clearTimeout(workTimer);workTimer=setTimeout(()=>remember("work",WORK).catch(()=>{}),600)};
 const mkId=()=>{const id=store.get("mk","");return plans().some(p=>p.id===id)?id:""};
 const mkPlan=()=>plans().find(p=>p.id===mkId());
@@ -1322,7 +1688,7 @@ function renderMake(){const list=plans().filter(p=>p.type!=="post"&&(p.status!==
   $("#mk-topic").value=w.topic||"";$("#mk-titles").value=(w.titles||(p?[p.title]:[])).join("\n");$("#mk-thumbtext").value=w.thumb||"";$("#mk-hook").value=w.hook||"";
   const t=w.pick||p?.title||w.topic||"";["#script-topic","#seo-topic","#thumb-topic","#shorts-topic"].forEach(s=>{if(t)$(s).value=t});if(w.pick)$("#thumb-title").value=w.pick;
   $("#mk-done").hidden=!p;$("#s-done").textContent=p?.status==="tayang"?"This video is already marked as published.":"";
-  renderAuto();mkStage(store.get("mkst","pkg"));renderTitles();renderThumbPrev();renderGen();renderRules();renderPub()}
+  renderAuto();mkStage(store.get("mkst","pkg"));renderTitles();renderThumbPrev();renderGen();renderRules();renderPub();syncScript();if(lastNarr){pkRender(lastNarr);igRender(lastNarr)}}
 function renderAuto(){const w=mkW(),has=!!(w.topic||"").trim(),full=has&&w.titles?.length>1&&w.thumb&&w.hook;
   $("#mk-auto-h").textContent=!has?"Not sure what to make?":full?"Filled in. Check it, then go on to the script.":`Topic: ${w.topic}`;
   $("#mk-auto-p").textContent=!has?"One click: AI picks a topic that matches your best videos, fills in the titles, thumbnail text and hook, then writes the full script and voice over.":full?"Title, thumbnail and hook are ready. One more click for the full script and voice over.":"One click: AI fills in the title, thumbnail text and hook for this topic, then writes the full script and voice over.";
@@ -1370,11 +1736,11 @@ const genW=()=>{const w=mkW();return w.gen=w.gen||{concepts:[],imgs:[],pick:null
 const GENBUSY=new Set(),GIMG={};
 const loadImg=u=>GIMG[u]=GIMG[u]||new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>{delete GIMG[u];rej()};i.src=u});
 const genUrl=x=>`/api/gen/${encodeURIComponent(x.file)}?v=${x.v}`;
-function genBar(){const g=genW(),has=g.imgs?.some(x=>x?.file),price=IMG_PRICE[CFG.image_model],b=$("#gen-go");if(b.dataset.arm)return;
-  if(!CFG.has_image){$("#gen-h").textContent="Add the image key first";$("#gen-p").textContent="Images are made by Gemini using the Google Cloud credit from your subscription. The key is set once in Settings.";b.textContent="Open Settings";return}
-  $("#gen-h").textContent=has?"Want 3 new images?":"Make 3 thumbnails with Gemini";
-  $("#gen-p").textContent=`3 images${price?", about "+usd(price*3)+",":""} is taken from your Google Cloud credit. ${imgSpentText()}`;
-  b.textContent=has?"Make 3 new":"Make 3 thumbnails"}
+function genBar(){const g=genW(),has=g.imgs?.some(x=>x?.file),price=IMG_PRICE[imgModel()],b=$("#gen-go"),tag=price?` (about ${usd(price*3)})`:"";if(b.dataset.arm)return;
+  if(!imgReady()){$("#gen-h").textContent=imgKie()?"Add the KIE.ai key first":"Add the image key first";$("#gen-p").textContent=imgKie()?"Images are set to KIE.ai in Settings, but no KIE.ai key is saved yet. The key is set once.":"Images are made by Gemini using the Google Cloud credit from your subscription, or by KIE.ai for about $0.04 each. The key is set once in Settings.";b.textContent="Open Settings";return}
+  $("#gen-h").textContent=has?"Want 3 new images?":"Make 3 thumbnails with "+imgWho();
+  $("#gen-p").textContent=imgKie()?`3 images cost about ${nf(KIE_IMG*3)} KIE.ai credits (${usd(price*3)}). ${imgSpentText()}`:`3 images${price?", about "+usd(price*3)+",":""} is taken from your Google Cloud credit. ${imgSpentText()}`;
+  b.textContent=(has?"Make 3 new":"Make 3 thumbnails")+tag}
 // At most 3 lines; short lines keep the letters large on a phone.
 function thumbLines(t){const words=(t||"").trim().toUpperCase().split(/\s+/).filter(Boolean);if(!words.length)return [];
   for(let lim=10;lim<40;lim+=2){const lines=[];let cur="";for(const w of words){if(cur&&(cur+" "+w).length>lim){lines.push(cur);cur=w}else cur=cur?cur+" "+w:w}lines.push(cur);if(lines.length<=3)return lines}
@@ -1394,9 +1760,9 @@ function drawThumb(cv,img,text,pos){const c=cv.getContext("2d"),W=cv.width,H=cv.
 function renderGen(){const g=genW(),id=mkId(),cs=(g.concepts||[]).slice(0,3);genBar();$("#gen-pos").value=g.pos||"tl";
   $("#gen-list").hidden=$("#gen-posrow").hidden=!cs.length;
   $("#gen-list").innerHTML=cs.map((c,i)=>{const x=g.imgs?.[i]||{},busy=GENBUSY.has(id+":"+i);
-    return `<article class="gth${g.pick===i?" pick":""}" data-slot="${i}"><div class="gimg">${x.file?`<canvas width="1280" height="720" role="img" aria-label="Thumbnail ${i+1}: ${esc(c.name)}"></canvas>`:""}${busy||!x.file?`<div class="gph${busy?" busy":""}">${busy?"Gemini is drawing… usually 10 to 40 seconds":esc(x.err||"No image yet")}</div>`:""}</div>
+    return `<article class="gth${g.pick===i?" pick":""}" data-slot="${i}"><div class="gimg">${x.file?`<canvas width="1280" height="720" role="img" aria-label="Thumbnail ${i+1}: ${esc(c.name)}"></canvas>`:""}${busy||!x.file?`<div class="gph${busy?" busy":""}">${busy?imgWait():esc(x.err||"No image yet")}</div>`:""}</div>
     <h3>${i+1}. ${esc(c.name)}</h3><p>${esc(c.composition)}</p>\n    <label>Text on image<input maxlength="40" data-g="text" value="${esc(c.text)}"></label>
-    <div class="chips"><button type="button" class="btn${g.pick===i?"":" ghost"}" data-g="pick"${x.file?"":" disabled"}>${g.pick===i?"Selected":"Pick this"}</button><button type="button" class="btn ghost" data-g="save"${x.file?"":" disabled"}>Save JPG</button><button type="button" class="btn ghost" data-g="redo"${busy?" disabled":""}>${x.file?"Redo":"Try again"}</button></div>
+    <div class="chips"><button type="button" class="btn${g.pick===i?"":" ghost"}" data-g="pick"${x.file?"":" disabled"}>${g.pick===i?"Selected":"Pick this"}</button><button type="button" class="btn ghost" data-g="save"${x.file?"":" disabled"}>Save JPG</button><button type="button" class="btn ghost" data-g="redo"${busy?" disabled":""}>${x.file?"Redo":"Try again"}${IMG_PRICE[imgModel()]?` (about ${usd(IMG_PRICE[imgModel()])})`:""}</button></div>
     <p class="note" data-g="msg" role="status">${x.file&&x.err?esc(x.err):""}</p></article>`}).join("");
   paintGen().then(renderPhone)}
 async function paintGen(only){const g=genW();try{await document.fonts.load("800 100px Archivo")}catch{}
@@ -1411,13 +1777,13 @@ async function genImage(i){const g=genW(),id=mkId(),c=g.concepts[i],k=id+":"+i;i
   GENBUSY.add(k);renderGen();
   const j=await api("/api/image",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({...(id?{id}:{}),slot:i,prompt:imgPrompt(c,g.pos)})});
   GENBUSY.delete(k);g.imgs=g.imgs||[];
-  if(j.error)g.imgs[i]={...(g.imgs[i]||{}),err:j.error};else{g.imgs[i]={file:j.file,v:j.v};addImg(1,j.model).catch(()=>{})}
+  if(j.error)g.imgs[i]={...(g.imgs[i]||{}),err:j.error};else{g.imgs[i]={file:j.file,v:j.v};addImg(1,j.model,j.provider).catch(()=>{})}
   saveWork();
   // Still on the same video: redraw, and refresh the saved thumbnail if this slot is the chosen one.
   if(mkId()===id){renderGen();if(!j.error&&g.pick===i){await paintGen(i);await applyPick(i)}}
   return !j.error}
 async function genAll(btn){const w=mkW(),g=genW(),st=$("#s-gen");
-  if(!CFG.has_image){show("settings");$("#f-image").scrollIntoView({block:"start"});$("#cfg-ikey").focus();return}
+  if(!imgReady()){openImgKey();return}
   const topic=(w.pick||w.topic||"").trim();
   if(!topic){st.className="status err";st.textContent='No topic yet. Click "Just suggest a topic" above first.';return}
   if(g.imgs?.some(x=>x?.file)&&!btn.dataset.arm){btn.dataset.arm="1";btn.textContent="Click again to replace";setTimeout(()=>{if(btn.dataset.arm){delete btn.dataset.arm;genBar()}},5000);return}
@@ -1431,7 +1797,7 @@ JSON shape: {"concepts":[{"name":"","text":"","composition":"","why":"","prompt"
   renderThumb(d.concepts);
   g.concepts=d.concepts.slice(0,3).map(c=>({name:String(c.name||"Concept"),text:String(c.text||main).slice(0,40),composition:String(c.composition||""),prompt:String(c.prompt||c.composition||topic)}));
   g.imgs=[];g.pick=null;saveWork();renderGen();
-  st.className="status";st.textContent="Concepts ready. Gemini is drawing 3 thumbnails…";btn.disabled=true;
+  st.className="status";st.textContent=`Concepts ready. ${imgWho()} is drawing 3 thumbnails…`;btn.disabled=true;
   const ok=(await Promise.all(g.concepts.map((_,i)=>genImage(i)))).filter(Boolean).length;btn.disabled=false;
   st.className=ok?"status":"status err";
   st.textContent=ok===g.concepts.length?`${ok} thumbnails done. Pick one; the text can be changed under each image.`:ok?`${ok} of ${g.concepts.length} images done. Click Try again on the one that failed.`:(g.imgs.find(x=>x?.err)?.err||"The image could not be made. Try again.")}
@@ -1493,7 +1859,7 @@ const RENDER={ideas:d=>d?.ideas?.length&&"subject" in d.ideas[0]&&(renderIdeas(d
 async function loadLast(){const j=await api("/api/last");if(!j||j.error)return;LAST=j;
   for(const [k,f] of Object.entries(RENDER)){const r=LAST[k];if(!r)continue;try{if(f(r.data)){const st=$("#s-"+k);if(st){st.className="status";st.textContent="Last result, made "+new Date(r.at).toLocaleString("en-US",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})+". No credit is used again."}}}catch{}}
   $("#cfg-spent").textContent=spentText();$("#cfg-ispent").textContent=imgSpentText()}
-api("/api/skin?skin="+(document.documentElement.dataset.skin||"batu"),{method:"POST"});
+api("/api/skin?skin="+(isDark()?"batu":"terang"),{method:"POST"});
 (async()=>{$("#script-words").value=Math.min(8000,Math.max(500,store.get("sw",2000)));scriptLen();skinName();setNav(navOpen());await loadConfig();await loadData();await loadLast();show(store.get("ver2",false)?store.get("tab","today"):"today",true);store.set("ver2",true);
   if(CFG.yt_connected&&Date.now()/1000-(CFG.yt_synced||0)>6*3600)ytSync(null,null)})();
 </script>
