@@ -1,8 +1,8 @@
-TERRA STUDIO 2.4.0 (Windows 10/11, 64-bit)
+TERRA STUDIO 2.4.1 (Windows 10/11, 64-bit)
 ==========================================
 
 INSTALL
-Easiest: double-click TerraStudio-Setup-2.4.0.exe, then Next and Install.
+Easiest: double-click TerraStudio-Setup-2.4.1.exe, then Next and Install.
 No admin rights needed. A "Terra Studio" shortcut appears in the Start
 Menu and on the desktop. Uninstall through Settings > Apps.
 Zip version (no install): click "Extract all" first; do not run
@@ -12,6 +12,10 @@ UPDATING
 Run the new installer, or extract the new zip and open TerraStudio.exe.
 If the old version is still running, the new one closes it. Your data and
 settings are kept (they live in %APPDATA%\TerraStudio).
+
+NEW IN 2.4.1
+- Fix: the whole window could slide up and to the side while the
+  script or voice over was being made.
 
 NEW IN 2.4
 - New light look, with a sun and moon switch for the dark look. The

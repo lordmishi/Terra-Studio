@@ -20,7 +20,7 @@
     <div class="rail-sp"></div>
     <button type="button" class="rail-plus" id="rail-plus" aria-label="New content plan" data-tip="New plan"><i aria-hidden="true">+</i><span>New plan</span></button>
     <button type="button" class="skin" id="skin-tog" role="switch" aria-checked="false" aria-label="Dark look" data-tip="Switch light / dark"><u aria-hidden="true"><i class="sun"><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="2.5"/><path d="M7 .75v1.5M7 11.75v1.5M.75 7h1.5M11.75 7h1.5M2.6 2.6l1.05 1.05M10.35 10.35l1.05 1.05M2.6 11.4l1.05-1.05M10.35 3.65l1.05-1.05"/></svg></i><i class="moon"><svg viewBox="0 0 14 14"><path d="M12.25 8.4A5.6 5.6 0 0 1 5.6 1.75a5.6 5.6 0 1 0 6.65 6.65"/></svg></i></u><span id="skin-name">Light look</span></button>
-    <p class="ver">v2.4.0</p>
+    <p class="ver">v2.4.1</p>
   </aside>
   <aside class="side" aria-label="Calendar and schedule">
     <div class="box calw">
@@ -607,6 +607,8 @@ const tabs=[...document.querySelectorAll("nav.tabs button")];
 // The first show() skips scrollIntoView: Chromium moves the Tab starting point there, past the skip link.
 // 1.x had separate Script, SEO and Thumbnail pages; they now live as stages of Make.
 const OLD_TAB={script:"script",seo:"seo",thumb:"pkg"};
+// The app scrolls inside .main and .side only; snap the window back if anything moves it.
+addEventListener("scroll",()=>{if(innerWidth>560&&(scrollX||scrollY))scrollTo(0,0)});
 function show(name,first){if(OLD_TAB[name]){mkStage(OLD_TAB[name]);name="make"}if(!tabs.some(b=>b.dataset.tab===name))name="today";tabs.forEach(b=>{const on=b.dataset.tab===name;b.setAttribute("aria-selected",on);if(on){if(!first)b.scrollIntoView({block:"nearest",inline:"nearest"});$("#page-title").textContent=b.textContent.trim()}$("#p-"+b.dataset.tab).hidden=!on});
   $(".shell").dataset.tab=name;store.set("tab",name);$("#main").scrollTop=0;
   if(name==="dash")renderDash();if(name==="today")renderToday();if(name==="learn")renderLearn();if(name==="ideas")renderPattern();if(name==="make")renderMake();if(name==="growth")requestAnimationFrame(()=>{if(YT)chart()})}

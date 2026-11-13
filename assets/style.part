@@ -636,7 +636,10 @@ label.cbx input{margin-top:2px;flex:none}
 /* 2.4 look: shapes shared by both skins. The app sits on one rounded sheet; cards are flat, controls are pills. */
 :root{--scrim:rgba(20,20,20,.42)}
 :root[data-skin="batu"]{--scrim:rgba(0,0,0,.62)}
-.shell{margin:10px;height:calc(100vh - 20px);padding:14px;background:var(--bg);border-radius:30px}
+/* the shell's own margin collapsed through body and made the page 20px taller than the window, so scrollIntoView could slide the whole app */
+@media (min-width:561px){html,body{overflow:hidden}}
+body{padding:10px}
+.shell{margin:0;height:calc(100vh - 20px);padding:14px;background:var(--bg);border-radius:30px}
 .rail{border-radius:26px}
 nav.tabs button{border-radius:22px}
 .nav-tog,.ic-btn{border-radius:50%}
