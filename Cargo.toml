@@ -1,6 +1,6 @@
 [package]
 name = "terra-studio"
-version = "2.4.1"
+version = "2.5.0"
 edition = "2021"
 description = "Terra Studio: YouTube channel toolkit (ideas, scripts, SEO, thumbnails, Studio analytics) powered by Claude"
 

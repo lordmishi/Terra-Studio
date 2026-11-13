@@ -937,7 +937,18 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
             if !body.starts_with(&[0xFF, 0xD8, 0xFF]) {
                 return respond_json(req, 400, json!({"error": "Not a JPG image."}));
             }
-            // With pack=<slug> the finished thumbnail goes into that video's edit pack folder.
+            // With folder=<video folder> it goes into 06 Thumbnail; with pack=<slug> into the old flat edit pack folder.
+            if let Some(f) = query_param(req.url(), "folder").filter(|f| !f.is_empty()) {
+                let d = match video::ensure(dir, &f) {
+                    Ok(d) => d,
+                    Err((code, e)) => return respond_json(req, code, json!({"error": e})),
+                };
+                return match video::save_new(&d.join(video::SUBS[5]), &format!("{}.jpg", thumb_file_stem(&name)), &body) {
+                    Ok(path) => respond_json(req, 200, json!({"path": path.display().to_string(), "folder": f,
+                        "file": path.file_name().map(|n| n.to_string_lossy().into_owned())})),
+                    Err(e) => respond_json(req, 500, json!({"error": format!("Could not save the JPG: {}", video::why(&e))})),
+                };
+            }
             let path = match query_param(req.url(), "pack") {
                 Some(p) => {
                     let Some(slug) = pack::slug(&p) else {
@@ -980,9 +991,25 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
             let c = cfg.lock().unwrap().clone();
             let voice = v["voice"].as_str().filter(|x| !x.is_empty()).unwrap_or(&c.eleven_voice).to_string();
             let parts: Vec<String> = v["parts"].as_array().into_iter().flatten().filter_map(|p| p.as_str().map(String::from)).collect();
-            match eleven::speak(&c, dir, v["title"].as_str().unwrap_or("voice over"), &parts, &voice) {
+            // The folder is checked before ElevenLabs is paid, not after.
+            let target = match video::from_req(dir, &v) {
+                Ok(t) => t,
+                Err((code, e)) => return respond_json(req, code, json!({"error": e})),
+            };
+            let spoken = match eleven::speak(&c, &parts, &voice) {
+                Ok(s) => s,
+                Err(e) => return respond_json(req, 502, json!({"error": e})),
+            };
+            let saved = match target {
+                Some((name, d)) => {
+                    let _g = video::LOCK.lock().unwrap();
+                    video::save_take(&d, &name, &spoken)
+                }
+                None => eleven::save_flat(dir, v["title"].as_str().unwrap_or("voice over"), &spoken).map_err(|e| (500, e)),
+            };
+            match saved {
                 Ok(out) => respond_json(req, 200, out),
-                Err(e) => respond_json(req, 502, json!({"error": e})),
+                Err((code, e)) => respond_json(req, code, json!({"error": e})),
             }
         }
         (Method::Post, "/api/yt/connect") => {
@@ -1033,6 +1060,86 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
         (Method::Post, "/api/open-folder") => {
             open_folder(&eleven::out_dir(dir));
             respond_json(req, 200, json!({"ok": true}))
+        }
+        (Method::Post, "/api/video/folder") => {
+            let v = match read_json(&mut req, 64 * 1024) {
+                Ok(v) => v,
+                Err(e) => return respond_json(req, 400, json!({"error": e})),
+            };
+            let root = pack::root(dir);
+            let name = match v["name"].as_str().filter(|n| !n.is_empty()) {
+                Some(n) => n.to_string(),
+                None if v["title"].is_string() => {
+                    let base = video::folder_name(v["date"].as_str().unwrap_or(""), v["title"].as_str().unwrap_or(""));
+                    if v["new"] == true { video::unique_name(&base, |n| root.join(n).exists()) } else { base }
+                }
+                None => return respond_json(req, 400, json!({"error": "Send the video folder name, or a title and upload date."})),
+            };
+            let d = match video::dir(dir, &name) {
+                Ok(d) => d,
+                Err((code, e)) => return respond_json(req, code, json!({"error": e})),
+            };
+            if v["create"] != false {
+                if let Err((code, e)) = video::ensure(dir, &name) {
+                    return respond_json(req, code, json!({"error": e}));
+                }
+            }
+            respond_json(req, 200, video::summary(&d, &name))
+        }
+        (Method::Post, "/api/video/open") => {
+            let v = match read_json(&mut req, 64 * 1024) {
+                Ok(v) => v,
+                Err(e) => return respond_json(req, 400, json!({"error": e})),
+            };
+            let d = match video::ensure(dir, v["name"].as_str().unwrap_or("")) {
+                Ok(d) => d,
+                Err((code, e)) => return respond_json(req, code, json!({"error": e})),
+            };
+            let target = match v["sub"].as_str().filter(|s| !s.is_empty()) {
+                None => d,
+                Some(s) if video::SUBS.contains(&s) => d.join(s),
+                Some(s) if s == video::OLDER || s == format!("{}/{}", video::NARR, video::OLDER) => d.join(video::NARR).join(video::OLDER),
+                Some(_) => return respond_json(req, 400, json!({"error": "That subfolder does not exist."})),
+            };
+            open_folder(&target);
+            respond_json(req, 200, json!({"ok": true, "dir": target.display().to_string()}))
+        }
+        (Method::Post, "/api/video/takes") | (Method::Post, "/api/video/take") => {
+            let v = match read_json(&mut req, 64 * 1024) {
+                Ok(v) => v,
+                Err(e) => return respond_json(req, 400, json!({"error": e})),
+            };
+            let name = v["name"].as_str().unwrap_or("").to_string();
+            let d = match video::dir(dir, &name) {
+                Ok(d) => d,
+                Err((code, e)) => return respond_json(req, code, json!({"error": e})),
+            };
+            let _g = video::LOCK.lock().unwrap();
+            if path == "/api/video/take" {
+                if let Err((code, e)) = video::use_take(&d, v["file"].as_str().unwrap_or("")) {
+                    return respond_json(req, code, json!({"error": e}));
+                }
+            }
+            respond_json(req, 200, video::takes(&d, &name))
+        }
+        (Method::Post, "/api/video/migrate") => {
+            let v = match read_json(&mut req, 2 * 1024 * 1024) {
+                Ok(v) => v,
+                Err(e) => return respond_json(req, 400, json!({"error": e})),
+            };
+            let Some(videos) = v["videos"].as_array().filter(|a| a.len() <= 1000) else {
+                return respond_json(req, 400, json!({"error": "Send the list of videos (at most 1000)."}));
+            };
+            let root = pack::root(dir);
+            let _g = video::LOCK.lock().unwrap();
+            let (moves, errors) = video::plan(&root, &eleven::out_dir(dir), videos);
+            let mut out = if v["dry"] == false {
+                video::run(&root, &moves)
+            } else {
+                json!({"dry": true, "count": moves.len(), "moves": moves.iter().map(|m| m.json(&root)).collect::<Vec<_>>()})
+            };
+            out["errors"] = json!(errors);
+            respond_json(req, 200, out)
         }
         (Method::Post, "/api/kie/test") => {
             let v = match read_json(&mut req, 64 * 1024) {
@@ -1097,10 +1204,18 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
                 Ok(v) => v,
                 Err(e) => return respond_json(req, 400, json!({"error": e})),
             };
-            let Some(slug) = pack::slug(v["slug"].as_str().unwrap_or("")) else {
-                return respond_json(req, 400, json!({"error": "The folder name is not valid."}));
+            let d = match v["folder"].as_str().filter(|f| !f.is_empty()) {
+                Some(f) => match video::dir(dir, f) {
+                    Ok(d) => d,
+                    Err((code, e)) => return respond_json(req, code, json!({"error": e})),
+                },
+                None => {
+                    let Some(slug) = pack::slug(v["slug"].as_str().unwrap_or("")) else {
+                        return respond_json(req, 400, json!({"error": "The folder name is not valid."}));
+                    };
+                    pack::root(dir).join(&slug)
+                }
             };
-            let d = pack::root(dir).join(&slug);
             if !d.is_dir() {
                 return respond_json(req, 404, json!({"error": "This edit pack folder does not exist yet."}));
             }
@@ -1249,14 +1364,31 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
             std::process::exit(0);
         }
         (Method::Get, p) if p.starts_with("/api/audio/") => {
-            let name = percent_decode(&p["/api/audio/".len()..]);
-            let ok = name.ends_with(".mp3") && !name.contains(['/', '\\']) && !name.contains("..");
-            match ok.then(|| fs::read(eleven::out_dir(dir).join(&name)).ok()).flatten() {
+            match audio_path(dir, &p["/api/audio/".len()..]).and_then(|f| fs::read(f).ok()) {
                 Some(bytes) => respond(req, 200, "audio/mpeg", bytes),
                 None => respond_json(req, 404, json!({"error": "not found"})),
             }
         }
         _ => respond_json(req, 404, json!({"error": "not found"})),
+    }
+}
+
+/// "/api/audio/<file>" is an MP3 loose in Downloads (before 2.5); "/api/audio/<video folder>/<file>"
+/// is a take or act in that video's 02 Narration or its "older takes".
+fn audio_path(app: &Path, rest: &str) -> Option<PathBuf> {
+    audio_in(&eleven::out_dir(app), rest)
+}
+
+fn audio_in(downloads: &Path, rest: &str) -> Option<PathBuf> {
+    let parts: Vec<String> = rest.split('/').map(percent_decode).collect();
+    let mp3 = |f: &str| video::valid_file(f) && f.to_ascii_lowercase().ends_with(".mp3");
+    match parts.as_slice() {
+        [f] if mp3(f) => Some(downloads.join(f)),
+        [folder, f] if mp3(f) && video::valid_name(folder) => {
+            let narr = pack::root_in(downloads).join(folder).join(video::NARR);
+            [narr.join(f), narr.join(video::OLDER).join(f)].into_iter().find(|p| p.is_file())
+        }
+        _ => None,
     }
 }
 
@@ -1270,6 +1402,18 @@ fn open_folder(d: &Path) {
 /// Plan ids become file names, so only short alphanumeric ids are accepted.
 fn thumb_stem(id: &str) -> Option<String> {
     (!id.is_empty() && id.len() <= 40 && id.chars().all(|c| c.is_ascii_alphanumeric())).then(|| id.to_string())
+}
+
+/// "<title> thumbnail 2" -> "<title slug>-thumbnail-2": the title is cut, never the number.
+fn thumb_file_stem(name: &str) -> String {
+    let name = name.trim();
+    let (head, n) = match name.rsplit_once(' ') {
+        Some((h, d)) if !d.is_empty() && d.len() <= 3 && d.bytes().all(|b| b.is_ascii_digit()) => (h.trim_end(), Some(d)),
+        _ => (name, None),
+    };
+    let head = head.strip_suffix("thumbnail").unwrap_or(head);
+    let title = file_slug(head, "video");
+    format!("{title}-thumbnail{}", n.map(|d| format!("-{d}")).unwrap_or_default())
 }
 
 /// Lowercase words joined by dashes, safe as a Windows file name.
@@ -1903,8 +2047,9 @@ mod eleven {
         base
     }
 
-    fn file_name(title: &str) -> String {
-        let slug: String = title
+    /// First eight words of the title, as used in voice over file names since 2.0.
+    pub fn title_slug(title: &str) -> String {
+        title
             .chars()
             .map(|c| if c.is_ascii_alphanumeric() { c.to_ascii_lowercase() } else { '-' })
             .collect::<String>()
@@ -1912,12 +2057,32 @@ mod eleven {
             .filter(|s| !s.is_empty())
             .take(8)
             .collect::<Vec<_>>()
-            .join("-");
+            .join("-")
+    }
+
+    fn file_name(title: &str) -> String {
+        let slug = title_slug(title);
         let slug = if slug.is_empty() { "voice-over".to_string() } else { slug };
         format!("{slug}-{}.mp3", now())
     }
 
-    pub fn speak(c: &Config, dir: &Path, title: &str, parts: &[String], voice: &str) -> Result<Value, String> {
+    pub struct Spoken {
+        pub audio: Vec<u8>,
+        pub chars: usize,
+        pub chunks: usize,
+    }
+
+    /// The old behaviour: one MP3 loose in Downloads.
+    pub fn save_flat(dir: &Path, title: &str, s: &Spoken) -> Result<Value, String> {
+        let name = file_name(title);
+        let path = out_dir(dir).join(&name);
+        fs::write(&path, &s.audio).map_err(|e| format!("Could not save the MP3: {e}"))?;
+        Ok(json!({"file": name, "path": path.display().to_string(), "chars": s.chars, "chunks": s.chunks, "bytes": s.audio.len(),
+            "seconds": mp3_seconds(&s.audio), "at": now(), "folder": null,
+            "url": format!("/api/audio/{}", video::enc(&name))}))
+    }
+
+    pub fn speak(c: &Config, parts: &[String], voice: &str) -> Result<Spoken, String> {
         if c.eleven_key.is_empty() {
             return Err("The ElevenLabs API key is empty. Open Settings, section Voice.".into());
         }
@@ -1956,11 +2121,8 @@ mod eleven {
                 Err(e) => return Err(friendly(0, &e.to_string())),
             }
         }
-        let name = file_name(title);
-        let path = out_dir(dir).join(&name);
-        fs::write(&path, &audio).map_err(|e| format!("Could not save the MP3: {e}"))?;
         let chars: usize = pieces.iter().map(|p| p.chars().count()).sum();
-        Ok(json!({"file": name, "path": path.display().to_string(), "chars": chars, "chunks": pieces.len(), "bytes": audio.len()}))
+        Ok(Spoken { audio, chars, chunks: pieces.len() })
     }
 
     /// Audio with the time of every character, for subtitles that match the voice.
@@ -1976,6 +2138,11 @@ mod eleven {
 
     /// Length of a constant bitrate MP3, read from its first frame header.
     pub fn mp3_seconds(b: &[u8]) -> Option<f64> {
+        mp3_seconds_len(b, b.len())
+    }
+
+    /// Same, from the start of a file and its full size, so a long file need not be read whole.
+    pub fn mp3_seconds_len(b: &[u8], total: usize) -> Option<f64> {
         const V1: [u32; 15] = [0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320];
         const V2: [u32; 15] = [0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160];
         let mut i = 0;
@@ -1988,7 +2155,7 @@ mod eleven {
                 let (version, layer, rate) = ((b[i + 1] >> 3) & 3, (b[i + 1] >> 1) & 3, (b[i + 2] >> 4) as usize);
                 if layer == 1 && version != 1 && (1..15).contains(&rate) {
                     let kbps = if version == 3 { V1[rate] } else { V2[rate] };
-                    return Some((b.len() - i) as f64 * 8.0 / (kbps as f64 * 1000.0));
+                    return Some((total.max(b.len()) - i) as f64 * 8.0 / (kbps as f64 * 1000.0));
                 }
             }
             i += 1;
@@ -2433,11 +2600,15 @@ mod pack {
     type Fail = (u16, String);
 
     pub fn root(app: &Path) -> PathBuf {
-        eleven::out_dir(app).join("Terra Studio")
+        root_in(&eleven::out_dir(app))
+    }
+
+    pub fn root_in(downloads: &Path) -> PathBuf {
+        downloads.join("Terra Studio")
     }
 
     /// Names Windows reserves for devices; a file or folder may not use them.
-    fn reserved(stem: &str) -> bool {
+    pub fn reserved(stem: &str) -> bool {
         let s = stem.to_ascii_lowercase();
         ["con", "prn", "aux", "nul"].contains(&s.as_str())
             || (s.len() == 4 && (s.starts_with("com") || s.starts_with("lpt")) && s.as_bytes()[3].is_ascii_digit())
@@ -2581,13 +2752,48 @@ mod pack {
         out
     }
 
-    fn folder(app: &Path, v: &Value) -> Result<(String, PathBuf), Fail> {
-        let name = slug(v["slug"].as_str().unwrap_or(""))
-            .or_else(|| slug(v["title"].as_str().unwrap_or("")))
-            .ok_or((400, "The folder name is not valid.".to_string()))?;
+    /// Where pack files go: the video folder with its numbered subfolders, or the old flat slug folder.
+    struct Dest {
+        slug: String,
+        dir: PathBuf,
+        video: Option<String>,
+    }
+
+    impl Dest {
+        fn sub(&self, s: &str) -> PathBuf {
+            if self.video.is_some() { self.dir.join(s) } else { self.dir.clone() }
+        }
+        fn json(&self) -> Value {
+            json!({"slug": self.slug, "folder": self.video, "dir": self.dir.display().to_string()})
+        }
+        fn files(&self) -> (Vec<String>, Vec<String>) {
+            if self.video.is_none() {
+                let l = listing(&self.dir);
+                return (l.clone(), l);
+            }
+            let mut names = Vec::new();
+            let mut paths = Vec::new();
+            for s in video::SUBS {
+                for f in video::files(&self.dir.join(s)) {
+                    paths.push(format!("{s}/{f}"));
+                    names.push(f);
+                }
+            }
+            names.sort();
+            names.dedup();
+            (names, paths)
+        }
+    }
+
+    fn folder(app: &Path, v: &Value) -> Result<Dest, Fail> {
+        let s = slug(v["slug"].as_str().unwrap_or("")).or_else(|| slug(v["title"].as_str().unwrap_or("")));
+        if let Some((name, d)) = video::from_req(app, v)? {
+            return Ok(Dest { slug: s.unwrap_or_default(), dir: d, video: Some(name) });
+        }
+        let name = s.ok_or((400, "The folder name is not valid.".to_string()))?;
         let d = root(app).join(&name);
         fs::create_dir_all(&d).map_err(|e| (500, format!("Could not create the edit pack folder: {e}")))?;
-        Ok((name, d))
+        Ok(Dest { slug: name, dir: d, video: None })
     }
 
     /// Every file now in the folder, sorted by name.
@@ -2616,7 +2822,8 @@ mod pack {
         let Some(index) = v["index"].as_u64().filter(|i| *i < 99) else {
             return Err((400, "The act number is not valid.".into()));
         };
-        let (name, d) = folder(app, v)?;
+        let dest = folder(app, v)?;
+        let d = dest.sub(video::NARR);
         let n = index + 1;
         let prefix = format!("{n:02}-act-{n}");
         // The act name often starts with "Act 1" already, which the prefix repeats.
@@ -2627,9 +2834,16 @@ mod pack {
         let file = if label.is_empty() { format!("{prefix}.mp3") } else { format!("{prefix}-{label}.mp3") };
         let timed = eleven::speak_timed(c, text).map_err(|e| (502, e))?;
         // A renamed act would otherwise leave two files for the same act.
+        // In a video folder the replaced act goes to "older takes" instead of being deleted.
+        let older = d.join(video::OLDER);
         for old in listing(&d) {
             if old.ends_with(".mp3") && (old == format!("{prefix}.mp3") || old.starts_with(&format!("{prefix}-"))) {
-                let _ = fs::remove_file(d.join(old));
+                if dest.video.is_some() {
+                    let _ = fs::create_dir_all(&older);
+                    let _ = fs::rename(d.join(&old), video::free_path(&older, &old, |p| p.exists()));
+                } else {
+                    let _ = fs::remove_file(d.join(old));
+                }
             }
         }
         let path = d.join(&file);
@@ -2638,8 +2852,12 @@ mod pack {
             .into_iter()
             .map(|c| json!({"start": c.start, "end": c.end, "text": c.text}))
             .collect();
-        Ok(json!({"file": file, "slug": name, "dir": d.display().to_string(), "path": path.display().to_string(),
-            "seconds": round3(timed.seconds), "chars": timed.count, "chunks": timed.chunks, "cues": cues}))
+        let mut out = dest.json();
+        for (k, x) in [("file", json!(file)), ("path", json!(path.display().to_string())), ("seconds", json!(round3(timed.seconds))),
+            ("chars", json!(timed.count)), ("chunks", json!(timed.chunks)), ("cues", json!(cues))] {
+            out[k] = x;
+        }
+        Ok(out)
     }
 
     /// The plan thumbnail (by plan id) or a generated image (by its file name under gen/).
@@ -2676,28 +2894,44 @@ mod pack {
             .take(20_000)
             .filter_map(|c| Some(Cue { start: c["start"].as_f64()?, end: c["end"].as_f64()?, text: c["text"].as_str()?.to_string() }))
             .collect();
-        let (name, d) = folder(app, v)?;
-        let save = |file: &str, data: &[u8]| write_atomic(&d.join(file), data).map_err(|e| (500, format!("Could not save {file}: {e}")));
+        let dest = folder(app, v)?;
+        let save = |sub: &str, file: &str, data: &[u8]| {
+            write_atomic(&dest.sub(sub).join(file), data).map_err(|e| (500, format!("Could not save {file}: {e}")))
+        };
         for (file, text) in &texts {
-            save(file, text.as_bytes())?;
+            save(video::sub_for(file).unwrap_or(video::SUBS[0]), file, text.as_bytes())?;
         }
         if !cues.is_empty() {
-            save("subtitle.srt", srt(&cues).as_bytes())?;
+            save(video::NARR, "subtitle.srt", srt(&cues).as_bytes())?;
         }
         let mut thumbnail = Value::Null;
         if let Some(id) = v["thumb"].as_str().filter(|s| !s.is_empty()) {
             if let Some((src, ext)) = thumb_source(app, id) {
                 // The picture keeps its real type; a PNG named .jpg confuses some editors.
-                let file = format!("thumbnail.{ext}");
                 let bytes = fs::read(&src).map_err(|e| (500, format!("Could not read the thumbnail: {e}")))?;
-                for old in ["jpg", "png", "webp"] {
-                    let _ = fs::remove_file(d.join(format!("thumbnail.{old}")));
-                }
-                save(&file, &bytes)?;
+                let td = dest.sub(video::SUBS[5]);
+                let file = if dest.video.is_some() {
+                    // 06 Thumbnail holds Sigit's own files too, so the pack only adds a picture there, never replaces one.
+                    let p = video::save_new(&td, &format!("pack-thumbnail.{ext}"), &bytes)
+                        .map_err(|e| (500, format!("Could not save the thumbnail: {}", video::why(&e))))?;
+                    p.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_default()
+                } else {
+                    let file = format!("thumbnail.{ext}");
+                    for old in ["jpg", "png", "webp"] {
+                        let _ = fs::remove_file(td.join(format!("thumbnail.{old}")));
+                    }
+                    save(video::SUBS[5], &file, &bytes)?;
+                    file
+                };
                 thumbnail = json!(file);
             }
         }
-        Ok(json!({"slug": name, "dir": d.display().to_string(), "files": listing(&d), "thumbnail": thumbnail}))
+        let (files, paths) = dest.files();
+        let mut out = dest.json();
+        out["files"] = json!(files);
+        out["paths"] = json!(paths);
+        out["thumbnail"] = thumbnail;
+        Ok(out)
     }
 
     /// One Veo clip saved into the pack folder. Spends KIE credits.
@@ -2709,14 +2943,24 @@ mod pack {
         if prompt.is_empty() || prompt.chars().count() > 4000 {
             return Err((400, "The clip prompt is empty or too long.".into()));
         }
-        let (name, d) = folder(app, v)?;
+        let dest = folder(app, v)?;
         let label: String = file_slug(v["name"].as_str().unwrap_or(""), "clip").chars().take(40).collect();
         let file = format!("clip-{}.mp4", label.trim_matches('-'));
         let (bytes, credits) = kie::clip(&c.kie_key, prompt).map_err(|e| (502, e))?;
-        let path = d.join(&file);
-        write_atomic(&path, &bytes).map_err(|e| (500, format!("Could not save the clip: {e}")))?;
-        Ok(json!({"file": file, "slug": name, "dir": d.display().to_string(), "path": path.display().to_string(),
-            "bytes": bytes.len(), "credits": credits}))
+        let cd = dest.sub(video::SUBS[3]);
+        let path = if dest.video.is_some() {
+            video::save_new(&cd, &file, &bytes).map_err(|e| (500, format!("Could not save the clip: {}", video::why(&e))))?
+        } else {
+            let p = cd.join(&file);
+            write_atomic(&p, &bytes).map_err(|e| (500, format!("Could not save the clip: {e}")))?;
+            p
+        };
+        let file = path.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or(file);
+        let mut out = dest.json();
+        for (k, x) in [("file", json!(file)), ("path", json!(path.display().to_string())), ("bytes", json!(bytes.len())), ("credits", credits)] {
+            out[k] = x;
+        }
+        Ok(out)
     }
 
     #[cfg(test)]
@@ -2801,6 +3045,728 @@ mod pack {
             assert_eq!(format!("{} {}", block[2], block[3]), cues[2].text);
             assert_eq!(two_lines("a  b\nc"), "a b c");
             assert_eq!(srt(&[]), "");
+        }
+    }
+}
+
+// One folder per video: Downloads\Terra Studio\<date title>\ with numbered subfolders.
+// Files are only ever moved or copied here, never deleted.
+
+mod video {
+    use super::*;
+    use std::collections::{HashMap, HashSet};
+
+    pub const SUBS: [&str; 8] = ["01 Script", "02 Narration", "03 Images", "04 Video clips", "05 Infographics", "06 Thumbnail", "07 Upload", "08 Premiere"];
+    pub const NARR: &str = "02 Narration";
+    pub const OLDER: &str = "older takes";
+    const MAX: usize = 80;
+    const ILLEGAL: &str = "<>:\"/\\|?*";
+    /// Moving takes and migrating run one at a time.
+    pub static LOCK: Mutex<()> = Mutex::new(());
+
+    type Fail = (u16, String);
+
+    /// A Windows-safe folder name. Idempotent, so a name is valid exactly when sanitize leaves it unchanged.
+    pub fn sanitize(raw: &str) -> String {
+        let clean: String = raw.chars().map(|c| if c.is_control() || ILLEGAL.contains(c) { ' ' } else { c }).collect();
+        let mut out: String = clean.split_whitespace().collect::<Vec<_>>().join(" ").chars().take(MAX).collect();
+        out = out.trim_end_matches(['.', ' ']).to_string();
+        if out.is_empty() {
+            out = "Untitled video".into();
+        }
+        if pack::reserved(out.split('.').next().unwrap_or("").trim_end()) {
+            if out.chars().count() >= MAX {
+                out = out.chars().take(MAX - 1).collect::<String>().trim_end_matches(['.', ' ']).to_string();
+            }
+            out = format!("_{out}");
+        }
+        out
+    }
+
+    pub fn valid_name(name: &str) -> bool {
+        !name.is_empty() && name.len() <= 4 * MAX && sanitize(name) == name
+    }
+
+    /// "<YYYY-MM-DD> <title>"; a missing or malformed date is left out.
+    pub fn folder_name(date: &str, title: &str) -> String {
+        let d = date.trim();
+        let ok = d.len() == 10 && d.bytes().enumerate().all(|(i, b)| if i == 4 || i == 7 { b == b'-' } else { b.is_ascii_digit() });
+        let t = sanitize(title);
+        if ok { sanitize(&format!("{d} {t}")) } else { t }
+    }
+
+    /// The base name, or "<base> (2)", "(3)"... when a folder with that name already exists.
+    pub fn unique_name(base: &str, taken: impl Fn(&str) -> bool) -> String {
+        if !taken(base) {
+            return base.to_string();
+        }
+        (2..)
+            .map(|n| {
+                let tail = format!(" ({n})");
+                let head: String = base.chars().take(MAX - tail.chars().count()).collect();
+                sanitize(&format!("{}{tail}", head.trim_end()))
+            })
+            .find(|c| !taken(c))
+            .unwrap()
+    }
+
+    /// A file name that is safe to join to a folder: one plain component, no stream or device names.
+    pub fn valid_file(name: &str) -> bool {
+        !name.is_empty()
+            && name.chars().count() <= 160
+            && !name.chars().any(|c| c.is_control() || ILLEGAL.contains(c))
+            && !name.starts_with(['.', ' '])
+            && !name.ends_with(['.', ' '])
+            && !name.contains("..")
+            && !pack::reserved(name.split('.').next().unwrap_or("").trim_end())
+    }
+
+    /// dir/file, or dir/"stem (2).ext", "(3)"... when the name is taken. Never overwrites.
+    pub fn free_path(dir: &Path, file: &str, taken: impl Fn(&Path) -> bool) -> PathBuf {
+        let first = dir.join(file);
+        if !taken(&first) {
+            return first;
+        }
+        let (stem, ext) = match file.rsplit_once('.') {
+            Some((s, e)) if !s.is_empty() => (s, format!(".{e}")),
+            _ => (file, String::new()),
+        };
+        (2..).map(|n| dir.join(format!("{stem} ({n}){ext}"))).find(|p| !taken(p)).unwrap()
+    }
+
+    /// Writes bytes as file, or "file (2)", "(3)"...; a file that already holds the same bytes is reused. Never overwrites.
+    pub fn save_new(dir: &Path, file: &str, bytes: &[u8]) -> std::io::Result<PathBuf> {
+        let same = |p: &Path| fs::metadata(p).is_ok_and(|m| m.len() == bytes.len() as u64) && fs::read(p).is_ok_and(|b| b == bytes);
+        let p = free_path(dir, file, |p| p.exists() && !same(p));
+        if !p.exists() {
+            write_atomic(&p, bytes)?;
+        }
+        Ok(p)
+    }
+
+    /// Windows words its own error text in the system language, so the reason is said in English here.
+    pub fn why(e: &std::io::Error) -> String {
+        use std::io::ErrorKind as K;
+        let what = match e.kind() {
+            K::PermissionDenied => "Windows denied access. The file may be open in another program, or the folder is protected",
+            K::NotFound => "the file or folder was not found",
+            K::AlreadyExists => "a file with that name already exists",
+            K::StorageFull => "the drive is full",
+            K::ReadOnlyFilesystem => "the drive is read-only",
+            K::InvalidFilename => "Windows does not accept this file name",
+            _ => "Windows reported an error",
+        };
+        match e.raw_os_error() {
+            Some(c) => format!("{what} (error {c})."),
+            None => format!("{what}."),
+        }
+    }
+
+    /// Which numbered subfolder a file belongs in; None leaves it in the video folder itself.
+    pub fn sub_for(file: &str) -> Option<&'static str> {
+        let f = file.to_lowercase();
+        let ext = f.rsplit_once('.').map(|(_, e)| e).unwrap_or("");
+        let has = |w: &str| f.contains(w);
+        Some(match ext {
+            "mp3" | "wav" | "m4a" | "srt" | "vtt" => SUBS[1],
+            "mp4" | "mov" | "webm" | "mkv" => SUBS[3],
+            "prproj" => SUBS[7],
+            "jpg" | "jpeg" | "png" | "webp" if has("thumb") => SUBS[5],
+            "jpg" | "jpeg" | "png" | "webp" => SUBS[2],
+            _ if has("infographic") => SUBS[4],
+            _ if has("flow") || has("prompt") => SUBS[2],
+            _ if has("title") || has("description") || has("seo") || has("tags") || has("upload") => SUBS[6],
+            "txt" | "md" | "json" | "csv" | "doc" | "docx" | "rtf" => SUBS[0],
+            _ => return None,
+        })
+    }
+
+    pub fn is_act(file: &str) -> bool {
+        let b = file.as_bytes();
+        b.len() > 7 && b[0].is_ascii_digit() && b[1].is_ascii_digit() && file[2..].starts_with("-act-")
+    }
+
+    /// A full voice over take: any MP3 in 02 Narration that is not one act of the edit pack.
+    pub fn is_take(file: &str) -> bool {
+        file.to_ascii_lowercase().ends_with(".mp3") && !is_act(file)
+    }
+
+    /// Unix time in names like "slug-1731480000.mp3" or "voice-over-1731480000 (2).mp3".
+    pub fn stamp_of(file: &str) -> Option<u64> {
+        let stem = file.strip_suffix(".mp3")?;
+        let stem = match stem.rsplit_once(" (") {
+            Some((s, n)) if n.strip_suffix(')').is_some_and(|d| !d.is_empty() && d.bytes().all(|b| b.is_ascii_digit())) => s,
+            _ => stem,
+        };
+        let (_, digits) = stem.rsplit_once('-')?;
+        ((9..=11).contains(&digits.len()) && digits.bytes().all(|b| b.is_ascii_digit())).then(|| digits.parse().ok()).flatten()
+    }
+
+    /// A voice over that ElevenLabs saved loose in Downloads for this title: exactly "<slug>-<timestamp>.mp3".
+    pub fn take_for(slug: &str, file: &str) -> Option<u64> {
+        if slug.is_empty() {
+            return None;
+        }
+        let digits = file.strip_prefix(slug)?.strip_prefix('-')?.strip_suffix(".mp3")?;
+        ((9..=11).contains(&digits.len()) && digits.bytes().all(|b| b.is_ascii_digit())).then(|| digits.parse().ok()).flatten()
+    }
+
+    pub fn enc(s: &str) -> String {
+        s.bytes()
+            .map(|b| if b.is_ascii_alphanumeric() || b"-_.~".contains(&b) { (b as char).to_string() } else { format!("%{b:02X}") })
+            .collect()
+    }
+
+    pub fn audio_url(name: &str, file: &str) -> String {
+        format!("/api/audio/{}/{}", enc(name), enc(file))
+    }
+
+    /// Regular files in a folder, sorted by name, without temp files and Windows/Mac clutter.
+    pub fn files(d: &Path) -> Vec<String> {
+        let mut names: Vec<String> = fs::read_dir(d)
+            .into_iter()
+            .flatten()
+            .flatten()
+            .filter(|e| e.file_type().is_ok_and(|t| t.is_file()))
+            .filter_map(|e| e.file_name().into_string().ok())
+            .filter(|n| {
+                let l = n.to_ascii_lowercase();
+                !l.ends_with(".tmp") && !["desktop.ini", "thumbs.db", ".ds_store"].contains(&l.as_str())
+            })
+            .collect();
+        names.sort();
+        names
+    }
+
+    pub fn dir(app: &Path, name: &str) -> Result<PathBuf, Fail> {
+        if !valid_name(name) {
+            return Err((400, "The video folder name is not valid.".into()));
+        }
+        Ok(pack::root(app).join(name))
+    }
+
+    pub fn ensure(app: &Path, name: &str) -> Result<PathBuf, Fail> {
+        let d = dir(app, name)?;
+        create(&d)?;
+        Ok(d)
+    }
+
+    fn create(d: &Path) -> Result<(), Fail> {
+        for s in SUBS {
+            fs::create_dir_all(d.join(s)).map_err(|e| (500, format!("Could not create the video folder: {}", why(&e))))?;
+        }
+        fs::create_dir_all(d.join(NARR).join(OLDER)).map_err(|e| (500, format!("Could not create the video folder: {}", why(&e))))
+    }
+
+    /// The "folder" field of a writer's request: Ok(None) when absent, an error when present but not valid.
+    pub fn from_req(app: &Path, v: &Value) -> Result<Option<(String, PathBuf)>, Fail> {
+        match v.get("folder") {
+            None | Some(Value::Null) => Ok(None),
+            Some(Value::String(n)) if n.is_empty() => Ok(None),
+            Some(Value::String(n)) => ensure(app, n).map(|d| Some((n.clone(), d))),
+            Some(_) => Err((400, "The video folder name is not valid.".into())),
+        }
+    }
+
+    pub fn summary(d: &Path, name: &str) -> Value {
+        let mut total = 0;
+        let folders: Vec<Value> = SUBS
+            .iter()
+            .map(|s| {
+                let list = files(&d.join(s));
+                total += list.len();
+                let mut o = json!({"name": s, "files": list.len(), "list": list.iter().take(5).collect::<Vec<_>>()});
+                if *s == NARR {
+                    let older = files(&d.join(NARR).join(OLDER)).len();
+                    total += older;
+                    o["older"] = json!(older);
+                }
+                o
+            })
+            .collect();
+        json!({"name": name, "dir": d.display().to_string(), "exists": d.is_dir(), "total": total,
+            "root_files": files(d).len(), "folders": folders})
+    }
+
+    fn mtime(p: &Path) -> u64 {
+        fs::metadata(p).and_then(|m| m.modified()).ok().and_then(|t| t.duration_since(UNIX_EPOCH).ok()).map_or(0, |d| d.as_secs())
+    }
+
+    fn seconds(p: &Path) -> Option<f64> {
+        let total = fs::metadata(p).ok()?.len() as usize;
+        let mut head = Vec::new();
+        fs::File::open(p).ok()?.take(70_000).read_to_end(&mut head).ok()?;
+        eleven::mp3_seconds_len(&head, total).map(|s| (s * 10.0).round() / 10.0)
+    }
+
+    /// Every take for a video, newest first. Only the newest take in 02 Narration counts as in use.
+    pub fn takes(d: &Path, name: &str) -> Value {
+        let narr = d.join(NARR);
+        let mut list: Vec<(u64, Value)> = Vec::new();
+        for (sub, here) in [(narr.clone(), true), (narr.join(OLDER), false)] {
+            for f in files(&sub).into_iter().filter(|f| is_take(f)) {
+                let p = sub.join(&f);
+                let m = mtime(&p);
+                let at = stamp_of(&f).unwrap_or(m);
+                list.push((at, json!({"file": f, "in_use": here, "where": if here { "current" } else { "older" },
+                    "size": fs::metadata(&p).map_or(0, |x| x.len()), "mtime": m, "at": at, "seconds": seconds(&p),
+                    "url": audio_url(name, &f)})));
+            }
+        }
+        list.sort_by(|a, b| b.0.cmp(&a.0).then_with(|| b.1["in_use"].as_bool().cmp(&a.1["in_use"].as_bool())));
+        let mut inuse = Value::Null;
+        for (_, t) in list.iter_mut() {
+            if t["in_use"] == true {
+                if inuse.is_null() { inuse = t["file"].clone() } else { t["in_use"] = json!(false) }
+            }
+        }
+        json!({"folder": name, "dir": d.display().to_string(), "inuse": inuse, "count": list.len(),
+            "takes": list.into_iter().map(|(_, t)| t).collect::<Vec<_>>()})
+    }
+
+    /// Moves every take except `keep` from 02 Narration into "older takes". Returns (moved, errors).
+    fn retire(narr: &Path, keep: Option<&str>) -> (Vec<String>, Vec<String>) {
+        let older = narr.join(OLDER);
+        let _ = fs::create_dir_all(&older);
+        let (mut moved, mut errors) = (Vec::new(), Vec::new());
+        for f in files(narr).into_iter().filter(|f| is_take(f) && Some(f.as_str()) != keep) {
+            let to = free_path(&older, &f, |p| p.exists());
+            match fs::rename(narr.join(&f), &to) {
+                Ok(()) => moved.push(to.file_name().and_then(|n| n.to_str()).unwrap_or(&f).to_string()),
+                Err(e) => errors.push(format!("{f}: {}", why(&e))),
+            }
+        }
+        (moved, errors)
+    }
+
+    /// Saves a new take as the one in use; the previous one moves to "older takes".
+    pub fn save_take(d: &Path, name: &str, s: &eleven::Spoken) -> Result<Value, Fail> {
+        let narr = d.join(NARR);
+        let at = now();
+        let path = free_path(&narr, &format!("voice-over-{at}.mp3"), |p| p.exists());
+        let file = path.file_name().and_then(|n| n.to_str()).unwrap_or_default().to_string();
+        write_atomic(&path, &s.audio).map_err(|e| (500, format!("Could not save the MP3: {}", why(&e))))?;
+        let (older, _) = retire(&narr, Some(&file));
+        Ok(json!({"file": file, "path": path.display().to_string(), "folder": name, "dir": d.display().to_string(),
+            "url": audio_url(name, &file), "chars": s.chars, "chunks": s.chunks, "bytes": s.audio.len(),
+            "seconds": eleven::mp3_seconds(&s.audio), "at": at, "older": older}))
+    }
+
+    /// Makes one existing take the one in use. Nothing is deleted.
+    pub fn use_take(d: &Path, file: &str) -> Result<(), Fail> {
+        if !valid_file(file) || !is_take(file) {
+            return Err((400, "This voice over take is not valid.".into()));
+        }
+        let narr = d.join(NARR);
+        let older = narr.join(OLDER);
+        let src = [narr.join(file), older.join(file)].into_iter().find(|p| p.is_file())
+            .ok_or((404, "This voice over take was not found. It may have been moved or renamed in Explorer.".to_string()))?;
+        let (_, errors) = retire(&narr, (src.parent() == Some(narr.as_path())).then_some(file));
+        if !errors.is_empty() {
+            return Err((500, format!("Could not move the other takes into \"older takes\": {}", errors.join("; "))));
+        }
+        if src.parent() == Some(older.as_path()) {
+            fs::rename(&src, free_path(&narr, file, |p| p.exists())).map_err(|e| (500, format!("Could not move the take: {}", why(&e))))?;
+        }
+        Ok(())
+    }
+
+    pub struct Move {
+        pub from: PathBuf,
+        pub to: PathBuf,
+        pub video: String,
+        pub kind: &'static str,
+    }
+
+    impl Move {
+        pub fn json(&self, root: &Path) -> Value {
+            let vd = root.join(&self.video);
+            let sub = self.to.parent().and_then(|p| p.strip_prefix(&vd).ok()).map(|p| p.to_string_lossy().replace('\\', "/")).unwrap_or_default();
+            let file = self.to.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_default();
+            let mut o = json!({"from": self.from.display().to_string(), "to": self.to.display().to_string(), "video": self.video,
+                "kind": self.kind, "sub": sub, "file": file,
+                "name": self.from.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_default()});
+            if self.kind == "voice" {
+                o["in_use"] = json!(sub == NARR);
+                o["url"] = json!(audio_url(&self.video, &file));
+            }
+            o
+        }
+    }
+
+    fn strings(v: &Value) -> Vec<String> {
+        match v {
+            Value::String(s) => vec![s.clone()],
+            Value::Array(a) => a.iter().filter_map(|x| x.as_str().map(String::from)).collect(),
+            _ => vec![],
+        }
+    }
+
+    /// Proposed moves of older files into video folders. `root` is Downloads\Terra Studio, `downloads` is Downloads.
+    pub fn plan(root: &Path, downloads: &Path, videos: &[Value]) -> (Vec<Move>, Vec<Value>) {
+        let mut moves: Vec<Move> = Vec::new();
+        let mut errors: Vec<Value> = Vec::new();
+        let mut claimed: HashSet<PathBuf> = HashSet::new();
+        let mut planned: HashSet<String> = HashSet::new();
+        let names: HashSet<&str> = videos.iter().filter_map(|v| v["name"].as_str()).collect();
+        let loose = files(downloads);
+        struct Acc<'a> {
+            moves: &'a mut Vec<Move>,
+            planned: &'a mut HashSet<String>,
+            claimed: &'a mut HashSet<PathBuf>,
+        }
+        fn add(acc: &mut Acc, from: PathBuf, dest: PathBuf, video: &str, kind: &'static str) {
+            let key = |p: &Path| p.to_string_lossy().to_lowercase();
+            let file = from.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_default();
+            let to = free_path(&dest, &file, |p| p.exists() || acc.planned.contains(&key(p)));
+            acc.planned.insert(key(&to));
+            acc.claimed.insert(from.clone());
+            acc.moves.push(Move { from, to, video: video.to_string(), kind });
+        }
+        // Titles that share their first words give identical file names, and two videos can send the same pack slug.
+        // Such a file or folder could belong to either video, so it stays where it is and is reported.
+        let mut owners: HashMap<String, HashSet<&str>> = HashMap::new();
+        for v in videos {
+            let name = v["name"].as_str().unwrap_or("");
+            if valid_name(name) {
+                let (slugs, voice, thumbs) = matches(v, &loose);
+                for k in slugs.into_iter().map(|s| format!("/{s}")).chain(voice.into_iter().map(|(_, f)| f)).chain(thumbs) {
+                    owners.entry(k).or_default().insert(name);
+                }
+            }
+        }
+        let shared = |k: &str| owners.get(k).is_some_and(|o| o.len() > 1);
+        let mut told: HashSet<String> = HashSet::new();
+        for (k, o) in &owners {
+            if o.len() > 1 && told.insert(k.clone()) {
+                let mut vs: Vec<&str> = o.iter().copied().collect();
+                vs.sort();
+                let what = match k.strip_prefix('/') {
+                    Some(s) => format!("The old edit pack folder \"{s}\""),
+                    None => format!("\"{k}\""),
+                };
+                errors.push(json!({"file": k.trim_start_matches('/'), "videos": vs,
+                    "error": format!("{what} matches more than one video ({}), so it was left where it is. Move it by hand.", vs.join(", "))}));
+            }
+        }
+        errors.sort_by(|a, b| a["file"].as_str().cmp(&b["file"].as_str()));
+        for v in videos {
+            let name = v["name"].as_str().unwrap_or("");
+            if !valid_name(name) {
+                errors.push(json!({"video": name, "id": v["id"], "error": "The video folder name is not valid."}));
+                continue;
+            }
+            let vd = root.join(name);
+            let (slugs, found, thumbs) = matches(v, &loose);
+            // Old flat edit pack folder, by its slug. A slug that is another video's folder is left alone.
+            for s in slugs {
+                let src = root.join(&s);
+                if (s != name && names.contains(s.as_str())) || !src.is_dir() || shared(&format!("/{s}")) {
+                    continue;
+                }
+                for f in files(&src) {
+                    let from = src.join(&f);
+                    if claimed.contains(&from) {
+                        continue;
+                    }
+                    let dest = sub_for(&f).map_or(vd.clone(), |x| vd.join(x));
+                    add(&mut Acc { moves: &mut moves, planned: &mut planned, claimed: &mut claimed }, from, dest, name, "pack");
+                }
+            }
+            // Voice overs ElevenLabs saved loose in Downloads: the newest becomes the take in use.
+            let narr = vd.join(NARR);
+            let mut has_take = files(&narr).iter().any(|f| is_take(f));
+            let found: Vec<String> = found.into_iter().map(|(_, f)| f).filter(|f| !shared(f) && !claimed.contains(&downloads.join(f))).collect();
+            for f in found {
+                let dest = if has_take { narr.join(OLDER) } else { narr.clone() };
+                has_take = true;
+                add(&mut Acc { moves: &mut moves, planned: &mut planned, claimed: &mut claimed }, downloads.join(&f), dest, name, "voice");
+            }
+            for f in thumbs {
+                let from = downloads.join(&f);
+                if !shared(&f) && !claimed.contains(&from) {
+                    add(&mut Acc { moves: &mut moves, planned: &mut planned, claimed: &mut claimed }, from, vd.join(SUBS[5]), name, "thumb");
+                }
+            }
+        }
+        (moves, errors)
+    }
+
+    /// What one video could claim: its pack slugs, loose voice overs (with their time, newest first) and loose thumbnails.
+    fn matches(v: &Value, loose: &[String]) -> (Vec<String>, Vec<(u64, String)>, Vec<String>) {
+        let mut slugs: Vec<String> = strings(&v["slug"]).into_iter().chain(strings(&v["slugs"])).filter_map(|s| pack::slug(&s)).collect();
+        slugs.sort();
+        slugs.dedup();
+        let titles: Vec<String> = strings(&v["title"]).into_iter().chain(strings(&v["titles"])).filter(|t| !t.trim().is_empty()).collect();
+        let tslugs: HashSet<String> = titles.iter().map(|t| eleven::title_slug(t)).filter(|s| !s.is_empty()).collect();
+        let mut voice: Vec<(u64, String)> =
+            loose.iter().filter_map(|f| tslugs.iter().find_map(|s| take_for(s, f)).map(|t| (t, f.clone()))).collect();
+        voice.sort_by(|a, b| b.0.cmp(&a.0).then_with(|| b.1.cmp(&a.1)));
+        // Thumbnails saved to Downloads by "Pick this": "<title> thumbnail <n>.jpg" as a slug.
+        let mut thumbs: Vec<String> = titles
+            .iter()
+            .flat_map(|t| (1..=3).map(move |n| format!("{}.jpg", file_slug(&format!("{t} thumbnail {n}"), "thumbnail"))))
+            .filter(|f| loose.contains(f))
+            .collect();
+        thumbs.sort();
+        thumbs.dedup();
+        (slugs, voice, thumbs)
+    }
+
+    /// Carries out a plan: rename, or copy and keep the original when rename fails (another drive).
+    pub fn run(root: &Path, moves: &[Move]) -> Value {
+        let (mut moved, mut copied, mut failed) = (Vec::new(), Vec::new(), Vec::new());
+        let mut made: HashSet<String> = HashSet::new();
+        for m in moves {
+            if made.insert(m.video.clone()) {
+                if let Err((_, e)) = create(&root.join(&m.video)) {
+                    failed.push(json!({"from": m.from.display().to_string(), "video": m.video, "error": e}));
+                    continue;
+                }
+            }
+            if !m.from.is_file() {
+                failed.push(json!({"from": m.from.display().to_string(), "video": m.video, "error": "The file is no longer there."}));
+                continue;
+            }
+            let parent = m.to.parent().unwrap_or(root);
+            let _ = fs::create_dir_all(parent);
+            let file = m.to.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_default();
+            let to = free_path(parent, &file, |p| p.exists());
+            let done = Move { from: m.from.clone(), to: to.clone(), video: m.video.clone(), kind: m.kind };
+            match fs::rename(&m.from, &to) {
+                Ok(()) => moved.push(done.json(root)),
+                Err(_) => match fs::copy(&m.from, &to) {
+                    Ok(_) => copied.push(done.json(root)),
+                    Err(e) => failed.push(json!({"from": m.from.display().to_string(), "video": m.video,
+                        "error": format!("Could not move or copy this file: {}", why(&e))})),
+                },
+            }
+        }
+        json!({"dry": false, "moved": moved, "copied": copied, "failed": failed})
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        fn temp(tag: &str) -> PathBuf {
+            let d = std::env::temp_dir().join(format!("terra-test-{tag}-{}-{}", std::process::id(), now()));
+            let _ = fs::remove_dir_all(&d);
+            fs::create_dir_all(&d).unwrap();
+            d
+        }
+
+        #[test]
+        fn sanitizer_makes_windows_safe_names() {
+            assert_eq!(sanitize("Smilodon: the <cat>?"), "Smilodon the cat");
+            assert_eq!(sanitize("a/b\\c|d*e\"f"), "a b c d e f");
+            assert_eq!(sanitize("  many   spaces\t\nand\u{0007}bell  "), "many spaces and bell");
+            assert_eq!(sanitize("ends with dots..."), "ends with dots");
+            assert_eq!(sanitize("dots . . ."), "dots");
+            for empty in ["", "   ", ".", "..", "...", "???", "\u{0000}"] {
+                assert_eq!(sanitize(empty), "Untitled video", "{empty:?}");
+            }
+            for r in ["CON", "con", "Nul", "aux.txt", "COM1", "lpt9", "PRN.", "con "] {
+                let s = sanitize(r);
+                assert!(s.starts_with('_'), "{r:?} -> {s:?}");
+                assert!(valid_name(&s));
+            }
+            assert_eq!(sanitize("Conan the cave bear"), "Conan the cave bear");
+            assert_eq!(sanitize("2026-11-20 CON"), "2026-11-20 CON");
+            let long = sanitize(&"Megatherium ".repeat(20));
+            assert!(long.chars().count() <= 80 && !long.ends_with(' '));
+            let reserved_long = sanitize(&format!("CON.{}", "x".repeat(100)));
+            assert!(reserved_long.chars().count() <= 80 && reserved_long.starts_with("_CON."));
+            assert_eq!(sanitize("Mammut – Ära der Riesen 🦣"), "Mammut – Ära der Riesen 🦣");
+            let uni = sanitize(&"é".repeat(200));
+            assert_eq!(uni.chars().count(), 80);
+            for s in ["Smilodon: the <cat>?", "CON", "CON.xx.", &"Megatherium ".repeat(20), &format!("CON.{}", "x".repeat(100)), "..", "a\u{3000}b"] {
+                let once = sanitize(s);
+                assert_eq!(sanitize(&once), once, "not idempotent for {s:?}");
+            }
+            assert_eq!(folder_name("2026-11-20", "Smilodon: The Cat"), "2026-11-20 Smilodon The Cat");
+            assert_eq!(folder_name("", "Smilodon"), "Smilodon");
+            assert_eq!(folder_name("20/11/2026", "Smilodon"), "Smilodon");
+            assert_eq!(folder_name("2026-11-20", ""), "2026-11-20 Untitled video");
+            assert!(folder_name("2026-11-20", &"word ".repeat(40)).chars().count() <= 80);
+        }
+
+        #[test]
+        fn names_with_traversal_or_separators_are_rejected() {
+            for bad in ["", ".", "..", "../x", "..\\x", "a/b", "a\\b", "C:", "C:\\Windows", "x:y", " lead", "trail ", "trail.", "CON",
+                "nul", "a\u{0000}b", "a\nb", "two  spaces", "%2e%2e/x"] {
+                assert!(!valid_name(bad), "{bad:?}");
+            }
+            for good in ["2026-11-20 Smilodon the cat", "Untitled video", "_CON", "Ära 🦣", "x (2)"] {
+                assert!(valid_name(good), "{good:?}");
+            }
+            for bad in ["", ".", "..", "../a.mp3", "a/b.mp3", "a\\b.mp3", "x.mp3:evil", "c:a.mp3", ".hidden.mp3", "a..mp3", "nul.mp3",
+                "COM1.mp3", "a\u{0000}.mp3", "a.mp3 ", "a.mp3."] {
+                assert!(!valid_file(bad), "{bad:?}");
+            }
+            for good in ["voice-over-1731480000.mp3", "voice-over-1731480000 (2).mp3", "01-act-1-the-hunt.mp3", "Mammut äre.mp3"] {
+                assert!(valid_file(good), "{good:?}");
+            }
+            // Only invalid names here, so nothing is created on disk.
+            let app = Path::new("/nonexistent-terra-app");
+            assert!(dir(app, "../../etc").is_err());
+            assert!(dir(app, "..").is_err());
+            assert!(from_req(app, &json!({"folder": "../x"})).is_err());
+            assert!(from_req(app, &json!({"folder": 5})).is_err());
+            assert!(matches!(from_req(app, &json!({"slug": "x"})), Ok(None)));
+            assert!(matches!(from_req(app, &json!({"folder": ""})), Ok(None)));
+        }
+
+        #[test]
+        fn clashes_get_a_number_and_nothing_is_overwritten() {
+            let d = Path::new("/v");
+            let taken: HashSet<PathBuf> = ["/v/a.mp3", "/v/a (2).mp3", "/v/README", "/v/.env"].iter().map(PathBuf::from).collect();
+            let t = |p: &Path| taken.contains(p);
+            assert_eq!(free_path(d, "b.mp3", t), PathBuf::from("/v/b.mp3"));
+            assert_eq!(free_path(d, "a.mp3", t), PathBuf::from("/v/a (3).mp3"));
+            assert_eq!(free_path(d, "README", t), PathBuf::from("/v/README (2)"));
+            assert_eq!(free_path(d, ".env", t), PathBuf::from("/v/.env (2)"));
+            assert_eq!(free_path(d, "x.tar.gz", |p| p == Path::new("/v/x.tar.gz")), PathBuf::from("/v/x.tar (2).gz"));
+            assert_eq!(unique_name("2026-11-20 Smilodon", |n| n == "2026-11-20 Smilodon"), "2026-11-20 Smilodon (2)");
+            assert_eq!(unique_name("x", |n| n == "x" || n == "x (2)"), "x (3)");
+            let long = sanitize(&"y".repeat(100));
+            let u = unique_name(&long, |n| n == long);
+            assert!(u.ends_with(" (2)") && u.chars().count() <= 80 && valid_name(&u));
+            assert_eq!(stamp_of("voice-over-1731480000.mp3"), Some(1731480000));
+            assert_eq!(stamp_of("voice-over-1731480000 (2).mp3"), Some(1731480000));
+            assert_eq!(stamp_of("smilodon-the-cat-1731480000.mp3"), Some(1731480000));
+            assert_eq!(stamp_of("my narration.mp3"), None);
+        }
+
+        #[test]
+        fn saving_never_replaces_an_existing_file() {
+            let d = temp("save");
+            fs::write(d.join("thumbnail.png"), "his own").unwrap();
+            let p1 = save_new(&d, "pack-thumbnail.jpg", b"one").unwrap();
+            assert_eq!(p1, d.join("pack-thumbnail.jpg"));
+            assert_eq!(save_new(&d, "pack-thumbnail.jpg", b"one").unwrap(), p1);
+            let p2 = save_new(&d, "pack-thumbnail.jpg", b"two").unwrap();
+            assert_eq!(p2, d.join("pack-thumbnail (2).jpg"));
+            assert_eq!(save_new(&d, "pack-thumbnail.jpg", b"two").unwrap(), p2);
+            assert_eq!(fs::read(&p1).unwrap(), b"one");
+            assert_eq!(fs::read_to_string(d.join("thumbnail.png")).unwrap(), "his own");
+            let e = std::io::Error::from(std::io::ErrorKind::PermissionDenied);
+            assert!(why(&e).starts_with("Windows denied access"));
+            assert!(why(&std::io::Error::from_raw_os_error(2)).is_ascii());
+            let _ = fs::remove_dir_all(&d);
+        }
+
+        #[test]
+        fn files_that_match_two_videos_stay_where_they_are() {
+            let base = temp("ambiguous");
+            let (dl, root) = (base.join("Downloads"), base.join("Downloads").join("Terra Studio"));
+            fs::create_dir_all(root.join("smilodon")).unwrap();
+            fs::write(root.join("smilodon").join("01-act-1.mp3"), "a").unwrap();
+            let shared = "what-happened-when-the-asteroid-hit-the-earth";
+            for f in [format!("{shared}-1731000000.mp3"), format!("{shared}-1731480000.mp3"), "mammut-1731480000.mp3".into()] {
+                fs::write(dl.join(f), "x").unwrap();
+            }
+            let (a, b, c) = ("2026-11-20 Day 1", "2026-11-27 Day 2", "2026-12-04 Mammut");
+            let videos = vec![
+                json!({"name": a, "title": "What Happened When the Asteroid Hit the Earth? Day 1", "slug": "smilodon"}),
+                json!({"name": b, "title": "What Happened When the Asteroid Hit the Earth? Day 2", "slug": ["smilodon"]}),
+                json!({"name": c, "title": "Mammut"}),
+            ];
+            let (moves, errors) = plan(&root, &dl, &videos);
+            assert_eq!(moves.len(), 1, "only the Mammut take is certain");
+            assert_eq!(moves[0].video, c);
+            assert_eq!(errors.len(), 3, "{errors:?}");
+            assert!(errors.iter().all(|e| e["videos"] == json!([a, b])));
+            let _ = fs::remove_dir_all(&base);
+        }
+
+        #[test]
+        fn files_go_to_the_right_subfolder() {
+            assert_eq!(sub_for("00-script.txt"), Some("01 Script"));
+            assert_eq!(sub_for("outline.txt"), Some("01 Script"));
+            assert_eq!(sub_for("script-check.txt"), Some("01 Script"));
+            assert_eq!(sub_for("01-act-1-the-hunt.mp3"), Some("02 Narration"));
+            assert_eq!(sub_for("subtitle.srt"), Some("02 Narration"));
+            assert_eq!(sub_for("flow-prompts.txt"), Some("03 Images"));
+            assert_eq!(sub_for("clip-1-2.mp4"), Some("04 Video clips"));
+            assert_eq!(sub_for("infographics.txt"), Some("05 Infographics"));
+            assert_eq!(sub_for("thumbnail.png"), Some("06 Thumbnail"));
+            assert_eq!(sub_for("title-and-description.txt"), Some("07 Upload"));
+            assert_eq!(sub_for("Edit.prproj"), Some("08 Premiere"));
+            assert_eq!(sub_for("notes.bin"), None);
+            assert!(is_act("01-act-1-the-hunt.mp3") && is_act("12-act-12.mp3"));
+            assert!(!is_act("voice-over-1731480000.mp3") && !is_act("1-act-1.mp3"));
+            assert!(is_take("voice-over-1731480000.mp3") && is_take("old.MP3") && !is_take("01-act-1.mp3") && !is_take("subtitle.srt"));
+        }
+
+        #[test]
+        fn migration_matches_only_the_full_slug_with_a_timestamp() {
+            assert_eq!(take_for("smilodon", "smilodon-1731480000.mp3"), Some(1731480000));
+            assert_eq!(take_for("smilodon", "smilodon-the-cat-1731480000.mp3"), None);
+            assert_eq!(take_for("smilodon", "smilodon-1731480000.mp3.part"), None);
+            assert_eq!(take_for("smilodon", "smilodon-12.mp3"), None);
+            assert_eq!(take_for("smilodon", "smilodons-1731480000.mp3"), None);
+            assert_eq!(take_for("", "-1731480000.mp3"), None);
+
+            let base = temp("migrate");
+            let (dl, root) = (base.join("Downloads"), base.join("Downloads").join("Terra Studio"));
+            fs::create_dir_all(root.join("smilodon")).unwrap();
+            for (f, body) in [("00-script.txt", "s"), ("01-act-1-hunt.mp3", "a"), ("subtitle.srt", "x"), ("flow-prompts.txt", "f"),
+                ("clip-1-1.mp4", "c"), ("infographics.txt", "i"), ("thumbnail.jpg", "t"), ("title-and-description.txt", "d")] {
+                fs::write(root.join("smilodon").join(f), body).unwrap();
+            }
+            for f in ["smilodon-1731000000.mp3", "smilodon-1731480000.mp3", "smilodon-the-cat-1731490000.mp3",
+                "smilodon-thumbnail-1.jpg", "unrelated.mp3"] {
+                fs::write(dl.join(f), f).unwrap();
+            }
+            let a = "2026-11-20 Smilodon";
+            let b = "2026-11-27 Smilodon the cat";
+            let videos = vec![
+                json!({"name": a, "title": "Smilodon", "slug": "smilodon", "id": "p1"}),
+                json!({"name": b, "title": "Smilodon the cat", "slug": "smilodon-the-cat", "id": "p2"}),
+                json!({"name": "../evil", "title": "x", "id": "p3"}),
+            ];
+            let (moves, errors) = plan(&root, &dl, &videos);
+            assert_eq!(errors.len(), 1);
+            let to = |from: &str| moves.iter().find(|m| m.from.ends_with(from)).map(|m| m.to.strip_prefix(&root).unwrap().to_string_lossy().replace('\\', "/"));
+            assert_eq!(to("00-script.txt").as_deref(), Some("2026-11-20 Smilodon/01 Script/00-script.txt"));
+            assert_eq!(to("01-act-1-hunt.mp3").as_deref(), Some("2026-11-20 Smilodon/02 Narration/01-act-1-hunt.mp3"));
+            assert_eq!(to("clip-1-1.mp4").as_deref(), Some("2026-11-20 Smilodon/04 Video clips/clip-1-1.mp4"));
+            assert_eq!(to("title-and-description.txt").as_deref(), Some("2026-11-20 Smilodon/07 Upload/title-and-description.txt"));
+            assert_eq!(to("smilodon-1731480000.mp3").as_deref(), Some("2026-11-20 Smilodon/02 Narration/smilodon-1731480000.mp3"));
+            assert_eq!(to("smilodon-1731000000.mp3").as_deref(), Some("2026-11-20 Smilodon/02 Narration/older takes/smilodon-1731000000.mp3"));
+            assert_eq!(to("smilodon-the-cat-1731490000.mp3").as_deref(), Some("2026-11-27 Smilodon the cat/02 Narration/smilodon-the-cat-1731490000.mp3"));
+            assert_eq!(to("smilodon-thumbnail-1.jpg").as_deref(), Some("2026-11-20 Smilodon/06 Thumbnail/smilodon-thumbnail-1.jpg"));
+            assert_eq!(to("unrelated.mp3"), None);
+            assert_eq!(moves.len(), 12);
+            // A dry run changes nothing.
+            assert!(dl.join("smilodon-1731480000.mp3").is_file() && !root.join(a).exists());
+
+            fs::create_dir_all(root.join(a).join("01 Script")).unwrap();
+            fs::write(root.join(a).join("01 Script").join("00-script.txt"), "already here").unwrap();
+            let out = run(&root, &moves);
+            assert_eq!(out["failed"].as_array().unwrap().len(), 0, "{out}");
+            assert_eq!(out["moved"].as_array().unwrap().len(), 12);
+            assert_eq!(fs::read_to_string(root.join(a).join("01 Script").join("00-script.txt")).unwrap(), "already here");
+            assert_eq!(fs::read_to_string(root.join(a).join("01 Script").join("00-script (2).txt")).unwrap(), "s");
+            assert!(root.join("smilodon").is_dir() && dl.join("unrelated.mp3").is_file());
+            for s in SUBS {
+                assert!(root.join(a).join(s).is_dir());
+            }
+            let t = takes(&root.join(a), a);
+            assert_eq!(t["inuse"], "smilodon-1731480000.mp3");
+            assert_eq!(t["count"], 2);
+            assert_eq!(t["takes"][1]["where"], "older");
+            assert_eq!(t["takes"][0]["url"], "/api/audio/2026-11-20%20Smilodon/smilodon-1731480000.mp3");
+
+            use_take(&root.join(a), "smilodon-1731000000.mp3").unwrap();
+            let t = takes(&root.join(a), a);
+            assert_eq!(t["inuse"], "smilodon-1731000000.mp3");
+            assert!(root.join(a).join(NARR).join(OLDER).join("smilodon-1731480000.mp3").is_file());
+            assert!(use_take(&root.join(a), "../smilodon-1731480000.mp3").is_err());
+            assert!(use_take(&root.join(a), "01-act-1-hunt.mp3").is_err());
+            assert_eq!(use_take(&root.join(a), "missing-1731480000.mp3").unwrap_err().0, 404);
+            let _ = fs::remove_dir_all(&base);
         }
     }
 }
@@ -3088,6 +4054,40 @@ mod tests {
             "iterations": [{"input_tokens": 100, "output_tokens": 0}, {"input_tokens": 5, "output_tokens": 7}]}});
         assert_eq!(usage(&r), json!({"input_tokens": 105, "output_tokens": 7}));
         assert_eq!(usage(&json!({"usage": {"input_tokens": 1, "output_tokens": 2}})), json!({"input_tokens": 1, "output_tokens": 2}));
+    }
+
+    #[test]
+    fn audio_urls_cannot_leave_the_narration_folders() {
+        let base = std::env::temp_dir().join(format!("terra-test-audio-{}", std::process::id()));
+        let app = base.as_path();
+        for bad in ["..%2F..%2Fsecret.mp3", "../x.mp3", "%2e%2e/x.mp3", "a/b/c.mp3", "x.wav", "2026-11-20%20Smilodon/..%2Fx.mp3",
+            "..%5Cx.mp3", "2026-11-20%20Smilodon/x.mp3%3Aevil", "x.mp3%00", "", "/x.mp3"] {
+            assert_eq!(audio_path(app, bad), None, "{bad:?}");
+        }
+        assert!(audio_path(app, "smilodon-1731480000.mp3").is_some_and(|p| p.ends_with("smilodon-1731480000.mp3")));
+
+        let dl = base.join("Downloads");
+        let narr = pack::root_in(&dl).join("2026-11-20 Smilodon").join(video::NARR);
+        fs::create_dir_all(narr.join(video::OLDER)).unwrap();
+        fs::write(narr.join(video::OLDER).join("x-1731480000.mp3"), "old").unwrap();
+        fs::write(narr.join("voice-over-1731490000.mp3"), "new").unwrap();
+        assert_eq!(audio_in(&dl, "2026-11-20%20Smilodon/x-1731480000.mp3"), Some(narr.join(video::OLDER).join("x-1731480000.mp3")));
+        assert_eq!(audio_in(&dl, "2026-11-20%20Smilodon/voice-over-1731490000.mp3"), Some(narr.join("voice-over-1731490000.mp3")));
+        assert_eq!(audio_in(&dl, "2026-11-20%20Smilodon/missing-1731480000.mp3"), None);
+        assert_eq!(audio_in(&dl, "2026-11-20%20Smilodon%2F..%2F..%2F/x-1731480000.mp3"), None);
+        assert_eq!(audio_in(&dl, "smilodon-1731480000.mp3"), Some(dl.join("smilodon-1731480000.mp3")));
+        let _ = fs::remove_dir_all(&base);
+    }
+
+    #[test]
+    fn thumbnail_names_keep_their_number() {
+        let long = "What Really Happened When the Asteroid Hit the Earth Sixty Six Million Years Ago";
+        let a = thumb_file_stem(&format!("{long} thumbnail 1"));
+        let b = thumb_file_stem(&format!("{long} thumbnail 2"));
+        assert!(a.ends_with("-thumbnail-1") && b.ends_with("-thumbnail-2"), "{a} {b}");
+        assert_eq!(thumb_file_stem("Smilodon thumbnail 3"), "smilodon-thumbnail-3");
+        assert_eq!(thumb_file_stem(" thumbnail 1"), "video-thumbnail-1");
+        assert_eq!(thumb_file_stem("../.."), "video-thumbnail");
     }
 
     #[test]
