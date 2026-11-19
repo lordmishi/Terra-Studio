@@ -2448,12 +2448,13 @@ dependencies = [
 
 [[package]]
 name = "terra-studio"
-version = "2.6.0"
+version = "2.7.0"
 dependencies = [
  "csv",
  "embed-resource",
  "serde",
  "serde_json",
+ "sha2",
  "tao",
  "tiny_http",
  "ureq",

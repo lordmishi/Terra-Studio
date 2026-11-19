@@ -21,7 +21,7 @@
     <div class="rail-sp"></div>
     <button type="button" class="rail-plus" id="rail-plus" aria-label="New content plan" data-tip="New plan"><i aria-hidden="true">+</i><span>New plan</span></button>
     <button type="button" class="skin" id="skin-tog" role="switch" aria-checked="false" aria-label="Dark look" data-tip="Switch light / dark"><u aria-hidden="true"><i class="sun"><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="2.5"/><path d="M7 .75v1.5M7 11.75v1.5M.75 7h1.5M11.75 7h1.5M2.6 2.6l1.05 1.05M10.35 10.35l1.05 1.05M2.6 11.4l1.05-1.05M10.35 3.65l1.05-1.05"/></svg></i><i class="moon"><svg viewBox="0 0 14 14"><path d="M12.25 8.4A5.6 5.6 0 0 1 5.6 1.75a5.6 5.6 0 1 0 6.65 6.65"/></svg></i></u><span id="skin-name">Light look</span></button>
-    <p class="ver">v2.6.0</p>
+    <p class="ver">v2.7.0</p>
   </aside>
   <aside class="side" aria-label="Calendar and schedule">
     <div class="box calw">
@@ -428,6 +428,7 @@
     <div id="g-full" hidden>
       <div class="card">
         <div class="out-head"><span class="layer" id="g-range">YouTube Studio data</span><span class="chips"><button type="button" class="btn ghost" data-ytsync hidden>Pull from YouTube</button><button type="button" class="btn ghost" data-import>Import new data</button></span></div>
+        <div class="ytexp" id="g-ytexp" hidden></div>
         <h3>Channel report</h3>
         <div class="kpis" id="g-kpis"></div>
         <p style="margin:14px 0 0;font-weight:700">Views per month: when did the channel rise, when did it fall?</p>
@@ -751,7 +752,7 @@ function costTag(u,k){if(runCopy(k))return "";if(CFG.provider==="gemini")return 
   return ` (about Rp${nf(Math.max(1,Math.round(costRp(CFG.model,u,CFG.provider)/10)*10))})`}
 /* Run with: each AI button runs with the AI set in Settings, or by copy and paste with claude.ai.
    The last choice is kept per button; the default is Settings. */
-const RUN_EST={post:[1200,300],pics:[2500,1500],ideas:[2600,2000],auto:[9000,6000],titles:[1400,300],hook:[1800,700],script:[8000,5200],full:[7000,4200],check:[1500,200],ig:[4500,700],gen:[1500,900],thumb:[1300,900],seo:[2000,1700],shorts:[1500,1100],ai:[5000,1800]};
+const RUN_EST={post:[1200,300],pics:[2500,1500],ideas:[2600,2000],auto:[9000,6000],titles:[1400,300],hook:[1800,700],script:[8000,5200],full:[7000,4200],check:[1500,200],ig:[4500,1400],gen:[1500,900],thumb:[1300,900],seo:[2000,1700],shorts:[1500,1100],ai:[5000,1800]};
 const RUN_MANY={auto:"In copy mode, Make script in 1 click takes 3 pastes: the topic, the outline, then the script.",script:"In copy mode this takes 2 pastes: the outline, then the script."};
 const provName=()=>({kie:"KIE.ai",claude:"Claude",gemini:"Gemini"})[CFG.provider]||"AI";
 const runCopy=k=>!CFG.provider||!!k&&store.get("run-"+k,"app")==="copy";
@@ -1274,7 +1275,7 @@ document.addEventListener("click",async e=>{
   if(e.target.closest("#pk-go")){makePack();return}
   if(e.target.closest("#pk-open")){const w=mkW(),slug=w.pack?.slug;if(!slug&&!w.folder)return;const r=w.folder?await pkPost("/api/video/open",{name:w.folder}):await pkPost("/api/pack/open",{slug});if(r.error&&!PK.run){PK={run:false,at:-1,msg:r.error,err:true,id:mkId()};pkRender(lastNarr)}}});
 
-/* Infographic briefs: the app finds the moments, Claude with the Remotion skill builds the clips. */
+/* Infographic briefs: the app finds the moments; the clip maker below renders them. */
 const IG_KIND={size:["Size comparison","size-comparison"],number:["Big number","big-number"],map:["Map","map"],timeline:["Timeline","timeline"],chart:["Chart","chart"]};
 const igNorm=s=>String(s||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
 let IG={msg:"",err:false,show:0};
@@ -1302,31 +1303,198 @@ function igFile(f,list,cues){return `INFOGRAPHIC BRIEFS
 Paste one brief at a time into Claude with the Remotion skill. Put each finished .mov on a video track above the footage, at the time shown.
 The numbers in these briefs come from the script. Check them the same way you check the script.
 `+list.map((m,i)=>`\n===== ${i+1}. ${IG_KIND[m.kind][0]}: ${m.title} =====\n\n${igBrief(f,m,i,cues)}\n`).join("")}
-function igCost(f){return costTag({input_tokens:(channelContext().length+1200+narrText(f).length)/4,output_tokens:600},"ig")}
-function igRender(f){const box=$("#ig-box");if(!box||!f)return;const b=mkW().briefs,list=b?.list||[],cues=list.length?igCues(f):null,focus=document.activeElement?.id;
-  const times=list.map(m=>igTime(f,m.quote,cues)),real=times.some(t=>t?.real),show=Math.min(IG.show,list.length-1);
-  box.innerHTML=`<span class="layer">Infographics with Claude</span><h3 id="ig-h" tabindex="-1">${list.length?`${list.length} infographic moment${list.length>1?"s":""} found`:"Infographic briefs for Claude"}</h3>
-  <p class="note">The app finds the moments in your script that deserve a graphic: a size comparison, a timeline, a map, one big number. It writes a ready brief for each. Paste a brief into Claude with the Remotion skill, and Claude builds the animated clip. Making the clips uses your Claude subscription.</p>
+function igCost(f){return costTag({input_tokens:(channelContext().length+2600+narrText(f).length)/4,output_tokens:1400},"ig")}
+/* Clip maker (2.7): Make clip fills a template and renders it on this PC with no AI. Make with AI writes a custom clip
+   for a brief no template fits, shows a still first, and saves only when asked. */
+const CK_TPL={number:"BigNumber",size:"SizeCompare",map:"MapRange",timeline:"Timeline",chart:"BarChart"};
+const CK_SHAPES=[["hyena","Hyena"],["hyena-heavy","Heavy hyena"],["bigcat","Big cat"],["bear","Bear"],["elephant","Elephant or mammoth"],["whale","Whale"],["bird","Big bird"]];
+const CK_REGIONS=[["africa","Africa"],["europe","Europe"],["middle-east","Middle East"],["asia","Asia"],["east-asia","East Asia"],["north-america","North America"],["south-america","South America"],["australia","Australia"]];
+const CK_SPEC=`"tpl" holds the boxes of the clip template for that kind. Use only facts from the narration; map pins may use the well-known location of a site the narration names.
+- size: {"kicker":"2 to 3 words","title":"short","animals":[{"name":"","shape":"hyena|hyena-heavy|bigcat|bear|elephant|whale|bird","sizeFt":0,"note":"short line or empty"}],"highlight":0,"person":true}. 1 to 3 animals, the closest shape for each. sizeFt is shoulder height in feet for land animals, body length for a whale, standing height for a bird. highlight is the index of the animal the film is about.
+- number: {"kicker":"","value":"the number as written, for example ~40 or 1,100","label":"what it counts","caption":"short or empty"}
+- map: {"kicker":"","title":"","regions":["africa|europe|middle-east|asia|east-asia|north-america|south-america|australia"],"pins":[{"name":"","lat":0,"lon":0}],"caption":""}. Up to 4 pins.
+- timeline: {"kicker":"","title":"","unit":"years ago|year","rows":[{"label":"","from":0,"to":0}],"marks":[{"at":0,"label":""}],"highlight":0}. Up to 4 rows and 2 marks. With years ago, from is the older (bigger) number.
+- chart: {"kicker":"","title":"","unit":"","bars":[{"label":"","value":0}],"highlight":0}. 2 to 5 bars.`;
+let CK={st:null,stP:null,vid:"",run:{},open:-1,ai:{},all:false};
+const ckPath=(o,k)=>k.split(".").reduce((a,p)=>a==null?a:a[p],o);
+function ckSet(o,k,v){const p=k.split(".");let a=o;p.forEach((x,i)=>{if(i===p.length-1){a[x]=v;return}if(a[x]==null||typeof a[x]!=="object")a[x]=/^\d+$/.test(p[i+1])?[]:{};a=a[x]})}
+// The brief's boxes as the template's props, with blank rows left out.
+function ckProps(m){const t=m.tpl||{},s=x=>String(x??"").replace(/\s+/g," ").trim().slice(0,90),
+  n=x=>{const v=parseFloat(String(x??"").replace(/[^0-9.\-]/g,""));return isFinite(v)?v:0},L=x=>Array.isArray(x)?x.filter(Boolean):[],hl=+t.highlight||0,
+  base={seconds:m.seconds,kicker:s(t.kicker),title:s(t.title)};
+  if(m.kind==="number")return {...base,value:s(t.value),label:s(t.label),caption:s(t.caption)};
+  if(m.kind==="size")return {...base,person:t.person!==false&&t.person!=="no",animals:L(t.animals).slice(0,3).map((a,i)=>({shape:CK_SHAPES.some(x=>x[0]===a.shape)?a.shape:"bigcat",name:s(a.name),lines:s(a.note)?[s(a.note)]:[],sizeFt:n(a.sizeFt),highlight:i===hl})).filter(a=>a.name&&a.sizeFt>0)};
+  if(m.kind==="map")return {...base,caption:s(t.caption),regions:L(t.regions).filter(r=>CK_REGIONS.some(x=>x[0]===r)),pins:L(t.pins).slice(0,4).map(p=>({name:s(p.name),lat:n(p.lat),lon:n(p.lon)})).filter(p=>p.name&&Math.abs(p.lat)<=90&&Math.abs(p.lon)<=180)};
+  if(m.kind==="timeline")return {...base,unit:t.unit==="year"?"year":"years ago",rows:L(t.rows).slice(0,4).map((r,i)=>({label:s(r.label),from:n(r.from),to:n(r.to),highlight:i===hl})).filter(r=>r.label),marks:L(t.marks).slice(0,2).map(k=>({at:n(k.at),label:s(k.label)})).filter(k=>k.label)};
+  return {...base,unit:s(t.unit),bars:L(t.bars).slice(0,5).map(b=>({label:s(b.label),value:n(b.value)})).filter(b=>b.label),highlight:hl}}
+// Why Make clip cannot run yet, or "".
+function ckWhy(m){if(!m.tpl)return "The boxes are empty. Press Fill the clip boxes above.";const p=ckProps(m);
+  if(m.kind==="number")return p.value?"":"Type the number in Edit.";
+  if(m.kind==="size")return p.animals.length?"":"Add an animal with its size in feet in Edit.";
+  if(m.kind==="map")return p.regions.length||p.pins.length?"":"Tick a region or add a place in Edit.";
+  if(m.kind==="timeline")return p.rows.length?"":"Add a row in Edit.";
+  return p.bars.length?"":"Add a bar in Edit."}
+async function ckStatus(force){if(CK.stP)return CK.stP;if(CK.st&&!force&&!CK.st.running)return CK.st;
+  CK.stP=(async()=>{const j=await api("/api/clip/status");CK.st=j.error?{ready:false,error:j.error}:j;return CK.st})();
+  try{return await CK.stP}finally{CK.stP=null}}
+function ckBanner(){const s=CK.st;if(!s||s.ready)return "";
+  if(s.running)return `<div class="ck-inst" role="status"><div><b>Getting the clip maker</b><p>${esc(s.step||"Starting")}${s.pct>=0?` · ${Math.round(s.pct)}%`:""}. It keeps going while you work, and it only happens once.</p></div><div class="ck-bar${s.pct<0?" busy":""}"><i style="width:${s.pct<0?35:Math.max(3,s.pct)}%"></i></div></div>`;
+  return `<div class="ck-inst"><div><b>First time only: get the clip maker</b><p>One download of about ${s.mb||400} MB (Node.js, Remotion and a render browser), about 5 to 10 minutes. After that, Make clip works on this PC with no AI and no cost.</p>${s.error?`<p class="ck-err">Last try failed: ${esc(s.error)}</p>`:""}</div><button type="button" class="btn" id="ck-get">${s.error?"Try again":"Get clip maker"}</button></div>`}
+let ckPollT=0;
+async function ckPollSetup(){clearTimeout(ckPollT);const s=await ckStatus(true);const b=$("#ck-banner");
+  if(b){if(s.ready)igRender(lastNarr);else b.innerHTML=ckBanner()}
+  if(s.running)ckPollT=setTimeout(ckPollSetup,1500)}
+// Starts a render and follows it; onTick gets each progress reply.
+async function ckJob(body,onTick){const j=await pkPost("/api/clip/render",body);if(j.error)return {state:"error",error:j.error};
+  for(;;){await new Promise(r=>setTimeout(r,800));const s=await api("/api/clip/job/"+j.job);if(s.error&&!s.state)return {state:"error",error:s.error};
+    onTick?.(s);if(s.state==="done"||s.state==="error")return s}}
+const ckBar=r=>r?`<div class="ck-run${r.err?" err":""}" role="status">${r.err?`<span>${esc(r.err)}</span>`:r.busy?`<div class="ck-bar"><i style="width:${Math.max(3,r.pct||0)}%"></i></div><span>${esc(r.msg||"Starting")}${r.pct?` · ${Math.round(r.pct)}%`:""}</span>`:r.msg?`<span>${esc(r.msg)}</span>`:""}</div>`:"";
+function ckPaint(i){const el=$(`#ck-s-${i}`);if(el)el.innerHTML=ckBar(CK.run[i])}
+const ckFile=(id,i,m)=>edIgFile(id,i,m);
+async function ckMake(i,still){const id=mkId(),w=mkW(),m=w.briefs?.list?.[i];if(!m)return false;const why=ckWhy(m);
+  if(why){CK.run[i]={err:why};ckPaint(i);return false}
+  const folder=still?"":await ensureFolder(id);if(!still&&!folder){CK.run[i]={err:VF[id]?.error||"The video folder could not be made."};ckPaint(i);return false}
+  CK.run[i]={busy:true,pct:0,msg:still?"Making a preview picture":"Starting"};ckPaint(i);
+  const s=await ckJob({template:CK_TPL[m.kind],props:ckProps(m),still:!!still,folder,file:igName(m,i)},x=>{if(mkId()!==id)return;CK.run[i]={busy:true,pct:x.pct,msg:x.state==="queued"?"Waiting for the clip before it":x.msg};ckPaint(i)});
+  if(mkId()!==id)return s.state==="done";
+  if(s.state!=="done"){CK.run[i]={err:"The clip was not made. "+(s.error||"")};ckPaint(i);return false}
+  if(still){CK.run[i]={msg:"Preview of the last frame, on a dark background. The saved clip is see-through."};CK.prev={i,url:s.still+"?v="+Date.now()};igRender(lastNarr);return true}
+  CK.run[i]={msg:`Saved as ${s.file} in 05 Infographics.`};await edScan(id,true);igRender(lastNarr);return true}
+async function ckMakeAll(btn){const list=mkW().briefs?.list||[],id=mkId(),todo=list.map((m,i)=>i).filter(i=>!ckFile(id,i,list[i])&&!ckWhy(list[i]));if(!todo.length)return;
+  CK.all=true;btn.disabled=true;let ok=0;for(const i of todo){if(mkId()!==id)break;if(await ckMake(i))ok++}CK.all=false;if($("#ck-all"))$("#ck-all").disabled=false;
+  const st=$("#s-ck");if(st){st.className="status";st.textContent=`${ok} of ${todo.length} clip${todo.length>1?"s":""} saved in 05 Infographics.`}}
+// The brief's boxes, edited in place; nothing renders until Preview or Make clip.
+function ckForm(i,m){const t=m.tpl||(m.tpl={}),v=k=>esc(String(ckPath(t,k)??"")),
+  inp=(k,l,num)=>`<label class="ck-f"><span>${l}</span><input ${num?'type="number" step="any" inputmode="decimal"':'type="text"'} data-ck="${k}" value="${v(k)}" autocomplete="off"></label>`,
+  sel=(k,l,o,d)=>{const cur=String(ckPath(t,k)??d??"");return `<label class="ck-f"><span>${l}</span><select data-ck="${k}">${o.map(([a,b])=>`<option value="${esc(String(a))}"${cur===String(a)?" selected":""}>${esc(b)}</option>`).join("")}</select></label>`},
+  rows=(key,n,lg,cells)=>`<fieldset class="ck-rows"><legend>${lg}</legend>${Array.from({length:n},(_,r)=>`<div class="ck-row">${cells(key+"."+r,r).join("")}</div>`).join("")}</fieldset>`,
+  pick=(key,n,l)=>sel("highlight","Amber highlight",Array.from({length:n},(_,r)=>[r,`${l} ${r+1}`]),0),
+  head=[sel("kind","Template",Object.keys(CK_TPL).map(k=>[k,IG_KIND[k][0]]),m.kind),sel("seconds","Length",[4,5,6,7,8].map(x=>[x,x+" seconds"]),m.seconds),inp("kicker","Small line on top")];
+  let body=[];
+  if(m.kind==="number")body=[inp("value","The number"),inp("label","Under the number"),inp("caption","Small caption")];
+  else if(m.kind==="size")body=[inp("title","Title"),sel("person","Person for scale",[["true","Yes, 5 ft 9 in"],["false","No"]],t.person===false||t.person==="false"?"false":"true"),pick("animals",3,"Animal"),
+    rows("animals",3,"Animals · size is shoulder height in feet (whale: length, bird: height)",k=>[sel(k+".shape","Shape",CK_SHAPES,"bigcat"),inp(k+".name","Name"),inp(k+".sizeFt","Size in feet",1),inp(k+".note","Line under the name")])];
+  else if(m.kind==="map")body=[inp("title","Title"),inp("caption","Caption"),`<fieldset class="ck-rows"><legend>Regions to shade</legend><div class="ck-checks">${CK_REGIONS.map(([a,b])=>`<label><input type="checkbox" data-ckset="regions" value="${a}"${(t.regions||[]).includes(a)?" checked":""}>${b}</label>`).join("")}</div></fieldset>`,
+    rows("pins",4,"Places · latitude and longitude in degrees (south and west are minus)",k=>[inp(k+".name","Place"),inp(k+".lat","Latitude",1),inp(k+".lon","Longitude",1)])];
+  else if(m.kind==="timeline")body=[inp("title","Title"),sel("unit","Years",[["years ago","Years ago"],["year","Calendar year"]],"years ago"),pick("rows",4,"Row"),
+    rows("rows",4,"Rows · from is the older year",k=>[inp(k+".label","Label"),inp(k+".from","From",1),inp(k+".to","To",1)]),rows("marks",2,"Markers",k=>[inp(k+".at","At",1),inp(k+".label","Label")])];
+  else body=[inp("title","Title"),inp("unit","Unit, for example psi or kg"),pick("bars",5,"Bar"),rows("bars",5,"Bars",k=>[inp(k+".label","Label"),inp(k+".value","Value",1)])];
+  const pv=CK.prev?.i===i?`<img class="ck-still" src="${esc(CK.prev.url)}" alt="Preview of clip ${i+1}, last frame">`:"";
+  return `<div class="ck-form" data-ckform="${i}"><div class="ck-grid">${head.concat(body).join("")}</div>
+    <p class="note"><strong>Check the numbers.</strong> They come from the script. Map places come from the AI's knowledge, so check those too.</p>
+    <div class="ck-btns"><button type="button" class="btn ghost" data-ckprev="${i}">Preview</button><button type="button" class="btn" data-ckmake="${i}">Make clip</button><button type="button" class="btn ghost" data-ckclose>Close</button></div>${pv}</div>`}
+let ckSaveT=0;
+function ckEdit(el){const f=el.closest("[data-ckform]");if(!f)return;const i=+f.dataset.ckform,m=mkW().briefs?.list?.[i];if(!m)return;m.tpl=m.tpl||{};
+  if(el.dataset.ckset){m.tpl[el.dataset.ckset]=[...f.querySelectorAll(`[data-ckset="${el.dataset.ckset}"]:checked`)].map(x=>x.value)}
+  else{const k=el.dataset.ck;let v=el.value;if(k==="seconds"){m.seconds=+v;return ckSoon()}if(k==="kind"){m.kind=v;ckSoon();igRender(lastNarr);return}
+    if(k==="person")v=v==="true";else if(k==="highlight")v=+v;ckSet(m.tpl,k,v)}
+  ckSoon()}
+const ckSoon=()=>{clearTimeout(ckSaveT);ckSaveT=setTimeout(saveWork,600)};
+// Make with AI: the AI writes one Remotion component on the clip kit, the app draws its last frame, and the clip is saved only when the user says so.
+function ckAIPrompt(f,m,i,fix){return `Write one Remotion clip as a single TypeScript React file (.tsx) for this documentary infographic.
+
+Brief: ${IG_KIND[m.kind][0]}. ${m.title}. ${m.detail}
+Voice over at this moment: "${m.quote}"
+Use only the numbers written in the brief. They come from the script.
+
+Rules for the file:
+- export const Custom: React.FC<{ seconds: number; background?: boolean }> = ({ background }) => ...
+- Wrap everything in <Stage background={background}> from "../kit". Stage is see-through unless background is set, so the clip overlays footage.
+- 1920x1080 at 30 fps. Read the length with useVideoConfig().durationInFrames. Everything animates in during the first 2 seconds, then holds; nothing fades out, and the last frame shows everything.
+- Imports allowed: "react", "remotion", "../kit", "../shapes", "d3-geo", "topojson-client", "world-atlas/land-110m.json". Nothing else: no images, no staticFile, no fetch, no web addresses, no extra fonts.
+- "../kit" exports: AMBER "#F2A230" (the one accent), TEXT "#EDE6DA", MUTED "#9A9187", STONE, LAND "#2B2722", FONT (Oswald, weights 500 and 700, use uppercase), W, H, clamp (interpolate options), out and inOut (easings), shadow (CSS filter), textShadow, Stage, fadeUp(frame, startFrame, dist) (style object), Headline({kicker, title, align: "left"|"right"|"center"}) at the top, Label({x, y, title, lines, color, start, align, width, size}), fmtNum(n).
+- "../shapes" exports SHAPES: Record<"hyena"|"hyena-heavy"|"bigcat"|"bear"|"elephant"|"whale"|"bird", {near: string (SVG path d, a side view facing left), size, top, width}>. Draw a path with fill={TEXT} or {AMBER}.
+- Style: big uppercase Oswald labels, flat shapes, amber only on the subject of the film, text with textShadow so it reads over footage. Keep the main content inside 120 px from each edge.
+${fix?`
+The last version failed to render. Fix it and return the whole file again.
+Error: ${fix.error}
+Last version:
+${fix.code}
+`:""}
+JSON shape: {"code":"the whole .tsx file"}`}
+const ckAICost=()=>costTag({input_tokens:3500+channelContext().length/4,output_tokens:4500},"ig");
+async function ckAI(i,btn,fix){const id=mkId(),m=mkW().briefs?.list?.[i],st=$(`#ck-s-${i}`);if(!m||!st)return;
+  CK.ai[i]={busy:true};const d=await ask(st,btn,ckAIPrompt(lastNarr,m,i,fix),null,fix?"The first version did not render. AI is fixing it… (about 1 to 2 minutes)":"AI is writing the clip… (about 1 to 2 minutes)");
+  if(mkId()!==id)return;if(!d?.code){CK.ai[i]=null;return}
+  m.code=String(d.code);CK.ai[i]={busy:true};saveWork();CK.run[i]={busy:true,pct:0,msg:"Drawing a preview of the AI clip"};ckPaint(i);
+  const s=await ckJob({template:"Custom",props:{seconds:m.seconds},code:m.code,still:true},x=>{if(mkId()===id){CK.run[i]={busy:true,pct:x.pct,msg:x.state==="queued"?"Waiting for the clip before it":"Drawing a preview of the AI clip"};ckPaint(i)}});
+  if(mkId()!==id)return;
+  if(s.state!=="done"){if(!fix&&!/not set up|not allowed|does not export|imports/.test(s.error||"")){CK.run[i]=null;return ckAI(i,btn,{error:s.error,code:m.code})}
+    CK.ai[i]=null;CK.run[i]={err:"The AI clip did not render, even after one fix. Press Make with AI again, or use Copy brief. "+(s.error||"")};ckPaint(i);return}
+  CK.ai[i]={url:s.still+"?v="+Date.now()};CK.run[i]={msg:"This is the last frame of the AI clip. Save it, or ask for a new version."};igRender(lastNarr)}
+async function ckAISave(i){const id=mkId(),m=mkW().briefs?.list?.[i];if(!m?.code)return;const folder=await ensureFolder(id);if(!folder)return;
+  CK.ai[i]={...CK.ai[i],saving:true};CK.run[i]={busy:true,pct:0,msg:"Starting"};igRender(lastNarr);
+  const s=await ckJob({template:"Custom",props:{seconds:m.seconds},code:m.code,folder,file:igName(m,i)},x=>{if(mkId()===id){CK.run[i]={busy:true,pct:x.pct,msg:x.msg};ckPaint(i)}});
+  if(mkId()!==id)return;CK.ai[i]=s.state==="done"?null:{...CK.ai[i],saving:false};
+  CK.run[i]=s.state==="done"?{msg:`Saved as ${s.file} in 05 Infographics.`}:{err:"The clip was not saved. "+(s.error||"")};await edScan(id,true);igRender(lastNarr)}
+async function ckFill(btn){const f=lastNarr,w=mkW(),list=w.briefs?.list||[];if(!f||!list.length)return;
+  const d=await ask($("#s-ck"),btn,`These are infographic briefs for a documentary. For each one, fill the boxes of its clip template.
+${CK_SPEC}
+Briefs: ${JSON.stringify(list.map((m,i)=>({n:i,kind:m.kind,title:m.title,detail:m.detail,quote:m.quote})))}
+Narration, for the facts: """${narrText(f)}"""
+JSON shape: {"tpl":[{"n":0,"tpl":{}}]}`,null,"AI is filling the clip boxes… (usually 20 to 60 seconds)");
+  if(!d)return;let n=0;for(const x of Array.isArray(d.tpl)?d.tpl:[]){const m=list[+x?.n];if(m&&x.tpl&&typeof x.tpl==="object"){m.tpl=x.tpl;n++}}
+  saveWork();igRender(lastNarr);if($("#s-ck")){$("#s-ck").className="status"+(n?"":" err");$("#s-ck").textContent=n?`Boxes filled for ${n} brief${n>1?"s":""}. Check the numbers in Edit, then make the clips.`:"No boxes came back. Press the button once more."}}
+function igRender(f){const box=$("#ig-box");if(!box||!f)return;const id=mkId(),b=mkW().briefs,list=b?.list||[],cues=list.length?igCues(f):null,focus=document.activeElement?.id;
+  if(CK.vid!==id){CK={...CK,vid:id,run:{},open:-1,ai:{},prev:null}}
+  if(!CK.st){ckStatus().then(()=>igRender(lastNarr));}
+  if(list.length&&work(id).folder&&!ED.scan[id]&&!ED.scanP[id])edScan(id).then(()=>{if(mkId()===id)igRender(lastNarr)});
+  // A form being typed in keeps its focus and caret; progress paints into the row only.
+  const fe=document.activeElement?.closest?.("[data-ckform]")?document.activeElement:null,feKey=fe?(fe.dataset.ck||fe.dataset.ckset+":"+fe.value):"",feSel=fe?.selectionStart;
+  const ready=!!CK.st?.ready,times=list.map(m=>igTime(f,m.quote,cues)),real=times.some(t=>t?.real),show=Math.min(IG.show,list.length-1),
+    files=list.map((m,i)=>ckFile(id,i,m)),left=list.filter((m,i)=>!files[i]&&!ckWhy(m)).length,noTpl=list.some(m=>!m.tpl);
+  const row=(m,i)=>{const fl=files[i],why=ckWhy(m),ai=CK.ai[i],busy=CK.run[i]?.busy||ai?.busy;
+    const acts=ready?`${fl?`<span class="ck-done">✓ ${esc(fl)}</span><button type="button" class="btn ghost sm" data-ckopen>Open folder</button>`:`<button type="button" class="btn sm" data-ckmake="${i}"${why||busy?" disabled":""}${why?` title="${esc(why)}"`:""}>Make clip</button>`}
+      <button type="button" class="btn ghost sm" data-ckedit="${i}" aria-expanded="${CK.open===i}">${fl?"Edit and make again":"Edit"}</button>
+      <button type="button" class="btn ghost sm" data-ckai="${i}" data-run="ig"${busy?" disabled":""}>Make with AI${ckAICost()}</button>`:"";
+    const aiBox=ai?.url?`<div class="ck-ai"><img class="ck-still" src="${esc(ai.url)}" alt="Preview of the AI clip for brief ${i+1}, last frame"><div class="ck-btns"><button type="button" class="btn" data-cksave="${i}"${ai.saving?" disabled":""}>Save clip</button><button type="button" class="btn ghost" data-ckai="${i}" data-run="ig"${ai.saving?" disabled":""}>Write a new version${ckAICost()}</button><button type="button" class="btn ghost" data-ckdrop="${i}">Discard</button></div></div>`:"";
+    return `<li><div><b><span class="pill${times[i]?" good":""}">${times[i]?pkClock(times[i].t):"time not found"} · ${m.seconds} s</span>${esc(IG_KIND[m.kind][0])}: ${esc(m.title)}</b><span>${esc(m.detail)}</span>${ready&&why&&!fl?`<span class="ck-why">${esc(why)}</span>`:""}</div>
+      <div class="ck-acts">${acts}<button type="button" class="btn ghost sm" data-brief="${i}" aria-label="Copy brief ${i+1}: ${esc(m.title)}">Copy brief</button></div>
+      <div class="ck-s" id="ck-s-${i}">${ckBar(CK.run[i])}</div>${aiBox}${CK.open===i&&ready?ckForm(i,m):""}</li>`};
+  box.innerHTML=`<span class="layer">Infographics</span><h3 id="ig-h" tabindex="-1">${list.length?`${list.length} infographic moment${list.length>1?"s":""} found`:"Infographic moments"}</h3>
+  <p class="note">The app finds the moments in your script that deserve a graphic: a size comparison, a timeline, a map, one big number, a chart. <strong>Make clip</strong> fills a template with the brief's numbers and renders a see-through clip on this PC, with no AI and no cost. When no template fits, <strong>Make with AI</strong> writes a custom clip and shows it before saving. Copy brief still works with Claude and the Remotion skill.</p>
   ${runW("ig")}<button type="button" class="btn${list.length?" ghost":""}" id="ig-find" data-run="ig" data-base="${esc((list.length?"Find them again":"Find infographic moments")+igCost(f))}">${runTxt("ig",list.length?"Find them again":"Find infographic moments")}${igCost(f)}</button><div class="status${IG.err?" err":""}" id="s-ig" role="status">${esc(IG.msg)}</div>
-  ${list.length?`<ul class="ig-list">${list.map((m,i)=>`<li><div><b><span class="pill${times[i]?" good":""}">${times[i]?pkClock(times[i].t):"time not found"} · ${m.seconds} s</span>${esc(IG_KIND[m.kind][0])}: ${esc(m.title)}</b><span>${esc(m.detail)}</span></div><button type="button" class="btn ghost" data-brief="${i}" aria-label="Copy brief ${i+1}: ${esc(m.title)}">Copy brief</button></li>`).join("")}</ul>
+  ${list.length?`<div id="ck-banner">${ckBanner()}</div>
+  ${ready&&noTpl?`<div class="ck-fill"><p>These briefs were found before the clip maker existed, so their boxes are empty. One short AI run fills them from the briefs.</p><button type="button" class="btn ghost" id="ck-fill" data-run="ig">Fill the clip boxes${costTag({input_tokens:2500+narrText(f).length/4,output_tokens:1200},"ig")}</button></div>`:""}
+  ${ready&&left?`<div class="ck-btns ck-allrow"><button type="button" class="btn" id="ck-all"${CK.all?" disabled":""}>Make all clips (${left} left)</button><span class="note">Free · about 30 to 60 seconds each on this PC</span></div>`:""}<div class="status" id="s-ck" role="status"></div>
+  <ul class="ig-list ck-list">${list.map(row).join("")}</ul>
   <p class="note">${real?"The times come from the voice over in the edit pack.":"The times are estimates at 145 words per minute. They become exact once the edit pack is made."}${b.sig!==pkHash(narrText(f))?" The script changed after these were found. Find them again if a sentence is gone.":""}</p>
   <p class="note"><strong>Check the numbers.</strong> The numbers in each brief come from the script. They need the same checking as the script.</p>
   <div class="ig-peek-h"><b id="ig-peek-n">Brief ${show+1}: ${esc(igName(list[show],show))}</b><span>all briefs are saved as infographics.txt in the edit pack</span></div>
   <pre class="ig-peek" id="ig-peek" tabindex="0" aria-labelledby="ig-peek-n">${esc(igBrief(f,list[show],show,cues))}</pre>`:""}`;
-  if(focus==="ig-find")$("#ig-find")?.focus()}
+  box.querySelectorAll("button[data-run]").forEach(runLbl);
+  if(fe){const sel=feKey.includes(":")?`[data-ckset="${feKey.split(":")[0]}"][value="${feKey.split(":")[1]}"]`:`[data-ck="${feKey}"]`,n=box.querySelector(`[data-ckform] ${sel}`);if(n){n.focus();try{if(feSel!=null)n.setSelectionRange(feSel,feSel)}catch{}}}
+  else if(focus&&document.getElementById(focus))document.getElementById(focus).focus();
+  if(CK.st?.running)ckPollSetup()}
 async function findMoments(btn){const f=lastNarr,w=mkW(),st=$("#s-ig");if(!f||!ownScript(f))return null;
   const d=await ask(st,btn,`Find the 3 to 5 moments in this documentary narration that most deserve an animated infographic: a size comparison, one big number, a map, a timeline or a simple chart. Pick moments where a graphic explains something faster than footage can. Spread them over the film. Use only numbers and facts that are in the narration, and do not add new ones.
-For each moment give: "kind" (one of size, number, map, timeline, chart), "title" (short, for example "Smilodon beside a grizzly bear and a man"), "detail" (one or two sentences: what is drawn, with the exact numbers from the narration, and how it animates), "seconds" (4 to 8, how long the graphic stays on screen), "quote" (the one sentence of the narration it belongs to, copied word for word).
+For each moment give: "kind" (one of size, number, map, timeline, chart), "title" (short, for example "Smilodon beside a grizzly bear and a man"), "detail" (one or two sentences: what is drawn, with the exact numbers from the narration, and how it animates), "seconds" (4 to 8, how long the graphic stays on screen), "quote" (the one sentence of the narration it belongs to, copied word for word), and "tpl".
+${CK_SPEC}
 Narration: """${narrText(f)}"""
-JSON shape: {"moments":[{"kind":"size","title":"","detail":"","seconds":6,"quote":""}]}`,null,"AI is reading the script for infographic moments… (usually 20 to 60 seconds)");
+JSON shape: {"moments":[{"kind":"size","title":"","detail":"","seconds":6,"quote":"","tpl":{}}]}`,null,"AI is reading the script for infographic moments… (usually 20 to 60 seconds)");
   if(!d)return null;
-  const clean=s=>String(s??"").replace(/\s+/g," ").trim(),list=(Array.isArray(d.moments)?d.moments:Array.isArray(d)?d:[]).map(m=>({kind:IG_KIND[String(m?.kind||"").toLowerCase()]?String(m.kind).toLowerCase():"chart",title:clean(m?.title).replace(/[.]+$/,""),detail:clean(m?.detail),seconds:Math.min(8,Math.max(4,Math.round(+m?.seconds)||6)),quote:clean(m?.quote).replace(/^["“”']+|["“”']+$/g,"")})).filter(m=>m.title&&m.detail).slice(0,5);
+  const clean=s=>String(s??"").replace(/\s+/g," ").trim(),list=(Array.isArray(d.moments)?d.moments:Array.isArray(d)?d:[]).map(m=>({kind:IG_KIND[String(m?.kind||"").toLowerCase()]?String(m.kind).toLowerCase():"chart",title:clean(m?.title).replace(/[.]+$/,""),detail:clean(m?.detail),seconds:Math.min(8,Math.max(4,Math.round(+m?.seconds)||6)),quote:clean(m?.quote).replace(/^["“”']+|["“”']+$/g,""),...(m?.tpl&&typeof m.tpl==="object"?{tpl:m.tpl}:{})})).filter(m=>m.title&&m.detail).slice(0,5);
   if(!list.length){IG={msg:"No usable moments came back. Press the button once more.",err:true,show:0};igRender(lastNarr);return null}
-  w.briefs={sig:pkHash(narrText(f)),at:Date.now(),list};saveWork();
+  w.briefs={sig:pkHash(narrText(f)),at:Date.now(),list};saveWork();CK.run={};CK.ai={};CK.open=-1;CK.prev=null;
   IG={msg:st.textContent.replace(", result saved","")+". Briefs saved.",err:false,show:0};igRender(lastNarr);pkRender(lastNarr);$("#ig-h")?.focus();return list}
+document.addEventListener("input",e=>{if(e.target.closest?.("[data-ckform]")&&e.target.matches("input[type=text],input[type=number]"))ckEdit(e.target)});
+document.addEventListener("change",e=>{if(e.target.closest?.("[data-ckform]")&&e.target.matches("select,input[type=checkbox]"))ckEdit(e.target)});
 document.addEventListener("click",e=>{
   const fb=e.target.closest("#ig-find");if(fb&&lastNarr){findMoments(fb);return}
-  const b=e.target.closest("[data-brief]");if(!b||!lastNarr)return;const i=+b.dataset.brief,m=mkW().briefs?.list?.[i],pre=$("#ig-peek");if(!m||!pre)return;
+  if(!lastNarr||!e.target.closest?.("#ig-box"))return;
+  const t=e.target.closest("button");if(!t)return;
+  if(t.id==="ck-get"){api("/api/clip/setup",{method:"POST",headers:{"Content-Type":"application/json"},body:"{}"}).then(j=>{CK.st=j.error?{ready:false,error:j.error}:j;$("#ck-banner").innerHTML=ckBanner();$("#ck-banner .ck-inst")?.focus?.();ckPollSetup()});return}
+  if(t.id==="ck-all"){ckMakeAll(t);return}
+  if(t.id==="ck-fill"){ckFill(t);return}
+  if(t.dataset.ckmake!=null){const i=+t.dataset.ckmake;t.disabled=true;ckMake(i).finally(()=>{const b=$(`[data-ckmake="${i}"]`);if(b)b.disabled=false});return}
+  if(t.dataset.ckprev!=null){const i=+t.dataset.ckprev;t.disabled=true;ckMake(i,true).finally(()=>{const b=$(`[data-ckprev="${i}"]`);if(b)b.disabled=false});return}
+  if(t.dataset.ckedit!=null){const i=+t.dataset.ckedit;CK.open=CK.open===i?-1:i;igRender(lastNarr);(CK.open===i?$(`[data-ckform="${i}"] select, [data-ckform="${i}"] input`):$(`[data-ckedit="${i}"]`))?.focus();return}
+  if(t.hasAttribute("data-ckclose")){const i=CK.open;CK.open=-1;igRender(lastNarr);$(`[data-ckedit="${i}"]`)?.focus();return}
+  if(t.hasAttribute("data-ckopen")){pkPost("/api/video/open",{name:mkW().folder,sub:"05 Infographics"});return}
+  if(t.dataset.ckai!=null){ckAI(+t.dataset.ckai,t);return}
+  if(t.dataset.cksave!=null){ckAISave(+t.dataset.cksave);return}
+  if(t.dataset.ckdrop!=null){const i=+t.dataset.ckdrop;CK.ai[i]=null;CK.run[i]=null;igRender(lastNarr);$(`[data-ckai="${i}"]`)?.focus();return}
+  if(t.dataset.brief==null)return;const b=t,i=+b.dataset.brief,m=mkW().briefs?.list?.[i],pre=$("#ig-peek");if(!m||!pre)return;
   const txt=igBrief(lastNarr,m,i,igCues(lastNarr));IG.show=i;pre.textContent=txt;$("#ig-peek-n").textContent=`Brief ${i+1}: ${igName(m,i)}`;
   const done=()=>{b.textContent="Copied";setTimeout(()=>b.textContent="Copy brief",1500)};
   // Without clipboard access the brief is selected, so Ctrl+C still copies it.
@@ -1612,10 +1780,19 @@ function ytFields(){const on=!!CFG.yt_connected;$("#yt-on").hidden=!on;$("#yt-se
   $("#yt-connect").textContent=on?"Reconnect":"Save and connect YouTube";
   if(!$("#yt-id").value)$("#yt-id").value=CFG.yt_client_id||"";
   $("#yt-secret-hint").textContent=CFG.has_yt_secret?"Client secret saved. Leave the field empty to keep using it.":"";
-  document.querySelectorAll("[data-ytsync]").forEach(b=>b.hidden=!on)}
+  document.querySelectorAll("[data-ytsync]").forEach(b=>b.hidden=!on);
+  const ex=$("#g-ytexp");if(ex){const show=!!CFG.yt_expired;if(show&&ex.hidden)ex.innerHTML=ytExpHTML();ex.hidden=!show}}
+const ytExpHTML=()=>`<p><b>The YouTube permission ended.</b> Google ends it every 7 days while the Google app is in Testing, so the numbers here stop updating. One click asks Google again; nothing else needs setting up.</p><div class="ytexp-row"><button type="button" class="btn" data-ytagain>Connect again</button><div class="status" role="status"></div></div>`;
+// Connect again: the saved Client ID and secret ask Google for a new permission, then the data is pulled.
+async function ytAgain(b){const st=b.closest(".status")||b.parentElement.querySelector(".status")||$("#s-yt");b.disabled=true;st.className="status";st.textContent="Opening the Google sign-in…";
+  const j=await api("/api/yt/connect",{method:"POST",headers:{"Content-Type":"application/json"},body:"{}"});b.disabled=false;
+  if(j.error){st.className="status err";st.textContent=j.error;return}
+  st.innerHTML=`The Google sign-in page opened in your browser. Choose the channel's account, allow access, then come back here. If it did not open, <a href="${esc(j.url)}" target="_blank" rel="noopener">click here</a>.`;
+  const t0=Date.now(),iv=setInterval(async()=>{await loadConfig();if(CFG.yt_connected){clearInterval(iv);st.textContent="YouTube connected again. Pulling data…";if(await ytSync(st)){const ex=$("#g-ytexp");if(ex&&!CFG.yt_expired)ex.hidden=true}}else if(Date.now()-t0>300000){clearInterval(iv);st.textContent="No answer from Google yet. Press Connect again to try once more."}},3000)}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-ytagain]");if(b)ytAgain(b)});
 async function ytSync(st,btn){if(btn)btn.disabled=true;if(st){st.className="status";st.textContent="Pulling data from YouTube…"}
   const j=await api("/api/yt/sync",{method:"POST",headers:{"Content-Type":"application/json"},body:"{}"});if(btn)btn.disabled=false;
-  if(j.error){if(st){st.className="status err";st.textContent=j.error}return false}
+  if(j.error){if(j.expired){await loadConfig();if(st&&!st.closest("#g-ytexp")){st.className="status err";st.innerHTML=`${esc(j.error)} <button type="button" class="btn sm" data-ytagain>Connect again</button>`}}else if(st){st.className="status err";st.textContent=j.error}return false}
   if(st)st.textContent=`Done: ${nf(j.videos)} video, ${nf(j.days)} days of data (${j.range}).${j.revenue?"":" Revenue is not included because this account does not give access to revenue data."}`;
   await loadConfig();await loadData();return true}
 $("#f-yt").addEventListener("submit",async e=>{e.preventDefault();const st=$("#s-yt"),id=$("#yt-id").value.trim(),sec=$("#yt-secret").value.trim();
@@ -2045,12 +2222,12 @@ const mkPlan=()=>plans().find(p=>p.id===mkId());
 const mkW=()=>work(mkId());
 const topicKey=()=>{const t=(mkW().topic||"").trim();return (t.split(/[\s,:(]+/).find(w=>w.length>=4)||t).toLowerCase()};
 /* 2.5: a list of videos, then one video at a time in 12 steps. A step is done when its result is saved for that video; steps are never stored separately. */
-const VD_STEPS=[["topic","Topic","Pick an animal and an angle that match your best videos."],["titles","Title & thumbnail text","Title ideas, pick one, plus the thumbnail text."],["hook","Hook (first 60 s)","The opening the viewer hears first."],["outline","Outline","Acts, beats and Google Flow prompts."],["script","Full script","The narration, ready to read aloud."],["check","Script check","Weak places where viewers may leave. Runs on your PC, no cost."],["voice","Voice over","One ElevenLabs MP3 of the whole script."],["pack","Edit pack","MP3 per act, subtitles and text files, sorted into the video folder."],["info","Infographics","Briefs for Claude with the Remotion skill."],["thumb","Thumbnail","An image with your text on top."],["seo","SEO","Description, tags and a pinned comment."],["upload","Upload checklist","Before you press Publish in YouTube Studio."]];
+const VD_STEPS=[["topic","Topic","Pick an animal and an angle that match your best videos."],["titles","Title & thumbnail text","Title ideas, pick one, plus the thumbnail text."],["hook","Hook (first 60 s)","The opening the viewer hears first."],["outline","Outline","Acts, beats and Google Flow prompts."],["script","Full script","The narration, ready to read aloud."],["check","Script check","Weak places where viewers may leave. Runs on your PC, no cost."],["voice","Voice over","One ElevenLabs MP3 of the whole script."],["pack","Edit pack","MP3 per act, subtitles and text files, sorted into the video folder."],["info","Infographics","Find the moments, then make the clips on this PC."],["thumb","Thumbnail","An image with your text on top."],["seo","SEO","Description, tags and a pinned comment."],["upload","Upload checklist","Before you press Publish in YouTube Studio."]];
 const VD_N=VD_STEPS.length,vdName=k=>(VD_STEPS.find(s=>s[0]===k)||[])[1]||k;
 const VD_NEED={script:"outline",check:"script",voice:"script",pack:"script",info:"script"};
 const VD_REVEAL={topic:"Change…",titles:"Change…",hook:"Change…",outline:"Show outline or redo…",script:"Show full script or redo…",check:"Show the check",pack:"Show edit pack",info:"Show briefs or redo…",thumb:"Show thumbnails or redo…",seo:"Show SEO package or redo…",upload:"Show checklist"};
 const VD_WHERE={outline:["03 Images",1],script:["01 Script",1],voice:["02 Narration"],pack:["02 Narration, 01 Script, 03 Images, 05 Infographics and 07 Upload"],info:["05 Infographics",1],thumb:["06 Thumbnail"],seo:["07 Upload",1]};
-const VD_FOLDERS=[["01 Script","The script, from the edit pack"],["02 Narration","Voice over takes, MP3 per act, subtitles"],["03 Images","Flow prompts; your images",1],["04 Video clips","Veo clips; your Flow clips",1],["05 Infographics","Briefs; your Remotion renders",1],["06 Thumbnail","From the Thumbnail step"],["07 Upload","Title, description, tags"],["08 Premiere","Your project and exports",1]];
+const VD_FOLDERS=[["01 Script","The script, from the edit pack"],["02 Narration","Voice over takes, MP3 per act, subtitles"],["03 Images","Flow prompts; your images",1],["04 Video clips","Veo clips; your Flow clips",1],["05 Infographics","Briefs and the clips you make",1],["06 Thumbnail","From the Thumbnail step"],["07 Upload","Title, description, tags"],["08 Premiere","Your project and exports",1]];
 const VD_IC={next:'<svg viewBox="0 0 14 14"><path d="M2.5 7h9M8 3.5 11.5 7 8 10.5"/></svg>',cal:'<svg viewBox="0 0 14 14"><rect x="1.5" y="2.5" width="11" height="10" rx="1.5"/><path d="M1.5 6h11M4.5 1v3M9.5 1v3"/></svg>',doc:'<svg viewBox="0 0 14 14"><path d="M3 1.5h5l3 3v8H3z"/><path d="M5 7.5h4M5 10h4"/></svg>',mic:'<svg viewBox="0 0 14 14"><rect x="5" y="1.5" width="4" height="7" rx="2"/><path d="M3 7a4 4 0 0 0 8 0M7 11v2"/></svg>',dir:'<svg viewBox="0 0 14 14"><path d="M1.5 3.5a1 1 0 0 1 1-1H6l1.5 1.5h4a1 1 0 0 1 1 1v5.5a1 1 0 0 1-1 1h-9a1 1 0 0 1-1-1z"/></svg>',ok:'<svg viewBox="0 0 14 14"><path d="m2.5 7.5 3 3 6-6.5"/></svg>'};
 const STAGE_MAP={pkg:"titles",hook:"hook",script:"script",seo:"seo"},PUB_KEYS=["t60","thumb","tc","desc","end","pin","time","comm"];
 const VD={view:"list",step:"",open:null,loaded:null,q:"",f:"all",job:""},VF={},VFP={};

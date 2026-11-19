@@ -1,8 +1,8 @@
-TERRA STUDIO 2.6.0 (Windows 10/11, 64-bit)
+TERRA STUDIO 2.7.0 (Windows 10/11, 64-bit)
 ==========================================
 
 INSTALL
-Easiest: double-click TerraStudio-Setup-2.6.0.exe, then Next and Install.
+Easiest: double-click TerraStudio-Setup-2.7.0.exe, then Next and Install.
 No admin rights needed. A "Terra Studio" shortcut appears in the Start
 Menu and on the desktop. Uninstall through Settings > Apps.
 Zip version (no install): click "Extract all" first; do not run
@@ -12,6 +12,29 @@ UPDATING
 Run the new installer, or extract the new zip and open TerraStudio.exe.
 If the old version is still running, the new one closes it. Your data and
 settings are kept (they live in %APPDATA%\TerraStudio).
+
+NEW IN 2.7
+- Make clip: in the Infographics step every brief now has a Make clip
+  button. The app fills one of 5 templates (big number, size
+  comparison, map, timeline, chart) with the brief's numbers and
+  renders a see-through ProRes 4444 .mov into the video's
+  05 Infographics folder. No AI and no cost; it runs on your PC,
+  about 30 to 60 seconds per clip. Make all clips does every brief in
+  one go. Edit shows the boxes (numbers, names, sizes, map places) so
+  you can fix them first, and Preview draws the last frame.
+- First time only: press Get clip maker. It downloads about 400 MB
+  (Node.js, Remotion and a render browser) into
+  %LOCALAPPDATA%\TerraStudio\clipmaker, once.
+- Make with AI: for a brief no template fits, the AI you chose in
+  Settings (or claude.ai by copy and paste) writes a custom clip. You
+  see its last frame first and press Save clip only if you like it.
+  With KIE.ai this costs roughly Rp1.000 to 3.000 per clip.
+- Briefs found before 2.7 have empty boxes: press Fill the clip boxes
+  once (a short AI run).
+- Copy brief still works for Claude with the Remotion skill.
+- YouTube: when Google ends the permission (every 7 days while the
+  Google app is in Testing), Data & money shows Connect again. One
+  click opens the Google sign-in and pulls the data afterwards.
 
 NEW IN 2.6
 - New Editing tab, after Make video. It lists every long video with

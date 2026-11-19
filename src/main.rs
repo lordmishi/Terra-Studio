@@ -16,6 +16,8 @@ use std::sync::{Arc, Mutex};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use tiny_http::{Header, Method, Request, Response, Server};
 
+mod clip;
+
 const PAGE: &str = concat!(
     include_str!("../assets/head.part"),
     include_str!("../assets/style.part"),
@@ -83,6 +85,8 @@ struct Config {
     yt_refresh_dpapi: String,
     yt_channel: String,
     yt_synced: u64,
+    /// Google ended the permission (every 7 days while the Google app is in Testing).
+    yt_expired: bool,
     model: String,
     effort: String,
     profile: Value,
@@ -117,6 +121,7 @@ impl Default for Config {
             yt_refresh_dpapi: String::new(),
             yt_channel: String::new(),
             yt_synced: 0,
+            yt_expired: false,
             model: MODELS[1].into(),
             effort: "medium".into(),
             profile: json!({}),
@@ -725,6 +730,7 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
                     "yt_connected": !c.yt_refresh.is_empty(),
                     "yt_channel": c.yt_channel,
                     "yt_synced": c.yt_synced,
+                    "yt_expired": c.yt_expired && c.yt_refresh.is_empty(),
                     "key_hint": hint,
                     "model": c.model,
                     "effort": c.effort,
@@ -745,6 +751,7 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
             if v["clear_yt"].as_bool() == Some(true) {
                 c.yt_refresh.clear();
                 c.yt_channel.clear();
+                c.yt_expired = false;
             }
             if let Some(x) = v["yt_client_id"].as_str().map(str::trim).filter(|x| x.len() < 200 && x.ends_with(".apps.googleusercontent.com")) {
                 c.yt_client_id = x.to_string();
@@ -1032,6 +1039,7 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
                     youtube::finish(&c, port, &code, &state).and_then(|refresh| {
                         let mut c = cfg.lock().unwrap();
                         c.yt_refresh = refresh;
+                        c.yt_expired = false;
                         save_config(dir, &c)
                     })
                 }
@@ -1053,6 +1061,14 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
                     c.yt_synced = now();
                     let _ = save_config(dir, &c);
                     respond_json(req, 200, summary)
+                }
+                Err(e) if e.starts_with(youtube::EXPIRED) => {
+                    // The saved permission no longer works, so drop it; Connect again asks Google for a new one.
+                    let mut c = cfg.lock().unwrap();
+                    c.yt_refresh.clear();
+                    c.yt_expired = true;
+                    let _ = save_config(dir, &c);
+                    respond_json(req, 400, json!({"error": e, "expired": true}))
                 }
                 Err(e) => respond_json(req, 400, json!({"error": e})),
             }
@@ -1161,6 +1177,29 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
             open_folder(&lib);
             respond_json(req, 200, json!({"ok": true, "dir": lib.display().to_string()}))
         }
+        (Method::Get, "/api/clip/status") => respond_json(req, 200, clip::status()),
+        (Method::Post, "/api/clip/setup") => {
+            clip::start_setup();
+            respond_json(req, 200, clip::status())
+        }
+        (Method::Post, "/api/clip/render") => {
+            let v = match read_json(&mut req, 256 * 1024) {
+                Ok(v) => v,
+                Err(e) => return respond_json(req, 400, json!({"error": e})),
+            };
+            match clip::start(dir, &v) {
+                Ok(id) => respond_json(req, 200, json!({"job": id})),
+                Err((code, e)) => respond_json(req, code, json!({"error": e})),
+            }
+        }
+        (Method::Get, p) if p.starts_with("/api/clip/job/") => match p["/api/clip/job/".len()..].parse().ok().and_then(clip::job) {
+            Some(j) => respond_json(req, 200, j),
+            None => respond_json(req, 404, json!({"error": "This clip job is gone. Make it again."})),
+        },
+        (Method::Get, p) if p.starts_with("/api/clip/still/") => match p["/api/clip/still/".len()..].parse().ok().and_then(clip::still) {
+            Some(b) => respond(req, 200, "image/png", b),
+            None => respond_json(req, 404, json!({"error": "This preview is gone."})),
+        },
         (Method::Post, "/api/kie/test") => {
             let v = match read_json(&mut req, 64 * 1024) {
                 Ok(v) => v,
@@ -4921,6 +4960,8 @@ mod youtube {
             .collect()
     }
 
+    pub const EXPIRED: &str = "The YouTube permission expired.";
+
     fn friendly(code: u16, body: &str) -> String {
         let v: Value = serde_json::from_str(body).unwrap_or(Value::Null);
         let msg = v["error"]["message"].as_str().or(v["error_description"].as_str()).or(v["error"].as_str()).unwrap_or("").to_string();
@@ -4928,7 +4969,7 @@ mod youtube {
         match code {
             0 => format!("Could not reach Google. Check your internet connection. ({body})"),
             400 if low.contains("invalid_grant") || low.contains("expired") || low.contains("revoked") => {
-                "The YouTube permission expired or was revoked. Click Connect YouTube again.".into()
+                format!("{} Google ends it every 7 days while the Google app is in Testing. Click Connect again.", EXPIRED)
             }
             401 => "Google rejected the Client ID or Client secret. Check them in Settings.".into(),
             403 if low.contains("has not been used") || low.contains("disabled") => {
