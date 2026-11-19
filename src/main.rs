@@ -1141,6 +1141,26 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
             out["errors"] = json!(errors);
             respond_json(req, 200, out)
         }
+        (Method::Post, "/api/edit/scan") | (Method::Post, "/api/edit/premiere") => {
+            let v = match read_json(&mut req, 8 * 1024 * 1024) {
+                Ok(v) => v,
+                Err(e) => return respond_json(req, 400, json!({"error": e})),
+            };
+            let root = pack::root(dir);
+            let out = if path == "/api/edit/scan" { edit::scan(&root, &v) } else { edit::premiere(&root, &v) };
+            match out {
+                Ok(out) => respond_json(req, 200, out),
+                Err((code, e)) => respond_json(req, code, json!({"error": e})),
+            }
+        }
+        (Method::Post, "/api/edit/library") => {
+            let lib = edit::library(&pack::root(dir));
+            if let Err(e) = fs::create_dir_all(&lib) {
+                return respond_json(req, 500, json!({"error": format!("Could not make the Sound library folder: {}", video::why(&e))}));
+            }
+            open_folder(&lib);
+            respond_json(req, 200, json!({"ok": true, "dir": lib.display().to_string()}))
+        }
         (Method::Post, "/api/kie/test") => {
             let v = match read_json(&mut req, 64 * 1024) {
                 Ok(v) => v,
@@ -1363,6 +1383,23 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
             std::thread::sleep(Duration::from_millis(300));
             std::process::exit(0);
         }
+        // The images in a video's 06 Thumbnail: the list, newest first, and each file. Read only.
+        (Method::Get, p) if p.starts_with("/api/vthumbs/") => {
+            let name = percent_decode(&p["/api/vthumbs/".len()..]);
+            match video::dir(dir, &name) {
+                Ok(d) => respond_json(req, 200, video::thumbs(&d.join(video::SUBS[5]), &name)),
+                Err((code, e)) => respond_json(req, code, json!({"error": e})),
+            }
+        }
+        (Method::Get, p) if p.starts_with("/api/vthumb/") => {
+            let found = vthumb_in(&eleven::out_dir(dir), &p["/api/vthumb/".len()..])
+                .filter(|(f, _)| fs::symlink_metadata(f).is_ok_and(|m| m.is_file()))
+                .and_then(|(f, ct)| fs::read(f).ok().map(|b| (b, ct)));
+            match found {
+                Some((bytes, ct)) => respond(req, 200, ct, bytes),
+                None => respond_json(req, 404, json!({"error": "not found"})),
+            }
+        }
         (Method::Get, p) if p.starts_with("/api/audio/") => {
             match audio_path(dir, &p["/api/audio/".len()..]).and_then(|f| fs::read(f).ok()) {
                 Some(bytes) => respond(req, 200, "audio/mpeg", bytes),
@@ -1387,6 +1424,18 @@ fn audio_in(downloads: &Path, rest: &str) -> Option<PathBuf> {
         [folder, f] if mp3(f) && video::valid_name(folder) => {
             let narr = pack::root_in(downloads).join(folder).join(video::NARR);
             [narr.join(f), narr.join(video::OLDER).join(f)].into_iter().find(|p| p.is_file())
+        }
+        _ => None,
+    }
+}
+
+/// "<video folder>/<file>": an image in that video's 06 Thumbnail, with its content type.
+fn vthumb_in(downloads: &Path, rest: &str) -> Option<(PathBuf, &'static str)> {
+    let parts: Vec<String> = rest.split('/').map(percent_decode).collect();
+    match parts.as_slice() {
+        [folder, f] if video::valid_name(folder) && video::valid_file(f) => {
+            let ct = video::image_type(f)?;
+            Some((pack::root_in(downloads).join(folder).join(video::SUBS[5]).join(f), ct))
         }
         _ => None,
     }
@@ -2316,20 +2365,42 @@ mod kie {
 
     pub fn friendly(code: u16, msg: &str) -> String {
         let msg: String = msg.chars().take(300).collect();
+        let said = said(&msg);
         match code {
             0 => format!("Could not reach KIE.ai. Check your internet connection. ({msg})"),
-            401 => "The KIE.ai key was rejected. Check the key in Settings.".into(),
-            402 => "The KIE.ai credit has run out. Top up at kie.ai, then try again.".into(),
-            404 => "KIE.ai does not know this model. Check the model name in Settings.".into(),
-            408 => "KIE.ai took too long to answer. Try again.".into(),
+            401 => format!("The KIE.ai key was rejected. Check the key in Settings.{said}"),
+            402 => format!("The KIE.ai credit has run out. Top up at kie.ai, then try again.{said}"),
+            404 => format!("KIE.ai does not know this model. Check the model name in Settings.{said}"),
+            408 => format!("KIE.ai took too long to answer. Try again.{said}"),
             422 => format!("KIE.ai did not accept the request. Original message: {msg}"),
-            429 => "Too many requests to KIE.ai. Wait a moment, then try again.".into(),
-            455 => "KIE.ai is under maintenance. Try again later.".into(),
+            429 => format!("Too many requests to KIE.ai. Wait a moment, then try again.{said}"),
+            455 => format!("KIE.ai is under maintenance. Try again later.{said}"),
             501 => format!("KIE.ai could not make this. Try again, or change the wording. Original message: {msg}"),
             502 if msg.starts_with("KIE.ai sent a reply") => msg,
-            500..=599 => "KIE.ai's servers are busy. Try again in a little while.".into(),
+            500..=599 => format!("KIE.ai's servers are busy. Try again in a little while.{said}"),
             _ => format!("The KIE.ai request failed (code {code}). Original message: {msg}"),
         }
+    }
+
+    /// KIE's own words, trimmed, for the end of a friendly sentence. Long tokens are cut out
+    /// because some replies echo the key back.
+    fn said(msg: &str) -> String {
+        let t = msg.trim();
+        if t.is_empty() || t.starts_with('<') {
+            return String::new();
+        }
+        let clean: Vec<String> = t
+            .split_whitespace()
+            .map(|w| {
+                let run = w.chars().filter(|c| c.is_ascii_alphanumeric() || *c == '-' || *c == '_').count();
+                if run >= 20 { "[hidden]".to_string() } else { w.to_string() }
+            })
+            .collect();
+        let mut s: String = clean.join(" ").chars().take(160).collect();
+        if s.chars().count() == 160 {
+            s.push('…');
+        }
+        format!(" KIE.ai said: \"{s}\"")
     }
 
     /// The error inside a reply body, if any. KIE answers HTTP 200 with its own
@@ -2553,6 +2624,11 @@ mod kie {
             assert!(friendly(429, "").contains("Wait"));
             assert!(friendly(455, "").contains("maintenance"));
             assert!(friendly(501, "nsfw").contains("nsfw"));
+            let m = friendly(401, "You do not have access permissions");
+            assert!(m.contains("rejected") && m.ends_with("KIE.ai said: \"You do not have access permissions\""));
+            let k = friendly(401, "Invalid key 3f9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c");
+            assert!(k.contains("[hidden]") && !k.contains("3f9a8b7c6d5e"));
+            assert_eq!(friendly(401, "  "), "The KIE.ai key was rejected. Check the key in Settings.");
         }
         #[test]
         fn result_json_is_a_string() {
@@ -3288,6 +3364,26 @@ mod video {
             "root_files": files(d).len(), "folders": folders})
     }
 
+    pub fn image_type(file: &str) -> Option<&'static str> {
+        match file.rsplit_once('.')?.1.to_ascii_lowercase().as_str() {
+            "jpg" | "jpeg" => Some("image/jpeg"),
+            "png" => Some("image/png"),
+            "webp" => Some("image/webp"),
+            _ => None,
+        }
+    }
+
+    /// The images in one 06 Thumbnail folder, newest first. A missing folder is an empty list.
+    pub fn thumbs(d: &Path, name: &str) -> Value {
+        let mut list: Vec<(u64, String)> = files(d).into_iter().filter(|f| image_type(f).is_some()).map(|f| (mtime(&d.join(&f)), f)).collect();
+        list.sort_by(|a, b| b.0.cmp(&a.0).then(b.1.cmp(&a.1)));
+        let files: Vec<Value> = list
+            .iter()
+            .map(|(at, f)| json!({"file": f, "at": at, "url": format!("/api/vthumb/{}/{}", enc(name), enc(f))}))
+            .collect();
+        json!({"name": name, "files": files})
+    }
+
     fn mtime(p: &Path) -> u64 {
         fs::metadata(p).and_then(|m| m.modified()).ok().and_then(|t| t.duration_since(UNIX_EPOCH).ok()).map_or(0, |d| d.as_secs())
     }
@@ -3777,6 +3873,652 @@ mod video {
 /// have to paste the profile or import the Studio export by hand.
 /// - profil-*.json fills an empty channel profile.
 /// - *.zip / *.csv from a YouTube Studio export are imported when no data exists yet.
+// Send to Premiere: the page works out every time; this checks the files it names and writes them
+// into the video's 08 Premiere as an FCP7 XML sequence plus text files. Nothing is overwritten.
+mod edit {
+    use super::*;
+
+    pub const FPS: i64 = 30;
+    pub const LIB: &str = "Sound library";
+    pub const GUIDE: &str = "edit-guide.xml";
+    const TEXTS: [&str; 5] = ["shots.srt", "subtitles-youtube.srt", "sound-list.txt", "chapters.txt", "edit-checklist.txt"];
+    const SOURCES: [&str; 3] = ["02 Narration", "04 Video clips", "05 Infographics"];
+    const VIDEO_EXT: [&str; 3] = ["mov", "mp4", "m4v"];
+    const AUDIO_EXT: [&str; 2] = ["mp3", "wav"];
+    const MAX_ITEMS: usize = 3000;
+    const MAX_SECS: f64 = 6.0 * 3600.0;
+
+    type Fail = (u16, String);
+
+    pub fn frames(sec: f64) -> i64 {
+        (sec.max(0.0) * FPS as f64).round() as i64
+    }
+
+    /// Text for XML: the five entities, and control characters XML 1.0 does not allow are dropped.
+    pub fn esc(s: &str) -> String {
+        let mut o = String::with_capacity(s.len());
+        for c in s.chars() {
+            match c {
+                '&' => o.push_str("&amp;"),
+                '<' => o.push_str("&lt;"),
+                '>' => o.push_str("&gt;"),
+                '"' => o.push_str("&quot;"),
+                '\'' => o.push_str("&apos;"),
+                '\t' | '\n' | '\r' => o.push(c),
+                c if (c as u32) < 0x20 || c == '\u{FFFE}' || c == '\u{FFFF}' => {}
+                c => o.push(c),
+            }
+        }
+        o
+    }
+
+    /// The pathurl form Premiere writes on Windows: file://localhost/C%3a/Users/...%20...
+    pub fn path_url(p: &str) -> String {
+        let s = p.strip_prefix(r"\\?\").unwrap_or(p).replace('\\', "/");
+        let b = s.as_bytes();
+        let (drive, rest) = if b.len() >= 2 && b[0].is_ascii_alphabetic() && b[1] == b':' { (Some(&s[..1]), &s[2..]) } else { (None, s.as_str()) };
+        let enc: String = rest
+            .bytes()
+            .map(|c| if c.is_ascii_alphanumeric() || b"-_.~/".contains(&c) { (c as char).to_string() } else { format!("%{c:02X}") })
+            .collect();
+        match drive {
+            Some(d) => format!("file://localhost/{}%3a{}", d.to_ascii_uppercase(), enc),
+            None if enc.starts_with('/') => format!("file://localhost{enc}"),
+            None => format!("file://localhost/{enc}"),
+        }
+    }
+
+    pub enum Kind {
+        Video,
+        Audio { rate: u32, channels: u32 },
+    }
+
+    pub struct Media {
+        pub name: String,
+        pub url: String,
+        pub frames: i64,
+        pub kind: Kind,
+    }
+
+    pub struct Clip {
+        pub media: usize,
+        pub start: i64,
+        pub end: i64,
+        pub inp: i64,
+    }
+
+    pub struct Mark {
+        pub name: String,
+        pub comment: String,
+        pub start: i64,
+        pub end: Option<i64>,
+    }
+
+    pub struct Seq {
+        pub name: String,
+        pub frames: i64,
+        pub media: Vec<Media>,
+        pub video: Vec<Vec<Clip>>,
+        pub audio: Vec<Vec<Clip>>,
+        pub marks: Vec<Mark>,
+    }
+
+    fn rate() -> String {
+        format!("<rate><timebase>{FPS}</timebase><ntsc>FALSE</ntsc></rate>")
+    }
+
+    fn video_chars() -> String {
+        format!("<samplecharacteristics>{}<width>1920</width><height>1080</height><anamorphic>FALSE</anamorphic><pixelaspectratio>square</pixelaspectratio><fielddominance>none</fielddominance><colordepth>24</colordepth></samplecharacteristics>", rate())
+    }
+
+    /// An FCP7 xmeml (version 4) sequence, laid out the way Premiere Pro exports one.
+    pub fn xml(s: &Seq) -> String {
+        let mut len: Vec<i64> = s.media.iter().map(|m| m.frames.max(1)).collect();
+        for c in s.video.iter().chain(s.audio.iter()).flatten() {
+            len[c.media] = len[c.media].max(c.inp + c.end - c.start);
+        }
+        let mut written = vec![false; s.media.len()];
+        let mut item = 0;
+        let mut o = String::from("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE xmeml>\n<xmeml version=\"4\">\n");
+        o += "\t<sequence id=\"sequence-1\">\n";
+        o += &format!("\t\t<duration>{}</duration>\n\t\t{}\n\t\t<name>{}</name>\n\t\t<media>\n", s.frames.max(1), rate(), esc(&s.name));
+        let mut clip = |o: &mut String, c: &Clip, audio: bool| {
+            item += 1;
+            let m = &s.media[c.media];
+            *o += &format!("\t\t\t\t\t<clipitem id=\"clipitem-{item}\">\n");
+            *o += &format!("\t\t\t\t\t\t<masterclipid>masterclip-{}</masterclipid>\n", c.media + 1);
+            *o += &format!("\t\t\t\t\t\t<name>{}</name>\n\t\t\t\t\t\t<enabled>TRUE</enabled>\n", esc(&m.name));
+            *o += &format!("\t\t\t\t\t\t<duration>{}</duration>\n\t\t\t\t\t\t{}\n", len[c.media], rate());
+            *o += &format!("\t\t\t\t\t\t<start>{}</start>\n\t\t\t\t\t\t<end>{}</end>\n\t\t\t\t\t\t<in>{}</in>\n\t\t\t\t\t\t<out>{}</out>\n", c.start, c.end, c.inp, c.inp + c.end - c.start);
+            if !audio {
+                *o += "\t\t\t\t\t\t<pixelaspectratio>square</pixelaspectratio>\n\t\t\t\t\t\t<anamorphic>FALSE</anamorphic>\n";
+            }
+            if written[c.media] {
+                *o += &format!("\t\t\t\t\t\t<file id=\"file-{}\"/>\n", c.media + 1);
+            } else {
+                written[c.media] = true;
+                *o += &format!("\t\t\t\t\t\t<file id=\"file-{}\">\n", c.media + 1);
+                *o += &format!("\t\t\t\t\t\t\t<name>{}</name>\n\t\t\t\t\t\t\t<pathurl>{}</pathurl>\n", esc(&m.name), esc(&m.url));
+                *o += &format!("\t\t\t\t\t\t\t{}\n\t\t\t\t\t\t\t<duration>{}</duration>\n\t\t\t\t\t\t\t<media>\n", rate(), len[c.media]);
+                match m.kind {
+                    Kind::Video => *o += &format!("\t\t\t\t\t\t\t\t<video>{}</video>\n", video_chars()),
+                    Kind::Audio { rate: r, channels } => {
+                        *o += &format!("\t\t\t\t\t\t\t\t<audio><samplecharacteristics><depth>16</depth><samplerate>{r}</samplerate></samplecharacteristics><channelcount>{channels}</channelcount></audio>\n")
+                    }
+                }
+                *o += "\t\t\t\t\t\t\t</media>\n\t\t\t\t\t\t</file>\n";
+            }
+            if audio {
+                *o += "\t\t\t\t\t\t<sourcetrack><mediatype>audio</mediatype><trackindex>1</trackindex></sourcetrack>\n";
+            }
+            *o += "\t\t\t\t\t</clipitem>\n";
+        };
+        o += &format!("\t\t\t<video>\n\t\t\t\t<format>{}</format>\n", video_chars());
+        for t in &s.video {
+            o += "\t\t\t\t<track>\n";
+            for c in t {
+                clip(&mut o, c, false);
+            }
+            o += "\t\t\t\t\t<enabled>TRUE</enabled>\n\t\t\t\t\t<locked>FALSE</locked>\n\t\t\t\t</track>\n";
+        }
+        o += "\t\t\t</video>\n\t\t\t<audio>\n\t\t\t\t<numOutputChannels>2</numOutputChannels>\n";
+        o += "\t\t\t\t<format><samplecharacteristics><depth>16</depth><samplerate>48000</samplerate></samplecharacteristics></format>\n";
+        o += "\t\t\t\t<outputs>";
+        for i in 1..=2 {
+            o += &format!("<group><index>{i}</index><numchannels>1</numchannels><downmix>0</downmix><channel><index>{i}</index></channel></group>");
+        }
+        o += "</outputs>\n";
+        for t in &s.audio {
+            o += "\t\t\t\t<track>\n";
+            for c in t {
+                clip(&mut o, c, true);
+            }
+            o += "\t\t\t\t\t<enabled>TRUE</enabled>\n\t\t\t\t\t<locked>FALSE</locked>\n\t\t\t\t</track>\n";
+        }
+        o += "\t\t\t</audio>\n\t\t</media>\n";
+        o += &format!("\t\t<timecode>\n\t\t\t{}\n\t\t\t<string>00:00:00:00</string>\n\t\t\t<frame>0</frame>\n\t\t\t<displayformat>NDF</displayformat>\n\t\t</timecode>\n", rate());
+        for m in &s.marks {
+            o += &format!(
+                "\t\t<marker>\n\t\t\t<comment>{}</comment>\n\t\t\t<name>{}</name>\n\t\t\t<in>{}</in>\n\t\t\t<out>{}</out>\n\t\t</marker>\n",
+                esc(&m.comment),
+                esc(&m.name),
+                m.start,
+                m.end.filter(|e| *e > m.start).unwrap_or(-1)
+            );
+        }
+        o += "\t</sequence>\n</xmeml>\n";
+        o
+    }
+
+    /// Sample rate and channels from a WAV header, with its length in seconds.
+    pub fn wav_info(b: &[u8], total: u64) -> Option<(f64, u32, u32)> {
+        if b.len() < 12 || &b[..4] != b"RIFF" || &b[8..12] != b"WAVE" {
+            return None;
+        }
+        let (mut i, mut fmt) = (12usize, None);
+        while i + 8 <= b.len() {
+            let id = &b[i..i + 4];
+            let size = u32::from_le_bytes(b[i + 4..i + 8].try_into().ok()?) as u64;
+            if id == b"fmt " && i + 24 <= b.len() {
+                let ch = u16::from_le_bytes([b[i + 10], b[i + 11]]) as u32;
+                let rate = u32::from_le_bytes(b[i + 12..i + 16].try_into().ok()?);
+                let bps = u32::from_le_bytes(b[i + 16..i + 20].try_into().ok()?);
+                fmt = Some((ch, rate, bps));
+            } else if id == b"data" {
+                let (ch, rate, bps) = fmt?;
+                if bps == 0 || ch == 0 {
+                    return None;
+                }
+                let data = if size == 0xFFFF_FFFF || size == 0 { total.saturating_sub(i as u64 + 8) } else { size.min(total.saturating_sub(i as u64 + 8)) };
+                return Some((data as f64 / bps as f64, rate, ch));
+            }
+            i += 8 + size as usize + (size as usize & 1);
+        }
+        None
+    }
+
+    /// Length, sample rate and channels of a sound file, read from its header.
+    pub fn sound_info(p: &Path) -> Option<(f64, u32, u32)> {
+        let total = fs::metadata(p).ok()?.len();
+        let mut head = Vec::new();
+        fs::File::open(p).ok()?.take(70_000).read_to_end(&mut head).ok()?;
+        match ext(&p.to_string_lossy()).as_str() {
+            "wav" => wav_info(&head, total),
+            "mp3" => eleven::mp3_seconds_len(&head, total as usize).map(|s| (s, 44100, 2)),
+            _ => None,
+        }
+        .filter(|(s, _, _)| s.is_finite() && *s > 0.05)
+    }
+
+    fn ext(f: &str) -> String {
+        f.rsplit_once('.').map(|(_, e)| e.to_ascii_lowercase()).unwrap_or_default()
+    }
+
+    fn is_file(p: &Path) -> bool {
+        fs::symlink_metadata(p).is_ok_and(|m| m.file_type().is_file())
+    }
+
+    /// Every function here takes the pack root (Downloads\Terra Studio), so tests never touch real folders.
+    pub fn library(root: &Path) -> PathBuf {
+        root.join(LIB)
+    }
+
+    fn video_dir(root: &Path, v: &Value) -> Result<(String, PathBuf), Fail> {
+        let name = v["folder"].as_str().unwrap_or("");
+        if !video::valid_name(name) {
+            return Err((400, "The video folder name is not valid.".into()));
+        }
+        let d = root.join(name);
+        if !d.is_dir() {
+            return Err((404, "The video folder was not found.".into()));
+        }
+        Ok((name.to_string(), d))
+    }
+
+    /// The files the Editing page matches against: sources in the video folder and the shared sound library.
+    pub fn scan(root: &Path, v: &Value) -> Result<Value, Fail> {
+        let (name, d) = video_dir(root, v)?;
+        let list = |sub: &str| video::files(&d.join(sub));
+        let lib = library(root);
+        let sounds: Vec<Value> = video::files(&lib)
+            .into_iter()
+            .filter(|f| AUDIO_EXT.contains(&ext(f).as_str()))
+            .take(400)
+            .filter_map(|f| sound_info(&lib.join(&f)).map(|(s, _, _)| json!({"file": f, "seconds": (s * 1000.0).round() / 1000.0})))
+            .collect();
+        Ok(json!({"folder": name, "dir": d.display().to_string(), "narration": list(video::NARR), "clips": list(video::SUBS[3]),
+            "infographics": list(video::SUBS[4]), "premiere": list(video::SUBS[7]), "sounds": sounds,
+            "library": lib.display().to_string(), "library_exists": lib.is_dir()}))
+    }
+
+    fn num(v: &Value, k: &str) -> Result<f64, Fail> {
+        v[k].as_f64().filter(|x| x.is_finite() && *x >= 0.0 && *x <= MAX_SECS).ok_or((400, format!("A time in the edit guide is not valid ({k}).")))
+    }
+
+    fn text(v: &Value, k: &str, max: usize) -> String {
+        v[k].as_str().unwrap_or("").chars().take(max).collect()
+    }
+
+    /// Builds the sequence from the page's timeline, refusing any file outside the allowed folders.
+    pub fn sequence(root: &Path, d: &Path, v: &Value) -> Result<Seq, Fail> {
+        let mut media: Vec<Media> = Vec::new();
+        let mut seen: Vec<PathBuf> = Vec::new();
+        let mut count = 0;
+        let mut track = |key: &str, video: bool| -> Result<Vec<Clip>, Fail> {
+            let mut out = Vec::new();
+            let empty = Vec::new();
+            for it in v["tracks"][key].as_array().unwrap_or(&empty) {
+                count += 1;
+                if count > MAX_ITEMS {
+                    return Err((400, "The edit guide has too many clips.".into()));
+                }
+                let file = it["file"].as_str().unwrap_or("");
+                let ok_ext = if video { VIDEO_EXT.contains(&ext(file).as_str()) } else { AUDIO_EXT.contains(&ext(file).as_str()) };
+                if !video::valid_file(file) || !ok_ext {
+                    return Err((400, format!("This file cannot go in the edit guide: {}", file.chars().take(80).collect::<String>())));
+                }
+                let (dir, place) = if it["lib"] == true {
+                    (library(root), LIB.to_string())
+                } else {
+                    let sub = it["sub"].as_str().unwrap_or("");
+                    if !SOURCES.contains(&sub) {
+                        return Err((400, "The edit guide names a folder it may not use.".into()));
+                    }
+                    (d.join(sub), sub.to_string())
+                };
+                let path = dir.join(file);
+                if !is_file(&path) {
+                    return Err((404, format!("{file} is not in {place}. Open the Editing tab again so it can look once more.")));
+                }
+                let (start, end, inp, secs) = (num(it, "start")?, num(it, "end")?, num(it, "in")?, num(it, "seconds")?);
+                let (s, e) = (frames(start), frames(end));
+                if e <= s {
+                    continue;
+                }
+                let idx = match seen.iter().position(|p| *p == path) {
+                    Some(i) => i,
+                    None => {
+                        let kind = if video {
+                            Kind::Video
+                        } else if place == video::NARR {
+                            Kind::Audio { rate: 44100, channels: 1 }
+                        } else {
+                            let (_, rate, channels) = sound_info(&path).unwrap_or((0.0, 48000, 2));
+                            Kind::Audio { rate, channels }
+                        };
+                        seen.push(path.clone());
+                        media.push(Media { name: file.to_string(), url: path_url(&path.display().to_string()), frames: frames(secs), kind });
+                        media.len() - 1
+                    }
+                };
+                out.push(Clip { media: idx, start: s, end: e, inp: frames(inp) });
+            }
+            out.sort_by_key(|c| c.start);
+            Ok(out)
+        };
+        let video = vec![track("V1", true)?, track("V2", true)?, track("V3", true)?];
+        let audio = vec![track("A1", false)?, track("A2", false)?, track("A3", false)?, track("A4", false)?];
+        let empty = Vec::new();
+        let marks_in = v["markers"].as_array().unwrap_or(&empty);
+        if marks_in.len() > MAX_ITEMS {
+            return Err((400, "The edit guide has too many markers.".into()));
+        }
+        let mut marks = Vec::new();
+        for m in marks_in {
+            let start = frames(num(m, "start")?);
+            let end = if m["end"].is_null() { None } else { Some(frames(num(m, "end")?)) };
+            marks.push(Mark { name: text(m, "name", 80), comment: text(m, "comment", 1500), start, end });
+        }
+        marks.sort_by_key(|m| m.start);
+        let last = video.iter().chain(audio.iter()).flatten().map(|c| c.end).chain(marks.iter().map(|m| m.end.unwrap_or(m.start))).max().unwrap_or(0);
+        Ok(Seq { name: text(v, "title", 200), frames: frames(num(v, "seconds")?).max(last), media, video, audio, marks })
+    }
+
+    /// Writes edit-guide.xml and the text files into 08 Premiere, each under a free name.
+    pub fn premiere(root: &Path, v: &Value) -> Result<Value, Fail> {
+        let (_, d) = video_dir(root, v)?;
+        let mut texts: Vec<(&str, String)> = Vec::new();
+        for t in TEXTS {
+            if let Some(s) = v["files"][t].as_str() {
+                texts.push((t, s.replace("\r\n", "\n").replace('\n', "\r\n")));
+            }
+        }
+        let seq = sequence(root, &d, v)?;
+        let out_dir = d.join(video::SUBS[7]);
+        fs::create_dir_all(&out_dir).map_err(|e| (500, format!("Could not open 08 Premiere: {}", video::why(&e))))?;
+        let lib = library(root);
+        let made_lib = !lib.is_dir() && fs::create_dir_all(&lib).is_ok();
+        let jobs: Vec<(&str, String, PathBuf)> = std::iter::once((GUIDE, xml(&seq))).chain(texts)
+            .map(|(f, b)| { let p = video::free_path(&out_dir, f, |p| p.exists()); (f, b, p) }).collect();
+        let name = |p: &Path| p.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_default();
+        // The text files name "{edit-guide.xml}" etc.; they get the free name each file really gets.
+        let names: Vec<(String, String)> = jobs.iter().map(|(f, _, p)| (format!("{{{f}}}"), name(p))).collect();
+        let mut written = Vec::new();
+        for (i, (file, mut body, p)) in jobs.into_iter().enumerate() {
+            if i > 0 {
+                for (k, n) in &names {
+                    body = body.replace(k.as_str(), n);
+                }
+            }
+            write_atomic(&p, body.as_bytes()).map_err(|e| (500, format!("Could not save {file}: {}", video::why(&e))))?;
+            written.push(name(&p));
+        }
+        let clips: usize = seq.video.iter().chain(seq.audio.iter()).map(Vec::len).sum();
+        Ok(json!({"dir": out_dir.display().to_string(), "files": written, "guide": written[0], "clips": clips, "markers": seq.marks.len(),
+            "library": lib.display().to_string(), "library_made": made_lib}))
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        /// A small XML checker: balanced tags, quoted attributes, known entities, no stray '<' or '&'.
+        fn well_formed(x: &str) -> Result<usize, String> {
+            let b = x.as_bytes();
+            let mut stack: Vec<String> = Vec::new();
+            let (mut i, mut tags) = (0, 0);
+            let entity_ok = |s: &str| {
+                let e = s.split(';').next().unwrap_or("");
+                s.contains(';') && (["amp", "lt", "gt", "quot", "apos"].contains(&e) || (e.starts_with('#') && e[1..].chars().all(|c| c.is_ascii_digit())))
+            };
+            while i < b.len() {
+                if b[i] == b'<' {
+                    let end = x[i..].find('>').ok_or("unclosed tag")? + i;
+                    let tag = &x[i + 1..end];
+                    i = end + 1;
+                    if tag.starts_with('?') || tag.starts_with('!') {
+                        continue;
+                    }
+                    tags += 1;
+                    if let Some(name) = tag.strip_prefix('/') {
+                        let open = stack.pop().ok_or(format!("close without open: {name}"))?;
+                        if open != name {
+                            return Err(format!("<{open}> closed by </{name}>"));
+                        }
+                        continue;
+                    }
+                    let self_close = tag.ends_with('/');
+                    let body = tag.trim_end_matches('/');
+                    let mut parts = body.splitn(2, char::is_whitespace);
+                    let name = parts.next().unwrap_or("").to_string();
+                    if name.is_empty() || !name.chars().all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_') {
+                        return Err(format!("bad tag name {name:?}"));
+                    }
+                    let mut attrs = parts.next().unwrap_or("").trim();
+                    while !attrs.is_empty() {
+                        let (k, rest) = attrs.split_once('=').ok_or("attribute without value")?;
+                        if !k.trim().chars().all(|c| c.is_ascii_alphanumeric()) || !rest.starts_with('"') {
+                            return Err(format!("bad attribute in {name}"));
+                        }
+                        let close = rest[1..].find('"').ok_or("unquoted attribute")? + 1;
+                        if rest[1..close].contains('<') {
+                            return Err("'<' in attribute".into());
+                        }
+                        attrs = rest[close + 1..].trim();
+                    }
+                    if !self_close {
+                        stack.push(name);
+                    }
+                } else {
+                    if b[i] == b'&' && !entity_ok(&x[i + 1..x.len().min(i + 12)]) {
+                        return Err(format!("bare & at {i}"));
+                    }
+                    if b[i] == b'>' {
+                        return Err(format!("stray > at {i}"));
+                    }
+                    i += 1;
+                }
+            }
+            if stack.is_empty() { Ok(tags) } else { Err(format!("unclosed: {stack:?}")) }
+        }
+
+        /// Text between the first <tag> and </tag> after position `from`.
+        fn inner<'a>(x: &'a str, tag: &str, from: usize) -> Option<(&'a str, usize)> {
+            let a = x[from..].find(&format!("<{tag}>"))? + from + tag.len() + 2;
+            let b = x[a..].find(&format!("</{tag}>"))? + a;
+            Some((&x[a..b], b))
+        }
+
+        #[test]
+        fn frames_round_from_cumulative_seconds() {
+            assert_eq!(frames(0.0), 0);
+            assert_eq!(frames(1.0), 30);
+            assert_eq!(frames(158.0161), 4740);
+            assert_eq!(frames(159.0161), 4770);
+            assert_eq!(frames(0.0166), 0);
+            assert_eq!(frames(0.0167), 1);
+            assert_eq!(frames(-3.0), 0);
+            // Acts of 158.4 s and 172.7 s with 1 s pauses: each start comes from the running total, not from rounded lengths.
+            let lens = [158.4, 172.7, 189.35, 174.05, 157.3];
+            let (mut t, mut starts) = (0.0, vec![]);
+            for l in lens {
+                starts.push(frames(t));
+                t += l + 1.0;
+            }
+            assert_eq!(starts, [0, 4782, 9993, 15704, 20955]);
+        }
+
+        #[test]
+        fn path_urls_match_premiere_on_windows() {
+            assert_eq!(
+                path_url(r"C:\Users\Sigit\Downloads\Terra Studio\2026-11-20 The Den\02 Narration\01-act-1-the-den.mp3"),
+                "file://localhost/C%3a/Users/Sigit/Downloads/Terra%20Studio/2026-11-20%20The%20Den/02%20Narration/01-act-1-the-den.mp3"
+            );
+            assert_eq!(path_url(r"d:\a b\c.mov"), "file://localhost/D%3a/a%20b/c.mov");
+            assert_eq!(path_url(r"\\?\C:\x\y (2).mp4"), "file://localhost/C%3a/x/y%20%282%29.mp4");
+            assert_eq!(path_url("C:\\Hy\u{e9}ne & 'Den'\\x.mp3"), "file://localhost/C%3a/Hy%C3%A9ne%20%26%20%27Den%27/x.mp3");
+            assert_eq!(path_url("/home/a b/x.mp3"), "file://localhost/home/a%20b/x.mp3");
+        }
+
+        #[test]
+        fn titles_are_escaped() {
+            assert_eq!(esc(r#"Bone & Blood <Act 1> "Den" 'Gone'"#), "Bone &amp; Blood &lt;Act 1&gt; &quot;Den&quot; &apos;Gone&apos;");
+            assert_eq!(esc("a\u{0}b\u{1b}c\td"), "abc\td");
+        }
+
+        fn sample() -> Seq {
+            let a = |n: &str, f| Media { name: n.into(), url: path_url(&format!(r"C:\T S\{n}")), frames: f, kind: Kind::Audio { rate: 44100, channels: 1 } };
+            Seq {
+                name: r#"The Hyena & the "Cave" <Den> it's"#.into(),
+                frames: frames(14.0 * 60.0 + 15.0),
+                media: vec![
+                    a("01-act-1.mp3", 4740),
+                    a("02-act-2.mp3", 5190),
+                    Media { name: "clip-1-1.mp4".into(), url: path_url(r"C:\T S\clip-1-1.mp4"), frames: 240, kind: Kind::Video },
+                    Media { name: "01-size-comparison.mov".into(), url: path_url(r"C:\T S\01-size-comparison.mov"), frames: 180, kind: Kind::Video },
+                    Media { name: "whoosh & co.wav".into(), url: path_url(r"C:\L\whoosh & co.wav"), frames: 20, kind: Kind::Audio { rate: 48000, channels: 2 } },
+                ],
+                video: vec![vec![Clip { media: 2, start: 0, end: 150, inp: 0 }], vec![Clip { media: 3, start: 1230, end: 1410, inp: 0 }], vec![]],
+                audio: vec![
+                    vec![Clip { media: 0, start: 0, end: 4740, inp: 0 }, Clip { media: 1, start: 4770, end: 9960, inp: 0 }],
+                    vec![Clip { media: 4, start: 1226, end: 1246, inp: 0 }, Clip { media: 4, start: 4770, end: 4790, inp: 0 }],
+                    vec![],
+                    vec![],
+                ],
+                marks: vec![
+                    Mark { name: "SFX".into(), comment: "Bone crack on \"snap\" / A2 / R9 & R13".into(), start: 2112, end: None },
+                    Mark { name: "WEAK SPOT".into(), comment: "132 words <no number>".into(), start: 3000, end: Some(4530) },
+                ],
+            }
+        }
+
+        #[test]
+        fn xml_is_well_formed_and_shaped_like_premiere_xmeml() {
+            let x = xml(&sample());
+            let tags = well_formed(&x).unwrap_or_else(|e| panic!("{e}\n{x}"));
+            assert!(tags > 50);
+            assert!(x.starts_with("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE xmeml>\n<xmeml version=\"4\">"));
+            assert!(x.contains("<name>The Hyena &amp; the &quot;Cave&quot; &lt;Den&gt; it&apos;s</name>"));
+            assert_eq!(inner(&x, "duration", 0).unwrap().0, "25650");
+            assert!(x.contains("<rate><timebase>30</timebase><ntsc>FALSE</ntsc></rate>"));
+            assert!(x.contains("<width>1920</width><height>1080</height>"));
+            assert_eq!(x.matches("<track>").count(), 7, "V1-V3 and A1-A4");
+            assert_eq!(x.matches("<clipitem ").count(), 6);
+            // Every clipitem names its file and has start, end, in, out and a duration.
+            for part in x.split("<clipitem ").skip(1) {
+                let ci = &part[..part.find("</clipitem>").unwrap()];
+                for t in ["<masterclipid>", "<duration>", "<start>", "<end>", "<in>", "<out>", "<file id=\"file-"] {
+                    assert!(ci.contains(t), "{t} missing in {ci}");
+                }
+                let n = |t| inner(ci, t, 0).unwrap().0.parse::<i64>().unwrap();
+                assert_eq!(n("out") - n("in"), n("end") - n("start"));
+                assert!(n("out") <= n("duration"));
+            }
+            // A file is written once, then referenced by id like Premiere does.
+            assert_eq!(x.matches("<file id=\"file-5\">").count(), 1);
+            assert_eq!(x.matches("<file id=\"file-5\"/>").count(), 1);
+            assert_eq!(x.matches("<pathurl>").count(), 5);
+            assert!(x.contains("<pathurl>file://localhost/C%3a/T%20S/01-act-1.mp3</pathurl>"));
+            assert!(x.contains("<pathurl>file://localhost/C%3a/L/whoosh%20%26%20co.wav</pathurl>"));
+            assert!(x.contains("<channelcount>1</channelcount>"));
+            assert!(x.contains("<sourcetrack><mediatype>audio</mediatype><trackindex>1</trackindex></sourcetrack>"));
+            // Video clips carry only a video stream, so their sound is not placed.
+            let clip = &x[x.find("<name>clip-1-1.mp4</name>").unwrap()..];
+            let clip = &clip[..clip.find("</clipitem>").unwrap()];
+            assert!(clip.contains("<video>") && !clip.contains("<audio>"));
+            assert_eq!(x.matches("<marker>").count(), 2);
+            assert!(x.contains("<comment>Bone crack on &quot;snap&quot; / A2 / R9 &amp; R13</comment>"));
+            assert!(x.contains("<in>2112</in>\n\t\t\t<out>-1</out>"));
+            assert!(x.contains("<in>3000</in>\n\t\t\t<out>4530</out>"));
+            assert!(x.find("</media>").unwrap() < x.find("<timecode>").unwrap() && x.find("<timecode>").unwrap() < x.find("<marker>").unwrap());
+            assert!(well_formed("<a><b></a></b>").is_err() && well_formed("<a>x & y</a>").is_err() && well_formed("<a x=1></a>").is_err());
+        }
+
+        #[test]
+        fn wav_headers_give_length_and_format() {
+            let mut w = b"RIFF\0\0\0\0WAVEfmt ".to_vec();
+            w.extend(16u32.to_le_bytes());
+            w.extend(1u16.to_le_bytes());
+            w.extend(2u16.to_le_bytes());
+            w.extend(48000u32.to_le_bytes());
+            w.extend((48000u32 * 4).to_le_bytes());
+            w.extend(4u16.to_le_bytes());
+            w.extend(16u16.to_le_bytes());
+            w.extend(b"data");
+            w.extend((48000u32 * 4 * 3).to_le_bytes());
+            let (s, rate, ch) = wav_info(&w, w.len() as u64 + 48000 * 12).unwrap();
+            assert!((s - 3.0).abs() < 1e-9);
+            assert_eq!((rate, ch), (48000, 2));
+            assert!(wav_info(b"RIFF\0\0\0\0AVI ", 100).is_none());
+        }
+
+        #[test]
+        fn premiere_files_stay_in_the_video_folder_and_never_overwrite() {
+            let base = std::env::temp_dir().join(format!("terra-edit-{}", std::process::id()));
+            let _ = fs::remove_dir_all(&base);
+            let root = base.join("Terra Studio");
+            let app = root.as_path();
+            let name = "2026-11-20 Hyena & Den";
+            let d = root.join(name);
+            for s in video::SUBS {
+                fs::create_dir_all(d.join(s)).unwrap();
+            }
+            fs::write(d.join("02 Narration").join("01-act-1-the-den.mp3"), [0xFF, 0xFB, 0x90, 0x00]).unwrap();
+            fs::write(d.join("05 Infographics").join("01-size-comparison.mov"), b"x").unwrap();
+            fs::write(d.join("08 Premiere").join("edit-guide.xml"), b"the owner's own file").unwrap();
+            fs::write(d.join("08 Premiere").join("shots.srt"), b"keep").unwrap();
+            let body = |tracks: Value| json!({"folder": name, "title": "Hyena & \"Den\"", "seconds": 20.0, "tracks": tracks,
+                "markers": [{"name": "SFX", "comment": "snap / A2 / R9", "start": 3.2}, {"name": "END SCREEN", "comment": "x", "start": 0.0, "end": 20.0}],
+                "files": {"shots.srt": "1\n00:00:00,000 --> 00:00:04,000\nShot\n", "chapters.txt": "00:00 The Den\n", "evil.txt": "no",
+                    "edit-checklist.txt": "Import {edit-guide.xml}, upload {subtitles-youtube.srt}\n"}});
+            let good = json!({"A1": [{"sub": "02 Narration", "file": "01-act-1-the-den.mp3", "start": 0.0, "end": 9.5, "in": 0.0, "seconds": 9.5}],
+                "V2": [{"sub": "05 Infographics", "file": "01-size-comparison.mov", "start": 2.0, "end": 8.0, "in": 0.0, "seconds": 6.0}]});
+            let out = premiere(app, &body(good.clone())).unwrap();
+            assert_eq!(out["files"], json!(["edit-guide (2).xml", "shots (2).srt", "chapters.txt", "edit-checklist.txt"]));
+            assert_eq!(fs::read_to_string(d.join("08 Premiere").join("edit-checklist.txt")).unwrap(), "Import edit-guide (2).xml, upload {subtitles-youtube.srt}\r\n");
+            assert_eq!(fs::read(d.join("08 Premiere").join("edit-guide.xml")).unwrap(), b"the owner's own file");
+            assert_eq!(fs::read(d.join("08 Premiere").join("shots.srt")).unwrap(), b"keep");
+            assert!(!d.join("08 Premiere").join("evil.txt").exists());
+            assert_eq!(fs::read_to_string(d.join("08 Premiere").join("chapters.txt")).unwrap(), "00:00 The Den\r\n");
+            assert!(library(app).is_dir() && out["library_made"] == true);
+            let x = fs::read_to_string(d.join("08 Premiere").join("edit-guide (2).xml")).unwrap();
+            well_formed(&x).unwrap();
+            assert!(x.contains("Hyena%20%26%20Den/02%20Narration/01-act-1-the-den.mp3</pathurl>"));
+            assert!(x.contains("<start>60</start>") && x.contains("<end>240</end>"));
+            assert_eq!(x.matches("<marker>").count(), 2);
+            let again = premiere(app, &body(good)).unwrap();
+            assert_eq!(again["guide"], "edit-guide (3).xml");
+            assert!(fs::read_to_string(d.join("08 Premiere").join("edit-checklist (2).txt")).unwrap().starts_with("Import edit-guide (3).xml,"));
+            assert_eq!(again["library_made"], false);
+
+            // Paths, other folders, wrong types and missing files are refused before anything is written.
+            let bad = [
+                json!({"A1": [{"sub": "02 Narration", "file": "../../x.mp3", "start": 0.0, "end": 1.0, "in": 0.0, "seconds": 1.0}]}),
+                json!({"A1": [{"sub": "08 Premiere", "file": "edit-guide.xml", "start": 0.0, "end": 1.0, "in": 0.0, "seconds": 1.0}]}),
+                json!({"A1": [{"sub": "..", "file": "01-act-1-the-den.mp3", "start": 0.0, "end": 1.0, "in": 0.0, "seconds": 1.0}]}),
+                json!({"V1": [{"sub": "02 Narration", "file": "01-act-1-the-den.mp3", "start": 0.0, "end": 1.0, "in": 0.0, "seconds": 1.0}]}),
+                json!({"A1": [{"sub": "02 Narration", "file": "02-act-2.mp3", "start": 0.0, "end": 1.0, "in": 0.0, "seconds": 1.0}]}),
+                json!({"A2": [{"lib": true, "file": "growl.wav", "start": 0.0, "end": 1.0, "in": 0.0, "seconds": 1.0}]}),
+                json!({"A1": [{"sub": "02 Narration", "file": "01-act-1-the-den.mp3", "start": f64::NAN, "end": 1.0, "in": 0.0, "seconds": 1.0}]}),
+            ];
+            let before = video::files(&d.join("08 Premiere")).len();
+            for t in bad {
+                assert!(premiere(app, &body(t.clone())).is_err(), "{t}");
+            }
+            assert_eq!(video::files(&d.join("08 Premiere")).len(), before);
+            assert!(premiere(app, &json!({"folder": "../x", "seconds": 1.0})).is_err());
+            assert!(premiere(app, &json!({"folder": "2026-01-01 Missing", "seconds": 1.0})).is_err());
+
+            // A file from the sound library is placed with its real format.
+            let mut w = b"RIFF\0\0\0\0WAVEfmt ".to_vec();
+            for x in [16u32.to_le_bytes().to_vec(), 1u16.to_le_bytes().to_vec(), 2u16.to_le_bytes().to_vec(), 48000u32.to_le_bytes().to_vec(),
+                192000u32.to_le_bytes().to_vec(), 4u16.to_le_bytes().to_vec(), 16u16.to_le_bytes().to_vec(), b"data".to_vec(), 192000u32.to_le_bytes().to_vec()] {
+                w.extend(x);
+            }
+            w.extend(vec![0u8; 192000]);
+            fs::write(library(app).join("low growl.wav"), &w).unwrap();
+            let s = scan(app, &json!({"folder": name})).unwrap();
+            assert_eq!(s["sounds"], json!([{"file": "low growl.wav", "seconds": 1.0}]));
+            assert_eq!(s["infographics"], json!(["01-size-comparison.mov"]));
+            let lib = json!({"A2": [{"lib": true, "file": "low growl.wav", "start": 4.0, "end": 5.0, "in": 0.0, "seconds": 1.0}]});
+            let out = premiere(app, &body(lib)).unwrap();
+            let x = fs::read_to_string(d.join("08 Premiere").join(out["guide"].as_str().unwrap())).unwrap();
+            assert!(x.contains("Sound%20library/low%20growl.wav</pathurl>") && x.contains("<samplerate>48000</samplerate></samplecharacteristics><channelcount>2</channelcount>"));
+            let _ = fs::remove_dir_all(&base);
+        }
+    }
+}
+
 fn first_run_setup(dir: &Path, c: &mut Config) {
     let Some(exe_dir) = std::env::current_exe().ok().and_then(|p| p.parent().map(Path::to_path_buf)) else { return };
     let Ok(entries) = fs::read_dir(&exe_dir) else { return };
@@ -4076,6 +4818,37 @@ mod tests {
         assert_eq!(audio_in(&dl, "2026-11-20%20Smilodon/missing-1731480000.mp3"), None);
         assert_eq!(audio_in(&dl, "2026-11-20%20Smilodon%2F..%2F..%2F/x-1731480000.mp3"), None);
         assert_eq!(audio_in(&dl, "smilodon-1731480000.mp3"), Some(dl.join("smilodon-1731480000.mp3")));
+        let _ = fs::remove_dir_all(&base);
+    }
+
+    #[test]
+    fn video_thumbnails_stay_in_their_folder() {
+        let base = std::env::temp_dir().join(format!("terra-test-vthumb-{}", std::process::id()));
+        let dl = base.join("Downloads");
+        let tdir = pack::root_in(&dl).join("2026-11-20 Smilodon").join(video::SUBS[5]);
+        for bad in ["..%2F..%2Fsecret.jpg", "../x.jpg", "%2e%2e/x.jpg", "2026-11-20%20Smilodon/..%2Fx.jpg", "2026-11-20%20Smilodon/..%5Cx.jpg",
+            "2026-11-20%20Smilodon%2F..%2F..%2F/x.jpg", "2026-11-20%20Smilodon/x.jpg%3Aevil", "2026-11-20%20Smilodon/x.jpg%00",
+            "2026-11-20%20Smilodon/notes.txt", "2026-11-20%20Smilodon/take.mp3", "2026-11-20%20Smilodon/x", "2026-11-20%20Smilodon/sub/x.jpg",
+            "x.jpg", "", "/x.jpg", "..%2F2026-11-20%20Smilodon/x.jpg", "2026-11-20%20Smilodon/con.jpg", "2026-11-20%20Smilodon/.jpg"] {
+            assert_eq!(vthumb_in(&dl, bad), None, "{bad:?}");
+        }
+        assert_eq!(vthumb_in(&dl, "2026-11-20%20Smilodon/smilodon-thumbnail-1.jpg"), Some((tdir.join("smilodon-thumbnail-1.jpg"), "image/jpeg")));
+        assert_eq!(vthumb_in(&dl, "2026-11-20%20Smilodon/My%20pick%20(2).PNG"), Some((tdir.join("My pick (2).PNG"), "image/png")));
+        assert_eq!(vthumb_in(&dl, "2026-11-20%20Smilodon/a.webp").map(|x| x.1), Some("image/webp"));
+
+        assert_eq!(video::thumbs(&tdir, "2026-11-20 Smilodon")["files"], json!([]));
+        fs::create_dir_all(&tdir).unwrap();
+        fs::write(tdir.join("old.jpg"), "a").unwrap();
+        fs::write(tdir.join("notes.txt"), "b").unwrap();
+        fs::write(tdir.join("new.png"), "c").unwrap();
+        let t = |f: &str, s: u64| fs::File::options().write(true).open(tdir.join(f)).unwrap().set_modified(UNIX_EPOCH + Duration::from_secs(s)).unwrap();
+        t("old.jpg", 1_700_000_000);
+        t("new.png", 1_800_000_000);
+        let v = video::thumbs(&tdir, "2026-11-20 Smilodon");
+        let names: Vec<&str> = v["files"].as_array().unwrap().iter().map(|f| f["file"].as_str().unwrap()).collect();
+        assert_eq!(names, ["new.png", "old.jpg"]);
+        assert_eq!(v["files"][0]["url"], "/api/vthumb/2026-11-20%20Smilodon/new.png");
+        assert_eq!(v["files"][0]["at"], 1_800_000_000u64);
         let _ = fs::remove_dir_all(&base);
     }
 

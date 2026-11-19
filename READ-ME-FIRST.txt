@@ -1,8 +1,8 @@
-TERRA STUDIO 2.5.0 (Windows 10/11, 64-bit)
+TERRA STUDIO 2.6.0 (Windows 10/11, 64-bit)
 ==========================================
 
 INSTALL
-Easiest: double-click TerraStudio-Setup-2.5.0.exe, then Next and Install.
+Easiest: double-click TerraStudio-Setup-2.6.0.exe, then Next and Install.
 No admin rights needed. A "Terra Studio" shortcut appears in the Start
 Menu and on the desktop. Uninstall through Settings > Apps.
 Zip version (no install): click "Extract all" first; do not run
@@ -12,6 +12,43 @@ UPDATING
 Run the new installer, or extract the new zip and open TerraStudio.exe.
 If the old version is still running, the new one closes it. Your data and
 settings are kept (they live in %APPDATA%\TerraStudio).
+
+NEW IN 2.6
+- New Editing tab, after Make video. It lists every long video with
+  its state (Needs script, Needs edit pack, Ready to edit, Editing,
+  Edited) and shows what to edit next. Open a video for its edit plan:
+  a timeline of the acts, shots, video clips, infographics, labels,
+  sounds and music, a "What goes where" list with the reason for each
+  item, and a checklist for Premiere that remembers your ticks.
+- Send to Premiere writes edit-guide.xml into the video's 08 Premiere
+  folder. In Premiere, File > Import it and double-click the new
+  sequence: the act MP3s sit on A1 with a 1 second pause between acts,
+  the video clips and finished infographics are placed, and everything
+  else is a named marker. It also writes shots.srt (one block per
+  shot), sound-list.txt, chapters.txt (real times for the description)
+  and edit-checklist.txt. Nothing is overwritten; a second send saves
+  "edit-guide (2).xml". Sound files you put in Downloads\Terra Studio\
+  Sound library are placed when their name holds a search word, for
+  example "growl". Your images are still yours to place.
+- Script check fix: a script written by AI now follows the rules the
+  check counts. After writing, every flagged place is fixed and checked
+  again before the voice over is made, so the MP3 matches the final
+  script. "Fix all" fixes what is left, and "See what was changed"
+  shows before and after.
+- Dashboard: "How to get more views" replaces "This week". It ranks
+  what to do from your own numbers (thumbnail test, hook, topic, old
+  thumbnails, end screen, publish time, Community post, Shorts) and
+  shows the evidence for each. Tick one when done, and after the next
+  data update it shows whether CTR and share watched moved.
+- Every AI button now has "Run with": the AI from Settings (with a
+  rough cost) or copy and paste with claude.ai (free). The app
+  remembers the choice per button.
+- Ideas leaves out animals you already made, by genus and other names,
+  and still gives you the number of ideas you asked for.
+- Calendar thumbnails come from the video's 06 Thumbnail folder. The
+  newest file is used unless you pick one yourself.
+- KIE.ai errors now also show KIE.ai's own short message.
+- These are tools and rules of thumb, not a promise of views or income.
 
 NEW IN 2.5
 - Make video now opens a list of every video in progress: upload
