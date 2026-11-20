@@ -1192,6 +1192,20 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
                 Err((code, e)) => respond_json(req, code, json!({"error": e})),
             }
         }
+        (Method::Post, "/api/tools/run") => {
+            let v = match read_json(&mut req, 256 * 1024) {
+                Ok(v) => v,
+                Err(e) => return respond_json(req, 400, json!({"error": e})),
+            };
+            match clip::tool(dir, &v) {
+                Ok(id) => respond_json(req, 200, json!({"job": id})),
+                Err((code, e)) => respond_json(req, code, json!({"error": e})),
+            }
+        }
+        (Method::Get, p) if p.starts_with("/api/tools/thumb/") => match clip::thumb(&p["/api/tools/thumb/".len()..]) {
+            Some(b) => respond(req, 200, "image/png", b),
+            None => respond_json(req, 404, json!({"error": "No picture."})),
+        },
         (Method::Get, p) if p.starts_with("/api/clip/job/") => match p["/api/clip/job/".len()..].parse().ok().and_then(clip::job) {
             Some(j) => respond_json(req, 200, j),
             None => respond_json(req, 404, json!({"error": "This clip job is gone. Make it again."})),
@@ -2534,22 +2548,90 @@ mod kie {
     pub fn result_url(data: &Value) -> Option<String> {
         // resultJson is JSON inside a string; an object is accepted too in case KIE changes it.
         let parsed = match &data["resultJson"] {
-            Value::String(s) => serde_json::from_str::<Value>(s).ok()?,
+            Value::String(s) => serde_json::from_str::<Value>(s).unwrap_or(Value::Null),
             other => other.clone(),
         };
-        parsed["resultUrls"][0].as_str().filter(|u| !u.is_empty()).map(String::from)
+        for k in ["resultUrls", "originUrls", "videoUrls", "imageUrls"] {
+            if let Some(u) = parsed[k][0].as_str().filter(|u| u.starts_with("http")) {
+                return Some(u.to_string());
+            }
+        }
+        // Some models put the file elsewhere in the record; any https file link will do.
+        let mut found = None;
+        find_url(&parsed, &mut found);
+        if found.is_none() {
+            find_url(&data["response"], &mut found);
+        }
+        found
     }
 
-    /// Creates a task, waits for it and returns the first result URL with the credits it used.
+    fn find_url(v: &Value, out: &mut Option<String>) {
+        if out.is_some() {
+            return;
+        }
+        match v {
+            Value::String(s) if s.starts_with("https://") && [".mp4", ".mov", ".webm", ".jpg", ".jpeg", ".png", ".webp"].iter().any(|e| s.split('?').next().unwrap_or("").to_lowercase().ends_with(e)) => {
+                *out = Some(s.clone())
+            }
+            Value::String(s) if s.trim_start().starts_with('{') || s.trim_start().starts_with('[') => {
+                if let Ok(inner) = serde_json::from_str::<Value>(s) {
+                    find_url(&inner, out)
+                }
+            }
+            Value::Array(a) => a.iter().for_each(|x| find_url(x, out)),
+            Value::Object(o) => o.values().for_each(|x| find_url(x, out)),
+            _ => {}
+        }
+    }
+
+    /// Tasks that may already be paid for but gave no file (no link yet, or too slow). Asking again for the
+    /// same model and input picks the task up instead of paying for a new one.
+    static OPEN: Mutex<Vec<(u64, String, u64)>> = Mutex::new(Vec::new());
+
+    fn task_key(model: &str, input: &Value) -> u64 {
+        use std::hash::{Hash, Hasher};
+        let mut h = std::collections::hash_map::DefaultHasher::new();
+        (model, input.to_string()).hash(&mut h);
+        h.finish()
+    }
+
+    fn open_task(k: u64, id: Option<&str>) {
+        let mut g = OPEN.lock().unwrap_or_else(|e| e.into_inner());
+        g.retain(|(key, _, at)| *key != k && now() < at + 86_400);
+        if let Some(id) = id {
+            g.push((k, id.to_string(), now()));
+        }
+    }
+
+    /// Creates a task (or resumes an unfinished one), waits for it and returns the first result URL with the credits it used.
     fn run_task(key: &str, model: &str, input: Value, max_secs: u64, what: &str) -> Result<(String, Value), String> {
-        let made = send(poll_agent().post(&format!("{}/api/v1/jobs/createTask", base())), key, Some(json!({"model": model, "input": input})))
-            .map_err(|(c, m)| friendly(c, &m))?;
-        let id = made["data"]["taskId"].as_str().filter(|s| !s.is_empty() && s.len() < 200 && s.chars().all(|ch| ch.is_ascii_alphanumeric() || "-_".contains(ch)))
-            .ok_or_else(|| "KIE.ai did not start the task. Try again.".to_string())?
-            .to_string();
+        let tk = task_key(model, &input);
+        let resumed = OPEN.lock().unwrap_or_else(|e| e.into_inner()).iter().find(|(k, _, at)| *k == tk && now() < at + 86_400).map(|(_, id, _)| id.clone());
+        let id = match resumed {
+            Some(id) => id,
+            None => {
+                let made = send(poll_agent().post(&format!("{}/api/v1/jobs/createTask", base())), key, Some(json!({"model": model, "input": input})))
+                    .map_err(|(c, m)| friendly(c, &m))?;
+                made["data"]["taskId"].as_str().filter(|s| !s.is_empty() && s.len() < 200 && s.chars().all(|ch| ch.is_ascii_alphanumeric() || "-_".contains(ch)))
+                    .ok_or_else(|| "KIE.ai did not start the task. Try again.".to_string())?
+                    .to_string()
+            }
+        };
+        let r = poll_task(key, &id, max_secs, what);
+        match &r {
+            Ok(_) => open_task(tk, None),
+            Err((true, _)) => open_task(tk, Some(&id)),
+            Err((false, _)) => open_task(tk, None),
+        }
+        r.map_err(|(_, e)| e)
+    }
+
+    /// Err((true, _)) means the task may still deliver, so a retry should look it up again.
+    fn poll_task(key: &str, id: &str, max_secs: u64, what: &str) -> Result<(String, Value), (bool, String)> {
         let started = std::time::Instant::now();
         let mut wait = 2000u64;
         let mut misses = 0;
+        let mut empty = 0;
         loop {
             std::thread::sleep(Duration::from_millis(wait));
             wait = (wait + 500).min(5000);
@@ -2559,17 +2641,22 @@ mod kie {
                     let d = &v["data"];
                     match d["state"].as_str().unwrap_or("") {
                         "success" => {
-                            return result_url(d)
-                                .map(|u| (u, d["creditsConsumed"].clone()))
-                                .ok_or_else(|| format!("KIE.ai finished but sent no {what}. Try again."));
+                            if let Some(u) = result_url(d) {
+                                return Ok((u, d["creditsConsumed"].clone()));
+                            }
+                            // The finished record can arrive a moment before its file link, so look a few more times.
+                            empty += 1;
+                            if empty > 8 {
+                                return Err((true, format!("KIE.ai says the {what} is finished but sent no file link yet. Try again: the app asks for this same {what} again, so it is not paid twice.")));
+                            }
                         }
                         "fail" => {
                             let why: String = d["failMsg"].as_str().unwrap_or("").chars().take(300).collect();
-                            return Err(if why.is_empty() {
+                            return Err((false, if why.is_empty() {
                                 format!("KIE.ai could not make this {what}. Try again, or change the wording.")
                             } else {
                                 format!("KIE.ai could not make this {what}. Original message: {why}")
-                            });
+                            }));
                         }
                         _ => {}
                     }
@@ -2578,12 +2665,12 @@ mod kie {
                 Err((code, msg)) => {
                     misses += 1;
                     if !matches!(code, 0 | 404 | 422 | 429 | 500..=599) || misses > 5 {
-                        return Err(friendly(code, &msg));
+                        return Err((code == 0 || code >= 500, friendly(code, &msg)));
                     }
                 }
             }
             if started.elapsed().as_secs() >= max_secs {
-                return Err(format!("KIE.ai did not finish the {what} within {} minutes. Try again in a little while.", max_secs / 60));
+                return Err((true, format!("KIE.ai did not finish the {what} within {} minutes. Try again in a little while: the app picks up the same {what}, so it is not paid twice.", max_secs / 60)));
             }
         }
     }
@@ -2675,6 +2762,9 @@ mod kie {
             assert_eq!(result_url(&d).as_deref(), Some("https://x.example/a.jpg"));
             assert_eq!(result_url(&json!({"resultJson": {"resultUrls": ["https://y/b.png"]}})).as_deref(), Some("https://y/b.png"));
             assert_eq!(result_url(&json!({"resultJson": "{\"resultUrls\":[]}"})), None);
+            assert_eq!(result_url(&json!({"resultJson": "{\"resultUrls\":[],\"originUrls\":[\"https://z/c.mp4\"]}"})).as_deref(), Some("https://z/c.mp4"));
+            assert_eq!(result_url(&json!({"resultJson": "", "response": {"resultUrls": ["https://z/d.mp4"]}})).as_deref(), Some("https://z/d.mp4"));
+            assert_eq!(result_url(&json!({"resultJson": {"result": {"video": {"url": "https://z/e.mp4?sig=1"}}}})).as_deref(), Some("https://z/e.mp4?sig=1"));
             assert_eq!(result_url(&json!({"resultJson": "not json"})), None);
         }
         #[test]
@@ -4166,7 +4256,7 @@ mod edit {
             .filter_map(|f| sound_info(&lib.join(&f)).map(|(s, _, _)| json!({"file": f, "seconds": (s * 1000.0).round() / 1000.0})))
             .collect();
         Ok(json!({"folder": name, "dir": d.display().to_string(), "narration": list(video::NARR), "clips": list(video::SUBS[3]),
-            "infographics": list(video::SUBS[4]), "premiere": list(video::SUBS[7]), "sounds": sounds,
+            "infographics": list(video::SUBS[4]), "premiere": list(video::SUBS[7]), "images": list(video::SUBS[2]), "upload": list(video::SUBS[6]), "sounds": sounds,
             "library": lib.display().to_string(), "library_exists": lib.is_dir()}))
     }
 

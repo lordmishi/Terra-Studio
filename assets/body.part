@@ -21,7 +21,7 @@
     <div class="rail-sp"></div>
     <button type="button" class="rail-plus" id="rail-plus" aria-label="New content plan" data-tip="New plan"><i aria-hidden="true">+</i><span>New plan</span></button>
     <button type="button" class="skin" id="skin-tog" role="switch" aria-checked="false" aria-label="Dark look" data-tip="Switch light / dark"><u aria-hidden="true"><i class="sun"><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="2.5"/><path d="M7 .75v1.5M7 11.75v1.5M.75 7h1.5M11.75 7h1.5M2.6 2.6l1.05 1.05M10.35 10.35l1.05 1.05M2.6 11.4l1.05-1.05M10.35 3.65l1.05-1.05"/></svg></i><i class="moon"><svg viewBox="0 0 14 14"><path d="M12.25 8.4A5.6 5.6 0 0 1 5.6 1.75a5.6 5.6 0 1 0 6.65 6.65"/></svg></i></u><span id="skin-name">Light look</span></button>
-    <p class="ver">v2.7.0</p>
+    <p class="ver">v2.8.0</p>
   </aside>
   <aside class="side" aria-label="Calendar and schedule">
     <div class="box calw">
@@ -1204,55 +1204,178 @@ function pkRender(f){const box=$("#pk-box");if(!box||!f)return;
   const s=pkState(f),{p,acts,need}=s,n=acts.length,kept=need.filter(x=>!x).length,ready=!!p.done&&!s.todo,cues=ready?pkCues(p,n):[];
   const stale=ready&&p.text!==pkHash(JSON.stringify(pkFiles(f,s.w,acts,cues))),q=store.get("eq",null),secs=p.acts.slice(0,n).reduce((t,a)=>t+(a?.seconds||0),0);
   const sep=(CFG.pack_dir||"").includes("\\")?"\\":"/",dir=VF[mkId()]?.dir||p.dir||(CFG.pack_dir?CFG.pack_dir+sep+p.want:"Downloads"+sep+"Terra Studio"+sep+p.want),hasFlow=pkFiles(f,s.w,acts,[]).some(x=>x.name==="flow-prompts.txt");
-  const label=busy?"Another edit pack is being made…":K.run?"Making edit pack…":!s.todo?(p.done?"Update text files (no voice characters used)":"Finish edit pack (no voice characters used)"):p.done?`Update edit pack (about ${nf(s.chars)} characters)`:kept?`Continue edit pack (about ${nf(s.chars)} characters left)`:`Make edit pack (about ${nf(s.chars)} characters)`;
   const run1=K.run&&K.at>=0&&K.at<n,run2=K.run&&K.at===n,a=run1?acts[K.at]:null;
   const li=(state,text,small)=>`<li${state?` class="${state}"`:""}><i aria-hidden="true">${state==="done"?"✓":""}</i><span><b class="sr">${state==="done"?"Done: ":state==="run"?"In progress: ":state==="part"?"Partly done: ":"Not started: "}</b>${text}</span><small>${small}</small></li>`;
   const focus=document.activeElement?.id;
   // Text files are rebuilt here from the same data that was saved, so no read route is needed.
   const peeks={};if(ready)for(const x of pkFiles(f,s.w,acts,cues))peeks[x.name]=x.text;
   if(ready&&cues.length)peeks["subtitle.srt"]=cues.slice(0,6).map((c,i)=>`${i+1}\n${srtT(c.start)} --> ${srtT(c.end)}\n${c.text}`).join("\n\n");
+  // One line says what is left, the button names that action, and steps that wait for another say so.
+  const left=s.need.map((x,i)=>x?i+1:0).filter(Boolean),nums=a=>a.length===1?`act ${a[0]}`:a.every((x,i)=>!i||x===a[i-1]+1)?`acts ${a[0]} to ${a[a.length-1]}`:`acts ${a.slice(0,-1).join(", ")} and ${a[a.length-1]}`;
+  const changed=p.done&&s.todo&&kept>0,allNew=s.todo&&!kept;
+  const label=busy?"Another edit pack is being made…":K.run?"Making edit pack…":allNew?`Voice all ${n} acts and make the pack (about ${nf(s.chars)} characters)`:s.todo?`Voice ${nums(left)} (about ${nf(s.chars)} characters)`:!p.done?"Finish edit pack (free)":stale?"Save text changes (free)":"Save text files again (free)";
+  const head=K.run?(run1?`Making the voice for act ${K.at+1} of ${n}`:"Writing subtitles and text files"):allNew?"Next: make the edit pack":changed?`${left.length===1?"Act "+left[0]+" changed":nums(left).replace(/^a/,"A")+" changed"}. Voice ${left.length===1?"it":"them"} again`:s.todo?`Next: make the voice for ${nums(left)}`:!p.done?"Next: finish the edit pack":stale?"Next: save the text changes":"Edit pack done";
+  const sub=K.run?esc(K.msg):s.todo?`Uses about ${nf(s.chars)}${q?` of your ${nf(q.left)}`:""} ElevenLabs characters.${kept?` ${kept===1?"Act "+(s.need.findIndex(x=>!x)+1)+" is":kept+" finished acts are"} kept.`:""} When it finishes, the subtitles and the folder are done on their own.`:!p.done?"Every act has its voice. This writes the subtitles and text files into the folder, with no voice characters used.":stale?"The title, description or infographic briefs changed after the pack was made. Saving them uses no voice characters.":`All ${n} act${n>1?"s":""} voiced (${pkLong(secs)}), subtitles and ${p.files?.length||0} files saved.`;
+  const doneN=n-left.length,seg=Array.from({length:n},(_,i)=>`<i class="${!s.need[i]?"on":run1&&K.at===i?"run":""}"></i>`).join("");
+  const st=(cls,num,title,small,tag)=>`<li class="${cls}"><i aria-hidden="true">${cls==="done"?"✓":num}</i><div><b>${title}</b>${small}</div><span class="pk-st"><span class="sr">${cls==="done"?"Done":cls==="run"?"In progress":cls==="now"?"Next":"Waiting"}: </span>${tag}</span></li>`;
+  const chips=`<div class="pk-acts">${acts.map((x,i)=>`<span class="${s.need[i]?(run1&&K.at===i?"run":""):"y"}">${s.need[i]?(run1&&K.at===i?"Act "+(i+1)+"…":i+1):"Act "+(i+1)+" ✓"}</span>`).join("")}</div>`;
   box.innerHTML=`<span class="layer">Edit pack for Premiere</span>
-  <div class="pk"><div><h3 id="pk-h">Make edit pack</h3><span>Voice over per act, subtitles, Google Flow prompts, script and thumbnail, all in one folder.</span></div>
-  <div class="chips"><button type="button" class="btn" id="pk-go"${K.run||busy?' aria-disabled="true"':""}>${label}</button><button type="button" class="btn ghost" id="pk-open"${p.slug||s.w.folder?"":" disabled"}>Open folder</button></div></div>
-  <p class="note">This script is ${nf(s.total)} characters in ${n} act${n>1?"s":""}. ${s.todo?`Making the pack uses about ${nf(s.chars)} characters of your ElevenLabs quota${kept?`, because ${kept} finished act${kept>1?"s are":" is"} kept`:""}.`:"Every act already has its voice, so nothing more is used from your ElevenLabs quota."}${q?` Your quota had about ${nf(q.left)} characters left when it was last checked.`:" Load voices in Settings to see how much quota is left."}</p>
-  ${q&&s.chars>q.left?`<p class="note err">That may not be enough for the whole pack. Acts that finish are kept, so you can continue after the quota refills.</p>`:""}
-  <ul class="pk-steps">
-  ${li(run1?"run":s.todo?(kept?"part":""):"done","ElevenLabs voice over, one file per act",run1?`act ${K.at+1} of ${n}: ${esc(a.name)}, ${nf(a.text.length)} characters`:s.todo?(kept?`${kept} of ${n} acts done, `:"")+`about ${nf(s.chars)} characters`:`${n} file${n>1?"s":""}, ${pkLong(secs)}`)}
-  ${li(run2?"run":ready?"done":"","Subtitle .srt from the voice over's own timing",ready?`${nf(cues.length)} lines`:"no AI call")}
-  ${li(run2?"run":ready&&hasFlow?"done":"","Google Flow prompts per scene, in act order",hasFlow?"already in the script":"this outline has no Flow prompts")}
-  ${li(run2?"run":ready?"done":"",`Save to ${esc(dir).replace(/([\\/])/g,"$1<wbr>")}`,ready&&p.files?`${p.files.length} files`:"")}
-  </ul>
-  <div class="status${K.err?" err":""}" id="s-pack" role="status">${esc(K.run||K.err||!stale?K.msg:"The title, description or infographic briefs changed after the pack was made. Click Update text files to save them in the folder.")}</div>
+  <div class="pk-left${!s.todo&&p.done&&!stale?" ok":""}">
+    <span class="k">Edit pack · ${doneN} of ${n} act${n>1?"s":""} voiced</span>
+    <div class="pk-seg" aria-hidden="true">${seg}</div>
+    <h3 id="pk-h">${esc(head)}</h3>
+    <p>${sub}</p>
+    ${q&&s.chars>q.left?`<p class="pk-warn">That may be more than your quota has left. Acts that finish are kept, so you can continue after it refills.</p>`:""}
+    <div class="chips"><button type="button" class="btn${!s.todo&&p.done&&!stale?" ghost":""}" id="pk-go"${K.run||busy?' aria-disabled="true"':""}>${label}</button><button type="button" class="btn ${!s.todo&&p.done&&!stale?"":"ghost"}" id="pk-open"${p.slug||s.w.folder?"":" disabled"}>Open folder</button></div>
+  </div>
+  <ol class="pk-steps2">
+  ${st(run1?"run":s.todo?"now":"done",1,"Voice over, one MP3 per act",chips,run1?"Making…":s.todo?`${left.length} act${left.length>1?"s":""} left`:pkLong(secs))}
+  ${st(run2?"run":ready?"done":s.todo?"wait":"now",2,"Subtitles (.srt)","<small>Made from the voice timing, free</small>",run2?"Making…":ready?`${nf(cues.length)} lines`:s.todo?"Waits for step 1":"Next")}
+  ${st(hasFlow?"done":"wait",3,"Google Flow prompts",`<small>${hasFlow?"Already in the script":"This outline has no Flow prompts"}</small>`,hasFlow?"Ready":"None")}
+  ${st(run2?"run":ready&&!stale?"done":s.todo?"wait":"now",4,"Save into the video folder",`<small>${esc(dir).replace(/([\\/])/g,"$1<wbr>")}</small>`,run2?"Saving…":ready&&!stale?`${p.files?.length||0} files`:s.todo?"Waits for step 1":"Next")}
+  </ol>
+  <div class="status${K.err?" err":""}" id="s-pack" role="status">${esc(K.run?"":K.msg)}</div>
   ${ready&&p.files?`<ul class="pk-files" aria-label="Files in the edit pack">${p.files.map(x=>peeks[x]?`<li><button type="button" data-peek="${esc(x)}" aria-expanded="${PEEK===x}">${esc(x)}</button></li>`:`<li>${esc(x)}</li>`).join("")}</ul>${peeks[PEEK]?`<pre class="ig-peek" tabindex="0" aria-label="Start of ${esc(PEEK)}">${esc(peeks[PEEK].slice(0,600))}${peeks[PEEK].length>600?"\n…":""}</pre>`:""}<p class="note">In Premiere: drag the folder into the Project panel. Put the act MP3s in order on the audio track, then import subtitle.srt. The same .srt can be uploaded in YouTube Studio, unless you use Send to Premiere: its 1 s act pauses need 08 Premiere\\subtitles-youtube.srt.</p>`:""}
-  ${pkClips(f,p)}
+  ${pkClips(f,p)}${pkTools(f,s,p)}
   <p class="note">The voice over is already in the pack, cut per act. The Voice over step makes one long MP3 instead; only make it when you want one long file, because it uses the quota again.</p>`;
   if(focus==="pk-go"||focus==="pk-open")$("#"+focus)?.focus()}
 /* KIE.ai clips: one 8-second Veo clip per Flow prompt. Money is only spent after a second click inside the page. */
-let KC={open:false,ask:"",run:"",id:"",at:"",msg:"",err:false};
+let KC={open:false,ask:"",run:"",id:"",at:"",msg:"",err:false,errs:{},all:null,askAll:false};
 function pkFlow(f){const o=lastOutline&&(!f.title||!lastOutline.title||f.title===lastOutline.title)?lastOutline:null;
   return (o?.acts||[]).flatMap((a,i)=>(a.flow_prompts||[]).filter(Boolean).map((t,j)=>({n:`${i+1}.${j+1}`,text:t,prompt:t+(o.flow_style?" Style: "+o.flow_style:"")})))}
+// Make all: one clip at a time, saved clips skipped, a failed clip does not stop the rest, and Stop waits for the running clip.
 function pkClips(f,p){const fl=pkFlow(f);if(!fl.length)return "";const mine=KC.id===mkId(),price=usd(KIE_CLIP*KIE_USD),on=!!CFG.has_kie;
-  return `<details class="pk-clips" id="pk-clips"${KC.open?" open":""}><summary>Video clips from the Flow prompts (optional, ${fl.length} prompt${fl.length>1?"s":""})</summary>
-  <p class="note">KIE.ai can make each 8-second clip with Veo 3.1 Lite and save it in this pack folder. One clip costs about ${KIE_CLIP} credits (${price}) and can take up to 10 minutes. Pasting the prompts into Google Flow yourself still works and costs nothing here.${on?"":" The buttons are off until a KIE.ai key is saved in Settings."}</p>
+  const fresh=c=>{const x=p.clips?.[c.n];return !!x&&x.sig===pkHash(c.prompt)},todo=fl.filter(c=>!fresh(c)),A=mine?KC.all:null;
+  const allBtn=on&&todo.length>1&&!A?`<button type="button" class="btn" id="kc-all"${KC.run?" disabled":""} aria-expanded="${mine&&KC.askAll}">Make all ${todo.length} clips (about ${usd(KIE_CLIP*KIE_USD*todo.length)})</button>`:"";
+  const ask=mine&&KC.askAll&&!A?`<div class="confirm kc-confirm"><span>This spends about <b>${nf(KIE_CLIP*todo.length)} KIE.ai credits (${usd(KIE_CLIP*KIE_USD*todo.length)})</b>. Clips are made one at a time, each 3 to 10 minutes, so ${todo.length} clips take about ${Math.max(1,Math.round(todo.length*6/60*2)/2)} hour${todo.length*6>90?"s":""}. Keep the app open; other tabs keep working. Saved clips are skipped.</span><div class="chips"><button type="button" class="btn" id="kc-allyes">Yes, make ${todo.length} clips</button><button type="button" class="btn ghost" id="kc-allno">Cancel</button></div></div>`:"";
+  const prog=A?`<div class="kc-prog" role="status"><div class="kc-track" aria-hidden="true"><i style="width:${Math.round(A.done/A.list.length*100)}%"></i></div><span>${A.stop?"Stopping after this clip":"Making clip "+esc(KC.run||"")} · ${A.done} of ${A.list.length} done${A.fail?` · ${A.fail} not made`:""}${A.list.length-A.done>1?` · about ${Math.round((A.list.length-A.done)*6)} minutes left`:""}</span>${A.stop?"":`<button type="button" class="btn ghost sm" id="kc-stop">Stop after this clip</button>`}</div>`:"";
+  return `<details class="pk-clips" id="pk-clips"${KC.open?" open":""}><summary>Video clips from the Flow prompts (optional, ${fl.length} prompt${fl.length>1?"s":""} · ${fl.length-todo.length} saved)</summary>
+  <p class="note">KIE.ai makes each 8-second clip with Veo 3.1 Lite and saves it in 04 Video clips. One clip costs about ${KIE_CLIP} credits (${price}) and can take up to 10 minutes. Pasting the prompts into Google Flow yourself still works and costs nothing here.${on?"":" The buttons are off until a KIE.ai key is saved in Settings."}</p>
   ${on?"":`<button type="button" class="btn ghost" data-goto="settings">Open Settings</button>`}
-  <ol class="pk-cl">${fl.map(c=>{const saved=p.clips?.[c.n],fresh=saved&&saved.sig===pkHash(c.prompt),run=KC.run===c.n&&mine,asking=mine&&KC.ask===c.n&&!KC.run;
+  ${allBtn||prog||(mine&&!A&&KC.allMsg)?`<div class="kc-bar">${allBtn}${prog}${mine&&!A&&KC.allMsg?`<span class="kc-sum" role="status">${esc(KC.allMsg)}</span>`:""}</div>`:""}${ask}
+  <ol class="pk-cl">${fl.map(c=>{const saved=p.clips?.[c.n],fr=fresh(c),run=KC.run===c.n&&mine,asking=mine&&KC.ask===c.n&&!KC.run,queued=A&&A.list.includes(c.n)&&!run&&!A.seen.includes(c.n),er=mine&&KC.errs[c.n];
+    const chip=run?`<span class="kc-chip run">Making… keep the app open</span>`:queued?`<span class="kc-chip q">Waiting</span>`:er?`<span class="kc-chip bad">Not made</span>`:fr?`<span class="kc-chip ok">✓ ${esc(saved.file)}</span>`:saved?`<span class="kc-chip q">Older prompt: ${esc(saved.file)}</span>`:"";
+    const btn=run||queued?"":`<button type="button" class="btn ghost sm" data-clip="${c.n}"${!on||KC.run||A?" disabled":""}${asking?' aria-expanded="true"':""}>${er?"Try again":saved?"Make again":"Make clip"} (about ${price})</button>`;
     return `<li><b>${c.n}</b><span>${esc(c.text)}</span>
-    <div class="chips"><button type="button" class="btn ghost" data-clip="${c.n}"${!on||(KC.run&&!run)?" disabled":""}${run?' aria-disabled="true"':""}${asking?' aria-expanded="true"':""}>${run?"Making clip… keep the app open":`${saved?"Make again":"Make clip"} (about ${price})`}</button>${saved?`<small>${fresh?"Saved as":"Saved from an older prompt as"} ${esc(saved.file)}</small>`:""}</div>
-    ${asking?`<div class="confirm"><span>Spend about ${KIE_CLIP} KIE.ai credits (${price}) on this one clip?${saved?" The saved clip is replaced.":""}</span><button type="button" class="btn" data-clipyes="${c.n}">Yes, make this clip</button><button type="button" class="btn ghost" data-clipno="${c.n}">Cancel</button></div>`:""}
-    ${mine&&KC.at===c.n&&KC.msg?`<div class="status${KC.err?" err":""}" role="status">${esc(KC.msg)}</div>`:""}</li>`}).join("")}</ol></details>`}
-async function makeClip(n){const f=lastNarr;if(!f||KC.run||!CFG.has_kie||!ownScript(f))return;const id=mkId(),{p}=pkState(f),c=pkFlow(f).find(x=>x.n===n);if(!c)return;
-  KC={...KC,ask:"",run:n,id,at:n,err:false,msg:`KIE.ai is making clip ${n}. This can take up to 10 minutes. Do not close the app.`};pkRender(lastNarr);
-  const folder=await ensureFolder(id),j=await pkPost("/api/kie/clip",{slug:p.slug||p.want,title:p.want,name:n,prompt:c.prompt,folder});
-  if(j.error||!j.file)KC={...KC,run:"",err:true,msg:`Clip ${n} was not made. ${j.error||"Try again."}`};
+    <div class="chips">${chip}${btn}</div>
+    ${asking?`<div class="confirm"><span>Spend about ${KIE_CLIP} KIE.ai credits (${price}) on this one clip?${er&&/not paid twice/.test(er)?" If KIE.ai already made it, the app picks that one up instead of paying again.":saved?" The saved clip is kept; the new one gets its own name.":""}</span><button type="button" class="btn" data-clipyes="${c.n}">Yes, make this clip</button><button type="button" class="btn ghost" data-clipno="${c.n}">Cancel</button></div>`:""}
+    ${er?`<div class="status err" role="status">${esc(er)}</div>`:mine&&KC.at===c.n&&KC.msg&&!A?`<div class="status${KC.err?" err":""}" role="status">${esc(KC.msg)}</div>`:""}</li>`}).join("")}</ol></details>`}
+async function makeClip(n){const f=lastNarr;if(!f||KC.run||!CFG.has_kie||!ownScript(f))return false;const id=mkId(),{p}=pkState(f),c=pkFlow(f).find(x=>x.n===n);if(!c)return false;
+  const errs={...KC.errs};delete errs[n];
+  KC={...KC,ask:"",run:n,id,at:n,err:false,errs,msg:`KIE.ai is making clip ${n}. This can take up to 10 minutes. Do not close the app.`};pkRender(lastNarr);
+  const folder=await ensureFolder(id),j=await pkPost("/api/kie/clip",{slug:p.slug||p.want,title:p.want,name:n,prompt:c.prompt,folder});let ok=false;
+  if(j.error||!j.file)KC={...KC,run:"",err:true,msg:"",errs:{...KC.errs,[n]:`Clip ${n} was not made. ${j.error||"Try again."}`}};
   else{p.slug=j.slug;p.dir=j.dir;p.clips={...(p.clips||{}),[n]:{file:j.file,sig:pkHash(c.prompt)}};if(p.files&&!p.files.includes(j.file))p.files=[...p.files,j.file].sort();await flushWork();
-    const cr=typeof j.credits==="number"&&j.credits>0?j.credits:KIE_CLIP;addKie(cr,"clip").catch(()=>{});
+    const cr=typeof j.credits==="number"&&j.credits>0?j.credits:KIE_CLIP;addKie(cr,"clip").catch(()=>{});ok=true;
     KC={...KC,run:"",err:false,msg:`Clip ${n} is saved as ${j.file}. It cost about ${kieTxt(cr)}.`}}
-  if(lastNarr)pkRender(lastNarr);if(mkId()===id)$(`[data-clip="${n}"]`)?.focus()}
+  if(lastNarr)pkRender(lastNarr);if(mkId()===id&&!KC.all)$(`[data-clip="${n}"]`)?.focus();return ok}
+async function makeAllClips(){const f=lastNarr;if(!f||KC.run||KC.all||!CFG.has_kie)return;const id=mkId(),{p}=pkState(f);
+  const list=pkFlow(f).filter(c=>{const x=p.clips?.[c.n];return !(x&&x.sig===pkHash(c.prompt))}).map(c=>c.n);if(!list.length)return;
+  KC={...KC,askAll:false,id,all:{list,seen:[],done:0,fail:0,stop:false},allMsg:""};
+  for(const n of list){if(KC.all.stop)break;KC.all.seen.push(n);const ok=await makeClip(n);KC.all.done++;if(!ok)KC.all.fail++;if(lastNarr)pkRender(lastNarr)}
+  const A=KC.all,made=A.done-A.fail;KC={...KC,all:null,allMsg:`${made} of ${A.list.length} clips saved${A.fail?`, ${A.fail} not made (press Try again on ${A.fail>1?"those":"that one"})`:""}${A.stop&&A.done<A.list.length?`, stopped with ${A.list.length-A.done} left`:""}.`};
+  if(lastNarr)pkRender(lastNarr)}
 document.addEventListener("toggle",e=>{if(e.target.id==="pk-clips")KC.open=e.target.open},true);
 document.addEventListener("click",e=>{const a=e.target.closest("[data-clip]"),y=e.target.closest("[data-clipyes]"),no=e.target.closest("[data-clipno]");
-  if(a){if(KC.run||!CFG.has_kie)return;const n=a.dataset.clip,same=KC.ask===n&&KC.id===mkId();KC={...KC,ask:same?"":n,id:mkId(),at:n,msg:"",err:false};pkRender(lastNarr);$(same?`[data-clip="${n}"]`:`[data-clipyes="${n}"]`)?.focus();return}
+  const t=e.target.closest("#kc-all,#kc-allyes,#kc-allno,#kc-stop");
+  if(t){if(t.id==="kc-all"){KC={...KC,askAll:!KC.askAll,id:mkId(),ask:""};pkRender(lastNarr);$(KC.askAll?"#kc-allyes":"#kc-all")?.focus()}
+    else if(t.id==="kc-allyes"){makeAllClips()}else if(t.id==="kc-allno"){KC={...KC,askAll:false};pkRender(lastNarr);$("#kc-all")?.focus()}
+    else if(KC.all){KC.all.stop=true;pkRender(lastNarr)}return}
+  if(a){if(KC.run||KC.all||!CFG.has_kie)return;const n=a.dataset.clip,same=KC.ask===n&&KC.id===mkId();KC={...KC,ask:same?"":n,askAll:false,id:mkId(),at:n,msg:"",err:false};pkRender(lastNarr);$(same?`[data-clip="${n}"]`:`[data-clipyes="${n}"]`)?.focus();return}
   if(y){makeClip(y.dataset.clipyes);return}
   if(no){KC={...KC,ask:""};pkRender(lastNarr);$(`[data-clip="${no.dataset.clipno}"]`)?.focus()}});
+/* 2.8 tools on the clip maker: moving stills, even voice loudness, Whisper name check, clip check and Shorts. Free, on this PC. */
+let TL={run:{},res:{},move:{},short:{}};
+const tlKey=(id,k)=>id+":"+k;
+function ckGateHTML(){const s=CK.st;if(!s)return `<p class="note">Checking the clip maker…</p>`;if(s.ready)return "";
+  if(s.running)return `<p class="note tl-gate" role="status"><b>Getting the clip maker:</b> ${esc(s.step||"Starting")}${s.pct>=0?` · ${Math.round(s.pct)}%`:""}. It only happens once.</p>`;
+  return `<div class="tl-gate"><p class="note">${s.update?"<b>The clip maker needs a one-time update</b> for these tools (a few minutes).":"<b>These tools use the clip maker</b>, a one-time download of about 400 MB that also makes the infographic clips."}${s.error?` Last try failed: ${esc(s.error)}`:""}</p><button type="button" class="btn ghost sm" data-ckget>${s.update?"Update clip maker":"Get clip maker"}</button></div>`}
+const tlGate=()=>{if(!CK.st&&!CK.stP)ckStatus().then(()=>{if(lastNarr)pkRender(lastNarr);edRender()});return ckGateHTML()};
+function tlSt(key){const r=TL.run[key],x=TL.res[key];
+  return `<div class="tl-st" data-tlst="${esc(key)}" role="status">${r?`<div class="ck-bar"><i style="width:${Math.max(3,r.pct||0)}%"></i></div><span>${esc(r.msg||"Starting")}${r.pct?` · ${Math.round(r.pct)}%`:""}</span>`:x?.error?`<span class="err">${esc(x.error)}</span>`:x?.msg?`<span>${esc(x.msg)}</span>`:""}</div>`}
+function tlPaint(key){const el=document.querySelector(`[data-tlst="${CSS.escape(key)}"]`);if(el)el.outerHTML=tlSt(key)}
+// Runs one tool job and keeps its result under key; done() turns the result into the line shown.
+async function tlGo(key,body,done,again){if(TL.run[key])return;TL.run[key]={pct:0,msg:"Starting"};delete TL.res[key];again();
+  const j=await pkPost("/api/tools/run",body);let s;
+  if(j.error)s={state:"error",error:j.error};
+  else for(;;){await new Promise(r=>setTimeout(r,900));s=await api("/api/clip/job/"+j.job);if(s.error&&!s.state){s={state:"error",error:s.error};break}
+    TL.run[key]={pct:s.pct,msg:s.state==="queued"?"Waiting for the job before it":s.msg};tlPaint(key);if(s.state==="done"||s.state==="error")break}
+  delete TL.run[key];TL.res[key]=s.state==="done"?{...done(s.result||{}),data:s.result}:{error:s.error||"It stopped. Try again."};
+  const id=body._id;if(id)await edScan(id,true);again()}
+const tlRe=()=>{if(lastNarr)pkRender(lastNarr);edRender()};
+// Genus and place names worth checking: capitalised words inside a sentence, and Latin-looking words anywhere.
+function tlNames(text){const out=new Set(),skip=/^(The|This|That|These|Those|There|Then|When|What|Which|While|Where|They|Their|Some|Most|Many|Each|Every|Today|About|After|Before|Because|Around|Across|Even|Only|Just|Still|Here|Now|And|But|For|With|From|Into|Over|Under|Its|His|Her|One|Two|Three|Four|Five|Six|Ten|Act|Chapter)$/;
+  for(const m of String(text).matchAll(/(^|[^.!?]\s)([A-Z][a-z]{3,}(?:\s[a-z]{4,})?)/g)){const w=m[2].split(" ")[0];if(!skip.test(w))out.add(w)}
+  for(const m of String(text).matchAll(/\b[A-Z][a-z]{4,}(?:us|um|ta|on|ia|is|ops|odon|therium|saurus|cyon|felis|crocuta|pithecus|anthropus|dus|tes)\b/g))out.add(m[0]);
+  return [...out].slice(0,20)}
+const tlSlug=f=>f.replace(/\.[^.]+$/,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,40).replace(/-+$/,"");
+const tlClock=t=>{t=Math.max(0,Math.round(t));return `${Math.floor(t/60)}:${String(t%60).padStart(2,"0")}`};
+// Edit pack step: moving stills from 03 Images, and the voice tools once every act has its voice.
+function pkTools(f,s,p){const id=mkId(),w=s.w;if(!w.folder)return "";const S=ED.scan[id];if(!S&&!ED.scanP[id])edScan(id).then(()=>{if(mkId()===id&&lastNarr)pkRender(lastNarr)});
+  const gate=tlGate(),ready=!!CK.st?.ready,imgs=(S?.images||[]).filter(x=>/\.(jpe?g|png|webp)$/i.test(x)).slice(0,60),clips=S?.clips||[],moves=["in","out","left","right"];
+  const made=x=>clips.find(c=>c.toLowerCase().startsWith("still-"+tlSlug(x))&&/\.mp4$/i.test(c));
+  const left=imgs.filter(x=>!made(x)),allK=tlKey(id,"still-all");
+  const stills=`<details class="pk-clips tl-box" id="tl-stills"${TL.openStills?" open":""}><summary>Moving stills from your pictures (free, no AI · ${imgs.length} picture${imgs.length===1?"":"s"} in 03 Images)</summary>
+    <p class="note">Each picture in 03 Images becomes an 8-second 1080p clip with a slow zoom or pan, saved in 04 Video clips as still-….mp4. About 20 to 40 seconds each on this PC. It moves the camera over the picture; it cannot make an animal walk.</p>
+    ${gate}${ready&&!imgs.length?`<p class="note">No pictures yet. Put your Flow or Gemini images in 03 Images, then <button type="button" class="linkish" data-tl-rescan>look again</button>.</p>`:""}
+    ${ready&&left.length>1?`<div class="kc-bar"><button type="button" class="btn" data-tl-stillall${TL.stillAll?" disabled":""}>${TL.stillAll?"Making moving stills…":`Make all ${left.length} moving stills`}</button>${TL.stillAll?`<button type="button" class="btn ghost sm" data-tl-stillstop>Stop after this one</button>`:""}</div>`:""}
+    ${ready&&imgs.length?`<ol class="tl-list">${imgs.map((x,i)=>{const k=tlKey(id,"still:"+x),mv=TL.move[x]||moves[i%4],m=made(x);
+      return `<li><span class="tl-name">${esc(x)}</span><label class="tl-mv"><span class="sr">Camera move for ${esc(x)}</span><select data-tl-move="${esc(x)}">${moves.map(o=>`<option value="${o}"${o===mv?" selected":""}>${{in:"Zoom in",out:"Zoom out",left:"Pan left",right:"Pan right"}[o]}</option>`).join("")}</select></label>
+        <div class="chips">${m?`<span class="kc-chip ok">✓ ${esc(m)}</span>`:""}<button type="button" class="btn ghost sm" data-tl-still="${esc(x)}"${TL.run[k]||TL.stillAll?" disabled":""}>${m?"Make again":"Make moving clip"}</button></div>${tlSt(k)}</li>`}).join("")}</ol>`:""}</details>`;
+  if(s.todo)return stills;
+  const n=s.acts.length,files=p.acts.slice(0,n).map(a=>a?.file).filter(Boolean),vk=tlKey(id,"voice"),nk=tlKey(id,"names"),nr=TL.res[nk]?.data;
+  const names=nr?`<ul class="tl-names">${nr.acts.map((a,i)=>`<li><b>Act ${i+1}</b> ${a.odd.length?a.odd.map(o=>o.heard?`<span class="tl-odd">“${esc(o.name)}” sounded like “${esc(o.heard)}” at ${tlClock(o.at)}</span>`:`<span class="tl-odd">“${esc(o.name)}” was not heard</span>`).join(""):`<span class="ok">All names sounded right.</span>`}</li>`).join("")}</ul><p class="note">Whisper can mishear rare names too, so listen at the time shown before you voice an act again.</p>`:"";
+  return stills+`<section class="tl-box tl-voice" aria-labelledby="tl-v-h"><h4 id="tl-v-h">Voice tools (free, on this PC)</h4>${gate}
+    ${ready?`<div class="tl-two"><div><p class="note"><b>Even loudness and one long MP3.</b> Every act gets the same loudness (-16 LUFS), saved in 02 Narration\\levelled, and the acts are joined with 1 s pauses into voice-all-acts.mp3. No ElevenLabs characters used.</p>
+      <button type="button" class="btn ghost sm" data-tl-voice${TL.run[vk]?" disabled":""}>Level and join the ${n} acts</button>${tlSt(vk)}</div>
+      <div><p class="note"><b>Check names with Whisper.</b> Whisper listens to each act and lists genus and place names that sounded wrong, with the time. The first use downloads Whisper (about 150 MB).</p>
+      <button type="button" class="btn ghost sm" data-tl-names${TL.run[nk]?" disabled":""}>Check names in ${n} acts</button>${tlSt(nk)}${names}</div></div>`:""}</section>`}
+async function tlStill(x){const id=mkId(),w=mkW();if(!w.folder)return false;const k=tlKey(id,"still:"+x),i=(ED.scan[id]?.images||[]).indexOf(x),mv=TL.move[x]||["in","out","left","right"][Math.max(0,i)%4];
+  await tlGo(k,{_id:id,kind:"still",folder:w.folder,file:x,move:mv},r=>({msg:`Saved as ${r.file} in 04 Video clips.`}),tlRe);return !TL.res[k]?.error}
+async function tlStillAll(){const id=mkId(),S=ED.scan[id];if(!S||TL.stillAll)return;const clips=S.clips||[];
+  const list=(S.images||[]).filter(x=>/\.(jpe?g|png|webp)$/i.test(x)&&!clips.some(c=>c.toLowerCase().startsWith("still-"+tlSlug(x))));
+  TL.stillAll=true;TL.stillStop=false;tlRe();for(const x of list){if(TL.stillStop||mkId()!==id)break;await tlStill(x)}TL.stillAll=false;tlRe()}
+// Editing tab: check every clip before Premiere, and cut a Short from the finished export.
+function tlEdit(id,P,S){const w=work(id),p=plans().find(x=>x.id===id);if(!w.folder)return "";const gate=tlGate(),ready=!!CK.st?.ready;
+  const ck=tlKey(id,"check"),cr=TL.res[ck]?.data,sk=tlKey(id,"short"),o=TL.short[id]||(TL.short[id]={start:"0",len:45,title:(p?.title||"").slice(0,80)});
+  const exports=(S?.premiere||[]).filter(x=>/\.(mp4|mov|m4v)$/i.test(x));if(!o.file||!exports.includes(o.file))o.file=exports[exports.length-1]||"";
+  const sugg=[["0","Hook, 0:00"],...P.A.slice(1).map(a=>[String(Math.round(a.start)),`Act ${a.i+1}, ${tlClock(a.start)}: ${a.name}`]),...P.igs.map(g=>[String(Math.max(0,Math.round(g.t-3))),`${g.name.replace(/\.mov$/,"")}, ${tlClock(g.t)}`])];
+  const bad=cr?cr.clips.filter(c=>c.problem):[];
+  return `<section class="card ed-card tl-ed" aria-labelledby="tl-e-h"><h3 id="tl-e-h">Free tools on this PC</h3>${gate}
+    <div class="tl-two">
+      <div><h4>Check clips before Premiere</h4><p class="note">Reads every clip in 04 Video clips and 05 Infographics, shows a small picture of each, and flags files that are broken or too short.</p>
+        <button type="button" class="btn ghost sm" data-tl-check${!ready||TL.run[ck]?" disabled":""}>${cr?"Check again":"Check clips"}</button>${tlSt(ck)}
+        ${cr?`<p class="note">${cr.clips.length?`${plural(cr.clips.length,"clip")} checked, ${bad.length?`<b class="err">${plural(bad.length,"problem")}</b>`:"no problems"}.`:"No clips in 04 Video clips or 05 Infographics yet."}</p>
+        <ul class="tl-grid">${cr.clips.map(c=>`<li${c.problem?' class="bad"':""}>${c.thumb?`<img src="${esc(c.thumb)}" alt="" loading="lazy">`:`<span class="tl-noimg" aria-hidden="true">?</span>`}<b>${esc(c.file)}</b><small>${c.problem?esc(c.problem):`${c.seconds} s · ${c.width}×${c.height}${c.audio?" · sound":""}`}</small></li>`).join("")}</ul>`:""}</div>
+      <div><h4>Make a Short from the finished video</h4><p class="note">Export the finished video from Premiere into 08 Premiere (H.264). The app cuts a part, puts it in a 9:16 frame over a blurred copy, and adds big captions from Whisper. Saved in 07 Upload. About 2 to 5 minutes.</p>
+        ${!exports.length?`<p class="note"><b>No export in 08 Premiere yet.</b> <button type="button" class="linkish" data-tl-rescan-ed>Look again</button></p>`:`<div class="tl-form">
+          <label>Video<select data-tl-sh="file">${exports.map(x=>`<option${x===o.file?" selected":""}>${esc(x)}</option>`).join("")}</select></label>
+          <label>Start at<select data-tl-sh="start">${sugg.map(([v,l])=>`<option value="${v}"${v===o.start?" selected":""}>${esc(l)}</option>`).join("")}<option value="custom"${o.start==="custom"?" selected":""}>Other time…</option></select></label>
+          ${o.start==="custom"?`<label>Time (m:ss)<input type="text" inputmode="numeric" data-tl-sh="at" value="${esc(o.at||"")}" placeholder="4:20"></label>`:""}
+          <label>Length<select data-tl-sh="len">${[30,45,58].map(x=>`<option value="${x}"${+o.len===x?" selected":""}>${x} seconds</option>`).join("")}</select></label>
+          <label class="tl-wide">Title on top<input type="text" data-tl-sh="title" value="${esc(o.title)}" maxlength="90"></label></div>
+          <div class="chips"><button type="button" class="btn sm" data-tl-short${!ready||TL.run[sk]?" disabled":""}>Make Short</button>${TL.res[sk]?.data?.file?`<button type="button" class="btn ghost sm" data-ed-folder="07 Upload">Open 07 Upload</button>`:""}</div>${tlSt(sk)}
+          <p class="note">A Short works best as a self-contained moment: a hook, one fact, an ending. The suggestions start at act openings and 3 s before infographics; these times follow the edit guide, so check them if you changed the cut.</p>`}</div>
+    </div></section>`}
+const tlAt=s=>{const m=String(s||"").trim().match(/^(\d+)(?::(\d{1,2}))?$/);return m?(m[2]!=null?+m[1]*60+ +m[2]:+m[1]):null};
+document.addEventListener("change",e=>{const m=e.target.closest?.("[data-tl-move]");if(m){TL.move[m.dataset.tlMove]=m.value;return}
+  const sh=e.target.closest?.("[data-tl-sh]");if(sh){const o=TL.short[ED.id];if(!o)return;o[sh.dataset.tlSh]=sh.value;if(sh.dataset.tlSh==="start"){edRender();if(sh.value==="custom")$('[data-tl-sh="at"]')?.focus()}}});
+document.addEventListener("input",e=>{const sh=e.target.closest?.("[data-tl-sh]");if(sh&&sh.tagName==="INPUT"){const o=TL.short[ED.id];if(o)o[sh.dataset.tlSh]=sh.value}});
+document.addEventListener("toggle",e=>{if(e.target.id==="tl-stills")TL.openStills=e.target.open},true);
+document.addEventListener("click",e=>{const t=e.target.closest?.("button");if(!t)return;
+  if(t.hasAttribute("data-ckget")){t.disabled=true;api("/api/clip/setup",{method:"POST",headers:{"Content-Type":"application/json"},body:"{}"}).then(j=>{CK.st=j.error?{ready:false,error:j.error}:j;tlRe();ckPollSetup()});return}
+  if(t.dataset.tlStill!=null){tlStill(t.dataset.tlStill);return}
+  if(t.hasAttribute("data-tl-stillall")){tlStillAll();return}
+  if(t.hasAttribute("data-tl-stillstop")){TL.stillStop=true;t.disabled=true;t.textContent="Stopping after this one";return}
+  if(t.hasAttribute("data-tl-rescan")){edScan(mkId(),true).then(tlRe);return}
+  if(t.hasAttribute("data-tl-rescan-ed")){edScan(ED.id,true).then(tlRe);return}
+  if(t.hasAttribute("data-tl-voice")||t.hasAttribute("data-tl-names")){const id=mkId(),f=lastNarr;if(!f)return;const s=pkState(f),n=s.acts.length,files=s.p.acts.slice(0,n).map(a=>a?.file);if(files.some(x=>!x))return;
+    if(t.hasAttribute("data-tl-voice"))tlGo(tlKey(id,"voice"),{_id:id,kind:"voice",folder:s.w.folder,acts:files},r=>({msg:`Saved ${r.file} in 02 Narration, and ${plural((r.levelled||[]).length,"levelled act")} in 02 Narration\\levelled.`}),tlRe);
+    else tlGo(tlKey(id,"names"),{_id:id,kind:"names",folder:s.w.folder,acts:s.acts.map((a,i)=>({file:files[i],names:tlNames(a.text)}))},r=>{const odd=r.acts.reduce((k,a)=>k+a.odd.length,0);return {msg:odd?`${plural(odd,"name")} to listen to, below.`:"Every name sounded right."}},tlRe);return}
+  if(t.hasAttribute("data-tl-check")){const id=ED.id,w=work(id);tlGo(tlKey(id,"check"),{_id:id,kind:"check",folder:w.folder},r=>({msg:""}),tlRe);return}
+  if(t.hasAttribute("data-tl-short")){const id=ED.id,w=work(id),o=TL.short[id];if(!o?.file)return;const k=tlKey(id,"short");
+    const start=o.start==="custom"?tlAt(o.at):+o.start;if(start==null){TL.res[k]={error:"Type the start time as m:ss, for example 4:20."};tlPaint(k);return}
+    tlGo(k,{_id:id,kind:"short",folder:w.folder,file:o.file,start,seconds:+o.len,title:o.title},r=>({msg:`Saved as ${r.file} in 07 Upload.${r.captions?"":" It has no captions: "+(r.note||"Whisper did not run.")}`}),tlRe);return}});
 async function makePack(){const f=lastNarr;if(!f||PK.run||!ownScript(f))return null;const id=mkId(),s=pkState(f),{w,p,acts}=s,n=acts.length,thumb=mkPlan()?.thumb?id:"";
   const fail=msg=>{PK={run:false,at:-1,msg,err:true,id};pkRender(lastNarr);return null};
   if(acts.some(a=>!a.text))return fail("The script is empty.");
@@ -1343,6 +1466,7 @@ function ckBanner(){const s=CK.st;if(!s||s.ready)return "";
 let ckPollT=0;
 async function ckPollSetup(){clearTimeout(ckPollT);const s=await ckStatus(true);const b=$("#ck-banner");
   if(b){if(s.ready)igRender(lastNarr);else b.innerHTML=ckBanner()}
+  document.querySelectorAll(".tl-gate").forEach(g=>{if(s.ready)tlRe();else g.outerHTML=ckGateHTML()});
   if(s.running)ckPollT=setTimeout(ckPollSetup,1500)}
 // Starts a render and follows it; onTick gets each progress reply.
 async function ckJob(body,onTick){const j=await pkPost("/api/clip/render",body);if(j.error)return {state:"error",error:j.error};
@@ -2961,7 +3085,7 @@ function edDetail(){const id=ED.id,p=plans().find(x=>x.id===id),w=work(id),s=edS
         <p class="sub">${P.pics?`Saved ${esc(vdWhen(w.edit.pics.at))}: shots.srt names a picture for each shot.`:"One AI call suggests a picture for each shot block. Without it, each block shows its narration."}</p>
         ${runW("pics")}<div class="chips"><button type="button" class="btn ghost" id="ed-pics" data-run="pics" data-base="${esc((P.pics?"Suggest shot pictures again":"Suggest shot pictures")+edPicsCost(P))}">${runTxt("pics",P.pics?"Suggest shot pictures again":"Suggest shot pictures")}${edPicsCost(P)}</button></div><div class="status" id="s-ed-ai" role="status"></div>
       </section>
-    </div>`+edLimits()));
+    </div>${tlEdit(id,P,S)}`+edLimits()));
   edFocus()}
 function edLimits(){return `<section class="card ed-card ed-lim" aria-labelledby="ed-lim-h"><h3 id="ed-lim-h">Honest limits</h3><ul>
   <li><b>Times come from the edit pack MP3s</b> (one per act), not the long voice over from step 7. A video needs its edit pack first, and making one for an older video uses ElevenLabs characters.</li>

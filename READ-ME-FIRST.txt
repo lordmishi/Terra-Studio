@@ -1,8 +1,8 @@
-TERRA STUDIO 2.7.0 (Windows 10/11, 64-bit)
+TERRA STUDIO 2.8.0 (Windows 10/11, 64-bit)
 ==========================================
 
 INSTALL
-Easiest: double-click TerraStudio-Setup-2.7.0.exe, then Next and Install.
+Easiest: double-click TerraStudio-Setup-2.8.0.exe, then Next and Install.
 No admin rights needed. A "Terra Studio" shortcut appears in the Start
 Menu and on the desktop. Uninstall through Settings > Apps.
 Zip version (no install): click "Extract all" first; do not run
@@ -12,6 +12,33 @@ UPDATING
 Run the new installer, or extract the new zip and open TerraStudio.exe.
 If the old version is still running, the new one closes it. Your data and
 settings are kept (they live in %APPDATA%\TerraStudio).
+
+NEW IN 2.8
+- Edit pack: the top box now says how many acts are voiced, what is
+  next, and the button names exactly what it does ("Voice acts 2 to 5",
+  "Finish edit pack (free)", "Save text changes (free)"). The old
+  "Update edit pack" button is gone.
+- Video clips from the Flow prompts: Make all clips makes every clip
+  that is not saved yet, one at a time, with the cost shown first and a
+  Stop button. A failed clip does not stop the rest.
+- KIE.ai fix: "finished but sent no clip" is fixed. If a clip was
+  already paid for, Try again picks up that same clip instead of paying
+  twice.
+- Free tools that run on your PC (no AI, no cost):
+  * Moving stills: every picture in 03 Images can become an 8-second
+    clip with a slow zoom or pan, saved in 04 Video clips.
+  * Level and join: same loudness for every act, plus one long
+    voice-all-acts.mp3.
+  * Check names: Whisper listens to each act and lists animal and place
+    names that sounded wrong. The first use downloads about 150 MB.
+    Not yet tested on Windows.
+  * Editing tab: Check clips shows a small picture of every clip and
+    flags broken or too short files. Make a Short cuts a part of your
+    Premiere export (08 Premiere) into a 9:16 Short with big captions,
+    saved in 07 Upload. If Whisper cannot run, the Short is made
+    without captions.
+- If you already had the clip maker from 2.7, press Update clip maker
+  once (a few minutes).
 
 NEW IN 2.7
 - Make clip: in the Infographics step every brief now has a Make clip

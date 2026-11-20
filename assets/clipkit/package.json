@@ -6,6 +6,7 @@
   "dependencies": {
     "@remotion/cli": "4.0.543",
     "@remotion/fonts": "4.0.543",
+    "@remotion/install-whisper-cpp": "4.0.543",
     "d3-geo": "3.1.2",
     "react": "19.3.1",
     "react-dom": "19.3.1",
