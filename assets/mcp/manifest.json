@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "terra-studio",
   "display_name": "Terra Studio",
-  "version": "2.9.0",
+  "version": "2.9.1",
   "description": "Lets Claude read your Terra Studio channel data (numbers, videos, calendar, ideas) and send approved video ideas to the Ideas tab.",
   "long_description": "Reads the files Terra Studio keeps in %APPDATA%\\TerraStudio. It can add ideas to an inbox that Terra Studio takes in. It cannot delete, upload or change anything else, and it makes no network calls.",
   "author": {

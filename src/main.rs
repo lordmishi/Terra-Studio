@@ -1351,14 +1351,11 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
             }
             respond_json(req, 200, all)
         }
-        // Opens TerraStudio.mcpb (next to the exe) so Claude Desktop offers to install it.
-        (Method::Post, "/api/claude/install") => {
-            let Some(f) = std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.join("TerraStudio.mcpb"))).filter(|f| f.exists()) else {
-                return respond_json(req, 404, json!({"error": "TerraStudio.mcpb is missing next to TerraStudio.exe. Run the 2.9 installer again."}));
-            };
-            open_folder(&f);
-            respond_json(req, 200, json!({"ok": true, "file": f.display().to_string()}))
-        }
+        // Registers TerraMCP.exe (next to TerraStudio.exe) in Claude Desktop's config, keeping everything else in it.
+        (Method::Post, "/api/claude/install") => match claude_register() {
+            Ok(paths) => respond_json(req, 200, json!({"ok": true, "files": paths})),
+            Err(e) => respond_json(req, 500, json!({"error": e})),
+        },
         (Method::Post, "/api/last") => {
             let v = match read_json(&mut req, 2 * 1024 * 1024) {
                 Ok(v) => v,
@@ -1509,6 +1506,65 @@ fn vthumb_in(downloads: &Path, rest: &str) -> Option<(PathBuf, &'static str)> {
         }
         _ => None,
     }
+}
+
+/// Claude Desktop keeps claude_desktop_config.json in %APPDATA%\\Claude, or, for the Microsoft Store build,
+/// in %LOCALAPPDATA%\\Packages\\Claude_*\\LocalCache\\Roaming\\Claude. Every one that exists gets the entry.
+fn claude_config_dirs() -> Vec<PathBuf> {
+    let mut out = vec![];
+    if let Some(a) = std::env::var_os("APPDATA") {
+        out.push(PathBuf::from(a).join("Claude"));
+    }
+    if let Some(l) = std::env::var_os("LOCALAPPDATA") {
+        if let Ok(rd) = fs::read_dir(PathBuf::from(l).join("Packages")) {
+            for e in rd.flatten() {
+                if e.file_name().to_string_lossy().starts_with("Claude_") {
+                    out.push(e.path().join("LocalCache").join("Roaming").join("Claude"));
+                }
+            }
+        }
+    }
+    out
+}
+
+fn claude_add_server(cfg: &Path, exe: &Path) -> Result<(), String> {
+    let mut v: Value = match fs::read_to_string(cfg) {
+        Ok(t) if !t.trim().is_empty() => serde_json::from_str(&t).map_err(|_| format!("{} could not be read, so it was left alone.", cfg.display()))?,
+        _ => json!({}),
+    };
+    if !v.is_object() {
+        return Err(format!("{} has an unexpected shape, so it was left alone.", cfg.display()));
+    }
+    if cfg.exists() {
+        let _ = fs::copy(cfg, cfg.with_extension("json.terra-backup"));
+    }
+    if !v["mcpServers"].is_object() {
+        v["mcpServers"] = json!({});
+    }
+    v["mcpServers"]["terra-studio"] = json!({"command": exe.display().to_string(), "args": []});
+    if let Some(d) = cfg.parent() {
+        let _ = fs::create_dir_all(d);
+    }
+    let text = serde_json::to_string_pretty(&v).map_err(|e| e.to_string())?;
+    write_atomic(cfg, text.as_bytes()).map_err(|e| format!("Could not save {}: {e}", cfg.display()))
+}
+
+fn claude_register() -> Result<Vec<String>, String> {
+    let exe = std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.join("TerraMCP.exe"))).filter(|f| f.exists())
+        .ok_or("TerraMCP.exe is missing next to TerraStudio.exe. Run the Terra Studio installer again.")?;
+    let dirs = claude_config_dirs();
+    let found: Vec<&PathBuf> = dirs.iter().filter(|d| d.exists()).collect();
+    let targets: Vec<PathBuf> = if found.is_empty() { dirs.first().cloned().into_iter().collect() } else { found.into_iter().cloned().collect() };
+    if targets.is_empty() {
+        return Err("Could not find where Claude Desktop keeps its settings.".into());
+    }
+    let mut done = vec![];
+    for d in targets {
+        let f = d.join("claude_desktop_config.json");
+        claude_add_server(&f, &exe)?;
+        done.push(f.display().to_string());
+    }
+    Ok(done)
 }
 
 /// Moves ideas from claude-inbox.json (written by TerraMCP) to the front of the saved Ideas list.
@@ -4917,6 +4973,23 @@ mod tests {
     use super::*;
 
     #[test]
+    fn claude_config_keeps_other_servers() {
+        let dir = std::env::temp_dir().join(format!("terra-ccfg-{}", std::process::id()));
+        let _ = fs::create_dir_all(&dir);
+        let f = dir.join("claude_desktop_config.json");
+        fs::write(&f, r#"{"mcpServers":{"other":{"command":"x"}},"globalShortcut":"Ctrl+Space"}"#).unwrap();
+        claude_add_server(&f, Path::new("C:\\T\\TerraMCP.exe")).unwrap();
+        let v: Value = serde_json::from_str(&fs::read_to_string(&f).unwrap()).unwrap();
+        assert_eq!(v["mcpServers"]["other"]["command"], "x");
+        assert_eq!(v["mcpServers"]["terra-studio"]["command"], "C:\\T\\TerraMCP.exe");
+        assert_eq!(v["globalShortcut"], "Ctrl+Space");
+        fs::write(&f, "{broken").unwrap();
+        assert!(claude_add_server(&f, Path::new("x")).is_err());
+        assert_eq!(fs::read_to_string(&f).unwrap(), "{broken");
+        let _ = fs::remove_dir_all(&dir);
+    }
+
+    #[test]
     fn claude_inbox_goes_to_front_of_ideas_once() {
         let dir = std::env::temp_dir().join(format!("terra-inbox-{}", std::process::id()));
         let _ = fs::create_dir_all(&dir);
@@ -5237,6 +5310,146 @@ mod youtube {
         v["columnHeaders"].as_array()?.iter().position(|h| h["name"] == name)
     }
 
+    const YTR: &str = "https://youtubereporting.googleapis.com/v1";
+    const REACH: &str = "channel_reach_basic_a1";
+
+    /// Reach per video from the daily CSV reports: (impressions, clicks, last date).
+    #[derive(Default, Debug, Clone, PartialEq)]
+    pub struct Reach {
+        pub imp: f64,
+        pub clicks: f64,
+        pub last: String,
+    }
+
+    /// Adds one reach CSV to the per-video sums. The CTR column may be a fraction (0.05) or a percent (5);
+    /// `frac` says which, decided over all files by `ctr_is_fraction`.
+    pub fn reach_add(csv_text: &str, frac: bool, out: &mut std::collections::HashMap<String, Reach>) {
+        let mut rd = csv::ReaderBuilder::new().flexible(true).from_reader(csv_text.as_bytes());
+        let Ok(h) = rd.headers().cloned() else { return };
+        let at = |n: &str| h.iter().position(|x| x.trim() == n);
+        let (Some(iv), Some(ii), Some(ic)) = (at("video_id"), at("video_thumbnail_impressions"), at("video_thumbnail_impressions_ctr")) else { return };
+        let id = at("date");
+        for r in rd.records().flatten() {
+            let vid = r.get(iv).unwrap_or("").trim();
+            let imp: f64 = r.get(ii).and_then(|x| x.trim().parse().ok()).unwrap_or(0.0);
+            let ctr: f64 = r.get(ic).and_then(|x| x.trim().parse().ok()).unwrap_or(0.0);
+            if vid.is_empty() || imp <= 0.0 {
+                continue;
+            }
+            let e = out.entry(vid.to_string()).or_default();
+            e.imp += imp;
+            e.clicks += imp * if frac { ctr } else { ctr / 100.0 };
+            if let Some(d) = id.and_then(|i| r.get(i)) {
+                if d > e.last.as_str() {
+                    e.last = d.to_string();
+                }
+            }
+        }
+    }
+
+    pub fn ctr_is_fraction(files: &[String]) -> bool {
+        let mut max = 0.0f64;
+        for t in files {
+            let mut rd = csv::ReaderBuilder::new().flexible(true).from_reader(t.as_bytes());
+            let Some(ic) = rd.headers().ok().and_then(|h| h.iter().position(|x| x.trim() == "video_thumbnail_impressions_ctr")) else { continue };
+            for r in rd.records().flatten() {
+                if let Some(v) = r.get(ic).and_then(|x| x.trim().parse::<f64>().ok()) {
+                    max = max.max(v);
+                }
+            }
+        }
+        max <= 1.0
+    }
+
+    fn post_json(token: &str, url: &str, body: Value) -> Result<Value, (u16, String)> {
+        match agent().post(url).set("Authorization", &format!("Bearer {token}")).send_json(body) {
+            Ok(r) => r.into_json().map_err(|e| (0, e.to_string())),
+            Err(ureq::Error::Status(code, r)) => Err((code, r.into_string().unwrap_or_default())),
+            Err(e) => Err((0, e.to_string())),
+        }
+    }
+
+    /// YouTube Reporting API: makes sure the reach job exists, then reads every daily report (cached in reach\).
+    /// Never fails the data pull: the status goes into data.json "reach".
+    fn reach(token: &str, dir: &Path) -> (Value, std::collections::HashMap<String, Reach>) {
+        let mut sums = std::collections::HashMap::new();
+        let jobs = match get(token, &format!("{YTR}/jobs")) {
+            Ok(v) => v,
+            Err((code, msg)) => {
+                let off = code == 403 && (msg.contains("not been used") || msg.contains("disabled") || msg.contains("not enabled") || msg.contains("SERVICE_DISABLED") || msg.contains("are not enabled"));
+                return (json!({"state": if off { "enable" } else { "error" }, "msg": msg}), sums);
+            }
+        };
+        let job = jobs["jobs"].as_array().into_iter().flatten().find(|j| j["reportTypeId"] == REACH).cloned();
+        let job = match job {
+            Some(j) => j,
+            None => match post_json(token, &format!("{YTR}/jobs"), json!({"reportTypeId": REACH, "name": "Terra Studio reach"})) {
+                Ok(j) => return (json!({"state": "waiting", "since": j["createTime"]}), sums),
+                Err((_, msg)) => return (json!({"state": "error", "msg": msg}), sums),
+            },
+        };
+        let id = job["id"].as_str().unwrap_or("").to_string();
+        let mut reports: Vec<Value> = vec![];
+        let mut page = String::new();
+        for _ in 0..20 {
+            let url = format!("{YTR}/jobs/{id}/reports?pageSize=100{}", if page.is_empty() { String::new() } else { format!("&pageToken={}", enc(&page)) });
+            let Ok(v) = get(token, &url) else { break };
+            reports.extend(v["reports"].as_array().cloned().unwrap_or_default());
+            match v["nextPageToken"].as_str() {
+                Some(t) if !t.is_empty() => page = t.to_string(),
+                _ => break,
+            }
+        }
+        if reports.is_empty() {
+            return (json!({"state": "waiting", "since": job["createTime"]}), sums);
+        }
+        // A day can be delivered again (backfill); keep the newest file per day.
+        let mut by_day: std::collections::BTreeMap<String, Value> = Default::default();
+        for r in reports {
+            let k = r["startTime"].as_str().unwrap_or("").to_string();
+            if by_day.get(&k).is_none_or(|o| o["createTime"].as_str().unwrap_or("") < r["createTime"].as_str().unwrap_or("")) {
+                by_day.insert(k, r);
+            }
+        }
+        let cache = dir.join("reach");
+        let _ = fs::create_dir_all(&cache);
+        let mut files = vec![];
+        let mut keep = std::collections::HashSet::new();
+        for r in by_day.values() {
+            let rid: String = r["id"].as_str().unwrap_or("").chars().filter(|c| c.is_ascii_alphanumeric()).collect();
+            let Some(url) = r["downloadUrl"].as_str() else { continue };
+            if rid.is_empty() {
+                continue;
+            }
+            let f = cache.join(format!("{rid}.csv"));
+            keep.insert(f.clone());
+            if let Ok(t) = fs::read_to_string(&f) {
+                files.push(t);
+                continue;
+            }
+            if let Ok(resp) = agent().get(url).set("Authorization", &format!("Bearer {token}")).call() {
+                if let Ok(t) = resp.into_string() {
+                    let _ = fs::write(&f, &t);
+                    files.push(t);
+                }
+            }
+        }
+        // Old cached days that YouTube no longer lists are removed so the folder does not grow forever.
+        if let Ok(rd) = fs::read_dir(&cache) {
+            for e in rd.flatten() {
+                if !keep.contains(&e.path()) {
+                    let _ = fs::remove_file(e.path());
+                }
+            }
+        }
+        let frac = ctr_is_fraction(&files);
+        for t in &files {
+            reach_add(t, frac, &mut sums);
+        }
+        let through = sums.values().map(|r| r.last.clone()).max().unwrap_or_default();
+        (json!({"state": "ok", "days": by_day.len(), "through": through, "from": by_day.keys().next()}), sums)
+    }
+
     /// Pulls channel, daily views, totals and per-video stats into data.json.
     pub fn sync(c: &Config, dir: &Path) -> Result<(String, Value), String> {
         let token = access_token(c)?;
@@ -5282,6 +5495,7 @@ mod youtube {
             }
         }
 
+        let (reach_state, reach_sums) = reach(&token, dir);
         let _guard = DATA_JSON_LOCK.lock().unwrap();
         let old = load_data(dir);
         // The Analytics API has no impressions or CTR; keep them from the last Studio export.
@@ -5296,7 +5510,8 @@ mod youtube {
         let videos: Vec<Value> = rows
             .iter()
             .filter_map(|r| {
-                let (title, date, dur) = meta.get(r[0].as_str()?)?.clone();
+                let vid = r[0].as_str()?;
+                let (title, date, dur) = meta.get(vid)?.clone();
                 let mut v = json!({
                     "t": title, "d": date, "dur": dur,
                     "v": num_at(r, iv) as i64,
@@ -5305,6 +5520,12 @@ mod youtube {
                 });
                 if ir.is_some() {
                     v["rev"] = json!(num_at(r, ir));
+                }
+                // Reach from the Reporting API covers about the last 30 to 60 days ("rimp", "rctr");
+                // for a new video that is its whole life, so the Dashboard uses it first.
+                if let Some(x) = reach_sums.get(vid).filter(|x| x.imp > 0.0) {
+                    v["rimp"] = json!(x.imp.round() as i64);
+                    v["rctr"] = json!((x.clicks / x.imp * 10_000.0).round() / 100.0);
                 }
                 if let Some(o) = old_by_title.get(&title) {
                     for k in ["imp", "ctr"] {
@@ -5338,6 +5559,7 @@ mod youtube {
         data["range"] = json!(format!("{start} sampai {end}"));
         data["imported_at"] = json!(now() * 1000);
         data["source"] = json!("youtube-api");
+        data["reach"] = reach_state;
         let bytes = serde_json::to_vec(&data).map_err(|e| e.to_string())?;
         write_atomic(&dir.join("data.json"), &bytes).map_err(|e| format!("Could not save the data: {e}"))?;
         let summary = json!({"channel": channel, "videos": videos.len(), "days": daily.len(), "revenue": has_rev, "range": data["range"]});
@@ -5347,6 +5569,25 @@ mod youtube {
     #[cfg(test)]
     mod tests {
         use super::*;
+        #[test]
+        fn reach_csv_sums_clicks_per_video() {
+            let a = "date,channel_id,video_id,video_thumbnail_impressions,video_thumbnail_impressions_ctr\n20261118,c,v1,1000,0.03\n20261118,c,v2,0,0\n".to_string();
+            let b = "date,channel_id,video_id,video_thumbnail_impressions,video_thumbnail_impressions_ctr\n20261119,c,v1,3000,0.01\n".to_string();
+            assert!(ctr_is_fraction(&[a.clone(), b.clone()]));
+            let mut m = Default::default();
+            reach_add(&a, true, &mut m);
+            reach_add(&b, true, &mut m);
+            let r = &m["v1"];
+            assert_eq!(r.imp, 4000.0);
+            assert!((r.clicks - 60.0).abs() < 1e-9);
+            assert_eq!(r.last, "20261119");
+            assert!(!m.contains_key("v2"));
+            let p = "video_id,video_thumbnail_impressions,video_thumbnail_impressions_ctr\nv1,100,4.5\n".to_string();
+            assert!(!ctr_is_fraction(&[p.clone()]));
+            let mut m = Default::default();
+            reach_add(&p, false, &mut m);
+            assert!((m["v1"].clicks - 4.5).abs() < 1e-9);
+        }
         #[test]
         fn dates_and_durations() {
             assert_eq!(ymd(0), "1970-01-01");

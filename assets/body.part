@@ -21,7 +21,7 @@
     <div class="rail-sp"></div>
     <button type="button" class="rail-plus" id="rail-plus" aria-label="New content plan" data-tip="New plan"><i aria-hidden="true">+</i><span>New plan</span></button>
     <button type="button" class="skin" id="skin-tog" role="switch" aria-checked="false" aria-label="Dark look" data-tip="Switch light / dark"><u aria-hidden="true"><i class="sun"><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="2.5"/><path d="M7 .75v1.5M7 11.75v1.5M.75 7h1.5M11.75 7h1.5M2.6 2.6l1.05 1.05M10.35 10.35l1.05 1.05M2.6 11.4l1.05-1.05M10.35 3.65l1.05-1.05"/></svg></i><i class="moon"><svg viewBox="0 0 14 14"><path d="M12.25 8.4A5.6 5.6 0 0 1 5.6 1.75a5.6 5.6 0 1 0 6.65 6.65"/></svg></i></u><span id="skin-name">Light look</span></button>
-    <p class="ver">v2.9.0</p>
+    <p class="ver">v2.9.1</p>
   </aside>
   <aside class="side" aria-label="Calendar and schedule">
     <div class="box calw">
@@ -610,7 +610,7 @@
       <div class="tool" id="f-claude">
         <h2>Claude Desktop</h2>
         <p class="hint">Talk about topics in Claude Desktop with your own channel data. Claude can read your numbers, videos, calendar and ideas, check if an animal is already made, and send an idea you agree on to the Ideas tab. It cannot delete or upload anything. Uses your claude.ai subscription, no extra cost.</p>
-        <ol class="steps"><li>Click <strong>Add to Claude</strong>. Claude Desktop opens and shows Terra Studio.</li><li>Click <strong>Install</strong> there. Done, once.</li><li>In a new Claude chat, ask for example: "Which topic fits December? Not one I already made."</li></ol>
+        <ol class="steps"><li>Click <strong>Add to Claude</strong>.</li><li>Quit Claude Desktop fully (right-click its icon next to the clock, then Quit) and open it again. Done, once.</li><li>In a new Claude chat, ask for example: "Which topic fits December? Not one I already made."</li></ol>
         <div class="chips"><button class="btn" type="button" id="claude-add">Add to Claude</button></div>
         <p class="note">Needs the Claude Desktop app on this PC. Ideas from Claude show in Ideas, marked From Claude, the next time the app opens or you open Ideas.</p>
         <div class="status" id="s-claude" role="status"></div>
@@ -638,7 +638,7 @@
         <label for="yt-secret">Client secret<input id="yt-secret" type="password" autocomplete="off" placeholder="GOCSPX-..."></label>
         <p class="note" id="yt-secret-hint"></p>
         <div class="chips"><button class="btn" type="submit" id="yt-connect">Save and connect YouTube</button></div>
-        <p class="note">Google will show "Google hasn't verified this app". That is normal because the app is your own: click Continue. Impressions and CTR are not available through this connection, so those numbers still come from the last Studio export.</p>
+        <p class="note">Google will show "Google hasn't verified this app". That is normal because the app is your own: click Continue. CTR of new videos comes through YouTube's Reporting API: enable it once (link on the Dashboard under After publishing). It runs about 2 days behind.</p>
         <div class="status" id="s-yt" role="status"></div>
       </form>
 
@@ -3163,7 +3163,7 @@ async function loadLast(){const j=await api("/api/last");if(!j||j.error)return;L
   $("#cfg-spent").textContent=spentText();$("#cfg-ispent").textContent=imgSpentText()}
 /* 2.9: Terra Studio for Claude Desktop */
 $("#claude-add").addEventListener("click",async()=>{const st=$("#s-claude"),j=await api("/api/claude/install",{method:"POST"});
-  st.className="status"+(j?.error?" err":"");st.textContent=j?.error||"Claude Desktop should now show Terra Studio. Click Install there. If nothing opens, install Claude Desktop from claude.ai/download first, then click Add to Claude again."});
+  st.className="status"+(j?.error?" err":"");st.textContent=j?.error||"Terra Studio is added to Claude Desktop. Now quit Claude Desktop fully (right-click its icon next to the clock, then Quit) and open it again. In a new chat, the tools icon lists terra-studio."});
 
 /* 2.9: Check before upload. The AI checks facts, title, description and tags; the app checks the files itself. */
 const UC_NUM=/\b\d+(?:[.,]\d+)?\b/;
@@ -3188,15 +3188,21 @@ JSON shape: {"items":[{"level":"bad|warn|ok","text":"short finding","fix":"what 
   if(!d?.items?.length||mkId()!==id)return;const items=[...d.items.map(x=>[["bad","warn","ok"].includes(x.level)?x.level:"warn",x.text||"",x.fix||""]),...local];
   work(id).upcheck={items,at:Date.now()};saveWork();ucRender(items)});
 
-/* 2.9: After publishing. YouTube's connection gives no CTR, so the newest videos take the CTR typed from YouTube Studio. */
+/* 2.9: After publishing. CTR comes from the Reporting API reach report (rctr, about 2 days behind);
+   until that has data, the CTR typed from YouTube Studio is used. */
+function reachNote(){const r=YT?.reach;if(!r)return "";
+  if(r.state==="enable")return `<div class="af af-setup"><b>Turn on automatic CTR (once)</b><ol class="steps"><li>Open <a href="https://console.cloud.google.com/apis/library/youtubereporting.googleapis.com" target="_blank" rel="noopener">YouTube Reporting API</a> with the Google account of your channel. Check that the project at the top is your Terra Studio project.</li><li>Click <strong>Enable</strong>.</li><li>Back here, press <strong>Update Studio data</strong>. YouTube then needs about 2 days before the first CTR arrives.</li></ol></div>`;
+  if(r.state==="waiting")return `<p class="note">YouTube is preparing your first CTR report. It arrives within about 2 days, with the last 30 days included. Until then you can type the CTR below.</p>`;
+  if(r.state==="ok")return `<p class="note">CTR from YouTube${r.through?`, data up to ${esc(fmtShort(String(r.through).replace(/^(\d{4})(\d{2})(\d{2})$/,"$1-$2-$3")))}`:""}. It runs about 2 days behind.</p>`;
+  return `<p class="note">Automatic CTR could not be read this time${r.msg?`: ${esc(String(r.msg).slice(0,160))}`:""}.</p>`}
 const CTR_GOAL=4;
 const ctrTyped=()=>LAST._ctr?.data||{};
 function renderAfter(){const el=$("#td-after");if(!el)return;const now=Date.now(),lf=longForm().filter(v=>v.d&&now-new Date(v.d+"T12:00:00")<21*864e5).sort((a,b)=>b.d.localeCompare(a.d)).slice(0,4);
   if(!lf.length){el.hidden=true;return}el.hidden=false;const typed=ctrTyped();
-  $("#af-list").innerHTML=lf.map(v=>{const t=(v.t||"").trim(),k=t.toLowerCase(),c=v.ctr!=null?+v.ctr:typed[k]?.ctr,age=Math.floor((now-new Date(v.d+"T12:00:00"))/36e5),early=age<48;
+  $("#af-list").innerHTML=reachNote()+lf.map(v=>{const t=(v.t||"").trim(),k=t.toLowerCase(),c=v.rctr!=null?+v.rctr:v.ctr!=null?+v.ctr:typed[k]?.ctr,age=Math.floor((now-new Date(v.d+"T12:00:00"))/36e5),early=age<48;
     const low=c!=null&&c<CTR_GOAL;
     return `<div class="af"><div class="af-h"><b>${esc(t)}</b><span class="tag ${c==null?"":low?"n2":"y"}">${c==null?(early?"Wait until 48 h":"CTR not known yet"):`CTR ${f1(c)}% · goal ${CTR_GOAL}%`}</span></div>
-      ${c==null&&!early?`<label class="af-in">CTR from YouTube Studio (%)<input type="number" step="0.1" min="0" max="30" inputmode="decimal" data-ctr="${esc(k)}" placeholder="e.g. 2.4"></label><p class="note">YouTube's connection does not give CTR. Open the video in YouTube Studio, Analytics, Reach, and type the impressions click-through rate here.</p>`:""}
+      ${c==null&&!early?`<label class="af-in">CTR from YouTube Studio (%)<input type="number" step="0.1" min="0" max="30" inputmode="decimal" data-ctr="${esc(k)}" placeholder="e.g. 2.4"></label><p class="note">No CTR from YouTube yet. To see it sooner: YouTube Studio, the video, Analytics, Reach, then type the impressions click-through rate here.</p>`:""}${v.rimp?`<p class="note">${nf(v.rimp)} impressions so far.</p>`:""}
       ${low?`<p class="note">Below your goal${age>=48?" after 48 hours":""}. Make 3 new thumbnails with different angles and test them in YouTube Studio's Test &amp; Compare.</p><div class="chips"><button type="button" class="btn" data-af-thumbs="${esc(t)}" data-af-date="${esc(v.d)}">Make 3 thumbnails</button></div>`:c!=null?`<p class="note">On or above your goal. Leave the thumbnail as it is.</p>`:""}</div>`}).join("")}
 document.addEventListener("change",async e=>{const i=e.target.closest?.("input[data-ctr]");if(!i)return;const v=parseFloat(String(i.value).replace(",","."));if(!(v>=0&&v<=30))return;
   await remember("_ctr",{...ctrTyped(),[i.dataset.ctr]:{ctr:v,at:Date.now()}});renderAfter()});

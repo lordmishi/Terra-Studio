@@ -3,7 +3,7 @@ Unicode true
 !include "MUI2.nsh"
 
 !define APP "Terra Studio"
-!define VERSION "2.9.0"
+!define VERSION "2.9.1"
 !define UNKEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\TerraStudio"
 !ifndef SRC
   !define SRC "..\..\pkg\TerraStudio"
@@ -46,7 +46,10 @@ Section "Terra Studio"
   File "${SRC}\TerraStudio.exe"
   File "${SRC}\WebView2Loader.dll"
   File "${SRC}\READ-ME-FIRST.txt"
-  ; Terra Studio for Claude Desktop: Settings > Add to Claude opens this file.
+  ; Terra Studio for Claude Desktop: Settings > Add to Claude registers TerraMCP.exe in Claude's config.
+  ; A running copy (started by Claude Desktop) locks the file, so it is stopped first.
+  nsExec::Exec 'taskkill /IM TerraMCP.exe /F'
+  File "${SRC}\TerraMCP.exe"
   File "${SRC}\TerraStudio.mcpb"
   Delete "$INSTDIR\BACA-DULU.txt"
   ; First start imports these two files from the exe folder. -DNOCHANNEL leaves them out (GitHub build).
@@ -79,6 +82,8 @@ Section "Uninstall"
   Delete "$INSTDIR\BACA-DULU.txt"
   Delete "$INSTDIR\READ-ME-FIRST.txt"
   Delete "$INSTDIR\TerraStudio.mcpb"
+  nsExec::Exec 'taskkill /IM TerraMCP.exe /F'
+  Delete "$INSTDIR\TerraMCP.exe"
   Delete "$INSTDIR\profil-terra.json"
   Delete "$INSTDIR\Content_*.zip"
   Delete "$INSTDIR\Uninstall.exe"
