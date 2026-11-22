@@ -1,0 +1,57 @@
+{
+  "manifest_version": "0.2",
+  "name": "terra-studio",
+  "display_name": "Terra Studio",
+  "version": "2.9.0",
+  "description": "Lets Claude read your Terra Studio channel data (numbers, videos, calendar, ideas) and send approved video ideas to the Ideas tab.",
+  "long_description": "Reads the files Terra Studio keeps in %APPDATA%\\TerraStudio. It can add ideas to an inbox that Terra Studio takes in. It cannot delete, upload or change anything else, and it makes no network calls.",
+  "author": {
+    "name": "Sigit"
+  },
+  "server": {
+    "type": "binary",
+    "entry_point": "server/TerraMCP.exe",
+    "mcp_config": {
+      "command": "${__dirname}/server/TerraMCP.exe",
+      "args": [],
+      "env": {}
+    }
+  },
+  "tools": [
+    {
+      "name": "get_channel_overview",
+      "description": "Channel numbers, top and newest videos"
+    },
+    {
+      "name": "list_videos",
+      "description": "Every published long video with its stats"
+    },
+    {
+      "name": "get_calendar",
+      "description": "Planned and in-progress videos"
+    },
+    {
+      "name": "get_ideas",
+      "description": "Saved ideas and ideas waiting from Claude"
+    },
+    {
+      "name": "check_animal",
+      "description": "Is this animal already made or planned?"
+    },
+    {
+      "name": "get_channel_rules",
+      "description": "The channel's house rules"
+    },
+    {
+      "name": "add_idea",
+      "description": "Send an approved idea to the Ideas tab"
+    }
+  ],
+  "compatibility": {
+    "platforms": [
+      "win32"
+    ]
+  },
+  "license": "Proprietary",
+  "icon": "icon.png"
+}

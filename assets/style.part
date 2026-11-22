@@ -1132,4 +1132,17 @@ section.tl-box h4{margin:0 0 8px;font:700 15px var(--f-body)}
 .tl-gate{margin:6px 0 10px}
 .tl-ed h3{margin-top:0}
 @media (max-width:760px){.tl-two,.tl-form{grid-template-columns:minmax(0,1fr)}.tl-list li{grid-template-columns:minmax(0,1fr) auto}}
+/* 2.9: Check before upload, After publishing */
+.ucl{display:grid;gap:8px;margin-top:12px}
+.uc{display:grid;grid-template-columns:20px 1fr;gap:8px;align-items:start;font-size:14px}
+.uc i{font-style:normal;font-weight:700;text-align:center}
+.uc.ok i{color:var(--ok)}.uc.bad i{color:var(--warn)}.uc.warn i{color:var(--accent-text)}
+.uc small{display:block;color:var(--muted)}
+.af-list{display:grid;gap:12px;margin-top:10px}
+.af{border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:grid;gap:8px;min-width:0}
+.af-h{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.af-h b{min-width:0}
+.af-in{max-width:260px}
+.tag.n2{background:color-mix(in srgb,var(--warn-bg) 100%,transparent);color:var(--warn)}
+.af-how{margin-top:10px}
 </style>

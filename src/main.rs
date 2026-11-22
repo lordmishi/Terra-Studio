@@ -1341,7 +1341,24 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
             }
         }
         // Last AI result per tool, so reopening the app does not cost a new call.
-        (Method::Get, "/api/last") => respond_json(req, 200, load_json(&dir.join("last.json"))),
+        (Method::Get, "/api/last") => {
+            // Ideas that Claude Desktop sent (Terra Studio for Claude) are taken in here, once.
+            let _guard = LAST_JSON_LOCK.lock().unwrap();
+            let path = dir.join("last.json");
+            let mut all = load_json(&path);
+            if take_claude_inbox(dir, &mut all) > 0 {
+                let _ = write_atomic(&path, all.to_string().as_bytes());
+            }
+            respond_json(req, 200, all)
+        }
+        // Opens TerraStudio.mcpb (next to the exe) so Claude Desktop offers to install it.
+        (Method::Post, "/api/claude/install") => {
+            let Some(f) = std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.join("TerraStudio.mcpb"))).filter(|f| f.exists()) else {
+                return respond_json(req, 404, json!({"error": "TerraStudio.mcpb is missing next to TerraStudio.exe. Run the 2.9 installer again."}));
+            };
+            open_folder(&f);
+            respond_json(req, 200, json!({"ok": true, "file": f.display().to_string()}))
+        }
         (Method::Post, "/api/last") => {
             let v = match read_json(&mut req, 2 * 1024 * 1024) {
                 Ok(v) => v,
@@ -1492,6 +1509,39 @@ fn vthumb_in(downloads: &Path, rest: &str) -> Option<(PathBuf, &'static str)> {
         }
         _ => None,
     }
+}
+
+/// Moves ideas from claude-inbox.json (written by TerraMCP) to the front of the saved Ideas list.
+/// Returns how many were added. The inbox file is removed once read.
+fn take_claude_inbox(dir: &Path, all: &mut Value) -> usize {
+    let inbox = dir.join("claude-inbox.json");
+    let taking = dir.join("claude-inbox.taking");
+    if fs::rename(&inbox, &taking).is_err() {
+        return 0;
+    }
+    let got = load_json(&taking);
+    let _ = fs::remove_file(&taking);
+    let new: Vec<Value> = got["ideas"].as_array().cloned().unwrap_or_default();
+    if !all.is_object() {
+        *all = json!({});
+    }
+    let old = all["ideas"]["data"].clone();
+    let mut list: Vec<Value> = old["ideas"].as_array().cloned().unwrap_or_default();
+    let mut want = old["want"].as_u64().unwrap_or(list.len() as u64);
+    let mut n = 0;
+    for x in new.into_iter().rev() {
+        let t = x["title"].as_str().unwrap_or("").trim().to_lowercase();
+        if t.is_empty() || list.iter().any(|y| y["title"].as_str().unwrap_or("").trim().to_lowercase() == t) {
+            continue;
+        }
+        list.insert(0, x);
+        want += 1;
+        n += 1;
+    }
+    if n > 0 {
+        all["ideas"] = json!({"at": now() * 1000, "data": {"ideas": list, "want": want}});
+    }
+    n
 }
 
 fn open_folder(d: &Path) {
@@ -4865,6 +4915,20 @@ fn parse_csv(text: &str, data: &mut Value) -> Option<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn claude_inbox_goes_to_front_of_ideas_once() {
+        let dir = std::env::temp_dir().join(format!("terra-inbox-{}", std::process::id()));
+        let _ = fs::create_dir_all(&dir);
+        fs::write(dir.join("claude-inbox.json"), r#"{"ideas":[{"title":"Epicyon: Biggest Dog","subject":"Epicyon"},{"title":"Old one","subject":"X"}]}"#).unwrap();
+        let mut all = json!({"ideas":{"at":1,"data":{"ideas":[{"title":"Old one","subject":"X"}],"want":1}}});
+        assert_eq!(take_claude_inbox(&dir, &mut all), 1);
+        assert_eq!(all["ideas"]["data"]["ideas"][0]["title"], "Epicyon: Biggest Dog");
+        assert_eq!(all["ideas"]["data"]["want"], 2);
+        assert!(!dir.join("claude-inbox.json").exists());
+        assert_eq!(take_claude_inbox(&dir, &mut all), 0);
+        let _ = fs::remove_dir_all(&dir);
+    }
 
     #[test]
     fn currency_header_is_sanitised() {

@@ -1,8 +1,8 @@
-TERRA STUDIO 2.8.0 (Windows 10/11, 64-bit)
+TERRA STUDIO 2.9.0 (Windows 10/11, 64-bit)
 ==========================================
 
 INSTALL
-Easiest: double-click TerraStudio-Setup-2.8.0.exe, then Next and Install.
+Easiest: double-click TerraStudio-Setup-2.9.0.exe, then Next and Install.
 No admin rights needed. A "Terra Studio" shortcut appears in the Start
 Menu and on the desktop. Uninstall through Settings > Apps.
 Zip version (no install): click "Extract all" first; do not run
@@ -12,6 +12,28 @@ UPDATING
 Run the new installer, or extract the new zip and open TerraStudio.exe.
 If the old version is still running, the new one closes it. Your data and
 settings are kept (they live in %APPDATA%\TerraStudio).
+
+NEW IN 2.9
+- Ideas no longer suggests animals you already made or already have in
+  the calendar. Videos in the calendar now count, "Dire Wolf vs.
+  Short-Faced Bear" counts for both animals, and an idea list older
+  than a day says so ("This is the saved list from ..."). Press Find
+  ideas once after updating so every video is looked up.
+- Scripts are 3,000 to 5,000 words: 4,000 is the default (about 15
+  minutes), with 3,000 / 4,000 / 5,000 buttons.
+- Channel rules: every AI button follows the same house rules as the
+  Terra skill file (topics, titles, thumbnails, 5-act scripts).
+- Claude Desktop: Settings > Claude Desktop > Add to Claude, then
+  Install in Claude. In a Claude chat you can then talk about topics
+  with your real channel data, and send ideas you like to the Ideas tab
+  (marked From Claude). Claude cannot delete or upload anything.
+- Check before upload (Make video > Upload): the AI checks facts in the
+  script, title, description and tags; the app checks chapters and the
+  number of thumbnails. KIE.ai or free copy-paste to claude.ai.
+- After publishing (Dashboard): CTR of your newest videos. YouTube's
+  connection does not give CTR, so type it from YouTube Studio. Below
+  4%, Make 3 thumbnails opens the Thumbnail step so you can test them
+  with YouTube Studio's Test & Compare.
 
 NEW IN 2.8
 - Edit pack: the top box now says how many acts are voiced, what is

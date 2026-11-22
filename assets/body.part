@@ -21,7 +21,7 @@
     <div class="rail-sp"></div>
     <button type="button" class="rail-plus" id="rail-plus" aria-label="New content plan" data-tip="New plan"><i aria-hidden="true">+</i><span>New plan</span></button>
     <button type="button" class="skin" id="skin-tog" role="switch" aria-checked="false" aria-label="Dark look" data-tip="Switch light / dark"><u aria-hidden="true"><i class="sun"><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="2.5"/><path d="M7 .75v1.5M7 11.75v1.5M.75 7h1.5M11.75 7h1.5M2.6 2.6l1.05 1.05M10.35 10.35l1.05 1.05M2.6 11.4l1.05-1.05M10.35 3.65l1.05-1.05"/></svg></i><i class="moon"><svg viewBox="0 0 14 14"><path d="M12.25 8.4A5.6 5.6 0 0 1 5.6 1.75a5.6 5.6 0 1 0 6.65 6.65"/></svg></i></u><span id="skin-name">Light look</span></button>
-    <p class="ver">v2.8.0</p>
+    <p class="ver">v2.9.0</p>
   </aside>
   <aside class="side" aria-label="Calendar and schedule">
     <div class="box calw">
@@ -62,6 +62,11 @@
         <div class="next noimg" id="td-next"></div>
         <div class="box"><h2>Production status</h2><ul class="stg5" id="td-stg"></ul></div>
       </div>
+    </div>
+    <div class="box" id="td-after" hidden>
+      <div class="bx-hd"><div><h2>After publishing</h2><p class="sub">CTR of your newest videos. Below 4%: test 3 new thumbnails in YouTube Studio's Test &amp; Compare. The app never changes anything on YouTube.</p></div></div>
+      <div id="af-list" class="af-list"></div>
+      <details class="af-how"><summary>How to start Test &amp; Compare</summary><ol class="steps"><li>Open YouTube Studio, Content, and click the video.</li><li>Under Thumbnail, click <strong>Test &amp; compare</strong>.</li><li>Upload the 3 thumbnails from the video's 06 Thumbnail folder, then click Done. YouTube picks the winner by watch time, usually within 2 weeks.</li></ol></details>
     </div>
     <div class="box gw" id="td-grow" hidden>
       <div class="bx-hd"><div><h2>How to get more views</h2><p class="sub">Ranked by how much it should help, from your own numbers. Do them top to bottom.</p></div><span class="sub gw-upd" id="gw-upd"></span></div>
@@ -391,6 +396,14 @@
           </div>
           <div class="vd-tool" data-tool="upload" hidden>
       <div class="box">
+        <h4>Check before upload</h4>
+        <p class="sub">The AI checks the facts in the script, the title, description and tags. The app checks chapters and thumbnails itself. It only gives a list; you decide.</p>
+        <div data-runw="upcheck"></div>
+        <div class="chips" style="margin-top:10px"><button type="button" class="btn" id="mk-upcheck" data-run="upcheck">Check before upload</button></div>
+        <div class="status" id="s-upcheck" role="status"></div>
+        <div id="o-upcheck"></div>
+      </div>
+      <div class="box">
         <h4>Checklist before upload</h4>
         <p class="sub">Saved per video. The app never uploads anything; you still upload yourself in YouTube Studio.</p>
         <ul class="check" id="mk-pub" style="margin-top:10px"></ul>
@@ -594,6 +607,15 @@
         <div id="cfg-itest-out"></div>
       </form>
 
+      <div class="tool" id="f-claude">
+        <h2>Claude Desktop</h2>
+        <p class="hint">Talk about topics in Claude Desktop with your own channel data. Claude can read your numbers, videos, calendar and ideas, check if an animal is already made, and send an idea you agree on to the Ideas tab. It cannot delete or upload anything. Uses your claude.ai subscription, no extra cost.</p>
+        <ol class="steps"><li>Click <strong>Add to Claude</strong>. Claude Desktop opens and shows Terra Studio.</li><li>Click <strong>Install</strong> there. Done, once.</li><li>In a new Claude chat, ask for example: "Which topic fits December? Not one I already made."</li></ol>
+        <div class="chips"><button class="btn" type="button" id="claude-add">Add to Claude</button></div>
+        <p class="note">Needs the Claude Desktop app on this PC. Ideas from Claude show in Ideas, marked From Claude, the next time the app opens or you open Ideas.</p>
+        <div class="status" id="s-claude" role="status"></div>
+      </div>
+
       <form class="tool" id="f-yt">
         <h2>YouTube Studio</h2>
         <p class="hint" id="yt-state">Connect the channel so the numbers on the Dashboard and in Data &amp; money update by themselves, without manual exports.</p>
@@ -706,6 +728,12 @@ $("#nav-tog").addEventListener("click",()=>setNav(!navOpen()));
 document.addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&!e.altKey&&!e.shiftKey&&e.key.toLowerCase()==="b"){e.preventDefault();setNav(!navOpen())}});
 document.addEventListener("click",e=>{const g=e.target.closest("[data-goto]");if(g)show(g.dataset.goto)});
 
+/* Terra house rules: the same rules as the Terra skill file that Claude Desktop reads (assets/terra-skill.md). */
+const TERRA_RULES=`House rules for this channel:
+- Topics: lead with a giant prehistoric mammal predator, with a threat-to-humans or size/record angle; only use the threat angle when the evidence supports it, and say when evidence is debated. Never repeat an animal the channel already made or already has in the calendar.
+- Titles: under 60 characters, name the animal or what it was, one hook (threat, record or a number), honest, no ALL CAPS words, no "shocking", no question-only titles.
+- Thumbnails: one animal, big, facing the viewer or attacking; a human or ancestor for scale when the angle is a threat; 2 to 4 words of large high-contrast text that does not repeat the title; dark natural palette; no arrows, circles or shocked faces.
+- Scripts: 3,000 to 5,000 words (4,000 is about 15 minutes), 5 acts, each act ends with an open loop; cold open with danger in the first 15 seconds; something to hold on to every 80 words; numbers in digits; never invent numbers or quotes.`;
 /* prompt context from the profile */
 function channelContext(){
   const p=CFG.profile||{},lines=[];
@@ -719,6 +747,7 @@ function channelContext(){
   if(p.style)lines.push("Narration style: "+p.style);
   lines.push("Keep facts accurate; flag anything uncertain instead of inventing it.");
   lines.push("Writing rules: no em dashes or en dashes (use commas, periods, colons or parentheses); no hype words (unlock, delve, journey, testament, revolutionary, seamless, mind-blowing, game-changer); no \"it's not just X, it's Y\" constructions; no runs of short dramatic fragments; no forced lists of three; no emojis; no invented numbers, dates, names or quotes.");
+  lines.push(TERRA_RULES);
   lines.push("Write every field in English.");
   return lines.join("\n");
 }
@@ -752,7 +781,7 @@ function costTag(u,k){if(runCopy(k))return "";if(CFG.provider==="gemini")return 
   return ` (about Rp${nf(Math.max(1,Math.round(costRp(CFG.model,u,CFG.provider)/10)*10))})`}
 /* Run with: each AI button runs with the AI set in Settings, or by copy and paste with claude.ai.
    The last choice is kept per button; the default is Settings. */
-const RUN_EST={post:[1200,300],pics:[2500,1500],ideas:[2600,2000],auto:[9000,6000],titles:[1400,300],hook:[1800,700],script:[8000,5200],full:[7000,4200],check:[1500,200],ig:[4500,1400],gen:[1500,900],thumb:[1300,900],seo:[2000,1700],shorts:[1500,1100],ai:[5000,1800]};
+const RUN_EST={upcheck:[13000,900],post:[1200,300],pics:[2500,1500],ideas:[2600,2000],auto:[9000,6000],titles:[1400,300],hook:[1800,700],script:[8000,5200],full:[7000,4200],check:[1500,200],ig:[4500,1400],gen:[1500,900],thumb:[1300,900],seo:[2000,1700],shorts:[1500,1100],ai:[5000,1800]};
 const RUN_MANY={auto:"In copy mode, Make script in 1 click takes 3 pastes: the topic, the outline, then the script.",script:"In copy mode this takes 2 pastes: the outline, then the script."};
 const provName=()=>({kie:"KIE.ai",claude:"Claude",gemini:"Gemini"})[CFG.provider]||"AI";
 const runCopy=k=>!CFG.provider||!!k&&store.get("run-"+k,"app")==="copy";
@@ -837,8 +866,9 @@ const pubAnimals=()=>{const m=aniMap();return madeVids().filter(v=>m[v.t]).map(v
 // The newest published long video about the same animal: by the mapping, else (titles not mapped yet) by a name word in the title.
 function madeOf(x,mapOnly){const nm=new Set(ideaNames(x)),newest=a=>a.sort((p,q)=>(q.d||"").localeCompare(p.d||""))[0]||null;
   const hit=newest(pubAnimals().filter(a=>a.names.some(n=>nm.has(n))).map(a=>a.v));if(hit||mapOnly)return hit;
-  const m=aniMap(),key=String(x.subject||"").trim().split(/[\s,(]+/).find(w=>w.length>=4)||"";
-  return key?newest(madeVids().filter(v=>!(m[v.t]?.g||m[v.t]?.n?.length)&&(v.t||"").toLowerCase().includes(key.toLowerCase()))):null}
+  // Titles not mapped yet (for example a new calendar entry): look for the animal's name or a common name in the title.
+  const m=aniMap(),keys=[String(x.subject||"").trim().split(/[\s,(]+/).find(w=>w.length>=4)||"",...(Array.isArray(x.names)?x.names:[]).map(n=>String(n).trim()).filter(n=>n.length>=5&&/\s/.test(n))].map(k=>k.toLowerCase()).filter(Boolean);
+  return keys.length?newest(madeVids().filter(v=>!(m[v.t]?.g||m[v.t]?.n?.length)&&keys.some(k=>(v.t||"").toLowerCase().includes(k)))):null}
 function aniMerge(list,asked){const m={...aniMap()},want=new Map(asked.map(t=>[t.trim().toLowerCase(),t.trim()]));let n=0;
   for(const a of Array.isArray(list)?list:[]){const t=want.get(String(a?.title||"").trim().toLowerCase());if(!t||(m[t]&&(m[t].g||m[t].n?.length)))continue;
     m[t]={g:String(a.genus||"").trim().slice(0,60),n:(Array.isArray(a.names)?a.names:[]).map(x=>String(x).trim().slice(0,60)).filter(Boolean).slice(0,6)};n++}
@@ -846,14 +876,14 @@ function aniMerge(list,asked){const m={...aniMap()},want=new Map(asked.map(t=>[t
   return n?remember("_animals",m).catch(()=>{}):null}
 function aniAvoid(){const m=aniMap(),seen=new Set(),out=[];for(const v of madeVids()){const a=m[v.t];if(!a||!(a.g||a.n?.length))continue;const k=aniNorm(a.g||a.n[0]);if(seen.has(k))continue;seen.add(k);out.push(a.g?a.g+(a.n?.length?` (${a.n.slice(0,2).join(", ")})`:""):a.n.join(", "))}return out}
 function renderIdeas(list,want){
-  const all=list,made=[];list=all.filter(x=>{const v=madeOf(x,true);if(v)made.push([x,v]);return !v}).slice(0,want||all.length);
+  const all=list,made=[];list=all.filter(x=>{const v=madeOf(x);if(v)made.push([x,v]);return !v}).slice(0,want||all.length);
   const lf=madeVids(),known=lf.filter(v=>aniMap()[v.t]).length;
   const note=lf.length?`<div class="card ani-note"><b>Animals you already made are left out</b><p class="note">${made.length?`${plural(made.length,"idea")} ${made.length===1?"was":"were"} about an animal you already made or planned (${esc([...new Set(made.map(([x])=>x.subject||x.genus))].join(", "))}), so ${made.length===1?"it is":"they are"} not shown. `:""}The app knows the animal behind ${nf(known)} of your ${plural(lf.length,"video")} (published and in the calendar).${known<lf.length?" The rest are looked up the next time you press Find ideas.":""} Press Update Studio data after an upload so the newest video counts too.</p></div>`:"";
   if(!list.length){$("#o-ideas").innerHTML=head("Next topics")+note+`<div class="empty">Every idea in this list is about an animal you already made or planned. Press <strong>Find ideas</strong> again.</div>`;return}
   const dates=schedule(list.length,+$("#ideas-freq").value,$("#ideas-start").value||new Date().toISOString().slice(0,10));
   const plan=list.map((x,i)=>`${dates[i].toISOString().slice(0,10)}  ${x.title}`).join("\n");
   const scored=list.map((x,i)=>({...x,date:isoDay(dates[i]),...fitOf(x)})).sort((a,b)=>b.score-a.score);
-  $("#o-ideas").innerHTML=head("Next topics, sorted by score")+note+`<div class="idea-list">${scored.map(x=>`<article class="idea2"><div class="fit" style="--p:${x.score*20}" role="img" aria-label="Score ${x.score} out of 5"><span>${x.score}</span></div><div style="min-width:0"><h3>${esc(x.title)}</h3><div class="tags">${x.tags.map(([ok,t])=>`<span class="tag ${ok?"y":"n"}">${ok?"✓ ":""}${esc(t)}</span>`).join("")}</div><p class="note" style="margin:8px 0 0"><strong>Hook:</strong> ${esc(x.hook)}</p><p class="note" style="margin:4px 0 0">${esc(x.why)}</p></div><div class="idea-act"><button type="button" class="btn${x.score<3?" ghost":""}" data-start="${esc(x.title)}" data-topic="${esc(x.subject||"")}" data-date="${x.date}">Start video</button><button type="button" class="btn ghost" data-plan="${esc(x.title)}" data-date="${x.date}">To calendar, ${esc(fmtShort(x.date))}</button></div></article>`).join("")}</div><div class="chips"><button type="button" class="btn ghost" id="plan-all">Add all to calendar</button></div>`+copyBox("Schedule (copy to your notes or calendar)",plan);
+  $("#o-ideas").innerHTML=head("Next topics, sorted by score")+note+`<div class="idea-list">${scored.map(x=>`<article class="idea2"><div class="fit" style="--p:${x.score*20}" role="img" aria-label="Score ${x.score} out of 5"><span>${x.score}</span></div><div style="min-width:0"><h3>${esc(x.title)}</h3><div class="tags">${x.from==="claude"?`<span class="tag y">From Claude</span>`:""}${x.tags.map(([ok,t])=>`<span class="tag ${ok?"y":"n"}">${ok?"✓ ":""}${esc(t)}</span>`).join("")}</div><p class="note" style="margin:8px 0 0"><strong>Hook:</strong> ${esc(x.hook)}</p><p class="note" style="margin:4px 0 0">${esc(x.why)}</p></div><div class="idea-act"><button type="button" class="btn${x.score<3?" ghost":""}" data-start="${esc(x.title)}" data-topic="${esc(x.subject||"")}" data-date="${x.date}">Start video</button><button type="button" class="btn ghost" data-plan="${esc(x.title)}" data-date="${x.date}">To calendar, ${esc(fmtShort(x.date))}</button></div></article>`).join("")}</div><div class="chips"><button type="button" class="btn ghost" id="plan-all">Add all to calendar</button></div>`+copyBox("Schedule (copy to your notes or calendar)",plan);
 }
 const fmtShort=iso=>new Date(iso+"T12:00:00").toLocaleDateString("en-US",{day:"numeric",month:"short"});
 // Score an idea against the winners' pattern. The AI only says what the animal is; the app checks the channel history itself.
@@ -2192,7 +2222,7 @@ function renderToday(){if(!$("#td-kpis"))return;const has=uploads().length>=6,dl
   else{const sc=Math.max(40,Math.max(n.wS||0,n.rS||0)*1.2);
     cmp=bar("Share watched, 6 best videos",pctTxt(n.wS),n.wS/sc*100>30?`average ${f1(med(W.map(avdMin)))} min`:"",n.wS/sc*100,"win")+bar("Share watched, last 5 uploads",pctTxt(n.rS),n.rS/sc*100>30?`${f1(med(R.map(avdMin)))} min`:"",n.rS/sc*100,"now")}
   $("#dx-cmp").innerHTML=cmp+`<small>Median values; both bars use the same scale.</small>`;
-  renderGrow(n);renderGrade(n)}
+  renderGrow(n);renderGrade(n);try{renderAfter()}catch{}}
 
 const weekKey=()=>{const d=new Date();d.setDate(d.getDate()-((d.getDay()+6)%7));return isoDay(d)};
 /* How to get more views: plain rules on the channel's own numbers, ranked by the size of the gap.
@@ -2431,6 +2461,7 @@ function vdLoad(id){VD.loaded=id;VD.job="";VD.said="";const p=plans().find(x=>x.
   const o=outlineOf(id);if(o?.acts?.length)renderScript(o);else{lastOutline=null;$("#o-script").innerHTML=VD_EMPTY["#o-script"]}
   const n=narrOf(id);if(n?.narration?.length)renderScriptFull(n);else vdNoNarr();
   if(w.seo?.titles)renderSEO(w.seo);else $("#o-seo").innerHTML=VD_EMPTY["#o-seo"];
+  if(w.upcheck?.items)ucRender(w.upcheck.items);else{const o=$("#o-upcheck");if(o)o.innerHTML="";const st=$("#s-upcheck");if(st)st.textContent=""}
   if(w.flowThumb?.list?.length)renderThumb(w.flowThumb.list);else $("#o-thumb").innerHTML=VD_EMPTY["#o-thumb"];
   if(w.hooks?.length)renderHooks(w.hooks);else $("#o-hook").innerHTML="";
   renderAuto();renderTitles();renderThumbPrev();renderGen();renderRules();renderPub();
@@ -3127,9 +3158,53 @@ document.addEventListener("click",e=>{const b=e.target.closest("#vd [data-ed-ope
 const RENDER={ideas:d=>d?.ideas?.length&&"subject" in d.ideas[0]&&(renderIdeas(d.ideas,d.want),true),shorts:d=>d?.shorts?.length&&(renderShorts(d.shorts),true),ai:d=>d&&(renderAI(d),true)};
 async function loadLast(){const j=await api("/api/last");if(!j||j.error)return;LAST=j;
   for(const [k,f] of Object.entries(RENDER)){const r=LAST[k];if(!r)continue;try{if(f(r.data)){const st=$("#s-"+k);if(st){st.className="status";const when=new Date(r.at).toLocaleString("en-US",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
-    // A saved idea list is shown again on every start; after 3 days say plainly that it is old and how to get new ones.
-    st.textContent=k==="ideas"&&Date.now()-r.at>3*864e5?`This is the saved list from ${when}, not new ideas. Press Find ideas for a fresh list.`:"Last result, made "+when+". No credit is used again."}}}catch{}}
+    // A saved idea list is shown again on every start; after a day say plainly that it is old and how to get new ones.
+    st.textContent=k==="ideas"&&Date.now()-r.at>864e5?`This is the saved list from ${when}, not new ideas. Press Find ideas for a fresh list.`:"Last result, made "+when+". No credit is used again."}}}catch{}}
   $("#cfg-spent").textContent=spentText();$("#cfg-ispent").textContent=imgSpentText()}
+/* 2.9: Terra Studio for Claude Desktop */
+$("#claude-add").addEventListener("click",async()=>{const st=$("#s-claude"),j=await api("/api/claude/install",{method:"POST"});
+  st.className="status"+(j?.error?" err":"");st.textContent=j?.error||"Claude Desktop should now show Terra Studio. Click Install there. If nothing opens, install Claude Desktop from claude.ai/download first, then click Add to Claude again."});
+
+/* 2.9: Check before upload. The AI checks facts, title, description and tags; the app checks the files itself. */
+const UC_NUM=/\b\d+(?:[.,]\d+)?\b/;
+function ucLocal(w,p){const out=[],t=w.pick||p?.title||"",d=w.seo?.description||"",tags=w.seo?.tags||[];
+  out.push(t?(t.length<=60?["ok",`Title is ${t.length} characters`]:["bad",`Title is ${t.length} characters`,"Keep it under 60 so it is not cut on phones."]):["bad","No title chosen","Pick one in Title & thumbnail text."]);
+  out.push(d?(/\b\d{1,2}:\d{2}\b/.test(d)?["ok","Description has chapters"]:["bad","No chapters in the description","chapters.txt is in 08 Premiere. Paste it in."]):["bad","No description yet","Make it in the SEO step."]);
+  out.push(tags.length>=5?["ok",`${tags.length} tags`]:["warn",`Only ${tags.length} tags`,"Add the genus, common names, era, prehistoric and documentary."]);
+  const n=(w.thumbs||0);out.push(n>=3?["ok",`${n} thumbnails saved for Test & Compare`]:["warn",n?`Only ${n} thumbnail${n===1?"":"s"} in 06 Thumbnail`:"No thumbnail in 06 Thumbnail yet","Test & Compare takes 3. Make more in the Thumbnail step."]);
+  return out}
+const ucThumbs=async()=>(await vtList(mkId())).length;
+function ucRender(items){const ic={ok:"✓",bad:"!",warn:"!"};$("#o-upcheck").innerHTML=`<div class="ucl">${items.map(([lv,t,fix])=>`<div class="uc ${lv}"><i aria-hidden="true">${ic[lv]||"·"}</i><span>${esc(t)}<span class="sr">${lv==="ok"?", fine":", needs a look"}</span>${fix?`<small>${esc(fix)}</small>`:""}</span></div>`).join("")}</div>`}
+$("#mk-upcheck").addEventListener("click",async e=>{const id=mkId(),w=mkW(),p=mkPlan(),st=$("#s-upcheck"),btn=e.currentTarget;
+  const thumbs=await ucThumbs().catch(()=>0);const local=ucLocal({...w,thumbs},p);ucRender(local);
+  const f=narrOf(id),script=narrText(f);
+  if(!script){st.className="status";st.textContent="The script is not written yet, so only the title, description, tags and thumbnails were checked.";return}
+  const d=await ask(st,btn,`Check this video before upload. Title: ${JSON.stringify(w.pick||p?.title||"")}. Thumbnail text: ${JSON.stringify(w.thumb||"")}.
+Description: ${JSON.stringify((w.seo?.description||"").slice(0,4000))}
+Tags: ${JSON.stringify(w.seo?.tags||[])}
+Script (narration): ${JSON.stringify(script.slice(0,40000))}
+Find: claims or numbers that are wrong or need a source or a range, ideas presented as fact that are debated, a title or thumbnail promise the script does not pay off, a description whose first two lines do not name the animal and the hook, tags that are missing obvious names (genus, common names, era). List at most 8 items, the most important first. Do not list things that are fine, except one item with level "ok" when the facts look right.
+JSON shape: {"items":[{"level":"bad|warn|ok","text":"short finding","fix":"what to change, one sentence"}]}`,null);
+  if(!d?.items?.length||mkId()!==id)return;const items=[...d.items.map(x=>[["bad","warn","ok"].includes(x.level)?x.level:"warn",x.text||"",x.fix||""]),...local];
+  work(id).upcheck={items,at:Date.now()};saveWork();ucRender(items)});
+
+/* 2.9: After publishing. YouTube's connection gives no CTR, so the newest videos take the CTR typed from YouTube Studio. */
+const CTR_GOAL=4;
+const ctrTyped=()=>LAST._ctr?.data||{};
+function renderAfter(){const el=$("#td-after");if(!el)return;const now=Date.now(),lf=longForm().filter(v=>v.d&&now-new Date(v.d+"T12:00:00")<21*864e5).sort((a,b)=>b.d.localeCompare(a.d)).slice(0,4);
+  if(!lf.length){el.hidden=true;return}el.hidden=false;const typed=ctrTyped();
+  $("#af-list").innerHTML=lf.map(v=>{const t=(v.t||"").trim(),k=t.toLowerCase(),c=v.ctr!=null?+v.ctr:typed[k]?.ctr,age=Math.floor((now-new Date(v.d+"T12:00:00"))/36e5),early=age<48;
+    const low=c!=null&&c<CTR_GOAL;
+    return `<div class="af"><div class="af-h"><b>${esc(t)}</b><span class="tag ${c==null?"":low?"n2":"y"}">${c==null?(early?"Wait until 48 h":"CTR not known yet"):`CTR ${f1(c)}% · goal ${CTR_GOAL}%`}</span></div>
+      ${c==null&&!early?`<label class="af-in">CTR from YouTube Studio (%)<input type="number" step="0.1" min="0" max="30" inputmode="decimal" data-ctr="${esc(k)}" placeholder="e.g. 2.4"></label><p class="note">YouTube's connection does not give CTR. Open the video in YouTube Studio, Analytics, Reach, and type the impressions click-through rate here.</p>`:""}
+      ${low?`<p class="note">Below your goal${age>=48?" after 48 hours":""}. Make 3 new thumbnails with different angles and test them in YouTube Studio's Test &amp; Compare.</p><div class="chips"><button type="button" class="btn" data-af-thumbs="${esc(t)}" data-af-date="${esc(v.d)}">Make 3 thumbnails</button></div>`:c!=null?`<p class="note">On or above your goal. Leave the thumbnail as it is.</p>`:""}</div>`}).join("")}
+document.addEventListener("change",async e=>{const i=e.target.closest?.("input[data-ctr]");if(!i)return;const v=parseFloat(String(i.value).replace(",","."));if(!(v>=0&&v<=30))return;
+  await remember("_ctr",{...ctrTyped(),[i.dataset.ctr]:{ctr:v,at:Date.now()}});renderAfter()});
+document.addEventListener("click",async e=>{const b=e.target.closest("[data-af-thumbs]");if(!b)return;const t=b.dataset.afThumbs,k=t.trim().toLowerCase();
+  let p=plans().find(x=>(x.title||"").trim().toLowerCase()===k);
+  if(!p){p={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),title:t,date:b.dataset.afDate||isoDay(new Date()),type:"video",status:"tayang",note:"Published. New thumbnails for Test & Compare."};await savePlans([...plans(),p])}
+  openMake(p.id,"thumb")});
+
 api("/api/skin?skin="+(isDark()?"batu":"terang"),{method:"POST"});
 (async()=>{if(!store.get("sw3k",false)){if(store.get("sw",4000)<3000)store.set("sw",4000);store.set("sw3k",true)}$("#script-words").value=Math.min(8000,Math.max(500,store.get("sw",4000)));scriptLen();skinName();setNav(navOpen());await loadConfig();await loadData();await loadLast();await vdMigrateLast().catch(()=>{});thumbFollow().catch(()=>{});show(store.get("ver2",false)?store.get("tab","today"):"today",true);store.set("ver2",true);
   if(CFG.yt_connected&&Date.now()/1000-(CFG.yt_synced||0)>6*3600)ytSync(null,null)})();
