@@ -286,10 +286,10 @@
       <label for="script-topic">Video topic<input id="script-topic" required></label>
       <label for="script-angle">Story angle (optional)<textarea id="script-angle" placeholder="Leave empty and AI picks the strongest"></textarea></label>
       <div class="row2">
-        <label for="script-words">Target words<input id="script-words" type="number" min="500" max="8000" step="100" value="2000"></label>
+        <label for="script-words">Target words<input id="script-words" type="number" min="500" max="8000" step="100" value="4000"></label>
         <label for="script-acts">Number of acts<input id="script-acts" type="number" min="3" max="7" value="5"></label>
       </div>
-      <div class="chips" id="script-len" role="group" aria-label="Script length options"><button type="button" class="btn ghost" data-w="2000">2,000 words · 14 min</button><button type="button" class="btn ghost" data-w="3000">3,000 words · 21 min</button><button type="button" class="btn ghost" data-w="4500">4,500 words · 32 min</button></div>
+      <div class="chips" id="script-len" role="group" aria-label="Script length options"><button type="button" class="btn ghost" data-w="3000">3,000 words · 11 min</button><button type="button" class="btn ghost" data-w="4000">4,000 words · 15 min</button><button type="button" class="btn ghost" data-w="5000">5,000 words · 19 min</button></div>
       <p class="note" id="script-len-note"></p>
       <label for="script-tone">Tone
         <select id="script-tone"><option>Cinematic, awe and mystery</option><option>Investigative, evidence-led</option><option>Survival drama</option><option>Calm, sleep-friendly narration</option></select>
@@ -830,22 +830,26 @@ const aniNorm=s=>{const w=String(s||"").toLowerCase().replace(/[^a-z0-9 ]+/g," "
   if(w.length){const l=w[w.length-1];w[w.length-1]=/[^aeiou]ves$/.test(l)&&l.length>5?l.slice(0,-3)+"f":/[^su]s$/.test(l)&&l.length>4?l.slice(0,-1):l}return w.join(" ")};
 const aniNames=(g,names)=>{const out=new Set(),raw=String(g||"").trim();if(raw){out.add(aniNorm(raw));if(/^[A-Z][a-z]+ [a-z]+$/.test(raw))out.add(aniNorm(raw.split(" ")[0]))}for(const n of names||[]){const x=aniNorm(n);if(x.length>=3)out.add(x)}return [...out].filter(x=>x.length>=3)};
 const ideaNames=x=>aniNames(x.genus,[x.subject,...(Array.isArray(x.names)?x.names:[])]);
-const pubAnimals=()=>{const m=aniMap();return longForm().filter(v=>m[v.t]).map(v=>({v,names:aniNames(m[v.t].g,m[v.t].n)})).filter(a=>a.names.length)};
+// Calendar videos count too: an idea already planned or in progress is not new. Plans carry no view data, so plan:true.
+const calVids=()=>plans().filter(p=>p.type==="video"&&p.title&&p.status!=="tayang").map(p=>({t:p.title.trim(),d:p.date||"",plan:true}));
+const madeVids=()=>[...longForm().map(v=>({...v,t:(v.t||"").trim()})),...calVids()];
+const pubAnimals=()=>{const m=aniMap();return madeVids().filter(v=>m[v.t]).map(v=>({v,names:aniNames(m[v.t].g,m[v.t].n)})).filter(a=>a.names.length)};
 // The newest published long video about the same animal: by the mapping, else (titles not mapped yet) by a name word in the title.
 function madeOf(x,mapOnly){const nm=new Set(ideaNames(x)),newest=a=>a.sort((p,q)=>(q.d||"").localeCompare(p.d||""))[0]||null;
   const hit=newest(pubAnimals().filter(a=>a.names.some(n=>nm.has(n))).map(a=>a.v));if(hit||mapOnly)return hit;
   const m=aniMap(),key=String(x.subject||"").trim().split(/[\s,(]+/).find(w=>w.length>=4)||"";
-  return key?newest(longForm().filter(v=>!(m[v.t]?.g||m[v.t]?.n?.length)&&(v.t||"").toLowerCase().includes(key.toLowerCase()))):null}
-function aniMerge(list,asked){const m={...aniMap()},want=new Map(asked.map(t=>[t.toLowerCase(),t]));let n=0;
-  for(const a of Array.isArray(list)?list:[]){const t=want.get(String(a?.title||"").trim().toLowerCase());if(!t||m[t])continue;
+  return key?newest(madeVids().filter(v=>!(m[v.t]?.g||m[v.t]?.n?.length)&&(v.t||"").toLowerCase().includes(key.toLowerCase()))):null}
+function aniMerge(list,asked){const m={...aniMap()},want=new Map(asked.map(t=>[t.trim().toLowerCase(),t.trim()]));let n=0;
+  for(const a of Array.isArray(list)?list:[]){const t=want.get(String(a?.title||"").trim().toLowerCase());if(!t||(m[t]&&(m[t].g||m[t].n?.length)))continue;
     m[t]={g:String(a.genus||"").trim().slice(0,60),n:(Array.isArray(a.names)?a.names:[]).map(x=>String(x).trim().slice(0,60)).filter(Boolean).slice(0,6)};n++}
+  if(!m.__v2){m.__v2={g:"",n:[]};n++}
   return n?remember("_animals",m).catch(()=>{}):null}
-function aniAvoid(){const m=aniMap(),seen=new Set(),out=[];for(const v of longForm()){const a=m[v.t];if(!a||!(a.g||a.n?.length))continue;const k=aniNorm(a.g||a.n[0]);if(seen.has(k))continue;seen.add(k);out.push(a.g?a.g+(a.n?.length?` (${a.n.slice(0,2).join(", ")})`:""):a.n.join(", "))}return out}
+function aniAvoid(){const m=aniMap(),seen=new Set(),out=[];for(const v of madeVids()){const a=m[v.t];if(!a||!(a.g||a.n?.length))continue;const k=aniNorm(a.g||a.n[0]);if(seen.has(k))continue;seen.add(k);out.push(a.g?a.g+(a.n?.length?` (${a.n.slice(0,2).join(", ")})`:""):a.n.join(", "))}return out}
 function renderIdeas(list,want){
   const all=list,made=[];list=all.filter(x=>{const v=madeOf(x,true);if(v)made.push([x,v]);return !v}).slice(0,want||all.length);
-  const lf=longForm(),known=lf.filter(v=>aniMap()[v.t]).length;
-  const note=lf.length?`<div class="card ani-note"><b>Animals you already made are left out</b><p class="note">${made.length?`${plural(made.length,"idea")} ${made.length===1?"was":"were"} about an animal you already made (${esc([...new Set(made.map(([x])=>x.subject||x.genus))].join(", "))}), so ${made.length===1?"it is":"they are"} not shown. `:""}The app knows the animal behind ${nf(known)} of your ${plural(lf.length,"published long video")}.${known<lf.length?" The rest are looked up the next time you press Find ideas.":""} Press Update Studio data after an upload so the newest video counts too.</p></div>`:"";
-  if(!list.length){$("#o-ideas").innerHTML=head("Next topics")+note+`<div class="empty">Every idea was about an animal you already made. Press <strong>Find ideas</strong> again.</div>`;return}
+  const lf=madeVids(),known=lf.filter(v=>aniMap()[v.t]).length;
+  const note=lf.length?`<div class="card ani-note"><b>Animals you already made are left out</b><p class="note">${made.length?`${plural(made.length,"idea")} ${made.length===1?"was":"were"} about an animal you already made or planned (${esc([...new Set(made.map(([x])=>x.subject||x.genus))].join(", "))}), so ${made.length===1?"it is":"they are"} not shown. `:""}The app knows the animal behind ${nf(known)} of your ${plural(lf.length,"video")} (published and in the calendar).${known<lf.length?" The rest are looked up the next time you press Find ideas.":""} Press Update Studio data after an upload so the newest video counts too.</p></div>`:"";
+  if(!list.length){$("#o-ideas").innerHTML=head("Next topics")+note+`<div class="empty">Every idea in this list is about an animal you already made or planned. Press <strong>Find ideas</strong> again.</div>`;return}
   const dates=schedule(list.length,+$("#ideas-freq").value,$("#ideas-start").value||new Date().toISOString().slice(0,10));
   const plan=list.map((x,i)=>`${dates[i].toISOString().slice(0,10)}  ${x.title}`).join("\n");
   const scored=list.map((x,i)=>({...x,date:isoDay(dates[i]),...fitOf(x)})).sort((a,b)=>b.score-a.score);
@@ -854,7 +858,7 @@ function renderIdeas(list,want){
 const fmtShort=iso=>new Date(iso+"T12:00:00").toLocaleDateString("en-US",{day:"numeric",month:"short"});
 // Score an idea against the winners' pattern. The AI only says what the animal is; the app checks the channel history itself.
 function fitOf(x){const prev=madeOf(x);
-  const tags=[[!!x.mammal,"Mamalia"],[!!x.predator,"Predator"],[!!x.threat,"Threat to humans"],[!!x.size,"Size claim"],[!prev,prev?`Already made ${fmtShort(prev.d)}, ${f1(share(prev))}% watched`:"Never made"]];
+  const tags=[[!!x.mammal,"Mamalia"],[!!x.predator,"Predator"],[!!x.threat,"Threat to humans"],[!!x.size,"Size claim"],[!prev,prev?(prev.plan?`In your calendar${prev.d?", "+fmtShort(prev.d):""}`:`Already made ${fmtShort(prev.d)}, ${f1(share(prev))}% watched`):"Never made"]];
   return {tags,score:tags.filter(t=>t[0]).length}}
 document.addEventListener("click",async e=>{const b=e.target.closest("[data-start]");if(!b)return;
   let p=plans().find(x=>x.title===b.dataset.start);
@@ -862,12 +866,12 @@ document.addEventListener("click",async e=>{const b=e.target.closest("[data-star
   if(b.dataset.topic){work(p.id).topic=b.dataset.topic;saveWork()}
   openMake(p.id,"pkg")});
 $("#f-ideas").addEventListener("submit",async e=>{e.preventDefault();const n=Math.min(12,Math.max(3,+$("#ideas-n").value||6));
-  const m=aniMap(),todo=[...new Set(longForm().map(v=>v.t).filter(t=>t&&!m[t]))].slice(0,60),avoid=aniAvoid();
-  const data=await ask($("#s-ideas"),e.submitter||$("#f-ideas .btn"),`Suggest ${n+2} new video ideas for this channel.${val("#ideas-focus")?" Focus: "+val("#ideas-focus")+".":""} Do not repeat or closely overlap these existing videos: ${val("#ideas-avoid")||"none listed"}.${avoid.length?`
+  const m=aniMap(),redo=!LAST._animals?.data?.__v2,todo=[...new Set(madeVids().map(v=>v.t).filter(t=>t&&t!=="__v2"&&(!m[t]||(redo&&!m[t].g&&!m[t].n?.length))))].slice(0,80),avoid=aniAvoid();
+  const data=await ask($("#s-ideas"),e.submitter||$("#f-ideas .btn"),`Suggest ${n+2} new video ideas for this channel.${val("#ideas-focus")?" Focus: "+val("#ideas-focus")+".":""} Do not repeat or closely overlap these existing videos: ${val("#ideas-avoid")||"none listed"}.${calVids().length?` Also leave out these videos already in the calendar: ${calVids().map(v=>v.t).join("; ")}.`:""} Two ideas about the same kind of animal and the same story (for example two hyena-eats-humans ideas) count as overlap.${avoid.length?`
 Do not suggest any of these animals, the channel already has a video about each: ${avoid.join("; ")}.`:""}
 Base the choices on what has worked for this channel: ${patternText()||"giant prehistoric mammals, predators, framed as a threat to humans or rivals"}. Titles under 60 characters, clickable but honest, naming the animal.
 For each idea also answer honestly about the main animal: "subject" its usual name, "genus" its scientific genus (one word), "names" its other common names in lowercase, "mammal" true if it is a mammal, "predator" true if it hunted or scavenged large prey, "threat" true if the video frames it as a danger to humans or our ancestors (only when the evidence supports it), "size" true if the title states a size, weight or record.
-${todo.length?`Also name the main animal of each of these published video titles: ${JSON.stringify(todo)}. Put them in "published_animals", one entry per title with the title copied exactly; use "" for genus and [] for names when a title is not about one animal.
+${todo.length?`Also name the main animal of each of these published video titles: ${JSON.stringify(todo)}. Put them in "published_animals", one entry per title with the title copied exactly; when a title is about two animals (for example a "vs" title), put the first animal's genus in "genus" and the second animal's genus and common names in "names"; use "" for genus and [] for names only when a title is not about any animal.
 `:""}JSON shape: {"ideas":[{"title":"","subject":"","genus":"","names":[""],"mammal":true,"predator":true,"threat":true,"size":true,"hook":"one-sentence cold-open hook","why":"why it can perform for this channel (English, one sentence)"}]${todo.length?`,"published_animals":[{"title":"","genus":"","names":[""]}]`:""}}`,null);
   if(!data?.ideas?.length)return;await aniMerge(data.published_animals,todo);const keep={ideas:data.ideas,want:n};remember("ideas",keep).catch(()=>{});renderIdeas(keep.ideas,n)});
 
@@ -912,7 +916,7 @@ async function makeVoice(b,force,vid,narr){const st=$("#s-vo"),id=vid??mkId(),f=
   if(VO_RUN.has(id)){say("The voice over for this video is already being made. Wait until it is done.");return null}
   if(!force&&takesOf(id).length){say("This video already has a voice over, so no new one was made. Use Make again in the Voice over step if you really want another take.");return null}
   if(!voice){say("Choose a voice first in Settings, under Voice.",1);return null}
-  VO_RUN.add(id);if(b)b.disabled=true;say("Making the voice over… this takes 1 to 3 minutes for a 2,000-word script. The finished audio is about as long as the video. Do not close the app.");
+  VO_RUN.add(id);if(b)b.disabled=true;say("Making the voice over… this takes 1 to 3 minutes for a 4,000-word script. The finished audio is about as long as the video. Do not close the app.");
   if(mkId()===id)voTool(f);vdSoon();
   try{const folder=await ensureFolder(id);
     const j=await api("/api/eleven/tts",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({title:f.title||"voice over",parts:f.narration.map(p=>p.text),voice,folder})});
@@ -931,7 +935,7 @@ const narrDone=(s,id)=>{const nw=wordsOf(narrText(narrOf(id)));return s.replace(
 // Asked for a whole script in one reply, models stop well short of the target. One call per act keeps each act at its planned length.
 let narrPart=null;
 async function writeFull(b,cp){
-  const id=mkId(),o=lastOutline,w=+$("#script-words").value||2000,st=$("#s-scriptfull"),acts=o.acts||[];
+  const id=mkId(),o=lastOutline,w=+$("#script-words").value||4000,st=$("#s-scriptfull"),acts=o.acts||[];
   if(cp||acts.length<2){
     const data=await ask(st,b,`Write the complete voice-over narration for this documentary, following the outline below act by act. The total must be about ${w} words (not shorter than ${Math.round(w*.9)}); keep each act close to its planned word count, in paragraphs of 70 to 95 words. Spoken style: clear sentences, vivid but accurate, no stage directions, no headings inside the text, no bracketed notes. Open with the cold open. Keep open loops and the soft CTAs where the outline puts them. Mark anything uncertain by phrasing it carefully ("scientists think", "the fossils suggest") rather than inventing facts.
 ${scRules()} The first two sentences name the animal and the danger it posed. Every act except the last ends with a question, with a question mark, in its last two sentences, answered in the next act.
@@ -962,7 +966,7 @@ This act's beats: ${JSON.stringify(a.beats||[])}`;
 // The rules scriptCheck counts, given to the writer so a fresh script passes without fixing.
 const scRules=()=>`Rules the script check counts, follow them exactly: give the listener something to hold on to at least every 80 words, never more than 80 words without one. It counts a concrete number written as digits (like 3, 40 or 1,200), a size comparison with a number in digits, a moment of danger with a word like hunt, kill, attack, predator, prey, bite, blood, death, fear or deadly, or a question with a question mark. Do not invent numbers; when no sure number fits, ask a question. Sentences: average under 22 words, none over 40. No channel intro: no "welcome back", "in this video", "today we" and no request to subscribe.`;
 $("#f-script").addEventListener("submit",e=>{e.preventDefault();runScript(e.submitter||$("#f-script .btn"))});
-async function runScript(btn,copy){const id=mkId(),w=+$("#script-words").value||2000,n=Math.min(7,Math.max(3,+$("#script-acts").value||5)),cp=typeof copy==="boolean"?copy:runCopy("script");
+async function runScript(btn,copy){const id=mkId(),w=+$("#script-words").value||4000,n=Math.min(7,Math.max(3,+$("#script-acts").value||5)),cp=typeof copy==="boolean"?copy:runCopy("script");
   const data=await ask($("#s-script"),btn,`Build a detailed ${n}-act outline for a documentary script. Topic: ${val("#script-topic")}. Central question: ${val("#script-angle")||"choose the strongest one"}. Tone: ${$("#script-tone").value}. Target length: about ${w} words total (act word counts must add up to about ${w}).
 ${hookForScript()}Include a vivid 2-3 sentence cold open that pays off within the first 30 seconds, 3-5 beats per act, open loops across act breaks for retention, at most two soft CTAs (membership or merch from the profile) placed where they don't break the story, a visual/B-roll list, and facts to double-check.
 Also write a "flow_style" line (one sentence, English) fixing one consistent visual style, lighting and camera look for the whole video, and for every act 2-4 "flow_prompts": English text-to-video prompts for Google Flow (Veo), each describing one 8-second shot (subject, action, setting, camera movement, lighting), self-contained (repeat key subject details, no references like "same as before"), scientifically accurate anatomy, no on-screen text, 16:9.
@@ -985,10 +989,10 @@ JSON shape: {"title":"","cold_open":"","flow_style":"","acts":[{"name":"","words
   say("Step 3 of 3: making the voice over…");vdFollow(id,["script","check"],"voice");
   const vo=await makeVoice(mkId()===id?$("#vo-btn"):null,false,id,narrOf(id));say((vo?"Done: the outline, full narration and MP3 voice over are ready. The Flow clip prompts are under the outline.":"Outline and full narration done. The voice over was not made, see the Voice over step.")+sc,!vo);return true}
 // Length presets; the last choice is remembered.
-function scriptLen(){const w=+$("#script-words").value||2000;document.querySelectorAll("#script-len [data-w]").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.w===w));
-  $("#script-len-note").textContent=`${nf(w)} words is roughly ${Math.round(w/140)} minutes of video and ${nf(Math.round(w*6.1/1000)*1000)} characters of ElevenLabs voice over.`}
+function scriptLen(){const w=+$("#script-words").value||4000;document.querySelectorAll("#script-len [data-w]").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.w===w));
+  $("#script-len-note").textContent=`${nf(w)} words is roughly ${Math.round(w*15/4000)} minutes of video (your rule: 4,000 words is about 15 minutes) and ${nf(Math.round(w*6.1/1000)*1000)} characters of ElevenLabs voice over.`}
 $("#script-len").addEventListener("click",e=>{const b=e.target.closest("[data-w]");if(!b)return;$("#script-words").value=b.dataset.w;store.set("sw",+b.dataset.w);scriptLen()});
-$("#script-words").addEventListener("input",e=>{store.set("sw",+e.target.value||2000);scriptLen()});
+$("#script-words").addEventListener("input",e=>{store.set("sw",+e.target.value||4000);scriptLen()});
 
 /* Script check: rules counted in the browser, no AI. They are known weak patterns, not a prediction of retention. */
 const SC_WPM=145,SC_WEAK=110,SC_RISK=180;
@@ -1851,7 +1855,7 @@ $("#cfg-eload").addEventListener("click",async e=>{const st=$("#s-voice"),k=$("#
   $("#cfg-evoice").innerHTML=`<option value="">Choose a voice</option>`+EVOICES.map(v=>`<option value="${esc(v.id)}">${esc(v.name)}${v.desc?", "+esc(v.desc):""}</option>`).join("");$("#cfg-evoice").value=EVOICES.some(v=>v.id===cur)?cur:"";
   const mc=$("#cfg-emodel").value||CFG.eleven_model;$("#cfg-emodel").innerHTML=`<option value="">Automatic: Multilingual v2 (most natural)</option>`+(j.models||[]).map(m=>`<option value="${esc(m.id)}">${esc(m.name)}</option>`).join("");$("#cfg-emodel").value=(j.models||[]).some(m=>m.id===mc)?mc:"";
   const reset=j.reset?new Date(j.reset*1000).toLocaleDateString("en-US",{day:"numeric",month:"long"}):"";
-  $("#eleven-quota").innerHTML=`<div class="qbar" role="img" aria-label="Quota used ${nf(j.used)} of ${nf(j.limit)} characters"><span style="width:${j.limit?Math.min(100,j.used/j.limit*100).toFixed(1):0}%"></span></div>Plan ${esc(j.tier||"-")}: <strong>${nf(j.left)}</strong> of ${nf(j.limit)} characters${reset?", refills "+reset:""}. One 2,000-word video is about 12,000 characters.`;
+  $("#eleven-quota").innerHTML=`<div class="qbar" role="img" aria-label="Quota used ${nf(j.used)} of ${nf(j.limit)} characters"><span style="width:${j.limit?Math.min(100,j.used/j.limit*100).toFixed(1):0}%"></span></div>Plan ${esc(j.tier||"-")}: <strong>${nf(j.left)}</strong> of ${nf(j.limit)} characters${reset?", refills "+reset:""}. One 4,000-word video is about 24,000 characters.`;
   store.set("eq",{left:j.left,limit:j.limit,at:Date.now()});
   st.textContent=`${EVOICES.length} voices loaded. Pick one, listen to the sample, then Save.`;showPreview()});
 $("#f-voice").addEventListener("submit",async e=>{e.preventDefault();const st=$("#s-voice"),k=$("#cfg-ekey").value.trim(),sel=$("#cfg-evoice");
@@ -3122,9 +3126,11 @@ document.addEventListener("click",e=>{const b=e.target.closest("#vd [data-ed-ope
 // Ideas saved by 1.x have no animal facts, so they can't be scored; leave the empty state instead.
 const RENDER={ideas:d=>d?.ideas?.length&&"subject" in d.ideas[0]&&(renderIdeas(d.ideas,d.want),true),shorts:d=>d?.shorts?.length&&(renderShorts(d.shorts),true),ai:d=>d&&(renderAI(d),true)};
 async function loadLast(){const j=await api("/api/last");if(!j||j.error)return;LAST=j;
-  for(const [k,f] of Object.entries(RENDER)){const r=LAST[k];if(!r)continue;try{if(f(r.data)){const st=$("#s-"+k);if(st){st.className="status";st.textContent="Last result, made "+new Date(r.at).toLocaleString("en-US",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})+". No credit is used again."}}}catch{}}
+  for(const [k,f] of Object.entries(RENDER)){const r=LAST[k];if(!r)continue;try{if(f(r.data)){const st=$("#s-"+k);if(st){st.className="status";const when=new Date(r.at).toLocaleString("en-US",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
+    // A saved idea list is shown again on every start; after 3 days say plainly that it is old and how to get new ones.
+    st.textContent=k==="ideas"&&Date.now()-r.at>3*864e5?`This is the saved list from ${when}, not new ideas. Press Find ideas for a fresh list.`:"Last result, made "+when+". No credit is used again."}}}catch{}}
   $("#cfg-spent").textContent=spentText();$("#cfg-ispent").textContent=imgSpentText()}
 api("/api/skin?skin="+(isDark()?"batu":"terang"),{method:"POST"});
-(async()=>{$("#script-words").value=Math.min(8000,Math.max(500,store.get("sw",2000)));scriptLen();skinName();setNav(navOpen());await loadConfig();await loadData();await loadLast();await vdMigrateLast().catch(()=>{});thumbFollow().catch(()=>{});show(store.get("ver2",false)?store.get("tab","today"):"today",true);store.set("ver2",true);
+(async()=>{if(!store.get("sw3k",false)){if(store.get("sw",4000)<3000)store.set("sw",4000);store.set("sw3k",true)}$("#script-words").value=Math.min(8000,Math.max(500,store.get("sw",4000)));scriptLen();skinName();setNav(navOpen());await loadConfig();await loadData();await loadLast();await vdMigrateLast().catch(()=>{});thumbFollow().catch(()=>{});show(store.get("ver2",false)?store.get("tab","today"):"today",true);store.set("ver2",true);
   if(CFG.yt_connected&&Date.now()/1000-(CFG.yt_synced||0)>6*3600)ytSync(null,null)})();
 </script>
