@@ -1149,4 +1149,6 @@ section.tl-box h4{margin:0 0 8px;font:700 15px var(--f-body)}
 .tlock-t{font-size:18px;font-weight:700;margin:0}
 .topts{display:grid;gap:8px;margin-top:12px}
 .tnext{display:grid;gap:8px;justify-items:start;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+.vd-nextbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
+.vd-nextbar .note{margin:0}
 </style>

@@ -21,7 +21,7 @@
     <div class="rail-sp"></div>
     <button type="button" class="rail-plus" id="rail-plus" aria-label="New content plan" data-tip="New plan"><i aria-hidden="true">+</i><span>New plan</span></button>
     <button type="button" class="skin" id="skin-tog" role="switch" aria-checked="false" aria-label="Dark look" data-tip="Switch light / dark"><u aria-hidden="true"><i class="sun"><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="2.5"/><path d="M7 .75v1.5M7 11.75v1.5M.75 7h1.5M11.75 7h1.5M2.6 2.6l1.05 1.05M10.35 10.35l1.05 1.05M2.6 11.4l1.05-1.05M10.35 3.65l1.05-1.05"/></svg></i><i class="moon"><svg viewBox="0 0 14 14"><path d="M12.25 8.4A5.6 5.6 0 0 1 5.6 1.75a5.6 5.6 0 1 0 6.65 6.65"/></svg></i></u><span id="skin-name">Light look</span></button>
-    <p class="ver">v2.9.2</p>
+    <p class="ver">v2.9.3</p>
   </aside>
   <aside class="side" aria-label="Calendar and schedule">
     <div class="box calw">
@@ -281,7 +281,7 @@
           <label for="mk-hook" style="margin-top:12px">Opening, in the video's language<textarea id="mk-hook" rows="9" placeholder="Two million years ago, a hyena bigger than any alive today ruled the caves of what is now China…"></textarea></label>
           <p class="note" id="mk-hook-len"></p>
           <div data-runw="hook"></div>
-          <div class="chips"><button type="button" class="btn" id="mk-hook-ai" data-run="hook" data-runcopy="Copy prompt and fix the hook">Fix with AI</button><button type="button" class="btn ghost" data-vd-go="outline">Go to outline</button></div>
+          <div class="chips"><button type="button" class="btn" id="mk-hook-ai" data-run="hook" data-runcopy="Copy prompt and fix the hook">Fix with AI</button><button type="button" class="btn ghost" id="mk-hook-use">Use this hook, next: Outline →</button></div>
           <div class="status" id="s-hook" role="status"></div>
           <div class="out" id="o-hook"></div>
         </div>
@@ -2511,8 +2511,15 @@ function renderDetail(){const id=mkId(),p=mkPlan();$("#vl").hidden=true;$("#vd")
   if(k==="voice"&&done)$("#vo-again-t").textContent=vdAgainText(I);
   const wh=VD_WHERE[k];$("#vd-where").innerHTML=wh&&w.folder&&!(k==="voice"&&done)?(wh[1]?`Goes into <b>${esc(wh[0])}</b> when the edit pack is made.`:`Saved in <b>${esc(wh[0])}</b>.`):"";
   const job=$("#vd-job");if(VD.job&&VD.job===k){job.textContent="";VD.job=""}
-  vdFolderCard(id);
+  vdFolderCard(id);vdNextBar(I,k,done);
   if(VD.focus){VD.focus=false;$("#vd-h").focus()}}
+/* 2.9.3: every step ends with the way to the next one. */
+function vdNextBar(I,k,done){let el=$("#vd-nextbar");if(!el){el=document.createElement("div");el.id="vd-nextbar";el.className="vd-nextbar";$("#vd-pane").appendChild(el)}
+  const i=VD_STEPS.findIndex(s=>s[0]===k),nx=VD_STEPS[i+1];
+  if(!nx){el.innerHTML=done?`<p class="note">All steps for this video are done. Upload it in YouTube Studio when you are ready.</p>`:"";return}
+  el.innerHTML=done?`<p class="note">✓ ${esc(vdName(k))} is done.</p><button type="button" class="btn" data-vd-go="${nx[0]}">Next: ${esc(nx[1])} →</button>`
+    :`<p class="note">When ${esc(vdName(k).toLowerCase())} is done, go on to ${esc(nx[1].toLowerCase())}.</p><button type="button" class="btn ghost" data-vd-go="${nx[0]}">Next: ${esc(nx[1])} →</button>`}
+$("#mk-hook-use").addEventListener("click",()=>{const w=mkW();if((w.hook||"").trim().split(/\s+/).length<20){const st=$("#s-hook");st.className="status err";st.textContent="Write or pick an opening first (at least 20 words).";return}stamp(w,"hook");saveWork();vdSelect("outline",true)});
 function vdHead(I,k){const [,t,d]=VD_STEPS.find(s=>s[0]===k),{w,p,n,o,R}=I,done=!!R[k],nx=k===I.next;
   let h=`<span class="vd-state ${done?"is-ok":nx?"is-next":"is-todo"}">${done?"✓ Done":nx?"Next step":"Not started"}</span><h3 class="vd-step-h" id="vd-step-h" tabindex="-1">${esc(t)}</h3>`;
   if(!done){h+=`<p class="sub">${esc(d)}</p>`;const need=VD_NEED[k];if(need&&!R[need])h+=`<p class="vd-need">Comes after <b>${esc(vdName(need))}</b>, which is not done yet. <button type="button" class="linkish" data-vs-go="${need}">Go to ${esc(vdName(need))}</button></p>`;return h}
