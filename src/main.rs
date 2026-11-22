@@ -1553,8 +1553,8 @@ fn claude_register() -> Result<Vec<String>, String> {
     let exe = std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.join("TerraMCP.exe"))).filter(|f| f.exists())
         .ok_or("TerraMCP.exe is missing next to TerraStudio.exe. Run the Terra Studio installer again.")?;
     let dirs = claude_config_dirs();
-    let found: Vec<&PathBuf> = dirs.iter().filter(|d| d.exists()).collect();
-    let targets: Vec<PathBuf> = if found.is_empty() { dirs.first().cloned().into_iter().collect() } else { found.into_iter().cloned().collect() };
+    // Write every place: the Store build may read its own LocalCache copy even when %APPDATA%\\Claude exists.
+    let targets: Vec<PathBuf> = dirs;
     if targets.is_empty() {
         return Err("Could not find where Claude Desktop keeps its settings.".into());
     }

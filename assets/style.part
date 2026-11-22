@@ -1145,4 +1145,8 @@ section.tl-box h4{margin:0 0 8px;font:700 15px var(--f-body)}
 .af-in{max-width:260px}
 .tag.n2{background:color-mix(in srgb,var(--warn-bg) 100%,transparent);color:var(--warn)}
 .af-how{margin-top:10px}
+.tlock{display:grid;gap:8px;margin-top:12px;padding:14px;border:1px solid var(--line);border-radius:14px}
+.tlock-t{font-size:18px;font-weight:700;margin:0}
+.topts{display:grid;gap:8px;margin-top:12px}
+.tnext{display:grid;gap:8px;justify-items:start;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
 </style>

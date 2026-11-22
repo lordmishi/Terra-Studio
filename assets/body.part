@@ -21,7 +21,7 @@
     <div class="rail-sp"></div>
     <button type="button" class="rail-plus" id="rail-plus" aria-label="New content plan" data-tip="New plan"><i aria-hidden="true">+</i><span>New plan</span></button>
     <button type="button" class="skin" id="skin-tog" role="switch" aria-checked="false" aria-label="Dark look" data-tip="Switch light / dark"><u aria-hidden="true"><i class="sun"><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="2.5"/><path d="M7 .75v1.5M7 11.75v1.5M.75 7h1.5M11.75 7h1.5M2.6 2.6l1.05 1.05M10.35 10.35l1.05 1.05M2.6 11.4l1.05-1.05M10.35 3.65l1.05-1.05"/></svg></i><i class="moon"><svg viewBox="0 0 14 14"><path d="M12.25 8.4A5.6 5.6 0 0 1 5.6 1.75a5.6 5.6 0 1 0 6.65 6.65"/></svg></i></u><span id="skin-name">Light look</span></button>
-    <p class="ver">v2.9.1</p>
+    <p class="ver">v2.9.2</p>
   </aside>
   <aside class="side" aria-label="Calendar and schedule">
     <div class="box calw">
@@ -248,19 +248,28 @@
         <div class="box">
           <h4>Title first, before writing</h4>
           <p class="sub">If no title makes people curious, change the topic. Pick one title; it is used for the thumbnail, hook and SEO.</p>
+          <div class="tlock" id="mk-tlock" hidden><span class="layer">Title in use</span><p class="tlock-t" id="mk-tlock-t"></p><div class="chips"><button type="button" class="btn ghost" id="mk-tunlock">Change title</button></div></div>
+          <div id="mk-tedit">
           <label for="mk-titles" style="margin-top:12px">Title ideas, one per line<textarea id="mk-titles" rows="4" placeholder="The 250 lb Hyena That Ate Our Ancestors"></textarea></label>
           <div class="tlist" id="mk-tlist" role="radiogroup" aria-label="Title in use"></div>
+          <div class="chips" style="margin-top:10px"><button type="button" class="btn" id="mk-tuse" disabled>Use this title</button></div>
           <p class="sub" style="margin-top:10px">Check: <b>≤60</b> fits a phone screen · <b>Size</b> a number people can picture · <b>Threat</b> a danger to humans or a rival · <b>Name</b> the animal's name, for search.</p>
           <div data-runw="titles" style="margin-top:12px"></div>
           <div class="chips" style="margin-top:8px"><button type="button" class="btn ghost" id="mk-titles-ai" data-run="titles" data-runcopy="Copy prompt for 5 titles">Ask AI for 5 titles</button></div>
+          </div>
           <div class="status" id="s-titles" role="status"></div>
         </div>
         <div class="box">
           <h4>Thumbnail text</h4>
           <p class="sub">At most 4 words. One animal, one threat, big contrast. This text adds to the title, it does not repeat it.</p>
+          <div id="mk-topts" class="topts" role="radiogroup" aria-label="Thumbnail text options"></div>
+          <div data-runw="thumbtx" style="margin-top:10px"></div>
+          <div class="chips" style="margin-top:8px"><button type="button" class="btn ghost" id="mk-thumbtx-ai" data-run="thumbtx" data-runcopy="Copy prompt for thumbnail text">Suggest thumbnail text from the title</button></div>
+          <div class="status" id="s-thumbtx" role="status"></div>
           <label for="mk-thumbtext" style="margin-top:12px">Thumbnail text<input id="mk-thumbtext" maxlength="40" placeholder="ATE OUR ANCESTORS"></label>
           <div class="mk-thumb" id="mk-thumbprev" aria-hidden="true"><span></span></div>
           <p class="note" id="mk-thumbnote"></p>
+          <div class="tnext" id="mk-tnext" hidden><p class="note" id="mk-tnext-t"></p><button type="button" class="btn" data-vd-go="hook">Next: Hook (first 60 s) →</button></div>
         </div>
       </div>
           </div>
@@ -781,7 +790,7 @@ function costTag(u,k){if(runCopy(k))return "";if(CFG.provider==="gemini")return 
   return ` (about Rp${nf(Math.max(1,Math.round(costRp(CFG.model,u,CFG.provider)/10)*10))})`}
 /* Run with: each AI button runs with the AI set in Settings, or by copy and paste with claude.ai.
    The last choice is kept per button; the default is Settings. */
-const RUN_EST={upcheck:[13000,900],post:[1200,300],pics:[2500,1500],ideas:[2600,2000],auto:[9000,6000],titles:[1400,300],hook:[1800,700],script:[8000,5200],full:[7000,4200],check:[1500,200],ig:[4500,1400],gen:[1500,900],thumb:[1300,900],seo:[2000,1700],shorts:[1500,1100],ai:[5000,1800]};
+const RUN_EST={thumbtx:[1800,400],upcheck:[13000,900],post:[1200,300],pics:[2500,1500],ideas:[2600,2000],auto:[9000,6000],titles:[1400,300],hook:[1800,700],script:[8000,5200],full:[7000,4200],check:[1500,200],ig:[4500,1400],gen:[1500,900],thumb:[1300,900],seo:[2000,1700],shorts:[1500,1100],ai:[5000,1800]};
 const RUN_MANY={auto:"In copy mode, Make script in 1 click takes 3 pastes: the topic, the outline, then the script.",script:"In copy mode this takes 2 pastes: the outline, then the script."};
 const provName=()=>({kie:"KIE.ai",claude:"Claude",gemini:"Gemini"})[CFG.provider]||"AI";
 const runCopy=k=>!CFG.provider||!!k&&store.get("run-"+k,"app")==="copy";
@@ -2669,12 +2678,30 @@ $("#mk-auto").addEventListener("click",e=>autoFill(e.currentTarget,false));
 $("#mk-auto-new").addEventListener("click",e=>autoFill(e.currentTarget,true));
 $("#mk-topic").addEventListener("input",e=>{mkW().topic=e.target.value;stamp(mkW(),"topic");saveWork();renderTitles();renderRules();renderAuto()});
 $("#mk-titles").addEventListener("input",e=>{mkW().titles=e.target.value.split("\n");saveWork();renderTitles()});
-$("#mk-thumbtext").addEventListener("input",e=>{mkW().thumb=e.target.value;stamp(mkW(),"titles");saveWork();renderThumbPrev();renderRules()});
+$("#mk-thumbtext").addEventListener("input",e=>{mkW().thumb=e.target.value;stamp(mkW(),"titles");saveWork();renderThumbPrev();renderRules();renderTNext()});
 $("#mk-hook").addEventListener("input",e=>{mkW().hook=e.target.value;stamp(mkW(),"hook");saveWork();renderRules()});
 function titleChecks(t){const k=topicKey();return [[t.length<=60,"≤60"],[SIZE.test(t),"Size"],[THREAT.test(t),"Threat"],[!!k&&t.toLowerCase().includes(k),"Name"]]}
+/* 2.9.2: lock the chosen title, then thumbnail text options made from it */
+function renderTNext(){const w=mkW(),el=$("#mk-tnext");if(!el)return;const ok=!!(w.locked&&w.pick&&(w.thumb||"").trim());el.hidden=!ok;if(ok)$("#mk-tnext-t").textContent="Title and thumbnail text are set.";}
+function renderTLock(){renderTNext();const w=mkW(),on=!!(w.locked&&w.pick);$("#mk-tlock").hidden=!on;$("#mk-tedit").hidden=on;if(on)$("#mk-tlock-t").textContent=w.pick;$("#mk-tuse").disabled=!w.pick;renderTOpts()}
+function renderTOpts(){const w=mkW(),o=w.thumbOpts,el=$("#mk-topts");if(!el)return;
+  if(!o?.list?.length||o.for!==w.pick){el.innerHTML="";return}
+  el.innerHTML=`<span class="layer">For "${esc(o.for)}"</span>`+o.list.map((x,i)=>`<label class="trow"><input type="radio" name="mk-pick-thumb" value="${i}" ${(w.thumb||"").trim()===x.text?"checked":""}><span class="t">${esc(x.text)}<small>${esc(x.why||"")}</small></span></label>`).join("");
+  el.onchange=e=>{const x=o.list[+e.target.value];if(!x)return;w.thumb=x.text;stamp(w,"titles");saveWork();$("#mk-thumbtext").value=x.text;renderThumbPrev();renderRules();renderTNext();$("#mk-tnext button")?.focus()}}
+async function thumbTextAI(btn){const id=mkId(),w=mkW(),title=w.pick,st=$("#s-thumbtx");if(!title){st.className="status err";st.textContent="Pick and use a title first.";return}
+  const d=await ask(st,btn,`Write 5 thumbnail text options for this YouTube video. Title: ${JSON.stringify(title)}. Topic: ${JSON.stringify(w.topic||mkPlan()?.title||"")}.
+Rules: 2 to 4 words each, uppercase, big and readable on a phone; add something the title does not say and never repeat its words; one clear idea (threat, size you can picture, or a mystery); honest about the animal: no threat to humans unless the evidence supports it, no invented numbers. Vary the angle.
+JSON shape: {"options":[{"text":"","why":"one short English sentence on the angle"}]}`,null);
+  if(!d?.options?.length||mkId()!==id)return;const list=d.options.map(x=>({text:String(x.text||"").trim().toUpperCase().slice(0,40),why:String(x.why||"").slice(0,160)})).filter(x=>x.text);
+  w.thumbOpts={for:title,list};saveWork();renderTOpts()}
+$("#mk-thumbtx-ai").addEventListener("click",e=>thumbTextAI(e.currentTarget));
+$("#mk-tuse").addEventListener("click",()=>{const w=mkW();if(!w.pick)return;w.locked=true;stamp(w,"titles");saveWork();renderTLock();
+  // In app mode the options come at once; in copy mode the person presses the button so the paste box is expected.
+  if(!(w.thumbOpts?.for===w.pick)&&!runCopy("thumbtx"))thumbTextAI($("#mk-thumbtx-ai"));else $("#mk-thumbtx-ai").focus()});
+$("#mk-tunlock").addEventListener("click",()=>{const w=mkW();w.locked=false;saveWork();renderTLock();$("#mk-titles").focus()});
 function renderTitles(){const w=mkW(),list=(w.titles||[]).map(s=>s.trim()).filter(Boolean);
   $("#mk-tlist").innerHTML=list.map((t,i)=>{const c=titleChecks(t);return `<label class="trow"><input type="radio" name="mk-pick-title" value="${i}" ${w.pick===t?"checked":""}><span class="t">${esc(t)}<small>${t.length} characters</small></span><span class="checks">${c.map(([ok,k])=>`<i class="${ok?"y":""}">${k}<span class="sr">${ok?" passed":" not yet"}</span></i>`).join("")}</span></label>`}).join("");
-  $("#mk-tlist").onchange=e=>{w.pick=list[+e.target.value];stamp(w,"titles");saveWork();$("#thumb-title").value=w.pick;["#script-topic","#seo-topic","#thumb-topic","#shorts-topic"].forEach(s=>$(s).value=w.pick);renderThumbPrev()}}
+  $("#mk-tlist").onchange=e=>{w.pick=list[+e.target.value];stamp(w,"titles");saveWork();$("#thumb-title").value=w.pick;["#script-topic","#seo-topic","#thumb-topic","#shorts-topic"].forEach(s=>$(s).value=w.pick);renderThumbPrev();renderTLock()};renderTLock()}
 function renderThumbPrev(){const w=mkW(),t=(w.thumb||"").trim(),words=t.split(/\s+/).filter(Boolean),pick=(w.pick||"").toLowerCase();
   $("#mk-thumbprev span").textContent=t||"Thumbnail text";$("#mk-thumbprev").classList.toggle("ph",!t);
   const rep=words.filter(x=>x.length>3&&pick.includes(x.toLowerCase()));
