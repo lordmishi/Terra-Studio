@@ -1,0 +1,40 @@
+name: Build Windows Release
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Run unit tests
+        run: cargo test --locked
+
+      - name: Build release binaries
+        run: cargo build --release --locked
+
+      - name: Stage release bundle
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force dist | Out-Null
+          Copy-Item target/release/TerraStudio.exe, target/release/TerraMCP.exe, READ-ME-FIRST.txt dist/
+          $dll = Get-ChildItem target/release/build -Recurse -Filter WebView2Loader.dll | Where-Object { $_.FullName -match 'x64' } | Select-Object -First 1
+          if ($dll) { Copy-Item $dll.FullName dist/ }
+
+      - name: Upload TerraStudio & TerraMCP binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: TerraStudio-win64
+          path: dist/*

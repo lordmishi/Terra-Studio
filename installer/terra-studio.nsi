@@ -3,7 +3,7 @@ Unicode true
 !include "MUI2.nsh"
 
 !define APP "Terra Studio"
-!define VERSION "2.9.3"
+!define VERSION "3.0.0"
 !define UNKEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\TerraStudio"
 !ifndef SRC
   !define SRC "..\..\pkg\TerraStudio"

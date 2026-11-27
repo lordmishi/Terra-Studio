@@ -9,19 +9,21 @@
       <button type="button" class="nav-tog" id="nav-tog" aria-label="Close menu" title="Close menu (Ctrl+B)"><svg viewBox="0 0 14 14" aria-hidden="true"><rect x=".75" y="1.5" width="12.5" height="11" rx="2"/><path d="M5 1.5v11"/><path id="nav-tog-arrow" d="m10 5.25-1.75 1.75L10 8.75"/></svg></button>
     </div>
     <nav class="tabs" role="tablist" aria-label="Menu" aria-orientation="vertical">
+      <span class="nav-grp" aria-hidden="true">Channel</span>
       <button role="tab" id="t-today" aria-selected="true" data-tab="today"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M12 9.5a1 1 0 0 1 1 1V12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-1.5a1 1 0 0 1 1-1z"/><path d="M7 1a1 1 0 0 1 1 1v4.5a1 1 0 0 1-1 1H1.932a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"/><path d="M12.469 1a.5.5 0 0 1 .5.5v1.25a.5.5 0 0 1-.5.5H10.5a.5.5 0 0 1-.5-.5V1.5a.5.5 0 0 1 .5-.5z"/><path d="M12.469 5.25a.5.5 0 0 1 .5.5V7a.5.5 0 0 1-.5.5H10.5A.5.5 0 0 1 10 7V5.75a.5.5 0 0 1 .5-.5z"/></svg><span>Dashboard</span></button>
+      <button role="tab" id="t-dash" aria-selected="false" data-tab="dash"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M1.5 2.5h11a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1zM.5 6h13M4 .5v3M10 .5v3"/></svg><span>Calendar</span></button>
+      <button role="tab" id="t-growth" aria-selected="false" data-tab="growth"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="m1.24 6.54 11.5-5.23"/><path d="m10.59.5 2.15.81-.8 2.15"/><path d="M13.25 13.5h-2.5v-7a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 .5.5z"/><path d="M8.25 13.5h-2.5V8a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 .5.5z"/><path d="M3.25 13.5H.75v-4a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 .5.5z"/></svg><span>Analytics &amp; Learn</span></button>
+      <span class="nav-grp" aria-hidden="true">Create</span>
       <button role="tab" id="t-ideas" aria-selected="false" data-tab="ideas"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M11.5 5.031a4.5 4.5 0 1 0-6.5 4v1.5a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1.5a4.48 4.48 0 0 0 2.5-4"/><path d="M5 13.5h4"/></svg><span>Ideas</span></button>
       <button role="tab" id="t-make" aria-selected="false" data-tab="make"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M10 3.5v8a2 2 0 0 1-2 2H.5a2 2 0 0 0 2-2v-9a2 2 0 0 1 2-2h7.25"/><path d="M11.75.5a1.75 1.75 0 0 1 1.75 1.75V3a.5.5 0 0 1-.5.5h-3V2.25A1.75 1.75 0 0 1 11.75.5"/><path d="M6 4h1.5"/><path d="M5 7h2.5"/><path d="M5 10h2.5"/></svg><span>Make video</span></button>
       <button role="tab" id="t-edit" aria-selected="false" data-tab="edit"><svg viewBox="0 0 14 14" aria-hidden="true"><rect x="1" y="2" width="12" height="10" rx="1.5"/><path d="M1 5h12M1 9h12M4.5 2v3M9.5 2v3M4.5 9v3M9.5 9v3"/></svg><span>Editing</span></button>
-      <button role="tab" id="t-learn" aria-selected="false" data-tab="learn"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M.5 13.5h13"/><path d="m1.5 10 3.5-4 3 2.5 4.5-6.5"/><path d="M10.5 2h2v2"/></svg><span>Learn</span></button>
-      <button role="tab" id="t-dash" aria-selected="false" data-tab="dash"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M1.5 2.5h11a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1zM.5 6h13M4 .5v3M10 .5v3"/></svg><span>Calendar</span></button>
-      <button role="tab" id="t-growth" aria-selected="false" data-tab="growth"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="m1.24 6.54 11.5-5.23"/><path d="m10.59.5 2.15.81-.8 2.15"/><path d="M13.25 13.5h-2.5v-7a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 .5.5z"/><path d="M8.25 13.5h-2.5V8a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 .5.5z"/><path d="M3.25 13.5H.75v-4a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 .5.5z"/></svg><span>Data &amp; money</span></button>
+      <span class="nav-grp" aria-hidden="true">Workspace</span>
       <button role="tab" id="t-settings" aria-selected="false" data-tab="settings"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="m5.23 2.25.43-1.11A1 1 0 0 1 6.59.5h.82a1 1 0 0 1 .93.64l.43 1.11 1.46.84 1.18-.18a1 1 0 0 1 1 .49l.4.7a1 1 0 0 1-.08 1.13l-.73.93v1.68l.75.93a1 1 0 0 1 .08 1.13l-.4.7a1 1 0 0 1-1 .49l-1.18-.18-1.46.84-.43 1.11a1 1 0 0 1-.93.64h-.84a1 1 0 0 1-.93-.64l-.43-1.11-1.46-.84-1.18.18a1 1 0 0 1-1-.49l-.4-.7a1 1 0 0 1 .08-1.13L2 7.84V6.16l-.75-.93a1 1 0 0 1-.08-1.13l.4-.7a1 1 0 0 1 1-.49l1.18.18zM5 7a2 2 0 1 0 4 0 2 2 0 0 0-4 0"/></svg><span>Settings</span></button>
     </nav>
     <div class="rail-sp"></div>
     <button type="button" class="rail-plus" id="rail-plus" aria-label="New content plan" data-tip="New plan"><i aria-hidden="true">+</i><span>New plan</span></button>
     <button type="button" class="skin" id="skin-tog" role="switch" aria-checked="false" aria-label="Dark look" data-tip="Switch light / dark"><u aria-hidden="true"><i class="sun"><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="2.5"/><path d="M7 .75v1.5M7 11.75v1.5M.75 7h1.5M11.75 7h1.5M2.6 2.6l1.05 1.05M10.35 10.35l1.05 1.05M2.6 11.4l1.05-1.05M10.35 3.65l1.05-1.05"/></svg></i><i class="moon"><svg viewBox="0 0 14 14"><path d="M12.25 8.4A5.6 5.6 0 0 1 5.6 1.75a5.6 5.6 0 1 0 6.65 6.65"/></svg></i></u><span id="skin-name">Light look</span></button>
-    <p class="ver">v2.9.3</p>
+    <p class="ver">v3.0.0</p>
   </aside>
   <aside class="side" aria-label="Calendar and schedule">
     <div class="box calw">
@@ -50,12 +52,12 @@
       <span class="layer">No video data yet</span>
       <h3>The Dashboard needs your channel's numbers</h3>
       <p class="note">Connect YouTube or import the Content file from YouTube Studio. Then this page shows your channel's numbers, its biggest problem and a ranked list of steps to get more views.</p>
-      <button type="button" class="btn" data-goto="growth">Open Data &amp; money</button>
+      <button type="button" class="btn" data-goto="growth">Open Analytics &amp; Learn</button>
     </div>
     <div class="kpis" id="td-kpis"></div>
     <div class="rowb">
       <div class="box vchart">
-        <div class="bx-hd"><div><h2>Views</h2><p class="sub" id="vc-sub"></p></div><div class="seg" role="group" aria-label="Time range" id="vc-seg"><button type="button" aria-pressed="true" data-r="30">30 days</button><button type="button" aria-pressed="false" data-r="90">90 days</button><button type="button" aria-pressed="false" data-r="12">12 months</button></div></div>
+        <div class="bx-hd"><div><h2>Views</h2><p class="sub" id="vc-sub"></p></div><div class="seg" role="group" aria-label="Time range" id="vc-seg"><button type="button" aria-pressed="false" data-r="7">7 days</button><button type="button" aria-pressed="true" data-r="30">30 days</button><button type="button" aria-pressed="false" data-r="90">90 days</button><button type="button" aria-pressed="false" data-r="12">12 months</button><button type="button" aria-pressed="false" data-r="all">All time</button></div></div>
         <div id="vc" class="vc" tabindex="0" role="group" aria-label="Views chart. Press the left or right arrow to read each bar."><svg id="vc-svg" aria-hidden="true"></svg><div class="tp" id="vc-tp" role="status" hidden></div></div>
       </div>
       <div class="colb">
@@ -96,7 +98,7 @@
     </div>
   </section>
 
-  <!-- LEARN: every upload graded against the channel's own best -->
+  <!-- EDITING -->
   <section id="p-edit" role="tabpanel" aria-labelledby="t-edit" hidden>
     <div id="el" class="vd-view">
       <div class="vd-intro"><p class="sub">Every long video, and what to do with it in Premiere. Closest upload first.</p><label class="ed-sw"><input type="checkbox" role="switch" id="el-pub"><span>Show published</span></label></div>
@@ -112,27 +114,6 @@
       <div><button type="button" class="vd-back" id="ed-back"><span aria-hidden="true">&larr;</span> All videos</button></div>
       <div class="vd-hd"><div><h2 class="vd-title" id="ed-h" tabindex="-1"></h2><p class="sub" id="ed-sub"></p></div><span id="ed-pill"></span></div>
       <div class="vd-view" id="ed-body"></div>
-    </div>
-  </section>
-
-  <section id="p-learn" role="tabpanel" aria-labelledby="t-learn" hidden>
-    <div id="ln-empty" class="card" hidden>
-      <span class="layer">No video data yet</span>
-      <h3>Report cards appear once video data is in</h3>
-      <button type="button" class="btn" data-goto="growth">Open Data &amp; money</button>
-    </div>
-    <div id="ln-full" class="stack">
-      <div class="box">
-        <h2>How much of each video is watched</h2>
-        <p class="sub" id="ln-sub"></p>
-        <div class="rchart" id="ln-chart"></div>
-        <div class="lgd"><span><i class="l-top"></i>Solid: 20% or more, close to your best videos</span><span><i class="l-low"></i>Striped: under 10%, viewers leave quickly</span><span><i></i>Grey: in between</span></div>
-      </div>
-      <div class="box">
-        <h2>Report card for each upload</h2>
-        <p class="sub">Each upload is compared with your 6 best videos, from the latest data pulled. One lesson per video for the next one.</p>
-        <div class="tblw"><table class="rc" id="ln-cards"></table></div>
-      </div>
     </div>
   </section>
 
@@ -230,6 +211,7 @@
       <div class="vd-hd"><div><h2 class="vd-title" id="vd-h" tabindex="-1"></h2><p class="sub" id="vd-sub"></p></div><span id="vd-pill"></span></div>
       <div class="vd-tiles" id="vd-tiles"></div>
       <div class="card vd-limit"><div class="vd-lh"><span><b id="vd-n"></b> steps done</span><span class="sub" id="vd-left"></span></div><div class="vd-track" role="img" id="vd-bar-l"><i id="vd-bar"></i></div><div class="status" id="vd-job" role="status"></div></div>
+      <div class="vd-phases" id="vd-phases" role="navigation" aria-label="Production phases"></div>
       <div class="vd-det">
         <ol class="vd-steps" id="vd-steps" aria-label="Steps for this video"></ol>
         <div class="card vd-pane" id="vd-pane">
@@ -296,7 +278,7 @@
     <div class="panel">
     <form class="tool" id="f-script">
       <h4>Outline and full script</h4>
-      <p class="hint">One click: an outline act by act, the full narration with your hook as the opening, then the ElevenLabs voice over (skipped when this video already has one). The narration is written one act at a time so it reaches the target length. All fields are filled in; just press the button.</p>
+      <p class="hint">One click: an outline act by act, the full narration with your hook as the opening, then the voice over using your configured provider (skipped when this video already has one). The narration is written one act at a time so it reaches the target length. All fields are filled in; just press the button.</p>
       <label for="script-topic">Video topic<input id="script-topic" required></label>
       <label for="script-angle">Story angle (optional)<textarea id="script-angle" placeholder="Leave empty and AI picks the strongest"></textarea></label>
       <div class="row2">
@@ -341,10 +323,10 @@
           <div class="vd-tool" data-tool="thumb" hidden>
       <div class="box" id="mk-gen">
         <h4>Finished thumbnails</h4>
-        <p class="sub">One click: AI writes 3 concepts, Gemini or KIE.ai draws them, the app puts the text on top. Pick one and save it.</p>
+        <p class="sub">One click: AI writes 3 concepts, Google Flow, Gemini, or KIE.ai draws them, the app puts the text on top. Pick one and save it.</p>
         <div class="mk-auto" style="margin-top:12px">
           <div><b id="gen-h">Make 3 thumbnails with Gemini</b><span id="gen-p"></span></div>
-          <button type="button" class="btn" id="gen-go" data-run="gen">Make 3 thumbnails</button>
+          <div class="chips"><button type="button" class="btn ghost" id="gen-flow" hidden>Open Google Flow</button><button type="button" class="btn ghost" id="gen-flow-all" hidden>Send all 3 to Flow</button><button type="button" class="btn" id="gen-go" data-run="gen">Make 3 thumbnails</button></div>
         </div>
         <div data-runw="gen"></div>
         <div class="status" id="s-gen" role="status"></div>
@@ -434,6 +416,23 @@
 
   <!-- GROWTH -->
   <section id="p-growth" role="tabpanel" aria-labelledby="t-growth" hidden>
+    <div class="subhead">
+      <div class="subtabs" id="ana-tabs" role="tablist" aria-label="Analytics sections">
+        <button type="button" role="tab" aria-selected="true" data-ana-tab="overview">Overview &amp; Revenue</button>
+        <button type="button" role="tab" aria-selected="false" data-ana-tab="learn">Report Cards (Learn)</button>
+        <button type="button" role="tab" aria-selected="false" data-ana-tab="shorts">Shorts &amp; Checklist</button>
+      </div>
+      <div class="ana-range" id="g-seg-wrap">
+        <div class="seg" role="group" aria-label="Analytics timeframe" id="g-seg">
+          <button type="button" aria-pressed="false" data-r="7">7 days</button>
+          <button type="button" aria-pressed="false" data-r="30">30 days</button>
+          <button type="button" aria-pressed="false" data-r="90">90 days</button>
+          <button type="button" aria-pressed="true" data-r="all">All time</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="ana-overview">
     <div id="g-empty" class="card" hidden>
       <span class="layer">No data yet</span>
       <h3>Import your YouTube Studio data</h3>
@@ -451,12 +450,12 @@
       <div class="card">
         <div class="out-head"><span class="layer" id="g-range">YouTube Studio data</span><span class="chips"><button type="button" class="btn ghost" data-ytsync hidden>Pull from YouTube</button><button type="button" class="btn ghost" data-import>Import new data</button></span></div>
         <div class="ytexp" id="g-ytexp" hidden></div>
-        <h3>Channel report</h3>
+        <h3 id="g-rep-h">Channel report</h3>
         <div class="kpis" id="g-kpis"></div>
-        <p style="margin:14px 0 0;font-weight:700">Views per month: when did the channel rise, when did it fall?</p>
-        <div class="chart-wrap" id="g-chart-wrap"><svg id="g-chart" role="img" aria-label="Bar chart of views per month" style="width:100%;min-width:560px;height:240px;display:block"></svg><div class="tip" id="g-tip" hidden></div></div>
+        <p id="g-chart-title" style="margin:14px 0 0;font-weight:700">Views per month: when did the channel rise, when did it fall?</p>
+        <div class="chart-wrap" id="g-chart-wrap"><svg id="g-chart" role="img" aria-label="Bar chart of views" style="width:100%;min-width:560px;height:240px;display:block"></svg><div class="tip" id="g-tip" hidden></div></div>
         <p class="note" id="g-chart-note">Hover or focus a bar for the monthly number. A striped bar is a month that is not complete yet.</p>
-        <details class="mtable"><summary>See the monthly numbers as a table</summary><div style="overflow-x:auto"><table id="g-mtable"></table></div></details>
+        <details class="mtable"><summary id="g-mtable-sum">See the monthly numbers as a table</summary><div style="overflow-x:auto"><table id="g-mtable"></table></div></details>
         <div class="status" id="s-import" role="status"></div>
       </div>
 
@@ -491,13 +490,36 @@
       <div class="grid2" style="margin-top:16px" id="g-extra"></div>
 
       <div class="card" style="margin-top:16px">
-        <span class="layer">All long videos, click a column header to sort</span>
+        <span class="layer" id="g-table-sub">Long videos, click a column header to sort</span>
         <h3>Performance per video</h3>
         <div style="overflow-x:auto"><table class="vt" id="g-table"></table></div>
       </div>
     </div>
+    </div>
 
-    <div class="grid2" style="margin-top:16px">
+    <div id="ana-learn" hidden>
+      <div id="ln-empty" class="card" hidden>
+        <span class="layer">No video data yet</span>
+        <h3>Report cards appear once video data is in</h3>
+        <button type="button" class="btn" data-import>Import .zip file from Studio</button>
+      </div>
+      <div id="ln-full" class="stack">
+        <div class="box">
+          <h2>How much of each video is watched</h2>
+          <p class="sub" id="ln-sub"></p>
+          <div class="rchart" id="ln-chart"></div>
+          <div class="lgd"><span><i class="l-top"></i>Solid: 20% or more, close to your best videos</span><span><i class="l-low"></i>Striped: under 10%, viewers leave quickly</span><span><i></i>Grey: in between</span></div>
+        </div>
+        <div class="box">
+          <h2>Report card for each upload</h2>
+          <p class="sub">Each upload is compared with your 6 best videos, from the latest data pulled. One lesson per video for the next one.</p>
+          <div class="tblw"><table class="rc" id="ln-cards"></table></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="ana-shorts" hidden>
+    <div class="grid2">
       <div class="card">
         <span class="layer">Saved on this computer</span>
         <h3>Growth checklist</h3>
@@ -514,12 +536,19 @@
         <div class="out" id="o-shorts"></div>
       </form>
     </div>
+    </div>
   </section>
 
   <!-- SETTINGS -->
   <section id="p-settings" role="tabpanel" aria-labelledby="t-settings" hidden>
-    <div class="grid2">
-      <form class="tool" id="f-key">
+    <div class="subtabs" id="set-tabs" role="tablist" aria-label="Settings sections">
+      <button type="button" role="tab" aria-selected="true" data-set-tab="voice">Voice &amp; Audio</button>
+      <button type="button" role="tab" aria-selected="false" data-set-tab="image">Images &amp; Flow</button>
+      <button type="button" role="tab" aria-selected="false" data-set-tab="ai">AI &amp; Scripts</button>
+      <button type="button" role="tab" aria-selected="false" data-set-tab="channel">YouTube &amp; Channel</button>
+    </div>
+    <div class="grid2" id="set-grid">
+      <form class="tool" id="f-key" data-set-panel="ai">
         <h2>AI connection</h2>
         <label for="cfg-provider">How to use AI
           <select id="cfg-provider">
@@ -531,7 +560,7 @@
         </label>
         <p class="hint" id="prov-hint"></p>
         <div id="grp-gemini" class="grp">
-          <ol class="steps"><li>Open <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a> and sign in with your Google account.</li><li>Click <strong>Create API key</strong>, then copy the key.</li><li>Paste it below, click Save, then Test connection.</li></ol>
+          <details class="fold"><summary>How to get a Gemini API key (free)</summary><ol class="steps"><li>Open <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a> and sign in with your Google account.</li><li>Click <strong>Create API key</strong>, then copy the key.</li><li>Paste it below, click Save, then Test connection.</li></ol></details>
           <label for="cfg-gkey">Gemini API key<input id="cfg-gkey" type="password" autocomplete="off" placeholder="AIza..."></label>
           <p class="note" id="cfg-gkey-hint"></p>
           <label for="cfg-gmodel">Gemini model<select id="cfg-gmodel"><option value="">Automatic: latest Gemini Flash</option></select></label>
@@ -556,7 +585,7 @@
           <div class="chips"><button class="btn ghost" type="button" id="cfg-clear">Remove Claude key</button></div>
         </div>
         <div id="grp-kie" class="grp">
-          <ol class="steps"><li>Open <a href="https://kie.ai" target="_blank" rel="noopener">kie.ai</a>, sign in and top up credit. A few dollars is enough to start.</li><li>Open <a href="https://kie.ai/api-key" target="_blank" rel="noopener">kie.ai/api-key</a>, create a key, then copy it.</li><li>Paste it below, click Save, then Test connection.</li></ol>
+          <details class="fold"><summary>How to set up a KIE.ai key</summary><ol class="steps"><li>Open <a href="https://kie.ai" target="_blank" rel="noopener">kie.ai</a>, sign in and top up credit. A few dollars is enough to start.</li><li>Open <a href="https://kie.ai/api-key" target="_blank" rel="noopener">kie.ai/api-key</a>, create a key, then copy it.</li><li>Paste it below, click Save, then Test connection.</li></ol></details>
           <label for="cfg-kkey">KIE.ai API key<input id="cfg-kkey" type="password" autocomplete="off" placeholder="Paste the key from kie.ai/api-key"></label>
           <p class="note" id="cfg-kkey-hint"></p>
           <label for="cfg-kmodel">Model
@@ -577,22 +606,31 @@
         <div class="status" id="s-key" role="status"></div>
       </form>
 
-      <form class="tool" id="f-image">
+      <form class="tool" id="f-image" data-set-panel="image">
         <h2>Thumbnail images</h2>
         <p class="hint">Makes thumbnail images right in the Thumbnail step of Make video. Choose who draws them.</p>
         <label for="cfg-iprov">Make images with
           <select id="cfg-iprov">
+            <option value="flow">Google Flow (built into Terra Studio, free with your Google account)</option>
             <option value="gemini">Gemini (uses your Google Cloud credit)</option>
             <option value="kie">KIE.ai, Nano Banana 2 (about $0.04 per image)</option>
           </select>
         </label>
+        <div id="grp-iflow" class="grp">
+          <p class="note">Opens Google Flow (flow.google.com) directly inside Terra Studio with your Google login saved. Prompts fill into Flow automatically, and every image or video you download goes straight into the right video folder.</p>
+          <details class="fold"><summary>How Google Flow works inside Terra Studio</summary><ol class="steps">
+            <li>Click <strong>Open Google Flow</strong> below and sign in with your Google account once.</li>
+            <li>Keep using <strong>Make 3 thumbnails</strong> or <strong>Send to Flow</strong> in Edit pack; any download in Flow saves straight to Terra Studio.</li>
+          </ol></details>
+          <div class="chips"><button class="btn ghost" type="button" id="cfg-flow-open">Open Google Flow</button><span class="note" id="cfg-flow-st"></span></div>
+        </div>
         <div id="grp-igem" class="grp">
           <p class="note">Images only work on a Gemini key with billing turned on, so use a separate key and your scripts and ideas stay free on the old key.</p>
-          <ol class="steps">
+          <details class="fold"><summary>How to set up a billed Gemini image key</summary><ol class="steps">
             <li>Open <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a>. Click <strong>Create API key</strong> and choose a new project. On that project's row click <strong>Set up billing</strong>, then add a first credit of $5.</li>
             <li>Open <a href="https://developers.google.com/program/my-benefits" target="_blank" rel="noopener">Google Developer Program, My benefits</a>. Claim the Google Cloud credit to that billing account and tick <strong>Always use this billing account</strong>.</li>
             <li>Paste the new key below, click Save, then Test image.</li>
-          </ol>
+          </ol></details>
           <label for="cfg-ikey">Gemini key for images<input id="cfg-ikey" type="password" autocomplete="off" placeholder="AIza..."></label>
           <p class="note" id="cfg-ikey-hint"></p>
           <label for="cfg-imodel">Image model
@@ -611,21 +649,21 @@
         </div>
         <div class="chips"><button class="btn" type="submit">Save</button><button class="btn ghost" type="button" id="cfg-itest">Test image</button></div>
         <p class="note" id="cfg-ispent"></p>
-        <p class="note">Test image makes one real image, so it uses credit.</p>
+        <p class="note" id="cfg-icost">Test image makes one real image, so it uses credit unless Google Flow is selected.</p>
         <div class="status" id="s-image" role="status"></div>
         <div id="cfg-itest-out"></div>
       </form>
 
-      <div class="tool" id="f-claude">
+      <div class="tool" id="f-claude" data-set-panel="ai">
         <h2>Claude Desktop</h2>
         <p class="hint">Talk about topics in Claude Desktop with your own channel data. Claude can read your numbers, videos, calendar and ideas, check if an animal is already made, and send an idea you agree on to the Ideas tab. It cannot delete or upload anything. Uses your claude.ai subscription, no extra cost.</p>
-        <ol class="steps"><li>Click <strong>Add to Claude</strong>.</li><li>Quit Claude Desktop fully (right-click its icon next to the clock, then Quit) and open it again. Done, once.</li><li>In a new Claude chat, ask for example: "Which topic fits December? Not one I already made."</li></ol>
+        <details class="fold"><summary>Setup steps (once)</summary><ol class="steps"><li>Click <strong>Add to Claude</strong>.</li><li>Quit Claude Desktop fully (right-click its icon next to the clock, then Quit) and open it again. Done, once.</li><li>In a new Claude chat, ask for example: "Which topic fits December? Not one I already made."</li></ol></details>
         <div class="chips"><button class="btn" type="button" id="claude-add">Add to Claude</button></div>
         <p class="note">Needs the Claude Desktop app on this PC. Ideas from Claude show in Ideas, marked From Claude, the next time the app opens or you open Ideas.</p>
         <div class="status" id="s-claude" role="status"></div>
       </div>
 
-      <form class="tool" id="f-yt">
+      <form class="tool" id="f-yt" data-set-panel="channel">
         <h2>YouTube Studio</h2>
         <p class="hint" id="yt-state">Connect the channel so the numbers on the Dashboard and in Data &amp; money update by themselves, without manual exports.</p>
         <div id="yt-on" class="grp" hidden>
@@ -651,23 +689,40 @@
         <div class="status" id="s-yt" role="status"></div>
       </form>
 
-      <form class="tool" id="f-voice">
-        <h2>Voice (ElevenLabs)</h2>
-        <p class="hint">Turns the full narration into an MP3 voice over. Uses the character quota of your ElevenLabs subscription, no extra cost.</p>
-        <ol class="steps"><li>Open <a href="https://elevenlabs.io/app/settings/api-keys" target="_blank" rel="noopener">elevenlabs.io/app/settings/api-keys</a>.</li><li>Click <strong>Create API key</strong>. Allow Text to Speech, Voices, Models and User (read).</li><li>Paste it below, then click Load voices.</li></ol>
-        <label for="cfg-ekey">ElevenLabs API key<input id="cfg-ekey" type="password" autocomplete="off" placeholder="sk_..."></label>
-        <p class="note" id="cfg-ekey-hint"></p>
-        <div class="chips"><button class="btn ghost" type="button" id="cfg-eload">Load voices</button></div>
-        <div id="eleven-quota" class="note"></div>
-        <label for="cfg-evoice">Narrator voice<select id="cfg-evoice"><option value="">Click Load voices first</option></select></label>
-        <div id="cfg-epreview"></div>
-        <label for="cfg-emodel">Voice model<select id="cfg-emodel"><option value="">Automatic: Multilingual v2 (most natural)</option></select></label>
-        <div class="chips"><button class="btn" type="submit">Save</button><button class="btn ghost" type="button" id="cfg-eclear">Remove ElevenLabs key</button></div>
+      <form class="tool" id="f-voice" data-set-panel="voice">
+        <h2>Voice over</h2>
+        <p class="hint">Turns the full narration into MP3 audio. Use local VoiceStudio (free, unlimited) or ElevenLabs.</p>
+        <label for="cfg-vprov">Make voice over with
+          <select id="cfg-vprov">
+            <option value="voicestudio">VoiceStudio (local on this PC, free)</option>
+            <option value="eleven">ElevenLabs (API key, paid character quota)</option>
+          </select>
+        </label>
+        <div id="grp-vs" class="grp">
+          <p class="note">Terra Studio starts VoiceStudio automatically in the background when needed. Click <strong>Load voices &amp; engines</strong> to refresh, or open the VoiceStudio app to record or edit voice profiles. Commercial-OK engines for YouTube include VoxCPM2, CosyVoice 3, and KittenTTS.</p>
+          <label for="cfg-vsurl">VoiceStudio URL<input id="cfg-vsurl" autocomplete="off" placeholder="http://127.0.0.1:3900"></label>
+          <div class="chips"><button class="btn ghost" type="button" id="cfg-vsload">Load voices &amp; engines</button><button class="btn ghost" type="button" id="cfg-vsopen">Open VoiceStudio app</button></div>
+          <div id="vs-info" class="note"></div>
+          <label for="cfg-vsvoice">Narrator voice<select id="cfg-vsvoice"><option value="">Click Load voices first</option></select></label>
+          <label for="cfg-vsmodel">TTS engine<select id="cfg-vsmodel"><option value="tts-1">Active engine in VoiceStudio</option></select></label>
+        </div>
+        <div id="grp-vel" class="grp">
+          <details class="fold"><summary>How to get an ElevenLabs API key</summary><ol class="steps"><li>Open <a href="https://elevenlabs.io/app/settings/api-keys" target="_blank" rel="noopener">elevenlabs.io/app/settings/api-keys</a>.</li><li>Click <strong>Create API key</strong>. Allow Text to Speech, Voices, Models and User (read).</li><li>Paste it below, then click Load voices.</li></ol></details>
+          <label for="cfg-ekey">ElevenLabs API key<input id="cfg-ekey" type="password" autocomplete="off" placeholder="sk_..."></label>
+          <p class="note" id="cfg-ekey-hint"></p>
+          <div class="chips"><button class="btn ghost" type="button" id="cfg-eload">Load voices</button></div>
+          <div id="eleven-quota" class="note"></div>
+          <label for="cfg-evoice">Narrator voice<select id="cfg-evoice"><option value="">Click Load voices first</option></select></label>
+          <div id="cfg-epreview"></div>
+          <label for="cfg-emodel">Voice model<select id="cfg-emodel"><option value="">Automatic: Multilingual v2 (most natural)</option></select></label>
+          <div class="chips"><button class="btn ghost" type="button" id="cfg-eclear">Remove ElevenLabs key</button></div>
+        </div>
+        <div class="chips"><button class="btn" type="submit">Save</button></div>
         <p class="note" id="cfg-adir"></p>
         <div class="status" id="s-voice" role="status"></div>
       </form>
 
-      <form class="tool" id="f-profile">
+      <form class="tool" id="f-profile" data-set-panel="channel">
         <h2>Channel profile</h2>
         <p class="hint">Every generator reads this profile. The more specific it is, the better the results.</p>
         <label for="pf-name">Channel name<input id="pf-name"></label>
@@ -685,7 +740,7 @@
         <div class="status" id="s-profile" role="status"></div>
       </form>
     </div>
-    <div class="card" style="margin-top:16px">
+    <div class="card" style="margin-top:16px" data-set-panel="channel">
       <span class="layer">App</span>
       <h3>Data and app</h3>
       <p class="note">All settings, Studio data, calendar plans and AI results are stored only on this computer, in the folder <code id="cfg-dir"></code>. API keys are stored encrypted with Windows protection. Closing the Terra Studio window closes the app.</p>
@@ -721,11 +776,29 @@ const tabs=[...document.querySelectorAll("nav.tabs button")];
 // The first show() skips scrollIntoView: Chromium moves the Tab starting point there, past the skip link.
 // 1.x had separate Script, SEO and Thumbnail pages; they now live as stages of Make.
 const OLD_TAB={script:"script",seo:"seo",thumb:"thumb"};
+let anaTab=store.get("anatab","overview");
+if(!["overview","learn","shorts"].includes(anaTab))anaTab="overview";
+function setAnaTab(k){if(!["overview","learn","shorts"].includes(k))k="overview";anaTab=k;store.set("anatab",k);
+  $("#ana-tabs")?.querySelectorAll("button").forEach(b=>b.setAttribute("aria-selected",b.dataset.anaTab===k));
+  const ov=$("#ana-overview"),ln=$("#ana-learn"),sh=$("#ana-shorts"),gw=$("#g-seg-wrap");
+  if(ov)ov.hidden=k!=="overview";if(ln)ln.hidden=k!=="learn";if(sh)sh.hidden=k!=="shorts";
+  if(gw)gw.hidden=k!=="overview"||!YT;
+  if(k==="overview"&&YT)requestAnimationFrame(()=>chart());
+  if(k==="learn")renderLearn()}
+let setTab=store.get("settab","voice");
+if(!["voice","image","ai","channel"].includes(setTab))setTab="voice";
+function setSettingsTab(k){if(!["voice","image","ai","channel"].includes(k))k="voice";setTab=k;store.set("settab",k);
+  $("#set-tabs")?.querySelectorAll("button").forEach(b=>b.setAttribute("aria-selected",b.dataset.setTab===k));
+  document.querySelectorAll("#p-settings [data-set-panel]").forEach(el=>el.hidden=el.dataset.setPanel!==k);
+  $("#set-grid")?.classList.toggle("set-single",k==="voice"||k==="image")}
+$("#ana-tabs")?.addEventListener("click",e=>{const b=e.target.closest("[data-ana-tab]");if(b)setAnaTab(b.dataset.anaTab)});
+$("#set-tabs")?.addEventListener("click",e=>{const b=e.target.closest("[data-set-tab]");if(b)setSettingsTab(b.dataset.setTab)});
+setSettingsTab(setTab);
 // The app scrolls inside .main and .side only; snap the window back if anything moves it.
 addEventListener("scroll",()=>{if(innerWidth>560&&(scrollX||scrollY))scrollTo(0,0)});
-function show(name,first){if(OLD_TAB[name])return openMake(null,OLD_TAB[name]);if(!tabs.some(b=>b.dataset.tab===name))name="today";tabs.forEach(b=>{const on=b.dataset.tab===name;b.setAttribute("aria-selected",on);if(on){if(!first)b.scrollIntoView({block:"nearest",inline:"nearest"});$("#page-title").textContent=b.textContent.trim()}$("#p-"+b.dataset.tab).hidden=!on});
+function show(name,first){if(OLD_TAB[name])return openMake(null,OLD_TAB[name]);if(name==="learn"){anaTab="learn";name="growth"}if(!tabs.some(b=>b.dataset.tab===name))name="today";tabs.forEach(b=>{const on=b.dataset.tab===name;b.setAttribute("aria-selected",on);if(on){if(!first)b.scrollIntoView({block:"nearest",inline:"nearest"});$("#page-title").textContent=b.textContent.trim()}$("#p-"+b.dataset.tab).hidden=!on});
   $(".shell").dataset.tab=name;store.set("tab",name);$("#main").scrollTop=0;
-  if(name==="dash"){renderDash();if(!first)thumbFollow().catch(()=>{})}if(name==="today")renderToday();if(name==="learn")renderLearn();if(name==="ideas")renderPattern();if(name==="make")renderMake();if(name==="edit"){ED.scan={};edRender()}if(name==="growth")requestAnimationFrame(()=>{if(YT)chart()})}
+  if(name==="dash"){renderDash();if(!first)thumbFollow().catch(()=>{})}if(name==="today")renderToday();if(name==="ideas")renderPattern();if(name==="make")renderMake();if(name==="edit"){ED.scan={};edRender()}if(name==="growth"){setAnaTab(anaTab)}if(name==="settings")setSettingsTab(setTab)}
 tabs.forEach(b=>b.addEventListener("click",()=>{if(b.dataset.tab==="make")VD.view="list";if(b.dataset.tab==="edit")ED.view="list";show(b.dataset.tab)}));
 function setNav(open){document.documentElement.dataset.nav=open?"open":"closed";store.set("nav",open?"open":"closed");
   const b=$("#nav-tog"),t=open?"Close menu":"Open menu";b.setAttribute("aria-label",t);b.title=t+" (Ctrl+B)";
@@ -935,11 +1008,12 @@ function renderScriptFull(f,partial){lastNarr=f;const parts=f.narration||[],all=
   $("#o-scriptfull").innerHTML=copyBox(`Full narration script, ${nf(words)} words, about ${mins} minutes read aloud`,parts.map((p,i)=>`[${p.act||"Act "+(i+1)}]\n${p.text}`).join("\n\n"))+(f.title?`<p class="note">For outline: ${esc(f.title)}</p>`:"");
   if(!partial){setRunTxt($("#script-full-btn"),"Write a new version");scRender(f);pkRender(f);igRender(f);voTool(f)}}
 function voTool(f){const box=$("#vo-box");if(!box)return;
-  if(!f){box.innerHTML=`<span class="layer">Voice over</span><h3>Turn it into voice with ElevenLabs</h3><p class="note">The voice over is made from the full script, so write that first.</p>`;return}
+  const who=voiceVS()?"VoiceStudio (local, free)":"ElevenLabs";
+  if(!f){box.innerHTML=`<span class="layer">Voice over</span><h3>Turn it into voice with ${who}</h3><p class="note">The voice over is made from the full script, so write that first.</p>`;return}
   const chars=(f.narration||[]).reduce((n,p)=>n+(p.text||"").length,0);
-  if(!CFG.has_eleven){box.innerHTML=`<span class="layer">Voice over</span><h3>Turn it into voice with ElevenLabs</h3><p class="note">Add your ElevenLabs API key in Settings, under Voice, so this script can become an MP3 right in the app.</p><button type="button" class="btn ghost" data-goto="settings">Open Settings</button>`;return}
-  const run=VO_RUN.has(mkId());
-  box.innerHTML=`<span class="layer">Voice over</span><h3>Turn it into voice with ElevenLabs</h3>\n  <label for="vo-voice">Voice<select id="vo-voice">${CFG.eleven_voice?`<option value="${esc(CFG.eleven_voice)}">${esc(CFG.eleven_voice_name||CFG.eleven_voice)}</option>`:`<option value="">Choose a voice in Settings first</option>`}</select></label>\n  <p class="note">This script is about ${nf(chars)} characters, so it uses about ${nf(chars)} characters of your ElevenLabs quota. A long script is split into parts and joined into one file. It is saved in 02 Narration of this video's folder.</p>\n  ${run?`<p class="note">Voice over is being made for this video… it is saved in 02 Narration when it is done.</p>`:""}<button type="button" class="btn" id="vo-btn"${run?" disabled":""}>${run?"Voice over is being made…":`Make voice over (${nf(chars)} characters)`}</button>`}
+  if(!voiceReady()){box.innerHTML=`<span class="layer">Voice over</span><h3>Turn it into voice with ${who}</h3><p class="note">Set up local VoiceStudio (free) or an ElevenLabs API key in Settings, under Voice over, so this script can become an MP3 right in the app.</p><button type="button" class="btn ghost" data-goto="settings">Open Settings</button>`;return}
+  const run=VO_RUN.has(mkId()),vid=activeVoiceId(),vname=activeVoiceName();
+  box.innerHTML=`<span class="layer">Voice over</span><h3>Turn it into voice with ${who}</h3>\n  <label for="vo-voice">Voice<select id="vo-voice">${vid?`<option value="${esc(vid)}">${esc(vname||vid)}</option>`:`<option value="">Choose a voice in Settings first</option>`}</select></label>\n  <p class="note">${voiceVS()?`This script is about ${nf(chars)} characters and uses your local VoiceStudio server (no quota or extra cost).`:`This script is about ${nf(chars)} characters, so it uses about ${nf(chars)} characters of your ElevenLabs quota.`} A long script is split into parts and joined into one file. It is saved in 02 Narration of this video's folder.</p>\n  ${run?`<p class="note">Voice over is being made for this video… it is saved in 02 Narration when it is done.</p>`:""}<button type="button" class="btn" id="vo-btn"${run?" disabled":""}>${run?"Voice over is being made…":`Make voice over (${nf(chars)} characters)`}</button>`}
 document.addEventListener("click",e=>{const b=e.target.closest("#vo-btn");if(b&&lastNarr)makeVoice(b)});
 // A new take goes first; takes the server moved to "older takes" keep their data.
 function addTake(id,j){const w=work(id),old=j.older||[];
@@ -950,17 +1024,17 @@ function jobSay(id,el,text,err){const cls=err?"status err":"status";if(mkId()===
   const job=$("#vd-job");if(!job)return;job.className=cls;job.textContent=`${plans().find(p=>p.id===id)?.title||"Another video"}: ${text}`;VD.job=""}
 // Videos with a voice over on its way; a take is only saved when ElevenLabs is done, so this stops a second paid run meanwhile.
 const VO_RUN=new Set();
-async function makeVoice(b,force,vid,narr){const st=$("#s-vo"),id=vid??mkId(),f=narr||(id===mkId()?lastNarr:narrOf(id)),voice=$("#vo-voice")?.value||CFG.eleven_voice||"",say=(t,e)=>jobSay(id,st,t,e);
+async function makeVoice(b,force,vid,narr){const st=$("#s-vo"),id=vid??mkId(),f=narr||(id===mkId()?lastNarr:narrOf(id)),voice=$("#vo-voice")?.value||activeVoiceId()||"",say=(t,e)=>jobSay(id,st,t,e);
   if(!f){say("Write the full script first.",1);return null}
   if(VO_RUN.has(id)){say("The voice over for this video is already being made. Wait until it is done.");return null}
   if(!force&&takesOf(id).length){say("This video already has a voice over, so no new one was made. Use Make again in the Voice over step if you really want another take.");return null}
-  if(!voice){say("Choose a voice first in Settings, under Voice.",1);return null}
-  VO_RUN.add(id);if(b)b.disabled=true;say("Making the voice over… this takes 1 to 3 minutes for a 4,000-word script. The finished audio is about as long as the video. Do not close the app.");
+  if(!voice){say("Choose a voice first in Settings, under Voice over.",1);return null}
+  VO_RUN.add(id);if(b)b.disabled=true;say(voiceVS()?"Starting VoiceStudio and making the voice over… keep this window open until it finishes.":"Making the voice over… this takes 1 to 3 minutes for a 4,000-word script. Do not close the app.");
   if(mkId()===id)voTool(f);vdSoon();
   try{const folder=await ensureFolder(id);
-    const j=await api("/api/eleven/tts",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({title:f.title||"voice over",parts:f.narration.map(p=>p.text),voice,folder})});
+    const j=await api("/api/eleven/tts",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({title:f.title||"voice over",parts:f.narration.map(p=>p.text),voice,folder,provider:voiceVS()?"voicestudio":"eleven"})});
     if(j.error){say(j.error,1);return null}
-    eqSpend(j.chars);await addTake(id,j);advance(id,"edit");
+    if(!voiceVS())eqSpend(j.chars);await addTake(id,j);advance(id,"edit");
     say(`Voice over done: ${nf(j.chars)} characters, ${j.chunks} parts, ${(j.bytes/1048576).toLocaleString("en-US",{maximumFractionDigits:1})} MB.${j.older?.length?" The take you had before is kept in older takes.":""}`);
     if(mkId()===id&&VD.step==="voice")VD.open=false;
     ensureFolder(id).then(()=>vdTakes(id));return j}
@@ -1024,12 +1098,12 @@ JSON shape: {"title":"","cold_open":"","flow_style":"","acts":[{"name":"","words
   if(cp&&$("#script-fix").checked&&checkNarr(narrOf(id)).findings.some(x=>!x.ok)){say("Outline and full narration done. No voice over yet, so it can match the fixed script."+sc+" Then make the voice over in the Voice over step.");return true}
   const nt=takesOf(id).length;if(nt){say(`Outline and full narration done. No new voice over: this video already has one (${nt} take${nt>1?"s":""}). Make it again in the Voice over step if the script changed.`+sc);return true}
   if(VO_RUN.has(id)){say("Outline and full narration done. No new voice over: one is already being made for this video."+sc);return true}
-  if(!(CFG.has_eleven&&CFG.eleven_voice)){say("Outline and full narration done. Voice over skipped: set up ElevenLabs in Settings first."+sc);return true}
+  if(!voiceReady()){say("Outline and full narration done. Voice over skipped: set up Voice over in Settings first."+sc);return true}
   say("Step 3 of 3: making the voice over…");vdFollow(id,["script","check"],"voice");
   const vo=await makeVoice(mkId()===id?$("#vo-btn"):null,false,id,narrOf(id));say((vo?"Done: the outline, full narration and MP3 voice over are ready. The Flow clip prompts are under the outline.":"Outline and full narration done. The voice over was not made, see the Voice over step.")+sc,!vo);return true}
 // Length presets; the last choice is remembered.
 function scriptLen(){const w=+$("#script-words").value||4000;document.querySelectorAll("#script-len [data-w]").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.w===w));
-  $("#script-len-note").textContent=`${nf(w)} words is roughly ${Math.round(w*15/4000)} minutes of video (your rule: 4,000 words is about 15 minutes) and ${nf(Math.round(w*6.1/1000)*1000)} characters of ElevenLabs voice over.`}
+  $("#script-len-note").textContent=`${nf(w)} words is roughly ${Math.round(w*15/4000)} minutes of video (your rule: 4,000 words is about 15 minutes) and about ${nf(Math.round(w*6.1/1000)*1000)} narration characters${voiceVS()?" (VoiceStudio, free)":""}.`}
 $("#script-len").addEventListener("click",e=>{const b=e.target.closest("[data-w]");if(!b)return;$("#script-words").value=b.dataset.w;store.set("sw",+b.dataset.w);scriptLen()});
 $("#script-words").addEventListener("input",e=>{store.set("sw",+e.target.value||4000);scriptLen()});
 
@@ -1223,13 +1297,25 @@ function pkActs(f){const n=(f?.narration||[]).filter(p=>(p.text||"").trim());
 const eqSpend=n=>{const q=store.get("eq",null);if(q&&n)store.set("eq",{...q,left:Math.max(0,q.left-n)})};
 const srtT=t=>{const m=Math.round(t*1000),h=Math.floor(m/36e5),mi=Math.floor(m%36e5/6e4),se=Math.floor(m%6e4/1e3),ms=m%1e3,z=(n,l=2)=>String(n).padStart(l,"0");return `${z(h)}:${z(mi)}:${z(se)},${z(ms,3)}`};
 let PEEK="";
-let PK={run:false,at:-1,msg:"",err:false,id:""};
-function pkState(f){const w=mkW(),acts=pkActs(f),want=pkSlug(scTopic()||f.title)||"video";
-  const sig=a=>pkHash([CFG.eleven_voice,CFG.eleven_model,a.text].join("|"));
-  // A new folder is started only when no kept act matches this script, so renaming the topic never drops paid voice files.
-  if(!w.pack||(w.pack.want!==want&&!acts.some((a,i)=>w.pack.acts[i]?.sig===sig(a))))w.pack={want,slug:"",acts:[]};
-  const p=w.pack,need=acts.map((a,i)=>p.acts[i]?.sig!==sig(a));
-  return {w,p,acts,sig,need,todo:need.some(Boolean),chars:acts.reduce((n,a,i)=>n+(need[i]?a.text.length:0),0),total:acts.reduce((n,a)=>n+a.text.length,0)}}
+let PK={run:false,at:-1,msg:"",err:false,id:"",stop:false};
+const pkTextSig=a=>pkHash(String(a?.text||"").trim());
+function pkSig(a){return voiceVS()?pkHash(["vs",CFG.voicestudio_voice,CFG.voicestudio_model||"tts-1",a.text].join("|")):pkHash([CFG.eleven_voice,CFG.eleven_model,a.text].join("|"))}
+function pkActKeep(pa,a,id,done){
+  if(!pa?.file||!(pa.seconds>0))return false;
+  if(pa.sig===pkSig(a))return true;
+  if(!done)return false;
+  if(pa.textSig)return pa.textSig===pkTextSig(a);
+  const narrAt=LAST[nKey(id)]?.at;
+  return !narrAt||done>=narrAt;
+}
+function pkState(f,revoice){const id=mkId(),w=mkW(),acts=pkActs(f),want=pkSlug(scTopic()||f.title)||"video";
+  const sig=pkSig;
+  // A new folder is started only when no kept act matches this script, so renaming the topic or switching Settings voice never drops paid/finished voice files.
+  if(!w.pack||(w.pack.want!==want&&!w.pack.done&&!acts.some((a,i)=>pkActKeep(w.pack.acts?.[i],a,id,w.pack.done))))w.pack={want,slug:"",acts:[]};
+  const p=w.pack,keepDone=!!p.done&&!revoice;
+  const need=acts.map((a,i)=>keepDone?!pkActKeep(p.acts?.[i],a,id,p.done):p.acts?.[i]?.sig!==sig(a));
+  const voiceDiff=keepDone&&!need.some(Boolean)&&acts.some((a,i)=>p.acts?.[i]?.sig!==sig(a));
+  return {w,p,acts,sig,need,todo:need.some(Boolean),voiceDiff,chars:acts.reduce((n,a,i)=>n+(need[i]?a.text.length:0),0),total:acts.reduce((n,a)=>n+a.text.length,0)}}
 // Each act's cue times start at zero, so they are shifted by the length of the acts before it.
 function pkCues(p,n){let off=0;const out=[];for(const a of p.acts.slice(0,n)){for(const c of a?.cues||[])out.push({start:+(c.start+off).toFixed(3),end:+(c.end+off).toFixed(3),text:c.text});off+=a?.seconds||0}return out}
 function pkFiles(f,w,acts,cues){const files=[{name:"00-script.txt",text:(f.title?f.title+"\n\n":"")+acts.map((a,i)=>(/^act\s*\d+/i.test(a.name)?a.name:`Act ${i+1} · ${a.name}`).toUpperCase()+"\n\n"+a.text).join("\n\n\n")+"\n"}];
@@ -1241,9 +1327,9 @@ function pkFiles(f,w,acts,cues){const files=[{name:"00-script.txt",text:(f.title
   if(w.briefs?.list?.length)files.push({name:"infographics.txt",text:igFile(f,w.briefs.list,cues)});
   return files}
 function pkRender(f){const box=$("#pk-box");if(!box||!f)return;
-  if(!CFG.has_eleven||!CFG.eleven_voice){box.innerHTML=`<span class="layer">Edit pack for Premiere</span><h3 id="pk-h">Make edit pack</h3><p class="note">The edit pack needs an ElevenLabs key and a voice. ${CFG.has_eleven?"Choose a voice in Settings, under Voice.":"Add your ElevenLabs API key in Settings, under Voice."}</p><button type="button" class="btn ghost" data-goto="settings">Open Settings</button>${pkClips(f,pkState(f).p)}`;return}
+  if(!voiceReady()){box.innerHTML=`<span class="layer">Edit pack for Premiere</span><h3 id="pk-h">Make edit pack</h3><p class="note">Set up local VoiceStudio (free) or an ElevenLabs key and voice in Settings, under Voice over.</p><button type="button" class="btn ghost" data-goto="settings">Open Settings</button>${pkClips(f,pkState(f).p)}`;return}
   // Progress belongs to the video the pack was started for.
-  const busy=PK.run&&PK.id!==mkId(),K=PK.id===mkId()?PK:{run:false,at:-1,msg:"",err:false};
+  const busy=PK.run&&PK.id!==mkId(),K=PK.id===mkId()?PK:{run:false,at:-1,msg:"",err:false,stop:false};
   const s=pkState(f),{p,acts,need}=s,n=acts.length,kept=need.filter(x=>!x).length,ready=!!p.done&&!s.todo,cues=ready?pkCues(p,n):[];
   const stale=ready&&p.text!==pkHash(JSON.stringify(pkFiles(f,s.w,acts,cues))),q=store.get("eq",null),secs=p.acts.slice(0,n).reduce((t,a)=>t+(a?.seconds||0),0);
   const sep=(CFG.pack_dir||"").includes("\\")?"\\":"/",dir=VF[mkId()]?.dir||p.dir||(CFG.pack_dir?CFG.pack_dir+sep+p.want:"Downloads"+sep+"Terra Studio"+sep+p.want),hasFlow=pkFiles(f,s.w,acts,[]).some(x=>x.name==="flow-prompts.txt");
@@ -1256,9 +1342,9 @@ function pkRender(f){const box=$("#pk-box");if(!box||!f)return;
   // One line says what is left, the button names that action, and steps that wait for another say so.
   const left=s.need.map((x,i)=>x?i+1:0).filter(Boolean),nums=a=>a.length===1?`act ${a[0]}`:a.every((x,i)=>!i||x===a[i-1]+1)?`acts ${a[0]} to ${a[a.length-1]}`:`acts ${a.slice(0,-1).join(", ")} and ${a[a.length-1]}`;
   const changed=p.done&&s.todo&&kept>0,allNew=s.todo&&!kept;
-  const label=busy?"Another edit pack is being made…":K.run?"Making edit pack…":allNew?`Voice all ${n} acts and make the pack (about ${nf(s.chars)} characters)`:s.todo?`Voice ${nums(left)} (about ${nf(s.chars)} characters)`:!p.done?"Finish edit pack (free)":stale?"Save text changes (free)":"Save text files again (free)";
+  const label=busy?"Another edit pack is being made…":K.run?"Making edit pack…":allNew?(voiceVS()?`Voice all ${n} acts and make the pack (VoiceStudio, free)`:`Voice all ${n} acts and make the pack (about ${nf(s.chars)} characters)`):s.todo?(voiceVS()?`Voice ${nums(left)} (VoiceStudio, free)`:`Voice ${nums(left)} (about ${nf(s.chars)} characters)`):!p.done?"Finish edit pack (free)":stale?"Save text changes (free)":"Save text files again (free)";
   const head=K.run?(run1?`Making the voice for act ${K.at+1} of ${n}`:"Writing subtitles and text files"):allNew?"Next: make the edit pack":changed?`${left.length===1?"Act "+left[0]+" changed":nums(left).replace(/^a/,"A")+" changed"}. Voice ${left.length===1?"it":"them"} again`:s.todo?`Next: make the voice for ${nums(left)}`:!p.done?"Next: finish the edit pack":stale?"Next: save the text changes":"Edit pack done";
-  const sub=K.run?esc(K.msg):s.todo?`Uses about ${nf(s.chars)}${q?` of your ${nf(q.left)}`:""} ElevenLabs characters.${kept?` ${kept===1?"Act "+(s.need.findIndex(x=>!x)+1)+" is":kept+" finished acts are"} kept.`:""} When it finishes, the subtitles and the folder are done on their own.`:!p.done?"Every act has its voice. This writes the subtitles and text files into the folder, with no voice characters used.":stale?"The title, description or infographic briefs changed after the pack was made. Saving them uses no voice characters.":`All ${n} act${n>1?"s":""} voiced (${pkLong(secs)}), subtitles and ${p.files?.length||0} files saved.`;
+  const sub=K.run?esc(K.msg):s.todo?`${voiceVS()?"Uses your local VoiceStudio server (no character quota used).":`Uses about ${nf(s.chars)}${q?` of your ${nf(q.left)}`:""} ElevenLabs characters.`}${kept?` ${kept===1?"Act "+(s.need.findIndex(x=>!x)+1)+" is":kept+" finished acts are"} kept.`:""} When it finishes, the subtitles and the folder are done on their own.`:!p.done?"Every act has its voice. This writes the subtitles and text files into the folder, with no voice characters used.":stale?"The title, description or infographic briefs changed after the pack was made. Saving them uses no voice characters.":`All ${n} act${n>1?"s":""} voiced (${pkLong(secs)}), subtitles and ${p.files?.length||0} files saved.`;
   const doneN=n-left.length,seg=Array.from({length:n},(_,i)=>`<i class="${!s.need[i]?"on":run1&&K.at===i?"run":""}"></i>`).join("");
   const st=(cls,num,title,small,tag)=>`<li class="${cls}"><i aria-hidden="true">${cls==="done"?"✓":num}</i><div><b>${title}</b>${small}</div><span class="pk-st"><span class="sr">${cls==="done"?"Done":cls==="run"?"In progress":cls==="now"?"Next":"Waiting"}: </span>${tag}</span></li>`;
   const chips=`<div class="pk-acts">${acts.map((x,i)=>`<span class="${s.need[i]?(run1&&K.at===i?"run":""):"y"}">${s.need[i]?(run1&&K.at===i?"Act "+(i+1)+"…":i+1):"Act "+(i+1)+" ✓"}</span>`).join("")}</div>`;
@@ -1268,8 +1354,8 @@ function pkRender(f){const box=$("#pk-box");if(!box||!f)return;
     <div class="pk-seg" aria-hidden="true">${seg}</div>
     <h3 id="pk-h">${esc(head)}</h3>
     <p>${sub}</p>
-    ${q&&s.chars>q.left?`<p class="pk-warn">That may be more than your quota has left. Acts that finish are kept, so you can continue after it refills.</p>`:""}
-    <div class="chips"><button type="button" class="btn${!s.todo&&p.done&&!stale?" ghost":""}" id="pk-go"${K.run||busy?' aria-disabled="true"':""}>${label}</button><button type="button" class="btn ${!s.todo&&p.done&&!stale?"":"ghost"}" id="pk-open"${p.slug||s.w.folder?"":" disabled"}>Open folder</button></div>
+    ${!voiceVS()&&q&&s.chars>q.left?`<p class="pk-warn">That may be more than your quota has left. Acts that finish are kept, so you can continue after it refills.</p>`:""}
+    <div class="chips"><button type="button" class="btn${!s.todo&&p.done&&!stale?" ghost":""}" id="pk-go"${K.run||busy?' aria-disabled="true"':""}>${label}</button>${K.run&&run1?`<button type="button" class="btn ghost" id="pk-stop"${K.stop?" disabled":""}>${K.stop?"Stopping after this act…":"Stop after this act"}</button>`:""}${s.voiceDiff&&!K.run&&!busy?`<button type="button" class="btn ghost" id="pk-revoice">Redo with ${voiceVS()?"VoiceStudio":"ElevenLabs"}</button>`:""}<button type="button" class="btn ${!s.todo&&p.done&&!stale?"":"ghost"}" id="pk-open"${p.slug||s.w.folder?"":" disabled"}>Open folder</button></div>
   </div>
   <ol class="pk-steps2">
   ${st(run1?"run":s.todo?"now":"done",1,"Voice over, one MP3 per act",chips,run1?"Making…":s.todo?`${left.length} act${left.length>1?"s":""} left`:pkLong(secs))}
@@ -1280,29 +1366,124 @@ function pkRender(f){const box=$("#pk-box");if(!box||!f)return;
   <div class="status${K.err?" err":""}" id="s-pack" role="status">${esc(K.run?"":K.msg)}</div>
   ${ready&&p.files?`<ul class="pk-files" aria-label="Files in the edit pack">${p.files.map(x=>peeks[x]?`<li><button type="button" data-peek="${esc(x)}" aria-expanded="${PEEK===x}">${esc(x)}</button></li>`:`<li>${esc(x)}</li>`).join("")}</ul>${peeks[PEEK]?`<pre class="ig-peek" tabindex="0" aria-label="Start of ${esc(PEEK)}">${esc(peeks[PEEK].slice(0,600))}${peeks[PEEK].length>600?"\n…":""}</pre>`:""}<p class="note">In Premiere: drag the folder into the Project panel. Put the act MP3s in order on the audio track, then import subtitle.srt. The same .srt can be uploaded in YouTube Studio, unless you use Send to Premiere: its 1 s act pauses need 08 Premiere\\subtitles-youtube.srt.</p>`:""}
   ${pkClips(f,p)}${pkTools(f,s,p)}
-  <p class="note">The voice over is already in the pack, cut per act. The Voice over step makes one long MP3 instead; only make it when you want one long file, because it uses the quota again.</p>`;
+  <div class="vd-opt"><span><b>Need one combined MP3 instead of per-act files?</b> Audio &amp; Edit pack already generates every act MP3 into <code>02 Narration</code>. Only use Single MP3 if you need one long file.</span><button type="button" class="btn ghost sm" data-vs="voice">Single MP3 (optional)</button></div>`;
   if(focus==="pk-go"||focus==="pk-open")$("#"+focus)?.focus()}
-/* KIE.ai clips: one 8-second Veo clip per Flow prompt. Money is only spent after a second click inside the page. */
+/* Direct Google Flow bridge + optional KIE.ai Veo clips. */
 let KC={open:false,ask:"",run:"",id:"",at:"",msg:"",err:false,errs:{},all:null,askAll:false};
+let FLOW={st:null,timer:0,seen:new Set(),msg:"",err:false};
+function flowApplyStatus(st){
+  if(!st||typeof st!=="object")return;
+  FLOW.st=st;
+  const stEl=$("#cfg-flow-st");
+  if(stEl){
+    stEl.textContent=st.downloading?"Downloading from Google Flow…":st.current?`Active: ${st.current.label}`:st.open?"Google Flow window open":"Ready";
+  }
+  const items=[...(st.recent||[]),...(st.last_saved?[st.last_saved]:[])];
+  let thumbDirty=false;
+  const scanFolders=new Set();
+  for(const item of items){
+    if(!item||!item.file)continue;
+    const key=`${item.kind}:${item.stem}:${item.slot}:${item.folder}:${item.file}:${item.v}`;
+    if(FLOW.seen.has(key))continue;
+    FLOW.seen.add(key);
+    if(item.kind==="test"){
+      const out=$("#cfg-itest-out"),sEl=$("#s-image");
+      if(sEl){sEl.className="status";sEl.textContent=`Google Flow saved ${item.file}. Ready for Thumbnail generation.`}
+      if(out){out.innerHTML=`<img class="gtest" src="/api/gen/${encodeURIComponent(item.file)}?v=${item.v}" alt="Test image from Google Flow">`}
+    }else if(item.kind==="thumbnail"){
+      const vid=item.stem;
+      if(vid){
+        const w=work(vid);
+        w.gen=w.gen||{concepts:[],imgs:[],pick:null,pos:"tl"};
+        w.gen.imgs=w.gen.imgs||[];
+        w.gen.imgs[item.slot]={file:item.file,v:item.v};
+        GENBUSY.delete(vid+":"+item.slot);
+        saveWork();
+        thumbDirty=true;
+        if(mkId()===vid){
+          const sg=$("#s-gen");
+          if(sg){sg.className="status";sg.textContent=`Saved thumbnail ${item.slot+1} from Google Flow (${item.file}).`}
+          if(w.gen.pick===item.slot)paintGen(item.slot).then(()=>applyPick(item.slot));
+        }
+      }
+    }else if(item.folder){
+      scanFolders.add(item.folder);
+      FLOW.err=false;
+      FLOW.msg=`Saved ${item.file} into ${item.kind==="clip"?"04 Video clips":"03 Images"}.`;
+    }
+  }
+  if(st.last_error){FLOW.err=true;FLOW.msg=st.last_error}
+  if(thumbDirty&&!$("#p-make").hidden)renderGen();
+  if(scanFolders.size){
+    const matchIds=plans().filter(p=>scanFolders.has(work(p.id).folder)).map(p=>p.id);
+    Promise.all(matchIds.map(id=>edScan(id,true))).then(()=>{
+      if(lastNarr&&!$("#p-make").hidden)pkRender(lastNarr);
+      if(!$("#p-edit").hidden)edRender();
+    });
+  }else if((st.queue_len||0)>0||st.downloading||st.last_error){
+    if(lastNarr&&!$("#p-make").hidden){
+      const fl=$("#fl-live");
+      if(fl)fl.innerHTML=flowLiveHTML();
+    }
+  }
+  if(!st.open&&!st.downloading&&!(st.queue_len>0)&&FLOW.timer){
+    clearInterval(FLOW.timer);FLOW.timer=0;
+  }
+}
+function flowStartWatch(){
+  if(FLOW.timer)return;
+  FLOW.timer=setInterval(async()=>{
+    try{const j=await api("/api/flow/status");flowApplyStatus(j)}catch{}
+  },1200);
+}
+function flowLiveHTML(){
+  const s=FLOW.st;
+  if(!s&&!FLOW.msg)return "";
+  if(s?.last_error)return `<div class="status err" role="status">${esc(s.last_error)}</div>`;
+  if(s?.downloading)return `<div class="status" role="status">Saving download from Google Flow…</div>`;
+  if(s?.current)return `<div class="fl-bar" role="status"><span><b>Google Flow active (${s.index+1}/${s.queue_len}):</b> ${esc(s.current.label)}${s.last_saved?` · Last saved: ${esc(s.last_saved.file)}`:""}</span><div class="chips"><button type="button" class="btn ghost sm" id="fl-open">Focus Flow</button><button type="button" class="btn ghost sm" id="fl-clear">Clear queue</button></div></div>`;
+  if(FLOW.msg)return `<div class="status${FLOW.err?" err":""}" role="status">${esc(FLOW.msg)}</div>`;
+  return "";
+}
 function pkFlow(f){const o=lastOutline&&(!f.title||!lastOutline.title||f.title===lastOutline.title)?lastOutline:null;
   return (o?.acts||[]).flatMap((a,i)=>(a.flow_prompts||[]).filter(Boolean).map((t,j)=>({n:`${i+1}.${j+1}`,text:t,prompt:t+(o.flow_style?" Style: "+o.flow_style:"")})))}
+const flSlug=n=>String(n||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
 // Make all: one clip at a time, saved clips skipped, a failed clip does not stop the rest, and Stop waits for the running clip.
-function pkClips(f,p){const fl=pkFlow(f);if(!fl.length)return "";const mine=KC.id===mkId(),price=usd(KIE_CLIP*KIE_USD),on=!!CFG.has_kie;
-  const fresh=c=>{const x=p.clips?.[c.n];return !!x&&x.sig===pkHash(c.prompt)},todo=fl.filter(c=>!fresh(c)),A=mine?KC.all:null;
-  const allBtn=on&&todo.length>1&&!A?`<button type="button" class="btn" id="kc-all"${KC.run?" disabled":""} aria-expanded="${mine&&KC.askAll}">Make all ${todo.length} clips (about ${usd(KIE_CLIP*KIE_USD*todo.length)})</button>`:"";
+function pkClips(f,p){const fl=pkFlow(f);if(!fl.length)return "";const id=mkId(),mine=KC.id===id,price=usd(KIE_CLIP*KIE_USD),on=!!CFG.has_kie;
+  const S=ED.scan[id],imgs=S?.images||[],clips=S?.clips||[];
+  const findImg=n=>imgs.find(x=>x.toLowerCase().startsWith("shot-"+flSlug(n)+".")||x.toLowerCase().startsWith("shot-"+flSlug(n)+" "));
+  const findClip=(n)=>p.clips?.[n]?.file||clips.find(x=>x.toLowerCase().startsWith("clip-"+flSlug(n)+".")||x.toLowerCase().startsWith("clip-"+flSlug(n)+" "));
+  const fresh=c=>{const x=p.clips?.[c.n];return (!!x&&x.sig===pkHash(c.prompt))||!!findClip(c.n)},todo=fl.filter(c=>!fresh(c)),A=mine?KC.all:null;
+  const imgDone=fl.filter(c=>!!findImg(c.n)).length,clipDone=fl.filter(c=>!!findClip(c.n)).length;
+  const allBtn=on&&todo.length>1&&!A?`<button type="button" class="btn ghost" id="kc-all"${KC.run?" disabled":""} aria-expanded="${mine&&KC.askAll}">KIE.ai: make ${todo.length} clips (about ${usd(KIE_CLIP*KIE_USD*todo.length)})</button>`:"";
   const ask=mine&&KC.askAll&&!A?`<div class="confirm kc-confirm"><span>This spends about <b>${nf(KIE_CLIP*todo.length)} KIE.ai credits (${usd(KIE_CLIP*KIE_USD*todo.length)})</b>. Clips are made one at a time, each 3 to 10 minutes, so ${todo.length} clips take about ${Math.max(1,Math.round(todo.length*6/60*2)/2)} hour${todo.length*6>90?"s":""}. Keep the app open; other tabs keep working. Saved clips are skipped.</span><div class="chips"><button type="button" class="btn" id="kc-allyes">Yes, make ${todo.length} clips</button><button type="button" class="btn ghost" id="kc-allno">Cancel</button></div></div>`:"";
   const prog=A?`<div class="kc-prog" role="status"><div class="kc-track" aria-hidden="true"><i style="width:${Math.round(A.done/A.list.length*100)}%"></i></div><span>${A.stop?"Stopping after this clip":"Making clip "+esc(KC.run||"")} · ${A.done} of ${A.list.length} done${A.fail?` · ${A.fail} not made`:""}${A.list.length-A.done>1?` · about ${Math.round((A.list.length-A.done)*6)} minutes left`:""}</span>${A.stop?"":`<button type="button" class="btn ghost sm" id="kc-stop">Stop after this clip</button>`}</div>`:"";
-  return `<details class="pk-clips" id="pk-clips"${KC.open?" open":""}><summary>Video clips from the Flow prompts (optional, ${fl.length} prompt${fl.length>1?"s":""} · ${fl.length-todo.length} saved)</summary>
-  <p class="note">KIE.ai makes each 8-second clip with Veo 3.1 Lite and saves it in 04 Video clips. One clip costs about ${KIE_CLIP} credits (${price}) and can take up to 10 minutes. Pasting the prompts into Google Flow yourself still works and costs nothing here.${on?"":" The buttons are off until a KIE.ai key is saved in Settings."}</p>
-  ${on?"":`<button type="button" class="btn ghost" data-goto="settings">Open Settings</button>`}
-  ${allBtn||prog||(mine&&!A&&KC.allMsg)?`<div class="kc-bar">${allBtn}${prog}${mine&&!A&&KC.allMsg?`<span class="kc-sum" role="status">${esc(KC.allMsg)}</span>`:""}</div>`:""}${ask}
-  <ol class="pk-cl">${fl.map(c=>{const saved=p.clips?.[c.n],fr=fresh(c),run=KC.run===c.n&&mine,asking=mine&&KC.ask===c.n&&!KC.run,queued=A&&A.list.includes(c.n)&&!run&&!A.seen.includes(c.n),er=mine&&KC.errs[c.n];
-    const chip=run?`<span class="kc-chip run">Making… keep the app open</span>`:queued?`<span class="kc-chip q">Waiting</span>`:er?`<span class="kc-chip bad">Not made</span>`:fr?`<span class="kc-chip ok">✓ ${esc(saved.file)}</span>`:saved?`<span class="kc-chip q">Older prompt: ${esc(saved.file)}</span>`:"";
-    const btn=run||queued?"":`<button type="button" class="btn ghost sm" data-clip="${c.n}"${!on||KC.run||A?" disabled":""}${asking?' aria-expanded="true"':""}>${er?"Try again":saved?"Make again":"Make clip"} (about ${price})</button>`;
+  return `<details class="pk-clips" id="pk-clips"${KC.open?" open":""}><summary>Google Flow visuals: images &amp; video clips (${fl.length} prompt${fl.length>1?"s":""} · ${imgDone} images · ${clipDone} clips saved)</summary>
+  <p class="note">Send prompts directly to Terra Studio's built-in <b>Google Flow</b> window (free with your Google account). Downloads save straight into <code>03 Images</code> or <code>04 Video clips</code> without overwriting existing files.${on?" You can also use KIE.ai Veo 3.1 below.":""}</p>
+  <div class="kc-bar">
+    <button type="button" class="btn" id="fl-all-img">Send all to Flow (Images to 03 Images)</button>
+    <button type="button" class="btn ghost" id="fl-all-vid">Send all to Flow (Veo to 04 Video clips)</button>
+    <button type="button" class="btn ghost" id="fl-open">Open Google Flow</button>
+    ${allBtn}
+  </div>
+  <div id="fl-live">${flowLiveHTML()}</div>
+  ${prog||(mine&&!A&&KC.allMsg)?`<div class="kc-bar">${prog}${mine&&!A&&KC.allMsg?`<span class="kc-sum" role="status">${esc(KC.allMsg)}</span>`:""}</div>`:""}${ask}
+  <ol class="pk-cl">${fl.map(c=>{const saved=p.clips?.[c.n],imgF=findImg(c.n),clipF=findClip(c.n),fr=fresh(c),run=KC.run===c.n&&mine,asking=mine&&KC.ask===c.n&&!KC.run,queued=A&&A.list.includes(c.n)&&!run&&!A.seen.includes(c.n),er=mine&&KC.errs[c.n];
+    const imgChip=imgF?`<span class="kc-chip ok">✓ ${esc(imgF)}</span>`:"";
+    const chip=run?`<span class="kc-chip run">Making… keep the app open</span>`:queued?`<span class="kc-chip q">Waiting</span>`:er?`<span class="kc-chip bad">Not made</span>`:clipF?`<span class="kc-chip ok">✓ ${esc(clipF)}</span>`:saved?`<span class="kc-chip q">Older prompt: ${esc(saved.file)}</span>`:"";
+    const flBtns=`<button type="button" class="btn ghost sm" data-fl-img="${c.n}">Flow image</button><button type="button" class="btn ghost sm" data-fl-vid="${c.n}">Flow video</button>`;
+    const kieBtn=!on||run||queued?"":`<button type="button" class="btn ghost sm" data-clip="${c.n}"${KC.run||A?" disabled":""}${asking?' aria-expanded="true"':""}>${er?"Try again":saved?"KIE again":"KIE clip"} (${price})</button>`;
     return `<li><b>${c.n}</b><span>${esc(c.text)}</span>
-    <div class="chips">${chip}${btn}</div>
+    <div class="chips">${imgChip}${chip}${flBtns}${kieBtn}</div>
     ${asking?`<div class="confirm"><span>Spend about ${KIE_CLIP} KIE.ai credits (${price}) on this one clip?${er&&/not paid twice/.test(er)?" If KIE.ai already made it, the app picks that one up instead of paying again.":saved?" The saved clip is kept; the new one gets its own name.":""}</span><button type="button" class="btn" data-clipyes="${c.n}">Yes, make this clip</button><button type="button" class="btn ghost" data-clipno="${c.n}">Cancel</button></div>`:""}
     ${er?`<div class="status err" role="status">${esc(er)}</div>`:mine&&KC.at===c.n&&KC.msg&&!A?`<div class="status${KC.err?" err":""}" role="status">${esc(KC.msg)}</div>`:""}</li>`}).join("")}</ol></details>`}
+async function sendFlowPack(kind,onlyN){const f=lastNarr;if(!f||!ownScript(f))return;const id=mkId(),all=pkFlow(f);if(!all.length)return;
+  const list=onlyN?all.filter(x=>x.n===onlyN):all;if(!list.length)return;
+  const folder=await ensureFolder(id);if(!folder){FLOW.err=true;FLOW.msg="Could not create the video folder first.";if(lastNarr)pkRender(lastNarr);return}
+  const items=list.map(c=>({id:c.n,kind,label:(kind==="clip"?"Veo Clip ":"Shot ")+c.n+" -> "+(kind==="clip"?"04 Video clips":"03 Images"),prompt:c.prompt,folder}));
+  const st=await pkPost("/api/flow/send",{kind,folder,items});
+  if(st.error){FLOW.err=true;FLOW.msg=st.error;if(lastNarr)pkRender(lastNarr);return}
+  FLOW.err=false;FLOW.msg="";flowApplyStatus(st);flowStartWatch();if(lastNarr)pkRender(lastNarr)}
 async function makeClip(n){const f=lastNarr;if(!f||KC.run||!CFG.has_kie||!ownScript(f))return false;const id=mkId(),{p}=pkState(f),c=pkFlow(f).find(x=>x.n===n);if(!c)return false;
   const errs={...KC.errs};delete errs[n];
   KC={...KC,ask:"",run:n,id,at:n,err:false,errs,msg:`KIE.ai is making clip ${n}. This can take up to 10 minutes. Do not close the app.`};pkRender(lastNarr);
@@ -1319,7 +1500,14 @@ async function makeAllClips(){const f=lastNarr;if(!f||KC.run||KC.all||!CFG.has_k
   const A=KC.all,made=A.done-A.fail;KC={...KC,all:null,allMsg:`${made} of ${A.list.length} clips saved${A.fail?`, ${A.fail} not made (press Try again on ${A.fail>1?"those":"that one"})`:""}${A.stop&&A.done<A.list.length?`, stopped with ${A.list.length-A.done} left`:""}.`};
   if(lastNarr)pkRender(lastNarr)}
 document.addEventListener("toggle",e=>{if(e.target.id==="pk-clips")KC.open=e.target.open},true);
-document.addEventListener("click",e=>{const a=e.target.closest("[data-clip]"),y=e.target.closest("[data-clipyes]"),no=e.target.closest("[data-clipno]");
+document.addEventListener("click",async e=>{
+  if(e.target.closest("#fl-all-img")){sendFlowPack("image");return}
+  if(e.target.closest("#fl-all-vid")){sendFlowPack("clip");return}
+  if(e.target.closest("#fl-open")){const st=await api("/api/flow/open",{method:"POST"});flowApplyStatus(st);flowStartWatch();return}
+  if(e.target.closest("#fl-clear")){const st=await api("/api/flow/clear",{method:"POST"});FLOW.msg="";flowApplyStatus(st);if(lastNarr)pkRender(lastNarr);return}
+  const fi=e.target.closest("[data-fl-img]");if(fi){sendFlowPack("image",fi.dataset.flImg);return}
+  const fv=e.target.closest("[data-fl-vid]");if(fv){sendFlowPack("clip",fv.dataset.flVid);return}
+  const a=e.target.closest("[data-clip]"),y=e.target.closest("[data-clipyes]"),no=e.target.closest("[data-clipno]");
   const t=e.target.closest("#kc-all,#kc-allyes,#kc-allno,#kc-stop");
   if(t){if(t.id==="kc-all"){KC={...KC,askAll:!KC.askAll,id:mkId(),ask:""};pkRender(lastNarr);$(KC.askAll?"#kc-allyes":"#kc-all")?.focus()}
     else if(t.id==="kc-allyes"){makeAllClips()}else if(t.id==="kc-allno"){KC={...KC,askAll:false};pkRender(lastNarr);$("#kc-all")?.focus()}
@@ -1369,7 +1557,7 @@ function pkTools(f,s,p){const id=mkId(),w=s.w;if(!w.folder)return "";const S=ED.
   const n=s.acts.length,files=p.acts.slice(0,n).map(a=>a?.file).filter(Boolean),vk=tlKey(id,"voice"),nk=tlKey(id,"names"),nr=TL.res[nk]?.data;
   const names=nr?`<ul class="tl-names">${nr.acts.map((a,i)=>`<li><b>Act ${i+1}</b> ${a.odd.length?a.odd.map(o=>o.heard?`<span class="tl-odd">“${esc(o.name)}” sounded like “${esc(o.heard)}” at ${tlClock(o.at)}</span>`:`<span class="tl-odd">“${esc(o.name)}” was not heard</span>`).join(""):`<span class="ok">All names sounded right.</span>`}</li>`).join("")}</ul><p class="note">Whisper can mishear rare names too, so listen at the time shown before you voice an act again.</p>`:"";
   return stills+`<section class="tl-box tl-voice" aria-labelledby="tl-v-h"><h4 id="tl-v-h">Voice tools (free, on this PC)</h4>${gate}
-    ${ready?`<div class="tl-two"><div><p class="note"><b>Even loudness and one long MP3.</b> Every act gets the same loudness (-16 LUFS), saved in 02 Narration\\levelled, and the acts are joined with 1 s pauses into voice-all-acts.mp3. No ElevenLabs characters used.</p>
+    ${ready?`<div class="tl-two"><div><p class="note"><b>Even loudness and one long MP3.</b> Every act gets the same loudness (-16 LUFS), saved in 02 Narration\\levelled, and the acts are joined with 1 s pauses into voice-all-acts.mp3. ${voiceVS()?"Runs locally on this PC.":"No ElevenLabs characters used."}</p>
       <button type="button" class="btn ghost sm" data-tl-voice${TL.run[vk]?" disabled":""}>Level and join the ${n} acts</button>${tlSt(vk)}</div>
       <div><p class="note"><b>Check names with Whisper.</b> Whisper listens to each act and lists genus and place names that sounded wrong, with the time. The first use downloads Whisper (about 150 MB).</p>
       <button type="button" class="btn ghost sm" data-tl-names${TL.run[nk]?" disabled":""}>Check names in ${n} acts</button>${tlSt(nk)}${names}</div></div>`:""}</section>`}
@@ -1419,26 +1607,30 @@ document.addEventListener("click",e=>{const t=e.target.closest?.("button");if(!t
   if(t.hasAttribute("data-tl-short")){const id=ED.id,w=work(id),o=TL.short[id];if(!o?.file)return;const k=tlKey(id,"short");
     const start=o.start==="custom"?tlAt(o.at):+o.start;if(start==null){TL.res[k]={error:"Type the start time as m:ss, for example 4:20."};tlPaint(k);return}
     tlGo(k,{_id:id,kind:"short",folder:w.folder,file:o.file,start,seconds:+o.len,title:o.title},r=>({msg:`Saved as ${r.file} in 07 Upload.${r.captions?"":" It has no captions: "+(r.note||"Whisper did not run.")}`}),tlRe);return}});
-async function makePack(){const f=lastNarr;if(!f||PK.run||!ownScript(f))return null;const id=mkId(),s=pkState(f),{w,p,acts}=s,n=acts.length,thumb=mkPlan()?.thumb?id:"";
-  const fail=msg=>{PK={run:false,at:-1,msg,err:true,id};pkRender(lastNarr);return null};
+async function makePack(revoice){const f=lastNarr;if(!f||PK.run||!ownScript(f))return null;const id=mkId(),s=pkState(f,revoice),{w,p,acts}=s,n=acts.length,thumb=mkPlan()?.thumb?id:"";
+  const fail=msg=>{PK={run:false,at:-1,msg,err:true,id,stop:false};pkRender(lastNarr);return null};
   if(acts.some(a=>!a.text))return fail("The script is empty.");
-  PK={run:true,at:-1,msg:"",err:false,id};const folder=await ensureFolder(id);
-  for(let i=0;i<n;i++){if(!s.need[i])continue;const a=acts[i];
+  PK={run:true,at:-1,msg:"",err:false,id,stop:false};const folder=await ensureFolder(id);
+  for(let i=0;i<n;i++){if(PK.stop)break;if(!s.need[i])continue;const a=acts[i];
     PK.at=i;PK.msg=`Making the voice for act ${i+1} of ${n}: ${a.name}. ${nf(a.text.length)} characters. Do not close the app.`;pkRender(lastNarr);
     const j=await pkPost("/api/pack/voice",{slug:p.slug||p.want,index:i,name:a.name,text:a.text,title:p.want,folder});
     if(j.error||!j.file){const kept=acts.filter((x,k)=>p.acts[k]?.sig===s.sig(x)).length;
       return fail(`Act ${i+1} was not made. ${j.error||"Try again."}${kept?` ${kept} finished act${kept>1?"s are":" is"} kept. Click the button again to continue.`:""}`)}
-    p.slug=j.slug;p.dir=j.dir;p.done=0;p.acts[i]={sig:s.sig(a),file:j.file,seconds:j.seconds,chars:j.chars,cues:j.cues||[]};eqSpend(j.chars);await saveCues(id||"free");await flushWork()}
+    p.slug=j.slug;p.dir=j.dir;p.done=0;p.acts[i]={sig:s.sig(a),textSig:pkTextSig(a),file:j.file,seconds:j.seconds,chars:j.chars,cues:j.cues||[]};eqSpend(j.chars);await saveCues(id||"free");await flushWork()}
+  if(PK.stop&&pkState(f).todo){const kept=acts.filter((x,k)=>pkActKeep(p.acts[k],x,id,p.done||Date.now())).length;
+    PK={run:false,at:-1,err:false,id,stop:false,msg:`Stopped after the running act. ${kept} of ${n} act${n>1?"s are":" is"} saved; press the button to finish the rest.`};pkRender(lastNarr);return null}
   PK.at=n;PK.msg="Writing the subtitles and text files…";pkRender(lastNarr);
   p.acts.length=n;const cues=pkCues(p,n),files=pkFiles(f,w,acts,cues);
   const r=await pkPost("/api/pack/finish",{slug:p.slug||p.want,files,cues,thumb,folder});
   if(r.error)return fail(`The voice files are saved, but the text files are not. ${r.error} Click the button again.`);
   p.slug=r.slug;p.dir=r.dir;p.files=r.files||[];p.text=pkHash(JSON.stringify(files));p.done=Date.now();saveWork();
-  PK={run:false,at:-1,err:false,id,msg:`Done. ${p.files.length} files are in ${r.dir}.${thumb&&!r.thumbnail?" The thumbnail was not found, so it is not in the folder.":""}`};
+  PK={run:false,at:-1,err:false,id,stop:false,msg:`Done. ${p.files.length} files are in ${r.dir}.${thumb&&!r.thumbnail?" The thumbnail was not found, so it is not in the folder.":""}`};
   pkRender(lastNarr);igRender(lastNarr);advance(id,"edit");ensureFolder(id).then(vdSoon);return r}
 document.addEventListener("click",async e=>{
   const pe=e.target.closest("[data-peek]");if(pe){PEEK=PEEK===pe.dataset.peek?"":pe.dataset.peek;pkRender(lastNarr);$(`[data-peek="${CSS.escape(pe.dataset.peek)}"]`)?.focus();return}
-  if(e.target.closest("#pk-go")){makePack();return}
+  if(e.target.closest("#pk-stop")){if(PK.run){PK.stop=true;if(lastNarr)pkRender(lastNarr)}return}
+  if(e.target.closest("#pk-go")){makePack(false);return}
+  if(e.target.closest("#pk-revoice")){makePack(true);return}
   if(e.target.closest("#pk-open")){const w=mkW(),slug=w.pack?.slug;if(!slug&&!w.folder)return;const r=w.folder?await pkPost("/api/video/open",{name:w.folder}):await pkPost("/api/pack/open",{slug});if(r.error&&!PK.run){PK={run:false,at:-1,msg:r.error,err:true,id:mkId()};pkRender(lastNarr)}}});
 
 /* Infographic briefs: the app finds the moments; the clip maker below renders them. */
@@ -1705,44 +1897,91 @@ const longForm=()=>(YT&&YT.videos||[]).filter(v=>v.dur>=120);
 const BN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 function monthly(){const m=new Map();(YT.daily||[]).forEach(([d,v])=>{const k=d.slice(0,7);m.set(k,(m.get(k)||0)+v)});return [...m.entries()].sort()}
 function lastDays(n,offset=0){const d=YT.daily||[];return d.slice(Math.max(0,d.length-n-offset),d.length-offset).reduce((a,x)=>a+x[1],0)}
-let MONTHS=[];
+let MONTHS=[],G_SERIES=[];
+const anaRange=()=>{const r=store.get("gr","all");return ["7","30","90","all"].includes(r)?r:"all"};
+const ytEnd=()=>YT?.daily?.length?YT.daily[YT.daily.length-1][0]:isoDay(new Date());
+function ytCut(r){if(r==="all")return null;if(r==="12"){const ms=monthly().slice(-12);return ms.length?ms[0][0]+"-01":null}
+  const n=+r||30,d=new Date(ytEnd()+"T12:00:00");d.setDate(d.getDate()-(n-1));return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
+function ytStatsFor(r){
+  const t=YT?.totals||{},d=YT?.daily||[],df=YT?.daily_full||[],cut=ytCut(r);
+  const since=d.length?`since ${BN[+d[0][0].slice(5,7)-1]} ${d[0][0].slice(0,4)}`:"";
+  const lbl=r==="7"?"7 days":r==="30"?"30 days":r==="90"?"90 days":r==="12"?"12 months":"all time";
+  let views=t.views??0,vNote=since;
+  if(r==="7"||r==="30"||r==="90"){const n=+r;views=d.length?lastDays(n):t.views;vNote="";
+    if(d.length>=n*2){const a=lastDays(n),b=lastDays(n,n);if(b){const p=Math.round((a/b-1)*100);vNote=`<em class="${p<0?"dn":"upc"}">${p<0?"down":"up"} ${Math.abs(p)}%</em> from the ${n} days before`}}
+    else if(d.length)vNote=`last ${Math.min(n,d.length)} days`}
+  else if(r==="12"){const ms=monthly().slice(-12);views=ms.reduce((a,x)=>a+x[1],0);vNote=`last ${ms.length} months`}
+  const dfSlice=cut?df.filter(x=>x[0]>=cut):df,hasFull=r!=="all"&&dfSlice.length>0;
+  let hours=t.hours,subs=t.subs,rev=t.revenue,hNote=since,sNote=since,rNote=since;
+  if(r!=="all"){
+    if(hasFull){hours=dfSlice.reduce((a,x)=>a+(+x[2]||0),0);subs=dfSlice.reduce((a,x)=>a+(+x[3]||0),0);hNote=sNote=`last ${lbl}`;
+      const revRows=dfSlice.filter(x=>x[4]!=null);
+      if(revRows.length){rev=revRows.reduce((a,x)=>a+(+x[4]||0),0);rNote=`last ${lbl}`}else{rev=t.revenue;rNote=`all time ${since}`}}
+    else{const fb=d.length?`all time ${since} · re-sync for ${lbl}`:`all time ${since}`;hNote=sNote=rNote=fb}
+  }
+  return {r,lbl,cut,views,vNote,hours,hNote,subs,sNote,rev,rNote,since,hasFull}}
 const mLabel=(m,i)=>BN[+m.slice(5,7)-1]+" "+m.slice(0,4)+(i===MONTHS.length-1&&YT.partialLast?" (not complete)":"");
 
 function renderGrowth(){
-  const has=YT&&(YT.videos?.length||YT.daily?.length);
+  const has=YT&&(YT.videos?.length||YT.daily?.length),gw=$("#g-seg-wrap");
   $("#g-empty").hidden=!!has;$("#g-full").hidden=!has;
+  if(gw)gw.hidden=!has||anaTab!=="overview";
   if(!has){$("#meter").innerHTML="";return}
   MONTHS=monthly();
-  const t=YT.totals||{};
+  const r=anaRange(),st=ytStatsFor(r);
+  $("#g-seg")?.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.r===r));
   $("#g-range").textContent="YouTube Studio data"+(YT.range?", "+YT.range:"")+(YT.imported_at?", imported "+new Date(YT.imported_at).toLocaleDateString("en-US"):"");
-  const k=[];if(t.views!=null)k.push([nf(t.views),"total views"]);if(t.hours!=null)k.push([nf(t.hours),"watch hours"]);if(t.subs!=null)k.push([(t.subs>=0?"+":"")+nf(t.subs),"net subscribers"]);if(t.revenue!=null)k.push([money(t.revenue),"estimated revenue"]);if(YT.daily?.length)k.push([nf(lastDays(30)),"views in the last 30 days"]);
+  const rh=$("#g-rep-h");if(rh)rh.textContent=r==="all"?"Channel report (all time)":`Channel report (last ${r} days)`;
+  const k=[];
+  if(st.views!=null)k.push([nf(st.views),r==="all"?"total views":`views (${st.lbl})`]);
+  if(st.hours!=null)k.push([nf(st.hours),st.hasFull?`watch hours (${st.lbl})`:r==="all"?"watch hours":"watch hours (all time)"]);
+  if(st.subs!=null)k.push([(st.subs>=0?"+":"")+nf(st.subs),st.hasFull?`net subscribers (${st.lbl})`:r==="all"?"net subscribers":"net subscribers (all time)"]);
+  if(st.rev!=null)k.push([money(st.rev),(st.hasFull&&st.rNote===`last ${st.lbl}`)?`estimated revenue (${st.lbl})`:r==="all"?"estimated revenue":"estimated revenue (all time)"]);
+  const lfRange=longForm().filter(v=>!st.cut||(v.d&&v.d>=st.cut));
+  if(r==="all"){if(YT.daily?.length)k.push([nf(lastDays(30)),"views in the last 30 days"])}
+  else k.push([nf(lfRange.length),`long video${lfRange.length===1?"":"s"} published (${st.lbl})`]);
   $("#g-kpis").innerHTML=k.map(([b,l])=>`<div><b>${b}</b><span>${l}</span></div>`).join("");
   if(YT.daily?.length>=60){const a=lastDays(30),b=lastDays(30,30),pct=b?Math.round((a/b-1)*100):0;$("#meter").innerHTML=`<span class="layer">Views in the last 30 days</span><b>${nf(a)}</b> <span class="${a<b?"no":"ok"}">${a<b?"down":"up"} ${Math.abs(pct)}%</span> compared with the 30 days before`}
   if(!(YT.daily?.length>=60))$("#meter").innerHTML="";
-  if(MONTHS.length){chart();$("#g-mtable").innerHTML=`<tr><th>Month</th><th>Views</th></tr>`+MONTHS.map(([m,v],i)=>`<tr><td>${mLabel(m,i)}</td><td>${nf(v)}</td></tr>`).join("")}
-  $("#g-chart-wrap").hidden=!MONTHS.length;
+  if(r==="all"){
+    G_SERIES=MONTHS.map(([m,v],i)=>({k:m,v,short:(+m.slice(5,7)===1||i===0)?`${BN[+m.slice(5,7)-1]} ${m.slice(2,4)}`:(MONTHS.length<=36&&+m.slice(5,7)%3===1&&i>2?BN[+m.slice(5,7)-1]:""),tip:`${mLabel(m,i)}: ${nf(v)} views`,tbl:mLabel(m,i),partial:i===MONTHS.length-1&&YT.partialLast}));
+    if($("#g-chart-title"))$("#g-chart-title").textContent="Views per month: when did the channel rise, when did it fall?";
+    if($("#g-chart-note"))$("#g-chart-note").textContent="Hover or focus a bar for the monthly number. A striped bar is a month that is not complete yet.";
+    if($("#g-mtable-sum"))$("#g-mtable-sum").textContent="See the monthly numbers as a table";
+  }else{
+    const ds=(YT.daily||[]).slice(-(+r)),n=ds.length,every=n<=10?1:n<=35?5:15;
+    G_SERIES=ds.map(([d,v],i)=>{const lbl=`${+d.slice(8)} ${BN[+d.slice(5,7)-1]}`;
+      return {k:d,v,short:((n-1-i)%every===0)?lbl:"",tip:`${lbl} ${d.slice(0,4)}: ${nf(v)} views`,tbl:`${lbl} ${d.slice(0,4)}`,partial:false}});
+    const sum=ds.reduce((a,x)=>a+x[1],0);
+    if($("#g-chart-title"))$("#g-chart-title").textContent=`Views per day (last ${r} days): ${nf(sum)} views (${nf(n?sum/n:0)} / day)`;
+    if($("#g-chart-note"))$("#g-chart-note").textContent="Hover or focus a bar for the daily number.";
+    if($("#g-mtable-sum"))$("#g-mtable-sum").textContent=`See the last ${r} days as a table`;
+  }
+  if(G_SERIES.length){chart();$("#g-mtable").innerHTML=`<tr><th>${r==="all"?"Month":"Date"}</th><th>Views</th></tr>`+G_SERIES.map(x=>`<tr><td>${esc(x.tbl)}</td><td>${nf(x.v)}</td></tr>`).join("")}
+  $("#g-chart-wrap").hidden=!G_SERIES.length;
   diagnose();table();extras();incomeSetup();
   const titles=(YT.videos||[]).filter(v=>v.dur>=120).map(v=>v.t);if(titles.length&&!$("#ideas-avoid").value)$("#ideas-avoid").value=titles.join("; ");
 }
+$("#g-seg")?.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;store.set("gr",b.dataset.r);renderGrowth()});
 
 function chart(){
-  const svg=$("#g-chart");if(!svg||!MONTHS.length)return;const W=Math.max(560,svg.clientWidth||560),H=240,pl=48,pb=26,pt=26,data=MONTHS;
-  const peak=Math.max(...data.map(d=>d[1]),1),step=niceStep(peak/4),max=step*4,bw=(W-pl-8)/data.length,y=v=>pt+(H-pt-pb)*(1-v/max),base=H-pb,mono='font-family="Familjen Grotesk,system-ui,sans-serif"';
+  const svg=$("#g-chart");if(!svg||!G_SERIES.length)return;const W=Math.max(560,svg.clientWidth||560),H=240,pl=48,pb=26,pt=26,data=G_SERIES;
+  const peak=Math.max(...data.map(d=>d.v),1),step=niceStep(peak/4),max=step*4,bw=(W-pl-8)/data.length,y=v=>pt+(H-pt-pb)*(1-v/max),base=H-pb,mono='font-family="Familjen Grotesk,system-ui,sans-serif"';
   let g="";for(let t=0;t<=max;t+=step)g+=`<line x1="${pl}" x2="${W-4}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)"/><text x="${pl-6}" y="${y(t)+4}" text-anchor="end" font-size="11" fill="var(--muted)" ${mono}>${short(t)}</text>`;
-  const peakI=data.reduce((b,d,i)=>d[1]>data[b][1]?i:b,0),lastFull=YT.partialLast?data.length-2:data.length-1;
-  data.forEach(([m,v],i)=>{const w=Math.max(2,bw-2),x=pl+i*bw+1,top=y(v),r=Math.min(4,w/2,base-top);
+  const peakI=data.reduce((b,d,i)=>d.v>data[b].v?i:b,0),lastFull=data[data.length-1]?.partial?data.length-2:data.length-1;
+  data.forEach((row,i)=>{const v=row.v,w=Math.max(2,bw-(data.length>60?1:2)),x=pl+i*bw+1,top=y(v),r=Math.min(4,w/2,base-top);
     const d=base-top<1?"":`M${x},${base}V${top+r}Q${x},${top} ${x+r},${top}H${x+w-r}Q${x+w},${top} ${x+w},${top+r}V${base}Z`;
-    g+=`<path d="${d}" fill="${i===data.length-1&&YT.partialLast?"url(#hx)":"var(--series)"}"/><rect class="hit" data-i="${i}" x="${pl+i*bw}" y="${pt}" width="${bw}" height="${base-pt}" fill="transparent" tabindex="0" aria-label="${mLabel(m,i)}: ${nf(v)} views"/>`;
-    const mo=+m.slice(5,7);if(mo===1||i===0)g+=`<text x="${x}" y="${H-8}" font-size="11" fill="var(--muted)" ${mono}>${BN[mo-1]} ${m.slice(2,4)}</text>`;else if(data.length<=36&&mo%3===1&&i>2)g+=`<text x="${x}" y="${H-8}" font-size="11" fill="var(--muted)" ${mono}>${BN[mo-1]}</text>`;
+    g+=`<path d="${d}" fill="${row.partial?"url(#hx)":"var(--series)"}"/><rect class="hit" data-i="${i}" x="${pl+i*bw}" y="${pt}" width="${bw}" height="${base-pt}" fill="transparent" tabindex="0" aria-label="${esc(row.tip)}"/>`;
+    if(row.short)g+=`<text x="${i===data.length-1?x+w:x+w/2}" y="${H-8}" text-anchor="${i===data.length-1?"end":"middle"}" font-size="11" fill="var(--muted)" ${mono}>${esc(row.short)}</text>`;
     if(i===peakI)g+=`<text x="${Math.min(Math.max(x+w/2,pl+30),W-40)}" y="${top-8}" text-anchor="middle" font-size="12" font-weight="500" fill="var(--ink)" ${mono}>${nf(v)}</text>`;
-    if(i===lastFull&&i!==peakI)g+=`<text x="${x+w}" y="${top-8}" text-anchor="end" font-size="12" font-weight="500" fill="var(--ink)" ${mono}>${BN[mo-1]}: ${nf(v)}</text>`});
+    if(i===lastFull&&i!==peakI&&data[lastFull])g+=`<text x="${x+w}" y="${top-8}" text-anchor="end" font-size="12" font-weight="500" fill="var(--ink)" ${mono}>${nf(v)}</text>`});
   svg.setAttribute("viewBox",`0 0 ${W} ${H}`);svg.innerHTML=g;
 }
 function niceStep(x){const p=Math.pow(10,Math.floor(Math.log10(Math.max(x,1)))),n=x/p;return (n<=1?1:n<=2?2:n<=2.5?2.5:n<=5?5:10)*p}
 function short(n){return n>=1e6?f1(n/1e6)+"M":n>=1e3?f1(n/1e3)+"K":String(n)}
-addEventListener("resize",()=>{if(YT&&!$("#p-growth").hidden)chart()});
+addEventListener("resize",()=>{if(YT&&!$("#p-growth").hidden&&anaTab==="overview")chart()});
 (function hover(){const wrap=$("#g-chart-wrap"),tip=$("#g-tip");
-  const showTip=el=>{const i=+el.dataset.i,[m,v]=MONTHS[i],r=el.getBoundingClientRect(),wr=wrap.getBoundingClientRect();tip.textContent=`${mLabel(m,i)}: ${nf(v)} views`;tip.hidden=false;let left=r.left-wr.left+wrap.scrollLeft+r.width/2;left=Math.max(90,Math.min(left,wrap.scrollWidth-90));tip.style.left=left+"px";tip.style.top=(r.top-wr.top+60)+"px"};
+  const showTip=el=>{const x=G_SERIES[+el.dataset.i];if(!x)return;const r=el.getBoundingClientRect(),wr=wrap.getBoundingClientRect();tip.textContent=x.tip;tip.hidden=false;let left=r.left-wr.left+wrap.scrollLeft+r.width/2;left=Math.max(90,Math.min(left,wrap.scrollWidth-90));tip.style.left=left+"px";tip.style.top=(r.top-wr.top+60)+"px"};
   wrap.addEventListener("pointerover",e=>{const h=e.target.closest(".hit");if(h)showTip(h)});wrap.addEventListener("pointerleave",()=>tip.hidden=true);
   wrap.addEventListener("focusin",e=>{const h=e.target.closest(".hit");if(h)showTip(h)});wrap.addEventListener("focusout",()=>tip.hidden=true)})();
 
@@ -1782,10 +2021,12 @@ function renderAI(data){$("#g-ai").innerHTML=`<div class="card"><p>${esc(data.su
 
 let sortKey="v",sortDir=-1;
 const COLS=[["t","Title"],["d","Publish"],["v","Views"],["ctr","CTR %"],["avd","Watched (min)"],["s","Subs"],["rev","Revenue"]];
-function table(){const rows=longForm().map(x=>({...x,avd:x.v?x.h*60/x.v:0})).sort((a,b)=>(a[sortKey]>b[sortKey]?1:a[sortKey]<b[sortKey]?-1:0)*sortDir);
-  const lf=longForm(),ctrs=lf.map(v=>v.ctr).sort((a,b)=>a-b),med=ctrs[Math.floor(ctrs.length/2)]||0;
+function table(){const r=anaRange(),cut=ytCut(r),lf=longForm(),ctrs=lf.map(v=>v.ctr).sort((a,b)=>a-b),med=ctrs[Math.floor(ctrs.length/2)]||0;
+  const rows=lf.filter(x=>!cut||(x.d&&x.d>=cut)).map(x=>({...x,avd:x.v?x.h*60/x.v:0})).sort((a,b)=>(a[sortKey]>b[sortKey]?1:a[sortKey]<b[sortKey]?-1:0)*sortDir);
+  if($("#g-table-sub"))$("#g-table-sub").textContent=r==="all"?"All long videos, click a column header to sort":`Long videos published in the last ${r} days (click a column header to sort)`;
   $("#g-table").innerHTML=`<tr>${COLS.map(([k,l])=>`<th data-k="${k}" tabindex="0" aria-sort="${k===sortKey?(sortDir>0?"ascending":"descending"):"none"}">${l}${k===sortKey?(sortDir>0?" ▲":" ▼"):""}</th>`).join("")}</tr>`+
-  rows.map(x=>`<tr><td>${esc(x.t)}</td><td>${x.d?new Date(x.d+"T12:00:00").toLocaleDateString("en-US",{day:"numeric",month:"short",year:"2-digit"}):""}</td><td>${nf(x.v)}</td><td class="${x.ctr>=med*1.25?"good":x.ctr<med*0.75?"flag":""}">${f1(x.ctr)}</td><td>${f1(x.avd)}</td><td>${nf(x.s)}</td><td>${money(x.rev)}</td></tr>`).join("")}
+  (rows.length?rows.map(x=>`<tr><td>${esc(x.t)}</td><td>${x.d?new Date(x.d+"T12:00:00").toLocaleDateString("en-US",{day:"numeric",month:"short",year:"2-digit"}):""}</td><td>${nf(x.v)}</td><td class="${x.ctr>=med*1.25?"good":x.ctr<med*0.75?"flag":""}">${f1(x.ctr)}</td><td>${f1(x.avd)}</td><td>${nf(x.s)}</td><td>${money(x.rev)}</td></tr>`).join("")
+  :`<tr><td colspan="7" class="vd-none">No long videos were published in the last ${r} days.</td></tr>`)}
 $("#g-table").addEventListener("click",e=>{const th=e.target.closest("th");if(!th)return;const k=th.dataset.k;if(k===sortKey)sortDir*=-1;else{sortKey=k;sortDir=k==="t"?1:-1}table();$(`#g-table th[data-k="${k}"]`)?.focus()});
 $("#g-table").addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches("th")){e.preventDefault();e.target.click()}});
 
@@ -1877,14 +2118,44 @@ $("#cfg-gmodels").addEventListener("click",async e=>{const st=$("#s-key"),g=$("#
 function fillGModels(list,def){const sel=$("#cfg-gmodel"),cur=sel.value||CFG.gemini_model||"";sel.innerHTML=`<option value="">Automatic: ${esc(def||"latest Gemini Flash")}</option>`+list.map(m=>`<option value="${esc(m)}">${esc(m)}</option>`).join("");sel.value=list.includes(cur)?cur:""}
 $("#cfg-gclear").addEventListener("click",async()=>{if(await saveConfig({clear_gemini:true,provider:$("#cfg-provider").value==="gemini"?"manual":$("#cfg-provider").value},$("#s-key")))$("#s-key").textContent="Gemini key removed."});
 $("#cfg-clear").addEventListener("click",async()=>{if(await saveConfig({clear_key:true,provider:$("#cfg-provider").value==="claude"?"manual":$("#cfg-provider").value},$("#s-key")))$("#s-key").textContent="Claude key removed."});
-/* ElevenLabs */
-let EVOICES=[];
-function voiceFields(){$("#cfg-ekey-hint").textContent=CFG.has_eleven?"Saved: key ending in "+CFG.eleven_hint+". Leave the field empty to keep using this key.":"No ElevenLabs key saved yet.";
+/* Voice over: local VoiceStudio or ElevenLabs */
+let EVOICES=[],VSVOICES=[];
+const voiceVS=()=>CFG.voice_provider==="voicestudio";
+const voiceReady=()=>voiceVS()?!!CFG.voicestudio_voice:(!!CFG.has_eleven&&!!CFG.eleven_voice);
+const activeVoiceId=()=>voiceVS()?CFG.voicestudio_voice:CFG.eleven_voice;
+const activeVoiceModel=()=>voiceVS()?(CFG.voicestudio_model||"tts-1"):CFG.eleven_model;
+const activeVoiceName=()=>voiceVS()?(CFG.voicestudio_voice_name||CFG.voicestudio_voice):(CFG.eleven_voice_name||CFG.eleven_voice);
+function showVoiceProv(){const vs=$("#cfg-vprov").value==="voicestudio";$("#grp-vs").hidden=!vs;$("#grp-vel").hidden=vs}
+function voiceFields(){
+  $("#cfg-vprov").value=voiceVS()?"voicestudio":"eleven";showVoiceProv();
+  $("#cfg-vsurl").value=CFG.voicestudio_url||"http://127.0.0.1:3900";
+  const vvs=$("#cfg-vsvoice");if(CFG.voicestudio_voice&&![...vvs.options].some(o=>o.value===CFG.voicestudio_voice))vvs.innerHTML=`<option value="${esc(CFG.voicestudio_voice)}">${esc(CFG.voicestudio_voice_name||CFG.voicestudio_voice)}</option>`;vvs.value=CFG.voicestudio_voice||"";
+  const vms=$("#cfg-vsmodel");if(CFG.voicestudio_model&&![...vms.options].some(o=>o.value===CFG.voicestudio_model))vms.insertAdjacentHTML("beforeend",`<option value="${esc(CFG.voicestudio_model)}">${esc(CFG.voicestudio_model)}</option>`);vms.value=CFG.voicestudio_model||"tts-1";
+  $("#cfg-ekey-hint").textContent=CFG.has_eleven?"Saved: key ending in "+CFG.eleven_hint+". Leave the field empty to keep using this key.":"No ElevenLabs key saved yet.";
   const vs=$("#cfg-evoice");if(CFG.eleven_voice&&![...vs.options].some(o=>o.value===CFG.eleven_voice))vs.innerHTML=`<option value="${esc(CFG.eleven_voice)}">${esc(CFG.eleven_voice_name||CFG.eleven_voice)}</option>`;vs.value=CFG.eleven_voice||"";
   const ms=$("#cfg-emodel");if(CFG.eleven_model&&![...ms.options].some(o=>o.value===CFG.eleven_model))ms.insertAdjacentHTML("beforeend",`<option value="${esc(CFG.eleven_model)}">${esc(CFG.eleven_model)}</option>`);ms.value=CFG.eleven_model||"";
-  $("#cfg-adir").textContent=CFG.audio_dir?"MP3 files are saved in "+CFG.audio_dir:"";showPreview()}
+  $("#cfg-adir").textContent=CFG.audio_dir?"MP3 files are saved in "+CFG.audio_dir:"";showPreview();
+  if(lastNarr&&!$("#p-make").hidden){voTool(lastNarr);pkRender(lastNarr)}}
 function showPreview(){const v=EVOICES.find(x=>x.id===$("#cfg-evoice").value);$("#cfg-epreview").innerHTML=v?.preview?`<p class="note">${esc(v.desc||"")}</p><audio controls preload="none" src="${esc(v.preview)}" style="width:100%"></audio>`:""}
+$("#cfg-vprov").addEventListener("change",showVoiceProv);
 $("#cfg-evoice").addEventListener("change",showPreview);
+$("#cfg-vsload").addEventListener("click",async e=>{const st=$("#s-voice"),url=$("#cfg-vsurl").value.trim()||"http://127.0.0.1:3900",b=e.currentTarget;
+  st.className="status";st.textContent="Starting / connecting to VoiceStudio…";b.disabled=true;
+  const j=await api("/api/voicestudio/info",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url})});b.disabled=false;
+  if(j.error){st.className="status err";st.textContent=j.error;return}
+  VSVOICES=j.voices||[];const cur=$("#cfg-vsvoice").value||CFG.voicestudio_voice;
+  $("#cfg-vsvoice").innerHTML=`<option value="">Choose a voice</option>`+VSVOICES.map(v=>`<option value="${esc(v.id)}">${esc(v.name)}${v.desc?" ("+esc(v.desc)+")":""}</option>`).join("");
+  $("#cfg-vsvoice").value=VSVOICES.some(v=>v.id===cur)?cur:(VSVOICES.find(v=>v.kind==="profile")?.id||VSVOICES[0]?.id||"");
+  const mc=$("#cfg-vsmodel").value||CFG.voicestudio_model||"tts-1";
+  $("#cfg-vsmodel").innerHTML=(j.models||[]).map(m=>`<option value="${esc(m.id)}">${esc(m.name)}</option>`).join("");
+  $("#cfg-vsmodel").value=(j.models||[]).some(m=>m.id===mc)?mc:"tts-1";
+  $("#vs-info").textContent=`Connected: VoiceStudio v${j.version||""}${j.auto_started?" (started automatically in background)":""} · active engine: ${j.engine||"auto"}.`;
+  st.textContent=`${VSVOICES.length} voices loaded from VoiceStudio. Pick a narrator and engine, then click Save.`});
+$("#cfg-vsopen").addEventListener("click",async e=>{const st=$("#s-voice"),b=e.currentTarget;
+  st.className="status";st.textContent="Opening VoiceStudio app…";b.disabled=true;
+  const j=await api("/api/voicestudio/open",{method:"POST"});b.disabled=false;
+  if(j.error){st.className="status err";st.textContent=j.error;return}
+  st.textContent="VoiceStudio app opened. When done editing voices, click Load voices & engines to refresh."});
 $("#cfg-eload").addEventListener("click",async e=>{const st=$("#s-voice"),k=$("#cfg-ekey").value.trim(),b=e.currentTarget;
   if(!k&&!CFG.has_eleven){st.className="status err";st.textContent="Paste the ElevenLabs API key first.";return}
   st.className="status";st.textContent="Loading voices and quota…";b.disabled=true;
@@ -1897,25 +2168,35 @@ $("#cfg-eload").addEventListener("click",async e=>{const st=$("#s-voice"),k=$("#
   $("#eleven-quota").innerHTML=`<div class="qbar" role="img" aria-label="Quota used ${nf(j.used)} of ${nf(j.limit)} characters"><span style="width:${j.limit?Math.min(100,j.used/j.limit*100).toFixed(1):0}%"></span></div>Plan ${esc(j.tier||"-")}: <strong>${nf(j.left)}</strong> of ${nf(j.limit)} characters${reset?", refills "+reset:""}. One 4,000-word video is about 24,000 characters.`;
   store.set("eq",{left:j.left,limit:j.limit,at:Date.now()});
   st.textContent=`${EVOICES.length} voices loaded. Pick one, listen to the sample, then Save.`;showPreview()});
-$("#f-voice").addEventListener("submit",async e=>{e.preventDefault();const st=$("#s-voice"),k=$("#cfg-ekey").value.trim(),sel=$("#cfg-evoice");
+$("#f-voice").addEventListener("submit",async e=>{e.preventDefault();const st=$("#s-voice"),vp=$("#cfg-vprov").value;
+  if(vp==="voicestudio"){
+    const sel=$("#cfg-vsvoice"),u=$("#cfg-vsurl").value.trim()||"http://127.0.0.1:3900";
+    if(!sel.value){st.className="status err";st.textContent="Click Load voices & engines and choose a VoiceStudio voice first.";return}
+    const x={voice_provider:"voicestudio",voicestudio_url:u,voicestudio_model:$("#cfg-vsmodel").value||"tts-1",voicestudio_voice:sel.value,voicestudio_voice_name:VSVOICES.find(v=>v.id===sel.value)?.name||sel.selectedOptions[0]?.textContent||sel.value};
+    if(await saveConfig(x,st))st.textContent=`Saved. Voice over and Edit pack now use VoiceStudio (${x.voicestudio_voice_name}).`;
+    return;
+  }
+  const k=$("#cfg-ekey").value.trim(),sel=$("#cfg-evoice");
   if(!k&&!CFG.has_eleven){st.className="status err";st.textContent="Paste the ElevenLabs API key first.";return}
-  const x={eleven_model:$("#cfg-emodel").value};if(k)x.eleven_key=k;if(sel.value){x.eleven_voice=sel.value;x.eleven_voice_name=EVOICES.find(v=>v.id===sel.value)?.name||sel.selectedOptions[0]?.textContent||""}
+  const x={voice_provider:"eleven",eleven_model:$("#cfg-emodel").value};if(k)x.eleven_key=k;if(sel.value){x.eleven_voice=sel.value;x.eleven_voice_name=EVOICES.find(v=>v.id===sel.value)?.name||sel.selectedOptions[0]?.textContent||""}
   if(await saveConfig(x,st)){$("#cfg-ekey").value="";st.textContent=CFG.eleven_voice?"Saved. The voice over button appears under the full narration script.":"Key saved. Click Load voices, then pick a narrator."}});
 $("#cfg-eclear").addEventListener("click",async()=>{if(await saveConfig({clear_eleven:true},$("#s-voice")))$("#s-voice").textContent="ElevenLabs key removed."});
-/* Image key: a second Gemini key on a billed project, so text generation can stay on the free key. */
-const IMG_PRICE={"gemini-3.1-flash-image":.067,"gemini-3.1-flash-lite-image":.0336,"gemini-nano-banana-2.1":.0336,"nano-banana-2":KIE_IMG*KIE_USD};
-// Images come from Gemini or from KIE.ai; every gate asks these instead of the Gemini key alone.
-const imgKie=()=>CFG.image_provider==="kie",imgReady=()=>imgKie()?!!CFG.has_kie:!!CFG.has_image,imgModel=()=>imgKie()?CFG.kie_image_model:CFG.image_model,imgWho=()=>imgKie()?"KIE.ai":"Gemini";
-const imgWait=()=>imgKie()?"KIE.ai is drawing… usually under a minute":"Gemini is drawing… usually 10 to 40 seconds";
-function showImgProv(){const k=$("#cfg-iprov").value==="kie",pr=IMG_PRICE[k?(CFG.kie_image_model||"nano-banana-2"):$("#cfg-imodel").value];$("#grp-igem").hidden=k;$("#grp-ikie").hidden=!k;$("#cfg-itest").textContent="Test image"+(pr?` (about ${usd(pr)})`:"")}
-function openImgKey(){show("settings");$("#f-image").scrollIntoView({block:"start"});$(imgKie()?"#cfg-ikkey":"#cfg-ikey").focus()}
+/* Image key: Google Flow (built-in), Gemini (billed project), or KIE.ai. */
+const IMG_PRICE={"gemini-3.1-flash-image":.067,"gemini-3.1-flash-lite-image":.0336,"gemini-nano-banana-2.1":.0336,"nano-banana-2":KIE_IMG*KIE_USD,"google-flow":0};
+const imgFlow=()=>CFG.image_provider==="flow",imgKie=()=>CFG.image_provider==="kie",imgReady=()=>imgFlow()||(imgKie()?!!CFG.has_kie:!!CFG.has_image),imgModel=()=>imgFlow()?"google-flow":imgKie()?CFG.kie_image_model:CFG.image_model,imgWho=()=>imgFlow()?"Google Flow":imgKie()?"KIE.ai":"Gemini";
+const imgWait=()=>imgFlow()?"Waiting for download from Google Flow…":imgKie()?"KIE.ai is drawing… usually under a minute":"Gemini is drawing… usually 10 to 40 seconds";
+function showImgProv(){const v=$("#cfg-iprov").value,f=v==="flow",k=v==="kie",pr=f?0:IMG_PRICE[k?(CFG.kie_image_model||"nano-banana-2"):$("#cfg-imodel").value];
+  $("#grp-iflow").hidden=!f;$("#grp-igem").hidden=f||k;$("#grp-ikie").hidden=!k;
+  $("#cfg-itest").textContent=f?"Test image in Flow (free)":"Test image"+(pr?` (about ${usd(pr)})`:"");
+  const ic=$("#cfg-icost");if(ic)ic.hidden=f}
+function openImgKey(){show("settings");$("#f-image").scrollIntoView({block:"start"});$(imgFlow()?"#cfg-flow-open":imgKie()?"#cfg-ikkey":"#cfg-ikey").focus()}
 const usd=x=>"$"+x.toFixed(2);
 const imgMonth=()=>{const s=LAST._img?.data,m=new Date().toISOString().slice(0,7);return s&&s.month===m?s:{month:m,n:0,usd:0}};
 const imgSpentText=()=>{const s=imgMonth();return s.n?`This month: ${plural(s.n,"image")}, about ${usd(s.usd)}.`:"No images made this month yet."};
 async function addImg(n,model,provider){const s={...imgMonth()};s.n+=n;s.usd+=n*(IMG_PRICE[model]||0);await remember("_img",s);$("#cfg-ispent").textContent=imgSpentText();genBar();if(provider==="kie")for(let i=0;i<n;i++)await addKie(KIE_IMG,"image")}
 function imgFields(){$("#cfg-ikey-hint").textContent=CFG.has_image?"Saved: key ending in "+CFG.image_hint+". Leave the field empty to keep using this key.":"No image key saved yet.";
   const s=$("#cfg-imodel");if(CFG.image_model&&![...s.options].some(o=>o.value===CFG.image_model))s.insertAdjacentHTML("beforeend",`<option value="${esc(CFG.image_model)}">${esc(CFG.image_model)}</option>`);s.value=CFG.image_model||"gemini-3.1-flash-image";
-  $("#cfg-iprov").value=imgKie()?"kie":"gemini";showImgProv();
+  $("#cfg-iprov").value=imgFlow()?"flow":imgKie()?"kie":"gemini";showImgProv();
   $("#cfg-ispent").textContent=imgSpentText();if(!$("#p-make").hidden)genBar()}
 async function saveImageCfg(st){const k=$("#cfg-ikey").value.trim(),q=$("#cfg-ikkey").value.trim(),x={image_model:$("#cfg-imodel").value,image_provider:$("#cfg-iprov").value};if(k)x.image_key=k;
   if(x.image_provider==="kie"&&q){if(!kieKeyOk(q)){st.className="status err";st.textContent="The KIE.ai key does not look right. Copy it again from kie.ai/api-key.";return false}x.kie_key=q;
@@ -1923,12 +2204,13 @@ async function saveImageCfg(st){const k=$("#cfg-ikey").value.trim(),q=$("#cfg-ik
     if(!CFG.provider)x.provider="manual"}
   const ok=await saveConfig(x,st);if(ok){$("#cfg-ikey").value="";$("#cfg-ikkey").value="";if(x.kie_key)kieBalance()}return ok}
 $("#cfg-iprov").addEventListener("change",showImgProv);$("#cfg-imodel").addEventListener("change",showImgProv);
+$("#cfg-flow-open").addEventListener("click",async()=>{const st=$("#cfg-flow-st");st.textContent="Opening Google Flow…";const j=await api("/api/flow/open",{method:"POST"});flowApplyStatus(j);st.textContent="Flow window ready. Sign in once with your Google account.";flowStartWatch()});
 $("#f-image").addEventListener("submit",async e=>{e.preventDefault();const st=$("#s-image");
-  if(await saveImageCfg(st))st.textContent=imgKie()?(CFG.has_kie?"Saved. Images are now made by KIE.ai. Click Test image to make sure the key has credit."+(CFG.provider==="kie"?"":" Scripts and ideas stay as they are under AI connection."):"Choice saved. Paste the KIE.ai key first, then Save."):CFG.has_image?"Saved. Click Test image to make sure billing is active.":"Model saved. Paste the key first, then Save."});
+  if(await saveImageCfg(st))st.textContent=imgFlow()?"Saved. Thumbnail images now open in Terra Studio's Google Flow window (free).":imgKie()?(CFG.has_kie?"Saved. Images are now made by KIE.ai. Click Test image to make sure the key has credit."+(CFG.provider==="kie"?"":" Scripts and ideas stay as they are under AI connection."):"Choice saved. Paste the KIE.ai key first, then Save."):CFG.has_image?"Saved. Click Test image to make sure billing is active.":"Model saved. Paste the key first, then Save."});
 $("#cfg-itest").addEventListener("click",async e=>{const st=$("#s-image"),b=e.currentTarget,out=$("#cfg-itest-out");
   if(!await saveImageCfg(st))return;
   if(!imgReady()){st.className="status err";st.textContent=imgKie()?"Paste the KIE.ai key first.":"Paste the Gemini key for images first.";return}
-  b.disabled=true;out.innerHTML="";st.className="status";st.textContent=imgWait()+".";
+  b.disabled=true;out.innerHTML="";st.className="status";st.textContent=imgWait();
   const j=await api("/api/image",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:"test",slot:0,prompt:"A giant prehistoric cave hyena standing at the mouth of a dark cave at dusk, warm orange light from inside the cave, photorealistic, cinematic, wide 16:9 frame. No text, letters, logos or watermarks."})});
   b.disabled=false;
   if(j.error){st.className="status err";st.textContent=j.error;
@@ -1936,6 +2218,7 @@ $("#cfg-itest").addEventListener("click",async e=>{const st=$("#s-image"),b=e.cu
       (m.models||[]).forEach(n=>{if(![...s.options].some(o=>o.value===n))s.insertAdjacentHTML("beforeend",`<option value="${esc(n)}">${esc(n)}</option>`)});
       if(m.models?.length)st.textContent+=" The models available for this key have been added to the list above.";}
     return}
+  if(j.flow){flowApplyStatus(j.status);flowStartWatch();st.textContent="Test prompt sent to Terra Studio's Google Flow window. Generate the image and click Download there; it will appear below automatically.";return}
   addImg(1,j.model,j.provider).catch(()=>{});
   st.textContent=j.provider==="kie"?"It works. The KIE.ai key has credit, and the Make 3 thumbnails button in the Thumbnail step is ready.":"It works. The key and billing are active, and the Make 3 thumbnails button in the Thumbnail step is ready.";
   out.innerHTML=`<img class="gtest" src="/api/gen/${encodeURIComponent(j.file)}?v=${j.v}" alt="Test image from ${j.provider==="kie"?"KIE.ai":"Gemini"}: a giant hyena at a cave mouth">`});
@@ -2061,28 +2344,28 @@ function renderNext(){const today=isoDay(new Date()),p=plans().filter(x=>x.date>
   el.innerHTML=`<div class="top"><span>${d.toLocaleDateString("en-US",{weekday:"long",day:"numeric",month:"short"})}</span><span class="badge">${when}</span></div><h3>${esc(p.title)}</h3><div class="row"><button type="button" class="p" data-act="tools" data-id="${esc(p.id)}">Work on it</button><button type="button" class="s" data-plan-id="${esc(p.id)}">Edit</button></div>${thumbUrl(p)?`<img class="stk" src="${thumbUrl(p)}" alt="">`:""}`}
 function renderStages(){const today=isoDay(new Date()),list=plans().filter(p=>p.date>=today&&p.status!=="tayang");const C={ide:"var(--s-ide)",naskah:"var(--s-naskah)",rekam:"var(--s-rekam)",edit:"var(--s-edit)",siap:"var(--s-siap)"};
   $("#stages").innerHTML=STAGES.slice(0,5).map(s=>`<li style="--c:${C[s]}"><i></i>${STATUS_LABEL[s]}<b>${list.filter(p=>p.status===s).length}</b></li>`).join("")}
-const vcRange=()=>{const r=store.get("vr","30");return ["30","90","12"].includes(r)?r:"30"};
+const vcRange=()=>{const r=store.get("vr","30");return ["7","30","90","12","all"].includes(r)?r:"30"};
 function viewSeries(){const d=YT?.daily||[],r=vcRange();
-  if(r==="12"){const end=dataEnd(),part=YT.partialLast;return monthly().slice(-12).map(([m,v],i,a)=>{const mo=BN[+m.slice(5,7)-1];return {v,short:mo,long:mo+" "+m.slice(0,4)+(part&&i===a.length-1?` (to day ${+end.slice(8)})`:"")}})}
+  if(r==="12"||r==="all"){const end=dataEnd(),part=YT.partialLast,ms=r==="12"?monthly().slice(-12):monthly();return ms.map(([m,v],i,a)=>{const mo=BN[+m.slice(5,7)-1];return {v,short:ms.length>14&&+m.slice(5,7)!==1&&i!==0&&i!==a.length-1?"":mo+(ms.length>14?" "+m.slice(2,4):""),long:mo+" "+m.slice(0,4)+(part&&i===a.length-1?` (to day ${+end.slice(8)})`:"")}})}
   return d.slice(-(+r)).map(([k,v])=>{const lbl=+k.slice(8)+" "+BN[+k.slice(5,7)-1];return {v,short:lbl,long:lbl+" "+k.slice(0,4)}})}
 let VC=null;
 function renderViews(){const box=$("#vc"),svg=$("#vc-svg"),d=YT?.daily||[],r=vcRange();if(!box)return;
   $("#vc-seg").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.r===r));
   $("#vc-tp").hidden=true;VC=null;
-  if(d.length<14){$("#vc-sub").textContent="The chart appears once Studio data is imported or YouTube is connected.";svg.innerHTML="";return}
+  if(d.length<7){$("#vc-sub").textContent="The chart appears once Studio data is imported or YouTube is connected.";svg.innerHTML="";return}
   const W=box.clientWidth,H=box.clientHeight;if(!W)return;
   const s=viewSeries(),n=s.length,pl=44,pr=4,pt=8,pb=24,pw=W-pl-pr,ph=H-pt-pb,top=Math.max(...s.map(x=>x.v),1);
   const ts=niceStep(top/5);
   const nt=Math.ceil(top/ts),max=ts*nt,step=pw/n,bw=Math.max(2,step-(n>40?1.5:n>20?3:8)),rx=Math.min(4,bw/2),y=v=>pt+ph-v/max*ph;
-  const every=(n<=12?[1,2,3,6]:[5,10,15,30]).find(k=>k*step>=50)||n;
+  const every=(r==="12"||r==="all"?[1,2,3,6,12]:r==="7"?[1,2]:[5,10,15,30]).find(k=>k*step>=50)||n;
   let h="";
   for(let i=0;i<=nt;i++){const v=ts*i,yy=y(v);h+=`<line x1="${pl}" x2="${W-pr}" y1="${yy}" y2="${yy}"/><text x="${pl-8}" y="${yy+4}" text-anchor="end">${v>=1000?f1(v/1000)+"K":nf(v)}</text>`}
   s.forEach((x,i)=>{const bx=pl+i*step+(step-bw)/2,t=Math.min(y(x.v),pt+ph-1);
     h+=`<path class="b" data-i="${i}" d="M${bx},${pt+ph}V${t+rx}a${rx},${rx} 0 0 1 ${rx},-${rx}h${bw-2*rx}a${rx},${rx} 0 0 1 ${rx},${rx}V${pt+ph}z"/>`;
-    if((n-1-i)%every===0)h+=`<text x="${i===n-1?bx+bw:bx+bw/2}" y="${H-6}" text-anchor="${i===n-1?"end":"middle"}">${x.short}</text>`});
+    if(r==="all"?x.short:(n-1-i)%every===0)h+=`<text x="${i===n-1?bx+bw:bx+bw/2}" y="${H-6}" text-anchor="${i===n-1?"end":"middle"}">${x.short}</text>`});
   svg.setAttribute("viewBox",`0 0 ${W} ${H}`);svg.innerHTML=h;
   const sum=s.reduce((a,x)=>a+x.v,0),peak=s.reduce((b,x)=>x.v>b.v?x:b,s[0]);
-  $("#vc-sub").innerHTML=r==="12"?`${n} months: <b>${nf(sum)}</b> views. Peak ${peak.long}, ${nf(peak.v)}.`:`${n} days: <b>${nf(sum)}</b> views, an average of ${nf(sum/n)} per day.`;
+  $("#vc-sub").innerHTML=r==="all"?`${n} months (all time): <b>${nf(sum)}</b> views. Peak ${peak.long}, ${nf(peak.v)}.`:r==="12"?`${n} months: <b>${nf(sum)}</b> views. Peak ${peak.long}, ${nf(peak.v)}.`:`${n} days: <b>${nf(sum)}</b> views, an average of ${nf(sum/n)} per day.`;
   VC={s,pl,step,W,y,i:-1}}
 function vcShow(i){const tp=$("#vc-tp");if(!VC)return;
   $("#vc-svg").querySelectorAll(".b").forEach(b=>b.classList.toggle("on",+b.dataset.i===i));
@@ -2095,14 +2378,13 @@ function vcShow(i){const tp=$("#vc-tp");if(!VC)return;
   box.addEventListener("pointermove",at);box.addEventListener("pointerdown",at);
   box.addEventListener("pointerleave",()=>vcShow(-1));box.addEventListener("blur",()=>vcShow(-1));
   box.addEventListener("keydown",e=>{const d={ArrowLeft:-1,ArrowRight:1}[e.key];if(!d||!VC)return;e.preventDefault();const n=VC.s.length;vcShow(VC.i<0?(d>0?0:n-1):Math.min(n-1,Math.max(0,VC.i+d)))});
-  $("#vc-seg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;store.set("vr",b.dataset.r);renderViews()});
+  $("#vc-seg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;store.set("vr",b.dataset.r);renderViews();renderKpis()});
   let w=0;new ResizeObserver(()=>{const n=box.clientWidth;if(n&&n!==w){w=n;if(!$("#p-today").hidden)renderViews()}}).observe(box)})();
 
 function renderTop(){const list=longForm().sort((a,b)=>b.v-a.v).slice(0,5);
   $("#topv").innerHTML=list.length?list.map(v=>`<li><span class="pl" aria-hidden="true"><svg viewBox="0 0 14 14"><path d="M4 2.5v9l7.5-4.5z"/></svg></span><span class="t" title="${esc(v.t)}">${esc(v.t)}</span><span class="v">${nf(v.v)}</span>${v.ctr?`<span class="c">${(+v.ctr).toLocaleString("en-US",{maximumFractionDigits:1})}%</span>`:""}</li>`).join(""):`<li class="empty-s">No video data yet.</li>`}
-function renderKpis(){const el=$("#td-kpis");if(!el)return;const t=YT?.totals||{},d=YT?.daily||[],since=d.length?`since ${BN[+d[0][0].slice(5,7)-1]} ${d[0][0].slice(0,4)}`:"";
-  let note="";if(d.length>=60){const a=lastDays(30),b=lastDays(30,30);if(b){const p=Math.round((a/b-1)*100);note=`<em class="${p<0?"dn":"upc"}">${p<0?"down":"up"} ${Math.abs(p)}%</em> from the 30 days before`}}
-  const k=[["Views, 30 days",d.length?nf(lastDays(30)):"-",note],["Net subscribers",t.subs!=null?(t.subs>=0?"+":"")+nf(t.subs):"-",since],["Watch hours",t.hours!=null?nf(t.hours):"-",since],["Estimated revenue",t.revenue!=null?moneyShort(t.revenue):"-",since]];
+function renderKpis(){const el=$("#td-kpis");if(!el)return;const r=vcRange(),st=ytStatsFor(r);
+  const k=[[r==="all"?"Views, all time":`Views, ${st.lbl}`,st.views!=null?nf(st.views):"-",st.vNote],["Net subscribers",st.subs!=null?(st.subs>=0?"+":"")+nf(st.subs):"-",st.sNote],["Watch hours",st.hours!=null?nf(st.hours):"-",st.hNote],["Estimated revenue",st.rev!=null?moneyShort(st.rev):"-",st.rNote]];
   el.innerHTML=k.map(([l,v,n])=>`<div class="box kpi"><span>${l}</span><b>${v}</b><small>${n}</small></div>`).join("")}
 
 function renderBoard(){$("#wk").hidden=view!=="week";$("#cal-wrap").hidden=view!=="month";if(view==="week")renderWeek();else renderCal()}
@@ -2334,7 +2616,7 @@ const PIPE=[["ide","Idea"],["naskah","Script"],["rekam","Voice"],["edit","Edit"]
 // Status only moves forward, so a manual "Edit" is never pulled back by re-running an earlier step.
 async function advance(id,status){const p=plans().find(x=>x.id===id);if(!p||STAGES.indexOf(status)<=STAGES.indexOf(p.status))return;
   await remember("plans",plans().map(x=>x.id===id?{...x,status}:x)).catch(()=>{});renderDash();renderPipe();renderStg();renderNextVideo()}
-const NEXT={ide:["Package and script","Make it in 1 click","one"],naskah:["Write the full script","Write script in 1 click","one"],rekam:["Make the voice over","Open voice over","vo"],edit:["Edit in Premiere","Mark as edited","siap"],siap:["Upload to YouTube","Mark as published","tayang"]};
+const NEXT={ide:["Package and script","Make it in 1 click","one"],naskah:["Write the full script","Write script in 1 click","one"],rekam:["Audio & Edit pack","Open Audio & Edit pack","vo"],edit:["Edit in Premiere","Mark as edited","siap"],siap:["Upload to YouTube","Mark as published","tayang"]};
 function renderPipe(){const el=$("#td-pipe");if(!el)return;const today=isoDay(new Date()),rank=s=>-STAGES.indexOf(s);
   const list=plans().filter(p=>p.type!=="post"&&p.status!=="tayang").sort((a,b)=>rank(a.status)-rank(b.status)||a.date.localeCompare(b.date));
   if(!list.length){el.innerHTML=`<li class="nx-empty">Nothing in progress. Press "New video" and the app suggests a topic.</li>`;return}
@@ -2343,7 +2625,7 @@ function renderPipe(){const el=$("#td-pipe");if(!el)return;const today=isoDay(ne
 document.addEventListener("click",e=>{const b=e.target.closest("[data-make]");if(b)openMake(b.dataset.make)});
 $("#td-pipe").addEventListener("click",async e=>{const b=e.target.closest("[data-nx]");if(!b)return;const id=b.dataset.id,a=b.dataset.nx;
   if(a==="one"){openMake(id,"outline");return oneClick($("#mk-one"))}
-  if(a==="vo")return openMake(id,"voice");
+  if(a==="vo")return openMake(id,"pack");
   b.disabled=true;await advance(id,a)});
 
 $("#td-new").addEventListener("click",()=>{store.set("mk","");const w=work("");w.topic="";w.titles=[];w.thumb="";w.hook="";w.pick="";saveWork();VD.view="list";show("make");$("#vl-new")?.focus()});
@@ -2388,9 +2670,12 @@ const mkId=()=>{const id=store.get("mk","");return plans().some(p=>p.id===id)?id
 const mkPlan=()=>plans().find(p=>p.id===mkId());
 const mkW=()=>work(mkId());
 const topicKey=()=>{const t=(mkW().topic||"").trim();return (t.split(/[\s,:(]+/).find(w=>w.length>=4)||t).toLowerCase()};
-/* 2.5: a list of videos, then one video at a time in 12 steps. A step is done when its result is saved for that video; steps are never stored separately. */
-const VD_STEPS=[["topic","Topic","Pick an animal and an angle that match your best videos."],["titles","Title & thumbnail text","Title ideas, pick one, plus the thumbnail text."],["hook","Hook (first 60 s)","The opening the viewer hears first."],["outline","Outline","Acts, beats and Google Flow prompts."],["script","Full script","The narration, ready to read aloud."],["check","Script check","Weak places where viewers may leave. Runs on your PC, no cost."],["voice","Voice over","One ElevenLabs MP3 of the whole script."],["pack","Edit pack","MP3 per act, subtitles and text files, sorted into the video folder."],["info","Infographics","Find the moments, then make the clips on this PC."],["thumb","Thumbnail","An image with your text on top."],["seo","SEO","Description, tags and a pinned comment."],["upload","Upload checklist","Before you press Publish in YouTube Studio."]];
-const VD_N=VD_STEPS.length,vdName=k=>(VD_STEPS.find(s=>s[0]===k)||[])[1]||k;
+/* 2.5: a list of videos, then one video at a time in 4 phases (11 core steps + optional Single MP3). A step is done when its result is saved for that video; steps are never stored separately. */
+const VD_STEPS=[["topic","Topic","Pick an animal and an angle that match your best videos."],["titles","Title & thumbnail text","Title ideas, pick one, plus the thumbnail text."],["hook","Hook (first 60 s)","The opening the viewer hears first."],["outline","Outline","Acts, beats and Google Flow prompts."],["script","Full script","The narration, ready to read aloud."],["check","Script check","Weak places where viewers may leave. Runs on your PC, no cost."],["pack","Audio & Edit pack","MP3 per act, subtitles, Flow prompts and visuals sorted into the video folder."],["info","Infographics","Find the moments, then make the clips on this PC."],["thumb","Thumbnail","An image with your text on top."],["seo","SEO","Description, tags and a pinned comment."],["upload","Upload checklist","Before you press Publish in YouTube Studio."]];
+const VD_OPT_VOICE=["voice","Single MP3 (optional)","One combined MP3 of the whole script. Skip this if you use Audio & Edit pack (recommended)."];
+const VD_PHASES=[{n:1,label:"Plan & Hook",keys:["topic","titles","hook"]},{n:2,label:"Script & Check",keys:["outline","script","check"]},{n:3,label:"Audio & Visuals",keys:["pack","info","thumb"]},{n:4,label:"SEO & Upload",keys:["seo","upload"]}];
+const vdStepMeta=k=>VD_STEPS.find(s=>s[0]===k)||VD_OPT_VOICE;
+const VD_N=VD_STEPS.length,vdName=k=>vdStepMeta(k)[1]||k;
 const VD_NEED={script:"outline",check:"script",voice:"script",pack:"script",info:"script"};
 const VD_REVEAL={topic:"Change…",titles:"Change…",hook:"Change…",outline:"Show outline or redo…",script:"Show full script or redo…",check:"Show the check",pack:"Show edit pack",info:"Show briefs or redo…",thumb:"Show thumbnails or redo…",seo:"Show SEO package or redo…",upload:"Show checklist"};
 const VD_WHERE={outline:["03 Images",1],script:["01 Script",1],voice:["02 Narration"],pack:["02 Narration, 01 Script, 03 Images, 05 Infographics and 07 Upload"],info:["05 Infographics",1],thumb:["06 Thumbnail"],seo:["07 Upload",1]};
@@ -2412,7 +2697,7 @@ const setH=(el,h)=>{if(el&&el._h!==h){el._h=h;el.innerHTML=h}};
 const keepPaste=(id,draw)=>{const o=document.getElementById(id),b=o?.nextElementSibling?.classList.contains("manual")?o.nextElementSibling:null;draw();
   const n=b&&document.getElementById(id);if(n&&n!==o){n.replaceWith(o);o.after(b)}};
 let vdT=0;const vdSoon=()=>{clearTimeout(vdT);vdT=setTimeout(()=>{if(!$("#p-make").hidden)renderMake()},120)};
-function packDone(id,n){const p=work(id).pack;if(!p?.done||!n)return false;return pkActs(n).every((a,i)=>p.acts?.[i]?.sig===pkHash([CFG.eleven_voice,CFG.eleven_model,a.text].join("|")))}
+function packDone(id,n){const p=work(id).pack;if(!p?.done||!n)return false;return pkActs(n).every((a,i)=>pkActKeep(p.acts?.[i],a,id,p.done))}
 // Everything a step list needs, read from what is saved for this one video.
 function vdInfo(id){const p=plans().find(x=>x.id===id),w=work(id),n=narrOf(id),o=outlineOf(id),A=w.at||{},R={},nT=narrText(n),words=wordsOf(nT),tk=takesOf(id),u=takeInUse(id);
   const r=(...a)=>a.filter(Boolean).join(" · ");
@@ -2430,7 +2715,7 @@ function vdInfo(id){const p=plans().find(x=>x.id===id),w=work(id),n=narrOf(id),o
   if(w.seo?.description||w.seo?.titles)R.seo=r(plural((w.seo.tags||[]).length,"tag"),vdDay(w.seo.at));
   const ticked=PUB_KEYS.filter(k=>w.pub?.[k]).length;if(p?.status==="tayang"||ticked===PUB_KEYS.length)R.upload=p?.status==="tayang"?r("Published",fmtShort(p.date)):r("All 8 ticked",vdWhen(A.upload));
   const next=VD_STEPS.map(s=>s[0]).find(k=>!R[k])||"";
-  return {p,w,n,o,R,next,count:Object.keys(R).length,words,tk,u,ticked}}
+  return {p,w,n,o,R,next,count:VD_STEPS.filter(([k])=>R[k]).length,words,tk,u,ticked}}
 const vdTile=(hot,ic,label,big,ft)=>`<div class="vd-tile${hot?" hot":""}"><div class="vd-th"><span>${label}</span><span class="vd-ic" aria-hidden="true">${VD_IC[ic]}</span></div><div class="vd-big">${big}</div><div class="vd-ft">${ft}</div></div>`;
 const vdBar=(n,cls)=>`<div class="vd-track${cls?" "+cls:""}" role="img" aria-label="${n} of ${VD_N} steps done"><i style="width:${(n/VD_N*100).toFixed(1)}%"></i></div>`;
 
@@ -2485,20 +2770,23 @@ function vdNoNarr(){lastNarr=null;setRunTxt($("#script-full-btn"),"Write full na
 function renderDetail(){const id=mkId(),p=mkPlan();$("#vl").hidden=true;$("#vd").hidden=false;markPick();
   if(VD.loaded!==id)vdLoad(id);
   const I=vdInfo(id),{w,R,tk,u}=I,today=isoDay(new Date());
-  if(!VD_STEPS.some(s=>s[0]===VD.step)){VD.step=I.next||"upload";VD.open=null}
+  if(!VD_STEPS.some(s=>s[0]===VD.step)&&VD.step!=="voice"){VD.step=I.next||"upload";VD.open=null}
   const k=VD.step,done=!!R[k];if(VD.open===null)VD.open=!done;
   $("#vd-h").textContent=p.title;
   $("#vd-sub").textContent=`Upload ${new Date(p.date+"T12:00:00").toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"})} · ${vdIn(daysBetween(today,p.date))}`;
   setH($("#vd-pill"),`<span class="pill st-${esc(p.status)}">${esc(STATUS_LABEL[p.status]||p.status)}</span>`);
   const F=VF[id],files=F&&!F.error?F.total:null,used=files!=null?F.folders.filter(x=>x.files+(x.older||0)>0).length:0,c=w.check,ci=tk.indexOf(u);
+  const pkAudioSec=(w.pack?.acts||[]).reduce((a,x)=>a+(x?.seconds||0),0),hasPack=!!R.pack;
   setH($("#vd-tiles"),`<div class="vd-tile hot"><div class="vd-th"><span>Next step</span><span class="vd-ic" aria-hidden="true">${VD_IC.next}</span></div><div class="vd-big vd-bn">${esc(I.next?vdName(I.next):"All done")}</div><div class="vd-ft"><button type="button" class="vd-go" data-vs-go="${I.next||"upload"}">${I.next?"Do it now":"Open checklist"}</button></div></div>`
     +vdTile(0,"doc","Script",I.words?`${nf(I.words)} <small>words</small>`:`– <small>not yet</small>`,c?.sig===pkHash(narrText(I.n))?`<span class="vd-delta">${c.score}/10</span> script check`:I.words?"Script check not run yet":"Comes after the outline")
-    +vdTile(0,"mic","Voice over",u?`${u.seconds?pkClock(u.seconds):"–"} <small>min</small>`:`– <small>not yet</small>`,u?`${plural(tk.length,"take")} · ${ci===0?"newest in use":`take ${tk.length-ci} in use`}`:"Comes after the script")
+    +vdTile(0,"mic","Audio & Pack",hasPack?`${pkAudioSec?pkClock(pkAudioSec):"Ready"} <small>${pkAudioSec?"min":"pack"}</small>`:u?`${u.seconds?pkClock(u.seconds):"–"} <small>min</small>`:`– <small>not yet</small>`,hasPack?`${plural(w.pack.acts?.length||0,"act MP3")} · edit pack ready`:u?`${plural(tk.length,"take")} · Single MP3`:"Comes after script check")
     +vdTile(0,"dir","Folder",files!=null?`${files} <small>file${files===1?"":"s"}</small>`:`– <small>no folder</small>`,files!=null?`${used} of 8 folders used`:F?.error?esc(F.error):"Made when the video opens"));
   $("#vd-n").textContent=`${I.count} of ${VD_N}`;$("#vd-left").textContent=I.count===VD_N?"All done. Ready to upload.":`${VD_N-I.count} left before upload`;
   $("#vd-bar").style.width=(I.count/VD_N*100).toFixed(1)+"%";$("#vd-bar-l").setAttribute("aria-label",`${I.count} of ${VD_N} steps done`);
+  setH($("#vd-phases"),VD_PHASES.map(ph=>{const pd=ph.keys.filter(x=>R[x]).length,on=ph.keys.includes(k)||(k==="voice"&&ph.n===3),nx=ph.keys.includes(I.next),ok=pd===ph.keys.length,firstTodo=ph.keys.find(x=>!R[x])||ph.keys[0];
+    return `<button type="button" class="vd-ph${ok?" is-done":nx?" is-next":""}" data-vd-phase="${firstTodo}"${on?' aria-current="true"':""}><small><span>Phase ${ph.n}</span><span>${ok?"Done":`${pd}/${ph.keys.length}`}</span></small><b>${esc(ph.label)}</b></button>`}).join(""));
   const fo=document.activeElement?.closest?.("#vd-steps")?document.activeElement.dataset.vs:null;
-  setH($("#vd-steps"),VD_STEPS.map(([s,t],i)=>{const st=R[s]?"done":s===I.next?"next":"todo";return `<li><button type="button" class="vd-st is-${st}" data-vs="${s}"${s===k?' aria-current="step"':""}><i aria-hidden="true">${st==="done"?"✓":i+1}</i><b>${esc(t)}</b><small>${st==="done"?esc(R[s]):s==="voice"&&VO_RUN.has(id)?"Being made…":st==="next"?"Next":"Not started"}</small><span class="sr">, ${st==="done"?"done":st==="next"?"next step":"not started"}</span></button></li>`}).join(""));
+  setH($("#vd-steps"),VD_STEPS.map(([s,t],i)=>{const st=R[s]?"done":s===I.next?"next":"todo";return `<li><button type="button" class="vd-st is-${st}" data-vs="${s}"${s===k?' aria-current="step"':""}><i aria-hidden="true">${st==="done"?"✓":i+1}</i><b>${esc(t)}</b><small>${st==="done"?esc(R[s]):s==="pack"&&PK.run&&PK.id===id?"Being made…":st==="next"?"Next":"Not started"}</small><span class="sr">, ${st==="done"?"done":st==="next"?"next step":"not started"}</span></button></li>`}).join(""));
   if(fo&&document.activeElement===document.body)$(`#vd-steps [data-vs="${fo}"]`)?.focus();
   const ae=document.activeElement,hf=ae?.closest?.("#vd-head")?ae.id||"vd-step-h":"";
   setH($("#vd-head"),vdHead(I,k));
@@ -2515,12 +2803,13 @@ function renderDetail(){const id=mkId(),p=mkPlan();$("#vl").hidden=true;$("#vd")
   if(VD.focus){VD.focus=false;$("#vd-h").focus()}}
 /* 2.9.3: every step ends with the way to the next one. */
 function vdNextBar(I,k,done){let el=$("#vd-nextbar");if(!el){el=document.createElement("div");el.id="vd-nextbar";el.className="vd-nextbar";$("#vd-pane").appendChild(el)}
+  if(k==="voice"){el.innerHTML=`<p class="note">Use Audio &amp; Edit pack to generate per-act audio + Premiere files together.</p><button type="button" class="btn ghost" data-vd-go="pack">Back to Audio &amp; Edit pack</button>`;return}
   const i=VD_STEPS.findIndex(s=>s[0]===k),nx=VD_STEPS[i+1];
   if(!nx){el.innerHTML=done?`<p class="note">All steps for this video are done. Upload it in YouTube Studio when you are ready.</p>`:"";return}
   el.innerHTML=done?`<p class="note">✓ ${esc(vdName(k))} is done.</p><button type="button" class="btn" data-vd-go="${nx[0]}">Next: ${esc(nx[1])} →</button>`
     :`<p class="note">When ${esc(vdName(k).toLowerCase())} is done, go on to ${esc(nx[1].toLowerCase())}.</p><button type="button" class="btn ghost" data-vd-go="${nx[0]}">Next: ${esc(nx[1])} →</button>`}
 $("#mk-hook-use").addEventListener("click",()=>{const w=mkW();if((w.hook||"").trim().split(/\s+/).length<20){const st=$("#s-hook");st.className="status err";st.textContent="Write or pick an opening first (at least 20 words).";return}stamp(w,"hook");saveWork();vdSelect("outline",true)});
-function vdHead(I,k){const [,t,d]=VD_STEPS.find(s=>s[0]===k),{w,p,n,o,R}=I,done=!!R[k],nx=k===I.next;
+function vdHead(I,k){const [,t,d]=vdStepMeta(k),{w,p,n,o,R}=I,done=!!R[k],nx=k===I.next;
   let h=`<span class="vd-state ${done?"is-ok":nx?"is-next":"is-todo"}">${done?"✓ Done":nx?"Next step":"Not started"}</span><h3 class="vd-step-h" id="vd-step-h" tabindex="-1">${esc(t)}</h3>`;
   if(!done){h+=`<p class="sub">${esc(d)}</p>`;const need=VD_NEED[k];if(need&&!R[need])h+=`<p class="vd-need">Comes after <b>${esc(vdName(need))}</b>, which is not done yet. <button type="button" class="linkish" data-vs-go="${need}">Go to ${esc(vdName(need))}</button></p>`;return h}
   const F=[],act=[];let extra="";const fact=(a,b)=>F.push([a,b]);
@@ -2544,7 +2833,7 @@ function vdVoiceHead(I){const {tk,u}=I,n=tk.length,run=VO_RUN.has(I.p?.id);
   <p class="note">${n>1?"The newest take is used unless you pick another. Older takes stay in 02 Narration, in the folder older takes. Nothing is deleted.":"Saved in 02 Narration of this video's folder."}</p>
   <div class="chips"><button type="button" class="btn" data-vd-folder="02 Narration">Open folder</button><button type="button" class="btn ghost" id="vo-again-btn" aria-controls="vo-again"${run?" disabled":""}>${run?"A new take is being made…":"Make again…"}</button></div>`}
 function vdAgainText(I){const {tk,u,n}=I,c=narrText(n).length,days=[...new Set(tk.map(t=>vdDay(t.at)))],ci=tk.indexOf(u);
-  return `Making it again uses about ${nf(c)} ElevenLabs characters. You made it ${tk.length===1?"once":tk.length+" times"}${days.length===1?" on "+days[0]:`, between ${days[days.length-1]} and ${days[0]}`}; ${ci===0?"the newest one is in use":`take ${tk.length-ci} is in use`}. A new take becomes the one in use, and the others are kept.`}
+  return `${voiceVS()?`Using VoiceStudio (free, about ${nf(c)} chars).`:`Making it again uses about ${nf(c)} ElevenLabs characters.`} You made it ${tk.length===1?"once":tk.length+" times"}${days.length===1?" on "+days[0]:`, between ${days[days.length-1]} and ${days[0]}`}; ${ci===0?"the newest one is in use":`take ${tk.length-ci} is in use`}. A new take becomes the one in use, and the others are kept.`}
 function vdFolderCard(id){const F=VF[id];
   if(!F||F.error){$("#vd-path").textContent=F?.error||"The folder is made when the video opens.";setH($("#vd-folders"),"");$("#vd-fsum").textContent="";return}
   $("#vd-path").textContent=F.dir;const used=F.folders.filter(x=>x.files+(x.older||0)>0).length;$("#vd-fsum").innerHTML=`<b>${used}</b> with files`;
@@ -2581,6 +2870,7 @@ async function vdCopy(text,b){const done=()=>{const l=b.textContent;b.textConten
   Object.keys(src).forEach(id=>mo.observe(document.getElementById(id),{childList:true,characterData:true,subtree:true}))})();
 document.addEventListener("click",e=>{const g=e.target.closest("[data-vd-go]");if(g)vdSelect(g.dataset.vdGo,true)});
 $("#vd").addEventListener("click",async e=>{const t=e.target;let b;
+  if((b=t.closest("[data-vd-phase]")))return vdSelect(b.dataset.vdPhase,true);
   if((b=t.closest("[data-vs]")))return vdSelect(b.dataset.vs);
   if((b=t.closest("[data-vs-go]")))return vdSelect(b.dataset.vsGo,true);
   if((b=t.closest("[data-vd-open]"))){VD.open=!VD.open;renderDetail();return}
@@ -2718,10 +3008,10 @@ const genW=()=>{const w=mkW();return w.gen=w.gen||{concepts:[],imgs:[],pick:null
 const GENBUSY=new Set(),GIMG={};
 const loadImg=u=>GIMG[u]=GIMG[u]||new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>{delete GIMG[u];rej()};i.src=u});
 const genUrl=x=>`/api/gen/${encodeURIComponent(x.file)}?v=${x.v}`;
-function genBar(){const g=genW(),has=g.imgs?.some(x=>x?.file),price=IMG_PRICE[imgModel()],b=$("#gen-go"),tag=price?` (about ${usd(price*3)})`:"";if(b.dataset.arm)return;$('[data-runw="gen"]').hidden=!imgReady();
-  if(!imgReady()){$("#gen-h").textContent=imgKie()?"Add the KIE.ai key first":"Add the image key first";$("#gen-p").textContent=imgKie()?"Images are set to KIE.ai in Settings, but no KIE.ai key is saved yet. The key is set once.":"Images are made by Gemini using the Google Cloud credit from your subscription, or by KIE.ai for about $0.04 each. The key is set once in Settings.";b.dataset.plain=b.dataset.base="Open Settings";b.textContent="Open Settings";return}
+function genBar(){const g=genW(),has=g.imgs?.some(x=>x?.file),price=IMG_PRICE[imgModel()]||0,b=$("#gen-go"),fb=$("#gen-flow"),fba=$("#gen-flow-all"),tag=price?` (about ${usd(price*3)})`:"";if(fb)fb.hidden=!imgFlow();if(fba)fba.hidden=!(imgFlow()&&(g.concepts||[]).length>0);if(b.dataset.arm)return;$('[data-runw="gen"]').hidden=!imgReady();
+  if(!imgReady()){$("#gen-h").textContent=imgKie()?"Add the KIE.ai key first":"Add the image key first";$("#gen-p").textContent=imgKie()?"Images are set to KIE.ai in Settings, but no KIE.ai key is saved yet. The key is set once.":"Images are made by Google Flow (free), Gemini, or KIE.ai. Choose one in Settings.";b.dataset.plain=b.dataset.base="Open Settings";b.textContent="Open Settings";return}
   $("#gen-h").textContent=has?"Want 3 new images?":"Make 3 thumbnails with "+imgWho();
-  $("#gen-p").textContent=imgKie()?`3 images cost about ${nf(KIE_IMG*3)} KIE.ai credits (${usd(price*3)}). ${imgSpentText()}`:`3 images${price?", about "+usd(price*3)+",":""} is taken from your Google Cloud credit. ${imgSpentText()}`;
+  $("#gen-p").textContent=imgFlow()?`3 concepts go straight into Terra Studio's Google Flow window (free). Generate and download each image there; it appears below automatically.`:imgKie()?`3 images cost about ${nf(KIE_IMG*3)} KIE.ai credits (${usd(price*3)}). ${imgSpentText()}`:`3 images${price?", about "+usd(price*3)+",":""} is taken from your Google Cloud credit. ${imgSpentText()}`;
   delete b.dataset.plain;setRunTxt(b,(has?"Make 3 new":"Make 3 thumbnails")+tag)}
 // At most 3 lines; short lines keep the letters large on a phone.
 function thumbLines(t){const words=(t||"").trim().toUpperCase().split(/\s+/).filter(Boolean);if(!words.length)return [];
@@ -2744,7 +3034,7 @@ function renderGen(){const g=genW(),id=mkId(),cs=(g.concepts||[]).slice(0,3);gen
   $("#gen-list").innerHTML=cs.map((c,i)=>{const x=g.imgs?.[i]||{},busy=GENBUSY.has(id+":"+i);
     return `<article class="gth${genOn(i)?" pick":""}" data-slot="${i}"><div class="gimg">${x.file?`<canvas width="1280" height="720" role="img" aria-label="Thumbnail ${i+1}: ${esc(c.name)}"></canvas>`:""}${busy||!x.file?`<div class="gph${busy?" busy":""}">${busy?imgWait():esc(x.err||"No image yet")}</div>`:""}</div>
     <h3>${i+1}. ${esc(c.name)}</h3><p>${esc(c.composition)}</p>\n    <label>Text on image<input maxlength="40" data-g="text" value="${esc(c.text)}"></label>
-    <div class="chips"><button type="button" class="btn${genOn(i)?"":" ghost"}" data-g="pick"${x.file?"":" disabled"}>${genOn(i)?"Selected":"Pick this"}</button><button type="button" class="btn ghost" data-g="save"${x.file?"":" disabled"}>Save JPG</button><button type="button" class="btn ghost" data-g="redo"${busy?" disabled":""}>${x.file?"Redo":"Try again"}${IMG_PRICE[imgModel()]?` (about ${usd(IMG_PRICE[imgModel()])})`:""}</button></div>
+    <div class="chips"><button type="button" class="btn${genOn(i)?"":" ghost"}" data-g="pick"${x.file?"":" disabled"}>${genOn(i)?"Selected":"Pick this"}</button><button type="button" class="btn ghost" data-g="save"${x.file?"":" disabled"}>Save JPG</button><button type="button" class="btn ghost" data-g="redo"${busy&&!imgFlow()?" disabled":""}>${imgFlow()?(x.file?"Redo in Flow":"Send to Flow"):(x.file?"Redo":"Try again")}${IMG_PRICE[imgModel()]?` (about ${usd(IMG_PRICE[imgModel()])})`:""}</button></div>
     <p class="note" data-g="msg" role="status">${x.file&&x.err?esc(x.err):""}</p></article>`}).join("");
   paintGen().then(renderPhone)}
 async function paintGen(only){const g=genW();try{await document.fonts.load("800 100px Archivo")}catch{}
@@ -2755,9 +3045,10 @@ function renderPhone(){const g=genW(),w=mkW(),cv=g.pick!=null&&$(`#gen-list [dat
   $("#gen-feed-title").textContent=$("#gen-side-title").textContent=t;$("#gen-feed-ch").textContent=(CFG.profile?.name||"Your channel")+" · new"}
 const imgPrompt=(c,pos)=>{const side=pos==="tr"?"right":"left",other=pos==="tr"?"left":"right";
   return `${c.prompt}\n\nFormat: wide 16:9 YouTube thumbnail background, cinematic, high contrast, one large clear subject on the ${other} side of the frame. Keep the ${side} third of the frame darker and uncluttered because a headline is added there later. Scientifically plausible anatomy. Do not render any text, letters, numbers, captions, logos, watermarks or borders anywhere in the image.`};
-async function genImage(i,vid,gg){const id=vid??mkId(),g=gg||genW(),c=g.concepts[i],k=id+":"+i;if(!c||GENBUSY.has(k))return false;
+async function genImage(i,vid,gg){const id=vid??mkId(),g=gg||genW(),c=g.concepts[i],k=id+":"+i;if(!c||(GENBUSY.has(k)&&!imgFlow()))return false;
   GENBUSY.add(k);if(mkId()===id)renderGen();
   const j=await api("/api/image",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({...(id?{id}:{}),slot:i,prompt:imgPrompt(c,g.pos)})});
+  if(j.flow){flowApplyStatus(j.status);flowStartWatch();if(mkId()===id){const st=$("#s-gen");if(st){st.className="status";st.textContent=`Thumbnail ${i+1} sent to Google Flow. Generate and download it there.`}}return true}
   GENBUSY.delete(k);g.imgs=g.imgs||[];
   if(j.error)g.imgs[i]={...(g.imgs[i]||{}),err:j.error};else{g.imgs[i]={file:j.file,v:j.v};addImg(1,j.model,j.provider).catch(()=>{})}
   saveWork();
@@ -2779,6 +3070,15 @@ JSON shape: {"concepts":[{"name":"","text":"","composition":"","why":"","prompt"
   w.flowThumb={at:Date.now(),list:d.concepts};if(mkW()===w)renderThumb(d.concepts);
   g.concepts=d.concepts.slice(0,3).map(c=>({name:String(c.name||"Concept"),text:String(c.text||main).slice(0,40),composition:String(c.composition||""),prompt:String(c.prompt||c.composition||topic)}));
   g.imgs=[];g.pick=null;saveWork();if(mkId()===id)renderGen();
+  if(imgFlow()){
+    g.concepts.forEach((_,i)=>GENBUSY.add(id+":"+i));if(mkId()===id)renderGen();
+    const items=g.concepts.map((c,i)=>({id:String(i+1),slot:i,stem:id||"free",kind:"thumbnail",label:`Thumbnail ${i+1} of ${g.concepts.length}: ${c.name}`,prompt:imgPrompt(c,g.pos)}));
+    const stRes=await pkPost("/api/flow/send",{kind:"thumbnail",id:id||"free",items});
+    if(stRes.error){g.concepts.forEach((_,i)=>GENBUSY.delete(id+":"+i));if(mkId()===id)renderGen();jobSay(id,st,stRes.error,true);return}
+    flowApplyStatus(stRes);flowStartWatch();
+    jobSay(id,st,`Concepts ready and sent to Terra Studio's Google Flow window. Generate and download each thumbnail there; they appear below automatically.`);
+    return;
+  }
   jobSay(id,st,`Concepts ready. ${imgWho()} is drawing 3 thumbnails…`);btn.disabled=true;
   const ok=(await Promise.all(g.concepts.map((_,i)=>genImage(i,id,g)))).filter(Boolean).length;btn.disabled=false;
   jobSay(id,st,ok===g.concepts.length?`${ok} thumbnails done. Pick one; the text can be changed under each image.`:ok?`${ok} of ${g.concepts.length} images done. Click Try again on the one that failed.`:(g.imgs.find(x=>x?.err)?.err||"The image could not be made. Try again."),!ok)}
@@ -2799,6 +3099,13 @@ async function applyPick(i){const g=genW(),id=mkId(),art=$(`#gen-list [data-slot
   if(msg){msg.className=bad.length?"note err":"note";msg.textContent=(done.length?"Selected: "+done.join(", ")+". ":"")+bad.join(" ")}if(id)ensureFolder(id).then(vdSoon)}
 let genTextTimer=0;
 $("#gen-go").addEventListener("click",e=>genAll(e.currentTarget));
+$("#gen-flow")?.addEventListener("click",async()=>{const st=$("#s-gen");const j=await api("/api/flow/open",{method:"POST"});flowApplyStatus(j);flowStartWatch();if(st){st.className="status";st.textContent="Google Flow window opened."}});
+$("#gen-flow-all")?.addEventListener("click",async()=>{const id=mkId(),g=genW(),st=$("#s-gen");if(!g.concepts?.length)return;
+  const list=g.concepts.slice(0,3);list.forEach((_,i)=>GENBUSY.add(id+":"+i));renderGen();
+  const items=list.map((c,i)=>({id:String(i+1),slot:i,stem:id||"free",kind:"thumbnail",label:`Thumbnail ${i+1} of ${list.length}: ${c.name}`,prompt:imgPrompt(c,g.pos)}));
+  const j=await pkPost("/api/flow/send",{kind:"thumbnail",id:id||"free",items});
+  if(j.error){list.forEach((_,i)=>GENBUSY.delete(id+":"+i));renderGen();if(st){st.className="status err";st.textContent=j.error}return}
+  flowApplyStatus(j);flowStartWatch();if(st){st.className="status";st.textContent=`All ${list.length} thumbnail prompts sent to Google Flow.`}});
 $("#gen-folder").addEventListener("click",async()=>{const f=await ensureFolder(mkId());if(f)pkPost("/api/video/open",{name:f,sub:"06 Thumbnail"});else api("/api/open-folder",{method:"POST"})});
 $("#gen-pos").addEventListener("change",async e=>{const g=genW();g.pos=e.target.value;saveWork();await paintGen();if(g.pick!=null)applyPick(g.pick)});
 $("#gen-list").addEventListener("input",e=>{if(e.target.dataset.g!=="text")return;const g=genW(),i=+e.target.closest(".gth").dataset.slot;g.concepts[i].text=e.target.value;saveWork();
@@ -2836,12 +3143,12 @@ function renderPub(){const w=mkW(),us=usShare(),best=winners()[0],done=w.pub||{}
   const items=[["t60","Title chosen, under 60 characters",w.pick?`"${w.pick}"`:"Pick a title in the Title & thumbnail text step"],["thumb","Thumbnail done, text of at most 4 words, readable at phone size",""],["tc","Test & Compare: 2 or 3 thumbnails tested in YouTube Studio",""],["desc","Description with chapters, keyword in the first sentence","Copy it from the SEO step"],["end","End screen points to your best video",best?`"${best.t}"`:""],["pin","Pinned comment with a question",""],["time",us?"Scheduled for 07:00 WIB, evening in America":"The publish time is set in YouTube Studio",us?`US viewers: ${us.views}% views`:""],["comm","Community post on publish day",""]];
   $("#mk-pub").innerHTML=items.map(([k,t,s])=>`<li><input type="checkbox" id="pub-${k}" data-pub="${k}" ${done[k]?"checked":""}><label for="pub-${k}">${esc(t)}${s?`<small>${esc(s)}</small>`:""}</label></li>`).join("");
   $("#mk-pub").onchange=e=>{const c=e.target.closest("[data-pub]");if(!c)return;w.pub={...(w.pub||{}),[c.dataset.pub]:c.checked};if(PUB_KEYS.every(k=>w.pub[k]))stamp(w,"upload");saveWork()}}
-$("#mk-done").addEventListener("click",async()=>{const p=mkPlan();if(!p)return;await savePlans(plans().map(x=>x.id===p.id?{...x,status:"tayang"}:x));$("#s-done").className="status";$("#s-done").textContent="Marked as published. Its report card appears in Learn after the next data pull."});
+$("#mk-done").addEventListener("click",async()=>{const p=mkPlan();if(!p)return;await savePlans(plans().map(x=>x.id===p.id?{...x,status:"tayang"}:x));$("#s-done").className="status";$("#s-done").textContent="Marked as published. Its report card appears in Analytics & Learn after the next data pull."});
 
 /* Editing: every long video, from its edit pack to a Premiere sequence. All times come from the per-act MP3s
    and their subtitle cues, and one plan feeds both this page and the files Send to Premiere writes. */
 const ED_GAP=1;
-const ED={view:"list",id:"",pub:false,zoom:"all",scan:{},scanP:{},msg:"",err:false,msgId:"",sel:-1,send:"",focus:false,ai:{msg:"",err:false}};
+const ED={view:"list",id:"",tab:"tl",pub:false,zoom:"all",scan:{},scanP:{},msg:"",err:false,msgId:"",sel:-1,send:"",focus:false,ai:{msg:"",err:false}};
 const ED_ST={script:["Needs script","wait","Write script"],pack:["Needs edit pack","wait","Make edit pack"],ready:["Ready to edit","ready","Send to Premiere"],editing:["Editing","ready","Open checklist"],edited:["Edited","done","Upload checklist"],pub:["Published","done",""]};
 const ED_RULES={R1:"Shots are 4 to 7 s. Short cues are merged, long ones split at word gaps.",R2:"Cut on cue edges, never mid-word.",R3:"Hook (0:00 to 1:00): a new picture every 2.5 to 4 s, first change by 0:03.",R4:"Slow zoom on stills, 100 to 108%, alternate the direction.",R5:"A video clip goes on a motion word inside its own act (clip 2.1 belongs to act 2).",R6:"An infographic goes at its brief's sentence, for the brief's length.",R7:"A label at the first mention of a genus name or a period, 3.5 s, using only words from the narration.",R8:"An ambience bed from the first place word of an act (cave, river, plain, forest…).",R9:"An impact sound on an impact word (snap, crack, crush, bite).",R10:"A creature sound in the pause after a sound word (call, roar, growl).",R11:"A low riser that ends on a reveal or death word (vanished, extinct, gone).",R12:"A soft whoosh 4 frames before each infographic.",R13:"At most about 2 sound effects a minute, and none in the first 3 s of a sentence with a number.",R14:"Act start: whoosh, new music bed, optional title card for 2 to 3 s.",R15:"One music bed per act, 18 to 24 dB under the voice. Mood from the act's place and its danger words.",R16:"A 1 s pause at every act end, built into the edit guide.",R17:"Music 6 dB lower during each pause.",R18:"Last 20 s: end screen, no new graphics, calm pictures, music resolves.",R19:"Optional: export at about -14 LUFS, true peak -1 dB.",check:"The script check: a long stretch with no number, no danger word and no question."};
 const ED_WHY={R1:"shot length",R2:"cut on cue edges",R3:"fast hook",R4:"slow zoom",R5:"clip in its own act",R6:"infographic at its sentence",R7:"label at first mention",R8:"ambience from a place word",R9:"impact word",R10:"creature sound",R11:"riser on a reveal word",R12:"whoosh before infographic",R13:"sound effect limit",R14:"act start",R15:"one music bed per act",R16:"act pause",R17:"music lower in pauses",R18:"end screen",R19:"loudness"};
@@ -2866,7 +3173,7 @@ function edReady(id){const n=narrOf(id),p=work(id).pack,acts=pkActs(n);
   const A=p.acts.slice(0,acts.length);if(A.some(a=>!a?.cues?.length||!(a.seconds>0)))return {ok:false,cues:true};
   // A cheap guard: the cues come from the same text, so their words should match the script's.
   const cw=A.reduce((x,a)=>x+a.cues.reduce((y,c)=>y+igNorm(c.text).split(" ").filter(Boolean).length,0),0),nw=igNorm(narrText(n)).split(" ").filter(Boolean).length;
-  return Math.abs(cw-nw)>nw*.03?{ok:false,guard:true}:{ok:true}}
+  return cw>0&&Math.abs(cw-nw)<=nw*.25?{ok:true}:{ok:false,guard:true}}
 function edState(id){const p=plans().find(x=>x.id===id);
   if(p?.status==="tayang")return "pub";if(p?.status==="siap")return "edited";if(work(id).edit?.sent)return "editing";
   if(!wordsOf(narrText(narrOf(id))))return "script";return edReady(id).ok?"ready":"pack"}
@@ -3051,7 +3358,7 @@ JSON shape: {"pictures":["picture for shot 1","picture for shot 2"]}`,null,"AI i
   const s2=$("#s-ed-ai");if(s2){s2.className="status";s2.textContent=st.textContent.replace(", result saved","")+`. Saved: shots.srt now names a picture for each shot. Send to Premiere again to write it.`}}
 
 /* Page */
-function edOpen(id,where){if(!plans().some(p=>p.id===id))return;delete ED.scan[id];ED.view="detail";ED.id=id;ED.sel=-1;ED.focus=where||"head";show("edit")}
+function edOpen(id,where){if(!plans().some(p=>p.id===id))return;delete ED.scan[id];ED.view="detail";ED.id=id;ED.tab=where==="check"?"guide":"tl";ED.sel=-1;ED.focus=where||"head";show("edit")}
 function edRender(){if($("#p-edit").hidden)return;const ok=ED.view==="detail"&&edPlans().some(p=>p.id===ED.id);if(!ok)ED.view="list";
   const fo=document.activeElement,key=fo&&fo.closest?.("#p-edit")?[...fo.attributes].find(a=>a.name.startsWith("data-ed")||a.name==="id"):null,kv=key?`[${key.name}="${CSS.escape(key.value)}"]`:"";
   if(ED.view==="detail")edDetail();else edList();
@@ -3097,7 +3404,7 @@ function edDetail(){const id=ED.id,p=plans().find(x=>x.id===id),w=work(id),s=edS
   if(!can){$("#ed-sub").textContent=`Upload ${fmtShort(p.date)} · ${vdIn(daysBetween(today,p.date))}`;
     const noScript=s==="script";
     setH($("#ed-body"),`<section class="card ed-need" aria-labelledby="ed-need-h"><h3 id="ed-need-h">${noScript?"Write the script first":"Make the edit pack first"}</h3>
-      <p class="sub">${noScript?"The edit plan is built from the script and its voice over. This video has no full script yet.":R.stale?"Voice or script changed since the edit pack. Times may be wrong. Make the edit pack again.":"The edit plan needs the edit pack: one MP3 per act with its subtitle timing. The long voice over from step 7 does not line up with the plan."}</p>
+      <p class="sub">${noScript?"The edit plan is built from the script and its voice over. This video has no full script yet.":R.stale?"Voice or script changed since the edit pack. Times may be wrong. Make the edit pack again.":"The edit plan needs the Audio & Edit pack: one MP3 per act with its subtitle timing. The optional Single MP3 does not line up with the plan."}</p>
       <div class="chips"><button type="button" class="btn" data-ed-make="${noScript?"script":"pack"}">${noScript?"Write script":"Make edit pack"}</button></div>${msg}</section>`+edLimits());
     edFocus();return}
   const P=edPlan(id),S=ED.scan[id],lost=S&&!S.error?P.A.filter(a=>!S.narration.includes(a.file)):[],sendOk=R.ok&&!lost.length;
@@ -3108,8 +3415,24 @@ function edDetail(){const id=ED.id,p=plans().find(x=>x.id===id),w=work(id),s=edS
   const sent=w.edit?.sent,done=w.edit?.done||{},steps=edSteps(P),rows=P.items.filter(x=>x.row!==false),idx=new Map(P.items.map((x,i)=>[x,i]));
   const busy=ED.send===id,track=x=>x.track==="marker"?"marker":x.track;
   const whatHtml=x=>x.lane==="ig"?esc(x.what).replace(esc(x.ok||x.miss),x.ok?`<span class="ed-ok">${esc(x.ok)}</span>`:`<span class="ed-miss">${esc(x.miss)}</span>`):esc(x.what);
-  keepPaste("s-ed-ai",()=>setH($("#ed-body"),`<div class="chips ed-acts"><button type="button" class="btn" id="ed-send"${sendOk&&!busy?"":' aria-disabled="true"'}>${busy?"Sending…":sent?"Send to Premiere again":"Send to Premiere"}</button><button type="button" class="btn ghost" data-ed-folder="">Open video folder</button>${sent?`<button type="button" class="btn ghost" data-ed-folder="08 Premiere">Open 08 Premiere</button>`:""}</div>
+  keepPaste("s-ed-ai",()=>setH($("#ed-body"),(()=>{
+    const clipDone=P.clips.filter(c=>c.found).length,igDone=P.igs.filter(g=>g.found).length,sndFiles=S?.sounds?.length||0,sndMatch=P.sfx.concat(P.amb,P.music).filter(x=>x.lib).length;
+    const readyStrip=`<div class="ed-ready" aria-label="Premiere readiness summary">
+      <div class="ed-tile"><small>Narration (A1)</small><b>${P.A.length} acts</b><span class="ed-st ${sendOk?"done":"wait"}">${sendOk?"Ready":lost.length?"Missing file":"Check"}</span></div>
+      <div class="ed-tile"><small>Video clips (V1)</small><b>${clipDone} / ${P.clips.length}</b><span class="ed-st ${!P.clips.length?"wait":clipDone===P.clips.length?"done":"ready"}">${!P.clips.length?"No Flow clips":clipDone===P.clips.length?"All placed":"In 04 Video clips"}</span></div>
+      <div class="ed-tile"><small>Infographics (V2)</small><b>${igDone} / ${P.igs.length}</b><span class="ed-st ${!P.igs.length?"wait":igDone===P.igs.length?"done":"ready"}">${!P.igs.length?"No briefs":igDone===P.igs.length?"All placed":"In 05 Infographics"}</span></div>
+      <div class="ed-tile"><small>Sound library (A2-A4)</small><b>${sndFiles} files</b><span class="ed-st ${sndMatch?"done":"wait"}">${sndMatch?`${sndMatch} matched`:"Markers only"}</span></div>
+    </div>`;
+    const tab=ED.tab||"tl";
+    return `<div class="chips ed-acts"><button type="button" class="btn" id="ed-send"${sendOk&&!busy?"":' aria-disabled="true"'}>${busy?"Sending…":sent?"Send to Premiere again":"Send to Premiere"}</button><button type="button" class="btn ghost" data-ed-folder="">Open video folder</button>${sent?`<button type="button" class="btn ghost" data-ed-folder="08 Premiere">Open 08 Premiere</button>`:""}</div>
     ${msg}${sent&&!(ED.msgId===id&&ED.msg)?`<p class="note ed-sent">Sent ${esc(vdWhen(sent.at))} as ${esc(sent.file)}. A new send makes a new file and a new sequence; your cuts in the old one stay.</p>`:""}${banner}
+    ${readyStrip}
+    <div class="subtabs" id="ed-tabs" role="tablist" aria-label="Editing sections">
+      <button type="button" role="tab" aria-selected="${tab==="tl"}" data-ed-tab="tl">Timeline &amp; Markers</button>
+      <button type="button" role="tab" aria-selected="${tab==="guide"}" data-ed-tab="guide">Premiere Guide &amp; Files <span class="ct">${steps.filter(([k])=>done[k]).length}/${steps.length}</span></button>
+      <button type="button" role="tab" aria-selected="${tab==="tools"}" data-ed-tab="tools">Clip Check &amp; Shorts</button>
+    </div>
+    <div id="ed-t0" class="stack"${tab==="tl"?"":" hidden"}>
     <section class="card ed-card" aria-labelledby="ed-tl-h">
       <div class="vd-tbar"><h3 id="ed-tl-h">Edit timeline</h3><div class="seg" role="group" aria-label="Zoom"><button type="button" data-ed-zoom="all" aria-pressed="${ED.zoom!=="hook"}">Whole video</button><button type="button" data-ed-zoom="hook" aria-pressed="${ED.zoom==="hook"}">First 3 min</button></div></div>
       <div class="ed-tlw"><div class="ed-tl" role="img" aria-label="Timeline of ${esc(edClock(P.total))}: ${P.A.length} acts, ${P.shots.length} shots, ${P.igs.length} infographics, ${P.sfx.length} sound effects. The same items are listed in the table below.">${edTimeline(P)}</div></div>
@@ -3122,6 +3445,8 @@ function edDetail(){const id=ED.id,p=plans().find(x=>x.id===id),w=work(id),s=edS
       <div class="vd-tblw"><table class="ed-rows"><thead><tr><th scope="col">Time</th><th scope="col">Track</th><th scope="col">What to do</th><th scope="col">Why</th></tr></thead><tbody>${rows.map(x=>`<tr${idx.get(x)===ED.sel?' class="on"':""}><td class="vd-mono">${esc(edClock(x.t))}${x.end&&x.end-x.t>=5?"–"+esc(edClock(x.end)):""}</td><td><span class="ed-lane">${esc(track(x))}</span></td><td>${whatHtml(x)}</td><td class="ed-why">${esc(edWhy(x.why))}</td></tr>`).join("")}</tbody></table></div>
       <details class="mtable ed-rules"${ED.rules?" open":""}><summary>What the rules in Why mean</summary><ul class="ed-steps ed-rlist">${Object.entries(ED_RULES).map(([r,t])=>`<li><b>${r==="check"?"Script check":r}</b> ${esc(t)}</li>`).join("")}</ul></details>
     </section>
+    </div>
+    <div id="ed-t1" class="stack"${tab==="guide"?"":" hidden"}>
     <div class="ed-cols">
       <section class="card ed-card" aria-labelledby="ed-chk-h">
         <h3 id="ed-chk-h" tabindex="-1">In Premiere, in this order</h3>
@@ -3131,7 +3456,7 @@ function edDetail(){const id=ED.id,p=plans().find(x=>x.id===id),w=work(id),s=edS
       <section class="card ed-card" aria-labelledby="ed-send-h">
         <h3 id="ed-send-h">What Send to Premiere writes</h3>
         <ul class="ed-files">
-          <li><code>edit-guide.xml</code><span>A Premiere sequence: act MP3s on A1, ${plural(P.clips.filter(c=>c.found).length,"video clip")} and ${plural(P.igs.filter(g=>g.found).length,"infographic")} placed, everything else as named markers.</span></li>
+          <li><code>edit-guide.xml</code><span>A Premiere sequence: act MP3s on A1, ${plural(clipDone,"video clip")} and ${plural(igDone,"infographic")} placed, everything else as named markers.</span></li>
           <li><code>shots.srt</code><span>One block per suggested shot, for cutting.${P.pics?" Each block names a picture.":""}</span></li>
           <li><code>sound-list.txt</code><span>Every music, ambience and sound effect idea with its time and words to search for in YouTube's Audio library.</span></li>
           <li><code>subtitles-youtube.srt</code><span>Captions for YouTube Studio, timed with the 1 s pauses.</span></li>
@@ -3148,22 +3473,27 @@ function edDetail(){const id=ED.id,p=plans().find(x=>x.id===id),w=work(id),s=edS
           <li><b>Window › Markers</b> lists every marker. Click one to jump to it.</li>
         </ol>
         <h4>Your own sounds (optional)</h4>
-        <p class="sub">Put sound files in the Sound library folder. A file whose name holds a search word, like "growl" or "cave", is placed on its track by the next send. ${S?.sounds?.length?`${plural(S.sounds.length,"file")} there now; ${P.sfx.concat(P.amb,P.music).filter(x=>x.lib).length} placed.`:"It is empty now, so sounds arrive as markers."}</p>
+        <p class="sub">Put sound files in the Sound library folder. A file whose name holds a search word, like "growl" or "cave", is placed on its track by the next send. ${sndFiles?`${plural(sndFiles,"file")} there now; ${sndMatch} placed.`:"It is empty now, so sounds arrive as markers."}</p>
         <div class="chips"><button type="button" class="btn ghost" id="ed-lib">Open Sound library</button></div>
         <h4>Picture ideas (optional)</h4>
         <p class="sub">${P.pics?`Saved ${esc(vdWhen(w.edit.pics.at))}: shots.srt names a picture for each shot.`:"One AI call suggests a picture for each shot block. Without it, each block shows its narration."}</p>
         ${runW("pics")}<div class="chips"><button type="button" class="btn ghost" id="ed-pics" data-run="pics" data-base="${esc((P.pics?"Suggest shot pictures again":"Suggest shot pictures")+edPicsCost(P))}">${runTxt("pics",P.pics?"Suggest shot pictures again":"Suggest shot pictures")}${edPicsCost(P)}</button></div><div class="status" id="s-ed-ai" role="status"></div>
       </section>
-    </div>${tlEdit(id,P,S)}`+edLimits()));
+    </div>
+    </div>
+    <div id="ed-t2" class="stack"${tab==="tools"?"":" hidden"}>
+      ${tlEdit(id,P,S)}
+      <details class="fold ed-card ed-lim"><summary>Honest limits &amp; workflow notes</summary><ul>${edLimitsBody()}</ul></details>
+    </div>`})()));
   edFocus()}
-function edLimits(){return `<section class="card ed-card ed-lim" aria-labelledby="ed-lim-h"><h3 id="ed-lim-h">Honest limits</h3><ul>
-  <li><b>Times come from the edit pack MP3s</b> (one per act), not the long voice over from step 7. A video needs its edit pack first, and making one for an older video uses ElevenLabs characters.</li>
+function edLimitsBody(){return `<li><b>Times come from the Audio &amp; Edit pack MP3s</b> (one per act), not the optional Single MP3. A video needs its edit pack first${voiceVS()?" (free via VoiceStudio)":""}.</li>
   <li><b>Sound effect and label times are estimated inside a sentence,</b> so they can be about half a second off. Nudge them by ear.</li>
-  <li><b>Your images are not placed for you.</b> The shot blocks show where each one goes. Text labels and sounds arrive as markers.</li>
+  <li><b>Your images are not placed for you.</b> The shot blocks show where each one goes. Text labels and non-library sounds arrive as markers.</li>
   <li><b>Each import makes a new sequence,</b> so send before you start cutting.</li>
   <li><b>The shot, sound and music rules are habits of good documentaries, not a promise of views.</b> After 3 to 5 uploads, compare with the retention graph in YouTube Studio and adjust.</li>
-  <li><b>Music and sound files are yours to pick and license.</b> The app never downloads or makes sound.</li>
-  <li><b>Not tested in Premiere yet.</b> The edit guide follows the Final Cut Pro 7 XML that Premiere imports. If your first import asks to relink, relinking one file usually fixes the rest.</li></ul></section>`}
+  <li><b>Music and sound files remain yours to pick and license.</b> Sound library files live locally in <code>Downloads\\Terra Studio\\Sound library</code>.</li>
+  <li><b>Premiere import notes.</b> The edit guide follows Final Cut Pro 7 XML. If your first import asks to relink, relinking one file usually fixes the rest.</li>`}
+function edLimits(){return `<details class="fold card ed-card ed-lim"><summary>Honest limits &amp; workflow notes</summary><ul>${edLimitsBody()}</ul></details>`}
 function edFocus(){if(!ED.focus)return;const f=ED.focus;ED.focus=false;(f==="check"?$("#ed-chk-h"):$("#ed-h"))?.focus();if(f==="check")$("#ed-chk-h")?.scrollIntoView({block:"start"})}
 
 $("#el-pub").addEventListener("change",e=>{ED.pub=e.target.checked;edRender()});
@@ -3176,6 +3506,7 @@ $("#p-edit").addEventListener("click",async e=>{const t=e.target;let b;
   if((b=t.closest("[data-ed-row]"))&&!t.closest("button"))return edOpen(b.dataset.edRow);
   if(t.closest("#ed-back")){const id=ED.id;ED.view="list";edRender();$("#main").scrollTop=0;$(`[data-ed-open="${CSS.escape(id)}"]`)?.focus();return}
   if((b=t.closest("[data-ed-make]")))return openMake(ED.id,b.dataset.edMake);
+  if((b=t.closest("[data-ed-tab]"))){ED.tab=b.dataset.edTab;edRender();return}
   if((b=t.closest("[data-ed-zoom]"))){ED.zoom=b.dataset.edZoom;edRender();return}
   if((b=t.closest("[data-ei]"))){ED.sel=+b.dataset.ei;edRender();return}
   if((b=t.closest("#ed-send"))){if(b.getAttribute("aria-disabled")!=="true")edSend(ED.id,$("#s-ed"));return}

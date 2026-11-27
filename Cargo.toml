@@ -1,8 +1,8 @@
 [package]
 name = "terra-studio"
-version = "2.9.3"
+version = "3.0.0"
 edition = "2021"
-description = "Terra Studio: YouTube channel toolkit (ideas, scripts, SEO, thumbnails, Studio analytics) powered by Claude"
+description = "Terra Studio: YouTube channel toolkit (ideas, scripts, SEO, thumbnails, Google Flow, Studio analytics) powered by Claude"
 
 [[bin]]
 name = "TerraStudio"

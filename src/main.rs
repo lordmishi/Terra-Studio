@@ -17,6 +17,8 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use tiny_http::{Header, Method, Request, Response, Server};
 
 mod clip;
+mod flow;
+mod voicestudio;
 
 const PAGE: &str = concat!(
     include_str!("../assets/head.part"),
@@ -64,14 +66,22 @@ struct Config {
     eleven_voice: String,
     eleven_voice_name: String,
     eleven_model: String,
+    /// "eleven" or "voicestudio" (local REST API on http://127.0.0.1:3900).
+    voice_provider: String,
+    voicestudio_url: String,
+    voicestudio_voice: String,
+    voicestudio_voice_name: String,
+    voicestudio_model: String,
     /// KIE.ai: one prepaid key for Claude text, images and video clips.
     #[serde(skip_serializing_if = "String::is_empty")]
     kie_key: String,
     #[serde(skip_serializing_if = "String::is_empty")]
     kie_key_dpapi: String,
     kie_model: String,
-    /// "gemini" (default) or "kie": who makes thumbnail images.
+    /// "gemini" (default), "kie", or "flow": who makes thumbnail images.
     image_provider: String,
+    /// "kie" (default) or "flow": who makes video clips from Flow prompts.
+    clip_provider: String,
     kie_image_model: String,
     /// YouTube (Google OAuth "Desktop app" client the user creates in Google Cloud).
     yt_client_id: String,
@@ -109,10 +119,16 @@ impl Default for Config {
             eleven_voice: String::new(),
             eleven_voice_name: String::new(),
             eleven_model: String::new(),
+            voice_provider: String::new(),
+            voicestudio_url: String::new(),
+            voicestudio_voice: String::new(),
+            voicestudio_voice_name: String::new(),
+            voicestudio_model: String::new(),
             kie_key: String::new(),
             kie_key_dpapi: String::new(),
             kie_model: String::new(),
             image_provider: String::new(),
+            clip_provider: String::new(),
             kie_image_model: String::new(),
             yt_client_id: String::new(),
             yt_secret: String::new(),
@@ -383,6 +399,12 @@ fn main() {
     let dir = app_dir();
     let mut first = load_config(&dir);
     first_run_setup(&dir, &mut first);
+    if voicestudio::is_active(&first) {
+        let vs_url = first.voicestudio_url.clone();
+        std::thread::spawn(move || {
+            let _ = voicestudio::ensure_running(&vs_url);
+        });
+    }
     let cfg = Arc::new(Mutex::new(first));
     // Give the window a minute of grace to load before the idle timer counts.
     let last_seen = Arc::new(AtomicU64::new(now() + 60));
@@ -394,12 +416,14 @@ fn main() {
             if !NATIVE.load(Ordering::Relaxed)
                 && now().saturating_sub(last_seen.load(Ordering::Relaxed)) > IDLE_EXIT_SECS
             {
+                voicestudio::stop_owned();
                 std::process::exit(0);
             }
         });
     }
 
     let web_dir = dir.join("webview");
+    let app_dir_native = dir.clone();
     let serve = move || {
         for req in server.incoming_requests() {
             let cfg = cfg.clone();
@@ -413,7 +437,7 @@ fn main() {
     {
         std::thread::spawn(serve);
         // Runs until the window closes. Returns only if WebView2 is unavailable.
-        native::run(port, web_dir);
+        native::run(port, app_dir_native, web_dir);
         open_window(port);
         loop {
             std::thread::park();
@@ -439,12 +463,20 @@ mod native {
     use std::sync::{Mutex, OnceLock};
     use tao::dpi::{LogicalSize, PhysicalSize};
     use tao::event::{Event, WindowEvent};
-    use tao::event_loop::{ControlFlow, EventLoopBuilder, EventLoopProxy};
+    use tao::event_loop::{ControlFlow, EventLoopBuilder, EventLoopProxy, EventLoopWindowTarget};
     use tao::platform::windows::IconExtWindows;
-    use tao::window::{Icon, WindowBuilder};
-    use wry::{WebContext, WebViewBuilder};
+    use tao::window::{Icon, Window, WindowBuilder};
+    use wry::{WebContext, WebView, WebViewBuilder};
 
-    static PROXY: OnceLock<Mutex<EventLoopProxy<()>>> = OnceLock::new();
+    #[derive(Clone, Debug)]
+    pub enum UserEvent {
+        ShowMain,
+        OpenFlow,
+        SyncFlow(bool),
+        NavigateFlow(String),
+    }
+
+    static PROXY: OnceLock<Mutex<EventLoopProxy<UserEvent>>> = OnceLock::new();
     static HWND: std::sync::atomic::AtomicIsize = std::sync::atomic::AtomicIsize::new(0);
 
     #[link(name = "dwmapi")]
@@ -472,17 +504,77 @@ mod native {
         set(36, colorref(ink)); // DWMWA_TEXT_COLOR
     }
 
+    fn send(ev: UserEvent) -> bool {
+        PROXY.get().and_then(|p| p.lock().ok().map(|p| p.send_event(ev).is_ok())).unwrap_or(false)
+    }
+
     /// Asks the window to come to the front. False when there is no native window.
     pub fn show() -> bool {
-        PROXY.get().and_then(|p| p.lock().ok().map(|p| p.send_event(()).is_ok())).unwrap_or(false)
+        send(UserEvent::ShowMain)
+    }
+
+    /// Opens or focuses the built-in Google Flow WebView2 window.
+    pub fn open_flow() {
+        let _ = send(UserEvent::OpenFlow);
+    }
+
+    /// Pushes the active prompt queue state into the open Google Flow window.
+    pub fn sync_flow(auto_fill: bool) {
+        let _ = send(UserEvent::SyncFlow(auto_fill));
     }
 
     fn local(url: &str, port: u16) -> bool {
         url.starts_with(&format!("http://127.0.0.1:{port}/")) || url == "about:blank"
     }
 
-    pub fn run(port: u16, data_dir: PathBuf) {
-        let event_loop = EventLoopBuilder::<()>::with_user_event().build();
+    fn build_flow_window(
+        target: &EventLoopWindowTarget<UserEvent>,
+        app_dir: &PathBuf,
+    ) -> Option<(Window, WebContext, WebView)> {
+        let win = WindowBuilder::new()
+            .with_title("Terra Studio - Google Flow")
+            .with_inner_size(LogicalSize::new(1280.0, 880.0))
+            .with_min_inner_size(LogicalSize::new(900.0, 640.0))
+            .with_window_icon(Icon::from_resource(1, Some(PhysicalSize::new(64, 64))).ok())
+            .build(target)
+            .ok()?;
+        let flow_dir = app_dir.join("webview-flow");
+        let _ = std::fs::create_dir_all(&flow_dir);
+        let mut fctx = WebContext::new(Some(flow_dir));
+        let app_dl = app_dir.clone();
+        let app_done = app_dir.clone();
+        let wv = WebViewBuilder::with_web_context(&mut fctx)
+            .with_url(super::flow::FLOW_URL)
+            .with_clipboard(true)
+            .with_initialization_script_for_main_only(super::flow::INIT_SCRIPT, true)
+            .with_ipc_handler(|req| super::flow::on_ipc(req.body()))
+            .with_navigation_handler(|u| {
+                if super::flow::is_google_url(&u) {
+                    return true;
+                }
+                super::open_browser(&u);
+                false
+            })
+            .with_new_window_req_handler(|u| {
+                if super::flow::is_flow_app_url(&u) {
+                    let _ = send(UserEvent::NavigateFlow(u));
+                    return false;
+                }
+                if super::flow::is_google_url(&u) {
+                    return true;
+                }
+                super::open_browser(&u);
+                false
+            })
+            .with_download_started_handler(move |uri, path| super::flow::begin_download(&app_dl, &uri, path))
+            .with_download_completed_handler(move |_uri, path, ok| super::flow::finish_download(&app_done, path, ok))
+            .build(&win)
+            .ok()?;
+        Some((win, fctx, wv))
+    }
+
+    pub fn run(port: u16, app_dir: PathBuf, data_dir: PathBuf) {
+        let event_loop = EventLoopBuilder::<UserEvent>::with_user_event().build();
         let Ok(window) = WindowBuilder::new()
             .with_title("Terra Studio")
             .with_inner_size(LogicalSize::new(1440.0, 920.0))
@@ -492,6 +584,7 @@ mod native {
         else {
             return;
         };
+        let main_id = window.id();
         {
             use tao::platform::windows::WindowExtWindows;
             HWND.store(window.hwnd() as isize, Ordering::Relaxed);
@@ -523,17 +616,53 @@ mod native {
         };
         super::NATIVE.store(true, Ordering::Relaxed);
         let _ = PROXY.set(Mutex::new(event_loop.create_proxy()));
-        event_loop.run(move |event, _, flow| {
+        let mut flow_win: Option<(Window, WebContext, WebView)> = None;
+        event_loop.run(move |event, target, flow| {
             *flow = ControlFlow::Wait;
             let _ = (&webview, &ctx);
             match event {
-                Event::UserEvent(()) => {
+                Event::UserEvent(UserEvent::ShowMain) => {
                     window.set_minimized(false);
                     window.set_visible(true);
                     window.set_focus();
                 }
-                Event::WindowEvent { event: WindowEvent::CloseRequested, .. } => {
-                    std::process::exit(0);
+                Event::UserEvent(UserEvent::OpenFlow) => {
+                    if flow_win.is_none() {
+                        flow_win = build_flow_window(target, &app_dir);
+                    }
+                    if let Some((fw, _, _)) = &flow_win {
+                        fw.set_minimized(false);
+                        fw.set_visible(true);
+                        fw.set_focus();
+                    }
+                }
+                Event::UserEvent(UserEvent::SyncFlow(auto_fill)) => {
+                    if let Some((_, _, fwv)) = &flow_win {
+                        let payload = super::flow::bar_payload(auto_fill);
+                        let _ = fwv.evaluate_script(&format!(
+                            "window.__terraFlowUpdate && window.__terraFlowUpdate({payload});"
+                        ));
+                    }
+                }
+                Event::UserEvent(UserEvent::NavigateFlow(url)) => {
+                    if let Some((fw, _, fwv)) = &flow_win {
+                        let _ = fwv.load_url(&url);
+                        fw.set_minimized(false);
+                        fw.set_visible(true);
+                        fw.set_focus();
+                    }
+                }
+                Event::WindowEvent { window_id, event: WindowEvent::CloseRequested, .. } => {
+                    if window_id == main_id {
+                        super::voicestudio::stop_owned();
+                        std::process::exit(0);
+                    }
+                    if let Some((fw, _, _)) = &flow_win {
+                        if fw.id() == window_id {
+                            fw.set_visible(false);
+                            super::flow::set_open(false);
+                        }
+                    }
                 }
                 _ => {}
             }
@@ -718,11 +847,17 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
                     "eleven_voice": c.eleven_voice,
                     "eleven_voice_name": c.eleven_voice_name,
                     "eleven_model": c.eleven_model,
+                    "voice_provider": if voicestudio::is_active(&c) { "voicestudio" } else { "eleven" },
+                    "voicestudio_url": if c.voicestudio_url.is_empty() { voicestudio::DEFAULT_URL } else { &c.voicestudio_url },
+                    "voicestudio_voice": c.voicestudio_voice,
+                    "voicestudio_voice_name": c.voicestudio_voice_name,
+                    "voicestudio_model": c.voicestudio_model,
                     "audio_dir": eleven::out_dir(dir).display().to_string(),
                     "has_kie": !c.kie_key.is_empty(),
                     "kie_hint": c.kie_key.chars().rev().take(4).collect::<Vec<_>>().into_iter().rev().collect::<String>(),
                     "kie_model": kie::text_model(&c),
-                    "image_provider": kie::image_provider(&c),
+                    "image_provider": flow::image_provider(&c),
+                    "clip_provider": flow::clip_provider(&c),
                     "kie_image_model": kie::image_model(&c),
                     "pack_dir": pack::root(dir).display().to_string(),
                     "yt_client_id": c.yt_client_id,
@@ -773,6 +908,21 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
             if let Some(x) = v["eleven_model"].as_str().filter(|x| safe_id(x)) {
                 c.eleven_model = x.to_string();
             }
+            if let Some(p) = v["voice_provider"].as_str().filter(|p| ["eleven", "voicestudio"].contains(p)) {
+                c.voice_provider = p.to_string();
+            }
+            if let Some(u) = v["voicestudio_url"].as_str() {
+                if let Ok(clean) = voicestudio::base_url(u) {
+                    c.voicestudio_url = clean;
+                }
+            }
+            if let Some(x) = v["voicestudio_voice"].as_str().map(str::trim).filter(|x| !x.is_empty() && x.len() < 120 && !x.chars().any(char::is_control)) {
+                c.voicestudio_voice = x.to_string();
+                c.voicestudio_voice_name = v["voicestudio_voice_name"].as_str().unwrap_or(x).chars().take(120).collect();
+            }
+            if let Some(x) = v["voicestudio_model"].as_str().map(str::trim).filter(|x| x.is_empty() || safe_id(x)) {
+                c.voicestudio_model = x.to_string();
+            }
             if v["clear_kie"].as_bool() == Some(true) {
                 c.kie_key.clear();
             }
@@ -785,8 +935,11 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
             if let Some(m) = v["kie_image_model"].as_str().filter(|m| m.is_empty() || gemini::safe_model(m)) {
                 c.kie_image_model = m.to_string();
             }
-            if let Some(p) = v["image_provider"].as_str().filter(|p| ["gemini", "kie"].contains(p)) {
+            if let Some(p) = v["image_provider"].as_str().filter(|p| ["gemini", "kie", "flow"].contains(p)) {
                 c.image_provider = p.to_string();
+            }
+            if let Some(p) = v["clip_provider"].as_str().filter(|p| ["kie", "flow"].contains(p)) {
+                c.clip_provider = p.to_string();
             }
             if v["clear_gemini"].as_bool() == Some(true) {
                 c.gemini_key.clear();
@@ -880,13 +1033,7 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
                 Err(e) => return respond_json(req, 400, json!({"error": e})),
             };
             let c = cfg.lock().unwrap().clone();
-            let via_kie = kie::image_provider(&c) == "kie";
-            if via_kie && c.kie_key.is_empty() {
-                return respond_json(req, 400, json!({"error": "The KIE.ai key is not set. Open Settings, section KIE.ai."}));
-            }
-            if !via_kie && c.image_key.is_empty() {
-                return respond_json(req, 400, json!({"error": "The Gemini key for images is not set. Open Settings, section Thumbnail images."}));
-            }
+            let prov = flow::image_provider(&c);
             let prompt = v["prompt"].as_str().unwrap_or("").trim().to_string();
             if prompt.is_empty() || prompt.len() > 6000 {
                 return respond_json(req, 400, json!({"error": "The image prompt is empty or too long."}));
@@ -900,6 +1047,21 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
                 },
                 None => "free".to_string(),
             };
+            if prov == "flow" {
+                let kind = if stem == "test" { "test" } else { "thumbnail" };
+                let req_val = json!({"kind": kind, "id": v["id"].as_str().unwrap_or("test"), "slot": slot, "prompt": prompt});
+                return match flow::send(dir, &req_val) {
+                    Ok(st) => respond_json(req, 200, json!({"flow": true, "provider": "flow", "status": st})),
+                    Err((code, e)) => respond_json(req, code, json!({"error": e})),
+                };
+            }
+            let via_kie = prov == "kie";
+            if via_kie && c.kie_key.is_empty() {
+                return respond_json(req, 400, json!({"error": "The KIE.ai key is not set. Open Settings, section KIE.ai."}));
+            }
+            if !via_kie && c.image_key.is_empty() {
+                return respond_json(req, 400, json!({"error": "The Gemini key for images is not set. Open Settings, section Thumbnail images."}));
+            }
             let model = if via_kie { kie::image_model(&c) } else { gemini::image_model(&c) };
             let made = if via_kie { kie::image(&c.kie_key, &model, &prompt) } else { gemini::image(&c.image_key, &model, &prompt) };
             match made {
@@ -918,6 +1080,27 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
                 Err(e) => respond_json(req, 502, json!({"error": e, "model": model})),
             }
         }
+        (Method::Get, "/api/flow/status") => respond_json(req, 200, flow::status()),
+        (Method::Post, "/api/flow/open") => respond_json(req, 200, flow::open()),
+        (Method::Post, "/api/flow/send") => {
+            let v = match read_json(&mut req, 512 * 1024) {
+                Ok(v) => v,
+                Err(e) => return respond_json(req, 400, json!({"error": e})),
+            };
+            match flow::send(dir, &v) {
+                Ok(st) => respond_json(req, 200, st),
+                Err((code, e)) => respond_json(req, code, json!({"error": e})),
+            }
+        }
+        (Method::Post, "/api/flow/step") => {
+            let v = match read_json(&mut req, 16 * 1024) {
+                Ok(v) => v,
+                Err(e) => return respond_json(req, 400, json!({"error": e})),
+            };
+            let delta = v["delta"].as_i64().unwrap_or(1).clamp(-10, 10) as isize;
+            respond_json(req, 200, flow::step(delta))
+        }
+        (Method::Post, "/api/flow/clear") => respond_json(req, 200, flow::clear()),
         (Method::Get, p) if p.starts_with("/api/gen/") => {
             let name = percent_decode(&p["/api/gen/".len()..]);
             let ct = match name.rsplit_once('.') {
@@ -990,20 +1173,45 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
                 Err(e) => respond_json(req, 502, json!({"error": e})),
             }
         }
+        (Method::Post, "/api/voicestudio/info") => {
+            let v = match read_json(&mut req, 64 * 1024) {
+                Ok(v) => v,
+                Err(e) => return respond_json(req, 400, json!({"error": e})),
+            };
+            let url = v["url"].as_str().map(str::trim).filter(|u| !u.is_empty()).map(String::from)
+                .unwrap_or_else(|| cfg.lock().unwrap().voicestudio_url.clone());
+            match voicestudio::info(&url) {
+                Ok(info) => respond_json(req, 200, info),
+                Err(e) => respond_json(req, 502, json!({"error": e})),
+            }
+        }
+        (Method::Post, "/api/voicestudio/open") => {
+            match voicestudio::open_app() {
+                Ok(()) => respond_json(req, 200, json!({"ok": true})),
+                Err(e) => respond_json(req, 500, json!({"error": e})),
+            }
+        }
         (Method::Post, "/api/eleven/tts") => {
             let v = match read_json(&mut req, 512 * 1024) {
                 Ok(v) => v,
                 Err(e) => return respond_json(req, 400, json!({"error": e})),
             };
             let c = cfg.lock().unwrap().clone();
-            let voice = v["voice"].as_str().filter(|x| !x.is_empty()).unwrap_or(&c.eleven_voice).to_string();
+            let use_vs = v["provider"].as_str().map_or_else(|| voicestudio::is_active(&c), |p| p == "voicestudio");
             let parts: Vec<String> = v["parts"].as_array().into_iter().flatten().filter_map(|p| p.as_str().map(String::from)).collect();
             // The folder is checked before ElevenLabs is paid, not after.
             let target = match video::from_req(dir, &v) {
                 Ok(t) => t,
                 Err((code, e)) => return respond_json(req, code, json!({"error": e})),
             };
-            let spoken = match eleven::speak(&c, &parts, &voice) {
+            let spoken = if use_vs {
+                let voice = v["voice"].as_str().filter(|x| !x.is_empty()).unwrap_or(&c.voicestudio_voice).to_string();
+                voicestudio::speak(&c, &parts, &voice)
+            } else {
+                let voice = v["voice"].as_str().filter(|x| !x.is_empty()).unwrap_or(&c.eleven_voice).to_string();
+                eleven::speak(&c, &parts, &voice)
+            };
+            let spoken = match spoken {
                 Ok(s) => s,
                 Err(e) => return respond_json(req, 502, json!({"error": e})),
             };
@@ -1448,6 +1656,7 @@ fn handle(mut req: Request, port: u16, cfg: &Mutex<Config>, dir: &Path, last_see
         (Method::Post, "/api/quit") => {
             respond_json(req, 200, json!({"ok": true}));
             std::thread::sleep(Duration::from_millis(300));
+            voicestudio::stop_owned();
             std::process::exit(0);
         }
         // The images in a video's 06 Thumbnail: the list, newest first, and each file. Read only.
@@ -2513,10 +2722,6 @@ mod kie {
         if c.kie_image_model.is_empty() { IMAGE_DEFAULT.to_string() } else { c.kie_image_model.clone() }
     }
 
-    pub fn image_provider(c: &Config) -> &'static str {
-        if c.image_provider == "kie" { "kie" } else { "gemini" }
-    }
-
     /// KIE's published rate: one credit is about half a US cent.
     pub fn usd(credits: f64) -> f64 {
         (credits * 0.5).round() / 100.0
@@ -2878,7 +3083,11 @@ mod kie {
             let mut c = Config::default();
             assert_eq!(text_model(&c), "claude-sonnet-5-5");
             assert_eq!(image_model(&c), "nano-banana-2");
-            assert_eq!(image_provider(&c), "gemini");
+            assert_eq!(flow::image_provider(&c), "gemini");
+            c.image_provider = "flow".into();
+            assert_eq!(flow::image_provider(&c), "flow");
+            c.image_provider = "kie".into();
+            assert_eq!(flow::image_provider(&c), "kie");
             assert_eq!(active_provider(&c), "");
             c.kie_key = "k".into();
             assert_eq!(active_provider(&c), "kie");
@@ -3143,7 +3352,14 @@ mod pack {
         let label: String = label.chars().take(40).collect();
         let label = label.trim_matches('-');
         let file = if label.is_empty() { format!("{prefix}.mp3") } else { format!("{prefix}-{label}.mp3") };
-        let timed = eleven::speak_timed(c, text).map_err(|e| (502, e))?;
+        let (audio, seconds, count, chunks, cue_list) = if voicestudio::is_active(c) {
+            let act = voicestudio::speak_act(c, text).map_err(|e| (502, e))?;
+            (act.audio, act.seconds, act.chars, act.chunks, act.cues)
+        } else {
+            let timed = eleven::speak_timed(c, text).map_err(|e| (502, e))?;
+            let cues = build_cues(&timed.chars, &timed.starts, &timed.ends);
+            (timed.audio, timed.seconds, timed.count, timed.chunks, cues)
+        };
         // A renamed act would otherwise leave two files for the same act.
         // In a video folder the replaced act goes to "older takes" instead of being deleted.
         let older = d.join(video::OLDER);
@@ -3158,14 +3374,14 @@ mod pack {
             }
         }
         let path = d.join(&file);
-        write_atomic(&path, &timed.audio).map_err(|e| (500, format!("Could not save the MP3: {e}")))?;
-        let cues: Vec<Value> = build_cues(&timed.chars, &timed.starts, &timed.ends)
+        write_atomic(&path, &audio).map_err(|e| (500, format!("Could not save the MP3: {e}")))?;
+        let cues: Vec<Value> = cue_list
             .into_iter()
             .map(|c| json!({"start": c.start, "end": c.end, "text": c.text}))
             .collect();
         let mut out = dest.json();
-        for (k, x) in [("file", json!(file)), ("path", json!(path.display().to_string())), ("seconds", json!(round3(timed.seconds))),
-            ("chars", json!(timed.count)), ("chunks", json!(timed.chunks)), ("cues", json!(cues))] {
+        for (k, x) in [("file", json!(file)), ("path", json!(path.display().to_string())), ("seconds", json!(round3(seconds))),
+            ("chars", json!(count)), ("chunks", json!(chunks)), ("cues", json!(cues))] {
             out[k] = x;
         }
         Ok(out)
@@ -5460,8 +5676,32 @@ mod youtube {
         let end = ymd((now() / 86_400) as i64 - 1);
         let range = format!("startDate={start}&endDate={end}");
 
-        let daily = get(&token, &format!("{YTA}&{range}&metrics=views&dimensions=day&sort=day")).map_err(|e| e.1)?;
-        let daily: Vec<Value> = daily["rows"].as_array().into_iter().flatten().map(|r| json!([r[0], r[1].as_f64().unwrap_or(0.0) as i64])).collect();
+        let (daily_rep, daily_has_rev) = report(
+            &token,
+            &format!("{range}&dimensions=day&sort=day"),
+            "views,estimatedMinutesWatched,subscribersGained,subscribersLost,estimatedRevenue",
+            "views,estimatedMinutesWatched,subscribersGained,subscribersLost",
+        )?;
+        let (dv, dm, dsg, dsl, dr) = (
+            col(&daily_rep, "views"),
+            col(&daily_rep, "estimatedMinutesWatched"),
+            col(&daily_rep, "subscribersGained"),
+            col(&daily_rep, "subscribersLost"),
+            col(&daily_rep, "estimatedRevenue"),
+        );
+        let dnum = |r: &Value, i: Option<usize>| i.and_then(|k| r.get(k)).and_then(Value::as_f64).unwrap_or(0.0);
+        let daily_rows = daily_rep["rows"].as_array().into_iter().flatten();
+        let mut daily: Vec<Value> = Vec::new();
+        let mut daily_full: Vec<Value> = Vec::new();
+        for r in daily_rows {
+            let Some(day) = r.get(0).and_then(Value::as_str) else { continue };
+            let views = dnum(r, dv) as i64;
+            let hrs = (dnum(r, dm) / 60.0 * 10.0).round() / 10.0;
+            let subs = (dnum(r, dsg) - dnum(r, dsl)) as i64;
+            let rev = if daily_has_rev && dr.is_some() { json!(dnum(r, dr)) } else { Value::Null };
+            daily.push(json!([day, views]));
+            daily_full.push(json!([day, views, hrs, subs, rev]));
+        }
 
         let (tot, has_rev) = report(
             &token,
@@ -5553,6 +5793,7 @@ mod youtube {
         }
         let mut data = if old.is_object() { old } else { json!({}) };
         data["daily"] = json!(daily);
+        data["daily_full"] = json!(daily_full);
         data["videos"] = json!(videos);
         data["totals"] = totals;
         data["currency"] = json!("IDR");

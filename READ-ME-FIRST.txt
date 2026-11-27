@@ -1,8 +1,8 @@
-TERRA STUDIO 2.9.3 (Windows 10/11, 64-bit)
+TERRA STUDIO 3.0.0 (Windows 10/11, 64-bit)
 ==========================================
 
 INSTALL
-Easiest: double-click TerraStudio-Setup-2.9.3.exe, then Next and Install.
+Easiest: double-click TerraStudio-Setup-3.0.0.exe, then Next and Install.
 No admin rights needed. A "Terra Studio" shortcut appears in the Start
 Menu and on the desktop. Uninstall through Settings > Apps.
 Zip version (no install): click "Extract all" first; do not run
@@ -12,6 +12,19 @@ UPDATING
 Run the new installer, or extract the new zip and open TerraStudio.exe.
 If the old version is still running, the new one closes it. Your data and
 settings are kept (they live in %APPDATA%\TerraStudio).
+
+NEW IN 3.0.0
+- Direct Google Flow inside Terra Studio (no Chrome extension needed):
+  * Built-in Flow window (`https://flow.google.com`) with persistent Google
+    login in `%APPDATA%\TerraStudio\webview-flow`, a floating prompt bar,
+    and automatic download routing.
+  * Settings > Thumbnail images now supports "Google Flow (built into Terra
+    Studio)" at no API cost; Make 3 thumbnails sends concepts straight to
+    Flow and displays downloaded images with your text overlay.
+  * Make video > Edit pack adds 1-click "Send all to Flow (Images to 03
+    Images)" and "Send all to Flow (Veo to 04 Video clips)" alongside
+    per-shot Flow buttons. Downloads save straight into the video's
+    03 Images or 04 Video clips folder without overwriting existing files.
 
 NEW IN 2.9.3
 - Every step in Make video ends with a Next button to the following
