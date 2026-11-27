@@ -64,7 +64,7 @@ fn overview(dir: &Path) -> Value {
     recent.sort_by(|x, y| y["d"].as_str().unwrap_or("").cmp(x["d"].as_str().unwrap_or("")));
     let newest: Vec<Value> = recent.iter().take(8).map(video_row).collect();
     json!({
-        "channel": "Terra Time Capsules",
+        "channel": "Terra Studio Channel",
         "data_range": data["range"],
         "currency": data["currency"],
         "totals": data["totals"],
@@ -170,11 +170,11 @@ fn add_idea(dir: &Path, a: &Value) -> Value {
 fn tools() -> Value {
     let none = json!({"type": "object", "properties": {}});
     json!([
-        {"name": "get_channel_overview", "description": "Terra Time Capsules channel numbers from Terra Studio: totals, views in the last 30 days vs the 30 before, top 10 long videos by views and the 8 newest, with CTR, average view minutes and percent watched.", "inputSchema": none, "annotations": {"readOnlyHint": true}},
+        {"name": "get_channel_overview", "description": "Channel numbers from Terra Studio: totals, views in the last 30 days vs the 30 before, top 10 long videos by views and the 8 newest, with CTR, average view minutes and percent watched.", "inputSchema": none, "annotations": {"readOnlyHint": true}},
         {"name": "list_videos", "description": "Every published long video (2 minutes or more) with date, length, views, CTR, impressions, average view minutes and percent watched, newest first.", "inputSchema": none, "annotations": {"readOnlyHint": true}},
         {"name": "get_calendar", "description": "Videos planned or in progress in Terra Studio's calendar, with date and status (idea, script, voice over, editing, ready, published).", "inputSchema": none, "annotations": {"readOnlyHint": true}},
         {"name": "get_ideas", "description": "The idea list saved in Terra Studio's Ideas tab, plus ideas from Claude that wait for the app to take them in.", "inputSchema": none, "annotations": {"readOnlyHint": true}},
-        {"name": "check_animal", "description": "Check whether the channel already has a published video or a calendar entry about an animal (genus or common name). Use this before suggesting any topic.", "inputSchema": {"type": "object", "properties": {"name": {"type": "string", "description": "Genus or common name, e.g. Pachycrocuta or giant hyena"}}, "required": ["name"]}, "annotations": {"readOnlyHint": true}},
+        {"name": "check_animal", "description": "Check whether the channel already has a published video or a calendar entry about an animal (genus or common name). Use this before suggesting any topic.", "inputSchema": {"type": "object", "properties": {"name": {"type": "string", "description": "Genus or common name, e.g. Smilodon or giant lion"}}, "required": ["name"]}, "annotations": {"readOnlyHint": true}},
         {"name": "get_channel_rules", "description": "The channel's fixed house rules: topics, titles, thumbnails, scripts of 3,000 to 5,000 words in 5 acts, the pre-upload checklist and the CTR rule. Read these before suggesting topics or writing anything.", "inputSchema": none, "annotations": {"readOnlyHint": true}},
         {"name": "add_idea", "description": "Send one approved video idea to Terra Studio's Ideas tab. Only call this after the owner agreed to the idea, and after check_animal says the animal is new.", "inputSchema": {"type": "object", "properties": {
             "title": {"type": "string", "description": "Video title, under 60 characters, naming the animal"},
@@ -217,7 +217,7 @@ fn reply(id: &Value, msg: &str, dir: &Path) -> Option<Value> {
             "protocolVersion": req["params"]["protocolVersion"].as_str().unwrap_or("2025-06-18"),
             "capabilities": {"tools": {}},
             "serverInfo": {"name": "terra-studio", "version": VERSION},
-            "instructions": "Terra Studio data for the Terra Time Capsules YouTube channel. Read get_channel_rules first. Before suggesting a topic, call check_animal. Use add_idea only after the owner approves an idea."
+            "instructions": "Terra Studio channel data and tools. Read get_channel_rules first. Before suggesting a topic, call check_animal. Use add_idea only after the owner approves an idea."
         }),
         "ping" => json!({}),
         "tools/list" => json!({"tools": tools()}),
@@ -260,10 +260,10 @@ mod tests {
     fn inbox_and_check() {
         let dir = std::env::temp_dir().join(format!("terra-mcp-{}", std::process::id()));
         let _ = fs::create_dir_all(&dir);
-        fs::write(dir.join("data.json"), r#"{"daily":[["2026-11-01",5]],"videos":[{"t":"The 240 Pound Giant Hyena That Ate Early Humans","d":"2026-11-21","dur":700,"v":10,"h":1}]}"#).unwrap();
-        fs::write(dir.join("last.json"), r#"{"plans":{"data":[{"title":"Sarkastodon: The Bone Crusher","date":"2026-12-19","status":"ide","type":"video"}]},"_animals":{"data":{"The 240 Pound Giant Hyena That Ate Early Humans":{"g":"Pachycrocuta","n":["giant hyena"]}}}}"#).unwrap();
-        assert_eq!(check_animal(&dir, "Pachycrocuta")["is_new"], false);
-        assert_eq!(check_animal(&dir, "sarkastodon")["already_in_calendar"].as_array().unwrap().len(), 1);
+        fs::write(dir.join("data.json"), r#"{"daily":[["2026-11-01",5]],"videos":[{"t":"The Saber-Toothed Predator of the Steppe","d":"2026-11-21","dur":700,"v":10,"h":1}]}"#).unwrap();
+        fs::write(dir.join("last.json"), r#"{"plans":{"data":[{"title":"Megacerops: Titan of the Plains","date":"2026-12-19","status":"ide","type":"video"}]},"_animals":{"data":{"The Saber-Toothed Predator of the Steppe":{"g":"Smilodon","n":["sabertooth"]}}}}"#).unwrap();
+        assert_eq!(check_animal(&dir, "Smilodon")["is_new"], false);
+        assert_eq!(check_animal(&dir, "megacerops")["already_in_calendar"].as_array().unwrap().len(), 1);
         assert_eq!(check_animal(&dir, "Epicyon")["is_new"], true);
         assert!(add_idea(&dir, &json!({"title":"Epicyon","subject":"Epicyon","mammal":true,"predator":true,"threat":false,"size":true}))["ok"].as_bool().unwrap());
         assert_eq!(load(&dir.join("claude-inbox.json"))["ideas"].as_array().unwrap().len(), 1);

@@ -223,7 +223,7 @@
       </div>
       <div data-runw="auto"></div>
       <div class="status" id="s-auto" role="status"></div>
-      <label for="mk-topic">Topic or animal name<input id="mk-topic" placeholder="e.g. Pachycrocuta" maxlength="140"></label>
+      <label for="mk-topic">Topic or animal name<input id="mk-topic" placeholder="e.g. Smilodon" maxlength="140"></label>
           </div>
           <div class="vd-tool" data-tool="titles" hidden>
       <div class="td2">
@@ -731,9 +731,9 @@
           <label for="pf-length">Usual video length<input id="pf-length" placeholder="e.g. 8 to 14 minutes"></label>
         </div>
         <label for="pf-niche">Niche and topics<textarea id="pf-niche" placeholder="e.g. prehistory documentaries: Ice Age megafauna, dinosaurs, ancient seas"></textarea></label>
-        <label for="pf-audience">Audience<textarea id="pf-audience" placeholder="e.g. 88% male, mostly 45 and over, 39% from the US"></textarea></label>
+        <label for="pf-audience">Audience<textarea id="pf-audience" placeholder="e.g. adults interested in natural history and paleontology"></textarea></label>
         <label for="pf-wins">What has worked<textarea id="pf-wins" placeholder="Best-performing video titles and their pattern. Filled in from Studio data when left empty."></textarea></label>
-        <label for="pf-money">Membership, merch, sponsor<textarea id="pf-money" placeholder="e.g. Field Crew and Lead Explorers memberships, Bog Titan merch collection"></textarea></label>
+        <label for="pf-money">Membership, merch, sponsor<textarea id="pf-money" placeholder="e.g. channel memberships, merch store, sponsors"></textarea></label>
         <label for="pf-style">Narration style<input id="pf-style" placeholder="e.g. cinematic, calm, authoritative"></label>
         <div class="chips"><button class="btn" type="submit">Save profile</button><button class="btn ghost" type="button" id="pf-export">Copy profile (JSON)</button><button class="btn ghost" type="button" id="pf-import">Paste profile (JSON)</button></div>
         <textarea id="pf-json" hidden aria-label="Profile as JSON"></textarea>
@@ -2300,7 +2300,7 @@ const thumbUrl=p=>{const f=p.tfile&&vFolder(p.id);return f?`/api/vthumb/${encode
 // Images from before 2.6 were always set by hand.
 const thumbMine=p=>typeof p.tmine==="boolean"?p.tmine:!!p.thumb;
 const vtList=async(id,strict)=>{const f=vFolder(id);if(!f)return [];const j=await api("/api/vthumbs/"+encodeURIComponent(f));return j.error?(strict?null:[]):j.files||[]};
-// Unless Sigit chose one himself, a plan shows the newest thumbnail saved in its video folder.
+// Unless the creator chose one manually, a plan shows the newest thumbnail saved in its video folder.
 async function thumbFollow(ids){const list=plans().map(p=>({...p}));let ch=false;
   for(const p of list){if((ids&&!ids.includes(p.id))||p.type==="post"||!vFolder(p.id))continue;const mine=thumbMine(p);if(mine&&!p.tfile)continue;
     const l=await vtList(p.id,1);if(!l)continue;const n=l[0];
@@ -2860,7 +2860,7 @@ function vdSelect(k,toHead){VD.step=k;VD.open=null;renderDetail();
   const pane=$("#vd-pane"),m=$("#main"),r=pane.getBoundingClientRect(),mr=m.getBoundingClientRect(),top=mr.top+($(".topbar")?.offsetHeight||0);
   if(r.top<top||r.top>mr.bottom-120)m.scrollTop+=r.top-top-8;
   if(toHead)$("#vd-step-h")?.focus()}
-// A one-click chain moves the pane along with it, but only when Sigit is still watching the step before.
+// A one-click chain moves the pane along with it, but only while the user is still viewing the step before.
 function vdFollow(id,from,to){if(VD.view==="detail"&&mkId()===id&&!$("#p-make").hidden&&[].concat(from).includes(VD.step)){VD.step=to;VD.open=true;renderDetail()}}
 function vdCheckSave(id,f,c){const w=work(id),sig=pkHash(narrText(f)),fails=c.findings.filter(x=>!x.ok).length;if(w.check?.sig===sig&&w.check.score===c.score&&w.check.fails===fails)return;w.check={...w.check,score:c.score,fails,sig,at:Date.now()};saveWork()}
 function vdCheckSeen(f,c){if(VD.view==="detail"&&VD.step==="check"&&!$("#p-make").hidden&&f===lastNarr)vdCheckSave(mkId(),f,c)}
@@ -2945,7 +2945,7 @@ function renderAuto(){const w=mkW(),has=!!(w.topic||"").trim(),full=has&&w.title
   $("#mk-auto-h").textContent=!has?"Not sure what to make?":full?"Filled in. Check it, then go on to the script.":`Topic: ${w.topic}`;
   $("#mk-auto-p").textContent=!has?"One click: AI picks a topic that matches your best videos, fills in the titles, thumbnail text and hook, then writes the full script and voice over.":full?"Title, thumbnail and hook are ready. One more click for the full script and voice over.":"One click: AI fills in the title, thumbnail text and hook for this topic, then writes the full script and voice over.";
   const mk=$("#mk-auto");mk.dataset.runcopy=!has?"Copy prompt and suggest a topic":full?"Copy prompt and refill the package":"Copy prompt and fill the package";setRunTxt(mk,!has?"Just suggest a topic":full?"Refill package":"Fill title, thumbnail & hook");$("#mk-auto-new").hidden=!has}
-// One AI call fills the whole package, so Sigit can start from a suggestion instead of a blank page.
+// One AI call fills the whole package, so the user can start from a suggestion instead of a blank page.
 async function autoFill(btn,newTopic,stEl,copy){const startId=mkId(),w=mkW(),topic=newTopic?"":(w.topic||"").trim(),st=stEl||$("#s-auto");
   const done=[...longForm().map(v=>v.t),...plans().map(p=>p.title)].slice(-80).join("; ");
   const d=await ask(st,btn,`${topic?`Plan the package for a documentary about: ${topic}.`:`Pick the single best next documentary topic for this channel and plan its package. Do not repeat or closely overlap: ${done||"none"}.${aniAvoid().length?` Do not pick any of these animals, the channel already has a video about each: ${aniAvoid().join("; ")}.`:""}`}

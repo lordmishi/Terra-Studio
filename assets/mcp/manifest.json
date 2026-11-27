@@ -6,7 +6,7 @@
   "description": "Lets Claude read your Terra Studio channel data (numbers, videos, calendar, ideas) and send approved video ideas to the Ideas tab.",
   "long_description": "Reads the files Terra Studio keeps in %APPDATA%\\TerraStudio. It can add ideas to an inbox that Terra Studio takes in. It cannot delete, upload or change anything else, and it makes no network calls.",
   "author": {
-    "name": "Sigit"
+    "name": "Terra Studio Contributors"
   },
   "server": {
     "type": "binary",

@@ -22,7 +22,7 @@ VIAddVersionKey "ProductName" "${APP}"
 VIAddVersionKey "FileDescription" "${APP} Setup"
 VIAddVersionKey "FileVersion" "${VERSION}"
 VIAddVersionKey "ProductVersion" "${VERSION}"
-VIAddVersionKey "LegalCopyright" "Sigit"
+VIAddVersionKey "LegalCopyright" "Terra Studio Contributors"
 
 !define MUI_ICON "..\assets\icon.ico"
 !define MUI_UNICON "..\assets\icon.ico"
@@ -64,7 +64,7 @@ Section "Terra Studio"
 
   WriteRegStr HKCU "${UNKEY}" "DisplayName" "${APP}"
   WriteRegStr HKCU "${UNKEY}" "DisplayVersion" "${VERSION}"
-  WriteRegStr HKCU "${UNKEY}" "Publisher" "Sigit"
+  WriteRegStr HKCU "${UNKEY}" "Publisher" "Terra Studio"
   WriteRegStr HKCU "${UNKEY}" "DisplayIcon" "$INSTDIR\TerraStudio.exe"
   WriteRegStr HKCU "${UNKEY}" "InstallLocation" "$INSTDIR"
   WriteRegStr HKCU "${UNKEY}" "UninstallString" '"$INSTDIR\Uninstall.exe"'

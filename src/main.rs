@@ -3438,7 +3438,7 @@ mod pack {
                 let bytes = fs::read(&src).map_err(|e| (500, format!("Could not read the thumbnail: {e}")))?;
                 let td = dest.sub(video::SUBS[5]);
                 let file = if dest.video.is_some() {
-                    // 06 Thumbnail holds Sigit's own files too, so the pack only adds a picture there, never replaces one.
+                    // 06 Thumbnail holds user-uploaded files too, so the pack only adds a picture there, never replaces one.
                     let p = video::save_new(&td, &format!("pack-thumbnail.{ext}"), &bytes)
                         .map_err(|e| (500, format!("Could not save the thumbnail: {}", video::why(&e))))?;
                     p.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_default()
@@ -4792,8 +4792,8 @@ mod edit {
         #[test]
         fn path_urls_match_premiere_on_windows() {
             assert_eq!(
-                path_url(r"C:\Users\Sigit\Downloads\Terra Studio\2026-11-20 The Den\02 Narration\01-act-1-the-den.mp3"),
-                "file://localhost/C%3a/Users/Sigit/Downloads/Terra%20Studio/2026-11-20%20The%20Den/02%20Narration/01-act-1-the-den.mp3"
+                path_url(r"C:\Users\Creator\Downloads\Terra Studio\2026-11-20 The Den\02 Narration\01-act-1-the-den.mp3"),
+                "file://localhost/C%3a/Users/Creator/Downloads/Terra%20Studio/2026-11-20%20The%20Den/02%20Narration/01-act-1-the-den.mp3"
             );
             assert_eq!(path_url(r"d:\a b\c.mov"), "file://localhost/D%3a/a%20b/c.mov");
             assert_eq!(path_url(r"\\?\C:\x\y (2).mp4"), "file://localhost/C%3a/x/y%20%282%29.mp4");
